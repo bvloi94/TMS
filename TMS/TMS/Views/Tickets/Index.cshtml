@@ -13,163 +13,207 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Type)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Mode)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ImpactDetail)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Status)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Subject)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Description)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Solution)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.UnapproveReason)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ScheduleStartDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ScheduleEndDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ActualStartDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ActualEndDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SolvedDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreatedTime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ModifiedTime)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AspNetUser.SecurityStamp)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AspNetUser1.SecurityStamp)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AspNetUser2.SecurityStamp)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AspNetUser3.SecurityStamp)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Category.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Department.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Impact.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Priority.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Urgency.Name)
-        </th>
-        <th></th>
-    </tr>
+<table class="table" id="ticket-table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImpactDetail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Subject)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Solution)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnapproveReason)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScheduleStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ScheduleEndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActualStartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActualEndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SolvedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ModifiedTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AspNetUser.SecurityStamp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AspNetUser1.SecurityStamp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AspNetUser2.SecurityStamp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AspNetUser3.SecurityStamp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Department.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Impact.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Priority.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Urgency.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tbody>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Type)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Mode)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ImpactDetail)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Status)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Subject)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Description)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Solution)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.UnapproveReason)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ScheduleStartDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ScheduleEndDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ActualStartDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ActualEndDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.SolvedDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CreatedTime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ModifiedTime)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AspNetUser.SecurityStamp)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AspNetUser1.SecurityStamp)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AspNetUser2.SecurityStamp)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AspNetUser3.SecurityStamp)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Category.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Department.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Impact.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Priority.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Urgency.Name)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
-}
+    @*@foreach (var item in Model)
+     {
+         <tr>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Type)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Mode)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.ImpactDetail)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Status)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Subject)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Description)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Solution)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.UnapproveReason)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.ScheduleStartDate)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.ScheduleEndDate)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.ActualStartDate)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.ActualEndDate)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.SolvedDate)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.CreatedTime)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.ModifiedTime)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.AspNetUser.SecurityStamp)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.AspNetUser1.SecurityStamp)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.AspNetUser2.SecurityStamp)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.AspNetUser3.SecurityStamp)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Category.Name)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Department.Name)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Impact.Name)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Priority.Name)
+             </td>
+             <td>
+                 @Html.DisplayFor(modelItem => item.Urgency.Name)
+             </td>
+             <td>
+                 @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                 @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                 @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+             </td>
+         </tr>
+    }*@
 
 </table>
+
+@Styles.Render("~/Content/datatables")
+@section scripts{
+    @Scripts.Render("~/bundles/datatables")
+    <script>
+            $("#ticket-table").DataTable({
+                "ajax": {
+                    "url": "http://localhost:58339/Ticket/GetTickets"
+                }
+            });
+    </script>
+}

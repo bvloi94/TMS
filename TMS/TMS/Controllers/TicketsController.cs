@@ -49,10 +49,10 @@ namespace TMS.Controllers
         // GET: Tickets/Create
         public ActionResult Create()
         {
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
+            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "Fullname");
+            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "Fullname");
+            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "Fullname");
+            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "Fullname");
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name");
             ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
             ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name");
@@ -169,6 +169,17 @@ namespace TMS.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        [HttpGet]
+        public JsonResult GetTickets()
+        {
+            var tickets = _ticketService.GetAll();
+            var jsonData = new
+            {
+                data = from ticket in tickets.ToList() select ticket
+            };
+            return Json(jsonData, JsonRequestBehavior.AllowGet);
         }
     }
 }

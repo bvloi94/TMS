@@ -26,7 +26,6 @@ namespace TMS
             bundles.Add(new ScriptBundle("~/bundles/app").Include(
                 "~/Scripts/app.js"));
 
-
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/AdminLTE.min.css",
@@ -34,6 +33,12 @@ namespace TMS
                       "~/Content/bootstrap.css.map",
                       "~/Content/font-awesome.min.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
+                "~/Content/Plugins/datatables/js/jquery.dataTables.min.js"));
+
+            bundles.Add(new StyleBundle("~/Content/datatables").Include(
+                      "~/Content/Plugins/datatables/css/jquery.dataTables.min.css"));
         }
     }
 }
