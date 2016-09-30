@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -71,7 +72,24 @@ namespace TMS.Controllers
             if (ModelState.IsValid)
             {
                 db.Tickets.Add(ticket);
+                try
+                {
+
                 db.SaveChanges();
+                } catch(DbEntityValidationException e)
+                {
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                ve.PropertyName, ve.ErrorMessage);
+                        }
+                    }
+                    throw;
+                }
                 return RedirectToAction("Index");
             }
 
@@ -172,14 +190,54 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetTickets()
+        public ActionResult GetTickets(jQueryDataTableParamModel param)
         {
-            var tickets = _ticketService.GetAll();
-            var jsonData = new
+            var ticketList = _ticketService.GetAll();
+            //var jsonData = new
+            //{
+            //    data = from ticket in tickets.ToList() select ticket
+            //};
+            //return Json(jsonData, JsonRequestBehavior.AllowGet);
+
+            IEnumerable<Ticket> filteredListItems;
+            if (!string.IsNullOrEmpty(param.sSearch))
             {
-                data = from ticket in tickets.ToList() select ticket
-            };
-            return Json(jsonData, JsonRequestBehavior.AllowGet);
+                filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(param.sSearch.ToLower()));
+            }
+            else
+            {
+                filteredListItems = ticketList;
+            }
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortDirection = Request["sSortDir_0"]; // asc or desc
+
+            switch (sortColumnIndex)
+            {
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Subject)
+                        : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.iDisplayStart).Take(param.iDisplayLength);
+            var result = displayedList.Select(p => new IConvertible[]{
+                p.ID,
+                p.Subject,
+                p.TechnicianID,
+                p.DepartmentID,
+                p.Status,
+                p.CreatedTime
+            }.ToArray());
+
+            return Json(new
+            {
+                param.sEcho,
+                iTotalRecords = result.Count(),
+                iTotalDisplayRecords = filteredListItems.Count(),
+                aaData = result
+            }, JsonRequestBehavior.AllowGet);
         }
     }
 }

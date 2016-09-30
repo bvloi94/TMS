@@ -241,6 +241,7 @@
     <Compile Include="Models\Impact.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\jQueryDataTableParamModel.cs" />
     <Compile Include="Models\KnowledgeBase.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
