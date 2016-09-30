@@ -199,22 +199,65 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\KnowlegeBasesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\TicketsController.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
-    <Compile Include="DAL\TMSContext.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AspNetRole.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUser.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserClaim.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserLogin.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BusinessRule.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BusinessRuleCondition.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BusinessRuleNotification.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\BusinessRuleTrigger.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Category.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Department.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\KnowlegeBase.cs">
+    <Compile Include="Models\Impact.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\KnowledgeBase.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Priority.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PriorityMatrixItem.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Ticket.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TicketAttachment.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TicketHistory.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TMSModel.Context.cs">
@@ -232,7 +275,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Urgency.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ITicketService.cs" />
+    <Compile Include="Services\TicketService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -310,6 +358,9 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
     <EntityDeploy Include="Models\TMSModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>TMSModel.Designer.cs</LastGenOutput>
@@ -317,9 +368,6 @@
     <Content Include="Models\TMSModel.edmx.diagram">
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
-    <Content Include="Content\bootstrap.css.map" />
-    <Content Include="Content\bootstrap.min.css.map" />
-    <Content Include="fonts\fontawesome-webfont.woff2" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -367,20 +415,16 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\TMSLayout.cshtml" />
     <Content Include="Views\Tickets\Create.cshtml" />
     <Content Include="Views\Tickets\Delete.cshtml" />
     <Content Include="Views\Tickets\Details.cshtml" />
     <Content Include="Views\Tickets\Edit.cshtml" />
     <Content Include="Views\Tickets\Index.cshtml" />
-    <Content Include="Views\KnowlegeBases\Create.cshtml" />
-    <Content Include="Views\KnowlegeBases\Delete.cshtml" />
-    <Content Include="Views\KnowlegeBases\Details.cshtml" />
-    <Content Include="Views\KnowlegeBases\Edit.cshtml" />
-    <Content Include="Views\KnowlegeBases\Index.cshtml" />
-    <Content Include="Views\Shared\TMSLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

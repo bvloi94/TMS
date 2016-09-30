@@ -25,7 +25,23 @@ namespace TMS.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<KnowlegeBase> KnowlegeBases { get; set; }
+        public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
+        public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
+        public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+        public virtual DbSet<BusinessRule> BusinessRules { get; set; }
+        public virtual DbSet<BusinessRuleCondition> BusinessRuleConditions { get; set; }
+        public virtual DbSet<BusinessRuleNotification> BusinessRuleNotifications { get; set; }
+        public virtual DbSet<BusinessRuleTrigger> BusinessRuleTriggers { get; set; }
+        public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<Department> Departments { get; set; }
+        public virtual DbSet<Impact> Impacts { get; set; }
+        public virtual DbSet<KnowledgeBase> KnowledgeBases { get; set; }
+        public virtual DbSet<Priority> Priorities { get; set; }
+        public virtual DbSet<PriorityMatrixItem> PriorityMatrixItems { get; set; }
         public virtual DbSet<Ticket> Tickets { get; set; }
+        public virtual DbSet<TicketAttachment> TicketAttachments { get; set; }
+        public virtual DbSet<TicketHistory> TicketHistories { get; set; }
+        public virtual DbSet<Urgency> Urgencies { get; set; }
     }
 }

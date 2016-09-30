@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using TMS.Models;
 
 namespace TMS.DAL
 {
     public class GenericRepository<TEntity> where TEntity : class
     {
-        internal TMSContext Context;
+        internal TMSEntities Context;
         internal DbSet<TEntity> DbSet;
-        public GenericRepository(TMSContext context)
+        public GenericRepository(TMSEntities context)
         {
             this.Context = context;
             this.DbSet = context.Set<TEntity>();
