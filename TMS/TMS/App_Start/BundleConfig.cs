@@ -32,13 +32,16 @@ namespace TMS
                       "~/Content/skins/_all-skins.min.css",
                       "~/Content/bootstrap.css.map",
                       "~/Content/font-awesome.min.css",
-                      "~/Content/site.css"));
+                      "~/Content/Site.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
                 "~/Content/Plugins/datatables/js/jquery.dataTables.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/datatables").Include(
                       "~/Content/Plugins/datatables/css/jquery.dataTables.min.css"));
+
+            bundles.Add(new StyleBundle("~/Content/login_css").Include(
+                      "~/Content/login.css"));
         }
     }
 }

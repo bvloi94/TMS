@@ -1,0 +1,118 @@
+﻿@model IEnumerable<TMS.Models.AspNetUser>
+
+@{
+    ViewBag.Title = "Manage Requesters";
+    Layout = "~/Views/Shared/TMSLayout.cshtml";
+}
+<p>@Html.ActionLink("Create New", "CreateRequester", null, new { @class = "btn btn-success" })</p>
+<input type="text" id="email-search-txt" />
+<table class="stripe" id="requester-table">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Fullname</th>
+            <th>Email</th>
+            <th>Birthday</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@Styles.Render("~/Content/datatables")
+@section scripts{
+    @Scripts.Render("~/bundles/datatables")
+    <script>
+        var initDataTable = function () {
+            $("#requester-table").DataTable({
+                "bRetrieve": true,
+                "bServerSide": true,
+                "bScrollCollapse": true,
+                "bSort": true,
+                "sAjaxSource": "/Admin/ManageUser/GetRequesters",
+                //"ajax": {
+                //    "type": "GET",
+                //    "url": "/Admin/ManageUser/GetRequesters",
+                //    "data": {
+                //        email_search_key: $("#email-search-txt").val()
+                //    }
+                //},
+                "bProcessing": true,
+                "fnServerParams": function (aoData) {
+                    aoData.push({ 'name': 'email_search_key', 'value': $("#email-search-txt").val() });
+                },
+                //"fnServerParams": function (aoData) {
+                //    aoData.push({ "email_search_key": $("#email-search-txt").val() });
+                //},
+                "aLengthMenu": [10, 20, 50],
+                "aoColumnDefs": [
+                    {
+                        "aTargets": [0],
+                        "mRender": function (data, type, row) {
+                            return row[1];
+                        }
+                    },
+                    {
+                        "aTargets": [1],
+                        "mRender": function (data, type, row) {
+                            return row[2];
+                        }
+                    },
+                    {
+                        "aTargets": [2],
+                        "bSortable": false,
+                        "mRender": function (data, type, row) {
+                            return row[3];
+                        }
+                    },
+                    {
+                        "aTargets": [3],
+                        "bSortable": false,
+                        "mRender": function (data, type, row) {
+                            return row[4];
+                        }
+                    },
+                    {
+                        "aTargets": [4],
+                        "bSortable": false,
+                        "mRender": function (data, type, row) {
+                            return '<a href="/Admin/ManageUser/EditRequester/"' + row[0] + '">Edit</a>'
+                            + '<a href="javascript:void(0)" onclick="removeRequester(\'' + row[0] + '\')">Remove</a>';
+                        }
+                    }
+                ]
+            })
+        };
+
+        var reloadDataTable = function () {
+            var oTable = $("#requester-table").dataTable();
+            oTable._fnPageChange(0);
+            oTable._fnAjaxUpdate();
+        };
+
+        $(document).ready(function () {
+            initDataTable();
+        });
+
+        $("#email-search-txt").keyup(function () {
+            reloadDataTable();
+        });
+
+        var removeRequester = function (id) {
+            $.ajax({
+                url: "/Admin/ManageUser/RemoveRequester",
+                data: {
+                    id: id
+                },
+                dataType: "JSON",
+                type: "POST",
+                success: function (data) {
+                    if (data.success) {
+                        alert(data.message);
+                        reloadDataTable();
+                    }
+                }
+            });
+        };
+    </script>
+}

@@ -9,6 +9,10 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using TMS.Models;
+using TMS.DAL;
+using TMS.Services;
+using System.Web.Security;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace TMS.Controllers
 {
@@ -17,15 +21,21 @@ namespace TMS.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private UnitOfWork _unitOfWork;
+        private UserService _userService;
 
         public AccountController()
         {
+            _unitOfWork = new UnitOfWork();
+            _userService = new UserService(_unitOfWork);
         }
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            _unitOfWork = new UnitOfWork();
+            _userService = new UserService(_unitOfWork);
         }
 
         public ApplicationSignInManager SignInManager
@@ -157,6 +167,62 @@ namespace TMS.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
+                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                    // Send an email with this link
+                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+                    return RedirectToAction("Index", "Home");
+                }
+                AddErrors(result);
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult CreateRequester()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CreateRequester(RequesterRegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
+                var result = await UserManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+
+                    AspNetUser requester = _userService.GetUserByUsername(model.UserName);
+                    requester.Fullname = model.Fullname;
+                    //requester.Birthday = model.Birthday;
+                    requester.Address = model.Address;
+                    requester.Gender = model.Gender;
+                    requester.DepartmentName = model.DepartmentName;
+                    requester.JobTitle = model.JobTitle;
+                    requester.CompanyName = model.CompanyName;
+                    requester.CompanyAddress = model.CompanyAddress;
+                    _userService.EditUser(requester);
+
+                    ApplicationDbContext context = new ApplicationDbContext();
+
+                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+                    if (!roleManager.RoleExists("Admin"))
+                    {
+                        var role = new IdentityRole();
+                        role.Name = "Admin";
+                        roleManager.Create(role);
+                    }
+                    UserManager.AddToRole(user.Id, "Admin");
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -392,7 +458,7 @@ namespace TMS.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Account", new { returnUrl = "" });
         }
 
         //

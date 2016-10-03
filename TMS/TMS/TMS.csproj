@@ -197,7 +197,10 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\TicketsController.cs" />
@@ -206,6 +209,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Utils\AuthorizeAttribute.cs" />
+    <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="ViewModels\UserViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AspNetRole.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
@@ -280,7 +286,9 @@
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IUserService.cs" />
     <Compile Include="Services\ITicketService.cs" />
+    <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\TicketService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -299,10 +307,12 @@
     <Content Include="Content\img\boxed-bg.png" />
     <Content Include="Content\img\default-50x50.gif" />
     <Content Include="Content\img\icons.png" />
+    <Content Include="Content\img\page403.png" />
     <Content Include="Content\img\photo1.png" />
     <Content Include="Content\img\photo2.png" />
     <Content Include="Content\img\photo3.jpg" />
     <Content Include="Content\img\photo4.jpg" />
+    <Content Include="Content\img\support_background.jpg" />
     <Content Include="Content\img\user1-128x128.jpg" />
     <Content Include="Content\img\user2-160x160.jpg" />
     <Content Include="Content\img\user3-128x128.jpg" />
@@ -377,6 +387,8 @@
     <Content Include="Content\skins\skin-yellow.min.css" />
     <Content Include="Content\skins\_all-skins.css" />
     <Content Include="Content\skins\_all-skins.min.css" />
+    <Content Include="Content\login.css" />
+    <Content Include="EmailTemplates\CreateRequesterEmailTemplate.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -410,6 +422,12 @@
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
     <Content Include="Content\Plugins\datatables\images\Sorting icons.psd" />
+    <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\Requester.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\CreateRequester.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\EditRequester.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -463,10 +481,13 @@
     <Content Include="Views\Tickets\Details.cshtml" />
     <Content Include="Views\Tickets\Edit.cshtml" />
     <Content Include="Views\Tickets\Index.cshtml" />
+    <Content Include="Views\Account\CreateRequester.cshtml" />
+    <Content Include="Views\Error\Error403.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="ViewModels\" />
+    <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Areas\Admin\Views\Manage\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
