@@ -21,7 +21,8 @@ namespace TMS.DAL
         private GenericRepository<BusinessRuleTrigger> _businessRuleTriggerRepository;
         private GenericRepository<Department> _departmentRepository;
         private GenericRepository<Impact> _impactRepository;
-        private GenericRepository<KnowledgeBase> _knowledgeBaseRepository;
+        private GenericRepository<Solution> _solutionRepository;
+        private GenericRepository<SolutionAttachment> _solutionAttachmentRepository;
         private GenericRepository<Priority> _priorityRepository;
         private GenericRepository<PriorityMatrixItem> _priorityMatrixItemRepository;
         private GenericRepository<Ticket> _ticketRepository;
@@ -162,15 +163,27 @@ namespace TMS.DAL
 
         }
 
-        public GenericRepository<KnowledgeBase> KnowledgeBaseRepository
+        public GenericRepository<Solution> SolutionRepository
         {
             get
             {
-                if (this._knowledgeBaseRepository == null)
+                if (this._solutionRepository == null)
                 {
-                    this._knowledgeBaseRepository = new GenericRepository<KnowledgeBase>(_context);
+                    this._solutionRepository = new GenericRepository<Solution>(_context);
                 }
-                return _knowledgeBaseRepository;
+                return _solutionRepository;
+            }
+        }
+
+        public GenericRepository<SolutionAttachment> SolutionAttachmentRepository
+        {
+            get
+            {
+                if (this._solutionAttachmentRepository == null)
+                {
+                    this._solutionAttachmentRepository = new GenericRepository<SolutionAttachment>(_context);
+                }
+                return _solutionAttachmentRepository;
             }
         }
 

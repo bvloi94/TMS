@@ -12,22 +12,24 @@ namespace TMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Impact
+    public partial class Solution
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Impact()
+        public Solution()
         {
-            this.PriorityMatrixItems = new HashSet<PriorityMatrixItem>();
-            this.Tickets = new HashSet<Ticket>();
+            this.SolutionAttachments = new HashSet<SolutionAttachment>();
         }
     
         public int ID { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Subject { get; set; }
+        public string ContentText { get; set; }
+        public Nullable<int> CategoryID { get; set; }
+        public Nullable<bool> IsDeleted { get; set; }
+        public Nullable<System.DateTime> CreatedTime { get; set; }
+        public Nullable<System.DateTime> ModifiedTime { get; set; }
     
+        public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PriorityMatrixItem> PriorityMatrixItems { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Ticket> Tickets { get; set; }
+        public virtual ICollection<SolutionAttachment> SolutionAttachments { get; set; }
     }
 }

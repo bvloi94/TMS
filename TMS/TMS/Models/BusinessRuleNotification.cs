@@ -16,8 +16,9 @@ namespace TMS.Models
     {
         public int ID { get; set; }
         public Nullable<int> BusinessRuleID { get; set; }
-        public Nullable<int> ReceiverID { get; set; }
+        public string ReceiverID { get; set; }
     
+        public virtual AspNetUser AspNetUser { get; set; }
         public virtual BusinessRule BusinessRule { get; set; }
     }
 }

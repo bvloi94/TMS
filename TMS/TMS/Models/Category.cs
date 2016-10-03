@@ -18,7 +18,7 @@ namespace TMS.Models
         public Category()
         {
             this.Category1 = new HashSet<Category>();
-            this.KnowledgeBases = new HashSet<KnowledgeBase>();
+            this.Solutions = new HashSet<Solution>();
             this.Tickets = new HashSet<Ticket>();
         }
     
@@ -32,7 +32,7 @@ namespace TMS.Models
         public virtual ICollection<Category> Category1 { get; set; }
         public virtual Category Category2 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<KnowledgeBase> KnowledgeBases { get; set; }
+        public virtual ICollection<Solution> Solutions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Ticket> Tickets { get; set; }
     }

@@ -36,9 +36,10 @@ namespace TMS.Models
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Impact> Impacts { get; set; }
-        public virtual DbSet<KnowledgeBase> KnowledgeBases { get; set; }
         public virtual DbSet<Priority> Priorities { get; set; }
         public virtual DbSet<PriorityMatrixItem> PriorityMatrixItems { get; set; }
+        public virtual DbSet<Solution> Solutions { get; set; }
+        public virtual DbSet<SolutionAttachment> SolutionAttachments { get; set; }
         public virtual DbSet<Ticket> Tickets { get; set; }
         public virtual DbSet<TicketAttachment> TicketAttachments { get; set; }
         public virtual DbSet<TicketHistory> TicketHistories { get; set; }

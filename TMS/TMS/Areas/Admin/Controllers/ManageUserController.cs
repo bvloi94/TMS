@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -66,7 +67,6 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/ManageUser/Requester
-        [Utils.Authorize(Roles = "Admin")]
         public ActionResult Requester()
         {
             IEnumerable<AspNetUser> requesters = _userService.GetRequesters();
@@ -141,7 +141,7 @@ namespace TMS.Areas.Admin.Controllers
         // POST: Admin/ManageUser/CreateRequester
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async System.Threading.Tasks.Task<ActionResult> CreateRequester(RequesterRegisterViewModel model)
+        public async Task<ActionResult> CreateRequester(RequesterRegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
