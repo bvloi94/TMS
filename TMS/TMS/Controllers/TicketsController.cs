@@ -16,7 +16,7 @@ namespace TMS.Controllers
     public class TicketsController : Controller
     {
         private TMSEntities db = new TMSEntities();
-        private UnitOfWork _unitOfWork; 
+        private UnitOfWork _unitOfWork;
         private TicketService _ticketService;
 
         public TicketsController()
@@ -28,8 +28,9 @@ namespace TMS.Controllers
         public ActionResult Index()
         {
             //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
-            var tickets = _ticketService.GetAll();
-            return View(tickets.ToList());
+            //var tickets = _ticketService.GetAll();
+            //return View(tickets.ToList());
+            return View();
         }
 
         // GET: Tickets/Details/5
@@ -75,8 +76,9 @@ namespace TMS.Controllers
                 try
                 {
 
-                db.SaveChanges();
-                } catch(DbEntityValidationException e)
+                    db.SaveChanges();
+                }
+                catch (DbEntityValidationException e)
                 {
                     foreach (var eve in e.EntityValidationErrors)
                     {
@@ -193,9 +195,10 @@ namespace TMS.Controllers
         public ActionResult GetTickets(jQueryDataTableParamModel param)
         {
             var ticketList = _ticketService.GetAll();
+
             //var jsonData = new
             //{
-            //    data = from ticket in tickets.ToList() select ticket
+            //    data = ticketList
             //};
             //return Json(jsonData, JsonRequestBehavior.AllowGet);
 
@@ -221,14 +224,14 @@ namespace TMS.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.iDisplayStart).Take(param.iDisplayLength);
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
             var result = displayedList.Select(p => new IConvertible[]{
-                p.ID,
+                p.CreatedTime.ToString(),
                 p.Subject,
-                p.TechnicianID,
-                p.DepartmentID,
+                p.Description,
                 p.Status,
-                p.CreatedTime
+                p.Solution,
+                p.ModifiedTime.ToString()
             }.ToArray());
 
             return Json(new

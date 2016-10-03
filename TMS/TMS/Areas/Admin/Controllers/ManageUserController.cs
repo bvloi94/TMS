@@ -114,7 +114,7 @@ namespace TMS.Areas.Admin.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.iDisplayStart).Take(param.iDisplayLength);
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
             var result = displayedList.Select(p => new IConvertible[]{
                 p.Id,
                 p.UserName,

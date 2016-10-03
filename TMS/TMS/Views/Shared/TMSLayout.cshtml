@@ -11,17 +11,14 @@
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
-
         <header class="main-header">
-
             <!-- Logo -->
-            <a href="index2.html" class="logo">
+            <a href="Index" class="logo">
                 <!-- mini logo for sidebar mini 50x50 pixels -->
                 <span class="logo-mini"><b>TM</b>S</span>
                 <!-- logo for regular state and mobile devices -->
                 <span class="logo-lg"><b>TMS</b></span>
             </a>
-
             <!-- Header Navbar: style can be found in header.less -->
             <nav class="navbar navbar-static-top">
                 <!-- Sidebar toggle button-->
@@ -33,7 +30,6 @@
                     <ul class="nav navbar-nav">
                         <!-- Messages: style can be found in dropdown.less-->
                         <li class="dropdown messages-menu">
-
                             <!-- Notifications: style can be found in dropdown.less -->
                         <li class="dropdown notifications-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -87,7 +83,6 @@
                                 <!-- User image -->
                                 <li class="user-header">
                                     <img src="~/Content/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-
                                     <p>
                                         Requester
                                         <small>FPT Software</small>
@@ -114,7 +109,6 @@
                         </li>
                     </ul>
                 </div>
-
             </nav>
         </header>
         <!-- Left side column. contains the logo and sidebar -->
@@ -146,7 +140,6 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
-
                     <li class="treeview active">
                         <a href="#">
                             <i class="fa fa-files-o"></i>
@@ -157,46 +150,39 @@
                         </a>
                     </li>
                     <li>
-
                     <li class="treeview active">
                         <a href="/KnowledgeBase/">
                             <i class="fa fa-dashboard"></i> <span>KNOWLEDGE BASE</span>
                         </a>
                     </li>
-
                     <li class="treeview active">
                         <a href="#">
                             <i class="fa fa-laptop"></i>
                             <span>REQUESTER</span>
                         </a>
                     </li>
-
                     <li class="treeview active">
                         <a href="#">
                             <i class="fa fa-laptop"></i>
                             <span>HELP DESK</span>
                         </a>
                     </li>
-
                     <li class="treeview active">
                         <a href="#">
                             <i class="fa fa-pie-chart"></i>
                             <span>REPORT</span>
                         </a>
                     </li>
-
                     <li class="treeview active">
                         <a href="#">
                             <i class="fa fa-gears"></i>
                             <span>SYSTEM CONFIG</span>
                         </a>
                     </li>
-
                 </ul>
             </section>
             <!-- /.sidebar -->
         </aside>
-
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
@@ -204,12 +190,7 @@
                 <h1>
                     @ViewBag.Title
                 </h1>
-                <ol class="breadcrumb">
-                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                    <li class="active">@ViewBag.Title</li>
-                </ol>
             </section>
-
             <!-- Main content -->
             <section class="content">
                 @RenderBody()
@@ -217,7 +198,6 @@
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
-
         <footer class="main-footer">
             <div class="pull-right hidden-xs">
                 <b>Version</b> 1.1.1
@@ -225,15 +205,11 @@
             <strong>Copyright &copy; 2016-2016 <a href="http://tms.com">Group 4</a>.</strong> All rights
             reserved.
         </footer>
-
     </div>
     <!-- ./wrapper -->
-
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
-
     @RenderSection("scripts", required: false)
-
 </body>
 </html>
