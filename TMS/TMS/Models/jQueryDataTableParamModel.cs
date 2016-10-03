@@ -21,12 +21,12 @@ namespace TMS.Models
         /// <summary>
         /// Number of records that should be shown in table
         /// </summary>
-        public int iDisplayLength { get; set; }
+        public int length { get; set; }
 
         /// <summary>
         /// First record that should be shown(used for paging)
         /// </summary>
-        public int iDisplayStart { get; set; }
+        public int start { get; set; }
 
         /// <summary>
         /// Number of columns in table

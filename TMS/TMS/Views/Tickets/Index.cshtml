@@ -1,82 +1,103 @@
 ﻿@model IEnumerable<TMS.Models.Ticket>
-
 @{
     Layout = "~/Views/Shared/TMSLayout.cshtml";
 }
-
 @{
-    ViewBag.Title = "Ticket";
+    ViewBag.Title = "Ticket Management";
 }
 
-<h2>Index</h2>
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table" id="ticket-table">
-    <thead>
-        <tr>
-            <th>Subject</th>
-            <th>Technician</th>
-            <th>Department</th>
-            <th>Status</th>
-            <th>Created Time</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-header padding-bottom-20 pull-left ">
+                <button type="button" class="btn btn-block btn-primary" onclick="@("location.href='"+ Url.Action("Create", "Tickets")+"'")">
+                    Create New Ticket
+                </button>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table" id="ticket-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Date Opened
+                            </th>
+                            <th>
+                                Subject
+                            </th>
+                            <th>
+                                Description
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                Solution
+                            </th>
+                            <th>
+                                Date Modified
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
 
 @Styles.Render("~/Content/datatables")
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
         $("#ticket-table").DataTable({
-            "bRetrieve": true,
-            "bServerSide": true,
-            "bScrollCollapse": true,
-            "bSort": true,
-            "sAjaxSource": "/Tickets/GetTickets",
-            "bProcessing": true,
-            @*"fnServerParams": function (aoData) {
-                aoData.push({ "name": "id", "value": @ViewBag.storeId });
-            },*@
-            "aLengthMenu": [10, 20, 50],
-            "aoColumnDefs": [
-                {
-                    "aTargets": [0],
-                    "mRender": function (data, type, o) {
-                        return o[1];
-                    }
+            processing: true,
+            serverSide: true,
+            paging: true,
+            sort: true,
+            ajax: {
+                url: "/Tickets/GetTickets"
+            },
+            "columnDefs": [
+            {
+                "render": function (data, type, row) {
+                    return row[0];
                 },
-                {
-                    "aTargets": [1],
-                    "bSortable": false,
-                    "mRender": function (data, type, o) {
-                        return o[2];
-                    }
+                "targets": 0,
+                "type": "date"
+            },
+            {
+                "render": function (data, type, row) {
+                    return row[1];
                 },
-                {
-                    "aTargets": [2],
-                    "bSortable": false,
-                    "mRender": function (data, type, o) {
-                        return o[3];
-                    }
+                "targets": 1
+            },
+            {
+                "render": function (data, type, row) {
+                    return row[2];
                 },
-                {
-                    "aTargets": [3],
-                    "bSortable": false,
-                    "mRender": function (data, type, o) {
-                        return o[4];
-                    }
+                "targets": 2
+            },
+            {
+                "render": function (data, type, row) {
+                    return row[3];
                 },
-                {
-                    "aTargets": [4],
-                    "bSortable": false,
-                    "mRender": function (data, type, o) {
-                        return o[5];
-                    }
-                }
+                "targets": 3
+            },
+            {
+                "render": function (data, type, row) {
+                    return row[4];
+                },
+                "targets": 4,
+                "type": "date"
+            }
+
             ]
         });
     </script>
 }
+
