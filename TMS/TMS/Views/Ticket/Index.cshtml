@@ -1,0 +1,216 @@
+﻿@{
+    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
+}
+@{
+    ViewBag.Title = "View Ticket";
+}
+
+<style>
+    .table thead, h4 {
+        color: #1074bd;
+    }
+
+    .rightItems {
+        text-align: right;
+    }
+
+    .modal-title {
+        color: #ffffff;
+        text-align: center;
+    }
+
+    .modal-header {
+        background-color: #1074bd;
+    }
+
+    .modal-body {
+        background-color: #e6e6e6;
+    }
+
+    .shortInfoContainer {
+        margin: 5px auto;
+        display: flex;
+    }
+
+    .shortInfo {
+        margin: auto;
+        height: 85px;
+        text-align: center;
+        display: table;
+        background-color: #ffffff;
+    }
+
+    hr {
+        height: 10px;
+        border: 0;
+        box-shadow: 0 10px 10px -10px #8c8b8b inset;
+    }
+
+    .detail {
+        margin: 10px 20px 10px 0px;
+        padding: 8px 20px 8px 20px;
+        background-color: #ffffff;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-body">
+                <a class="btn btn-primary" href="@(Url.Action("Create", "Ticket"))">Create new ticket</a>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date Opened</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Solution</th>
+                            <th>Last Modified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>6/8/2016 11:23:00 PM</td>
+                            <td><a data-toggle="modal" data-target="#Modal1">Change website main color</a></td>
+                            <td>Open</td>
+                            <td>Color is changed to red.</td>
+                            <td>8/8/2016 11:23:00 PM</td>
+                        </tr>
+                        <tr>
+                            <td>7/8/2016 11:23:00 PM</td>
+                            <td><a data-toggle="modal" data-target="#Modal2">Move host javi.net to new server</a></td>
+                            <td>Closed</td>
+                            <td>Host is moved to new server on August 7th.</td>
+                            <td>9/8/2016 11:23:00 PM</td>
+                        </tr>
+                        <tr>
+                            <td>8/8/2016 11:23:00 PM</td>
+                            <td><a data-toggle="modal" data-target="#Modal3">Request admin account</a></td>
+                            <td>Closed</td>
+                            <td>Account is now administrator.</td>
+                            <td>10/8/2016 11:23:00 PM</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="Modal1" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Change website main color</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="box-body">
+                                    <div class="shortInfoContainer">
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Date opened</h4>
+                                            6/8/2016 11:23:00
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Department</h4>
+                                            Technical support - Website Developer
+                                        </div>
+                                        <div class="col-sm-2 shortInfo">
+                                            <h4>Status</h4>
+                                            Open
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Last modified</h4>
+                                            8/8/2016 11:23:00
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="detailContainer">
+                                        <div class="col-lg-12 detail">
+                                            <h4>Ticket Description</h4>
+                                            <p>I wish to change my website's main color to red. The color code is #ff3434. Please email me when my request is solved.</p>
+                                        </div>
+                                        <div class="col-lg-12 detail">
+                                            <h4>Solution</h4>
+                                            <p>Main color is changes to red.</p>
+                                            <p>Thank you for using our services.</p>
+                                            <p><b>Person in charge:</b> Bui Van Loi</p>
+                                            <p>Sent: 8/8/2016 11:23:00</p>
+                                            <div class="rightItems">
+                                                <b>Are you sastified with this solution?</b>
+                                                <a class="btn btn-primary" href="@(Url.Action("ViewTicketList", "Tickets"))">Yes</a>
+                                                <a class="btn btn-default" href="@(Url.Action("ViewTicketList", "Tickets"))">No</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="Modal2" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Move host javi.net to new server</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="box-body">
+                                    <div class="shortInfoContainer">
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Date opened</h4>
+                                            7/8/2016 11:23:00
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Department</h4>
+                                            Technical support - Website Developer
+                                        </div>
+                                        <div class="col-sm-2 shortInfo">
+                                            <h4>Status</h4>
+                                            Closed
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Last modified</h4>
+                                            9/8/2016 11:23:00
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="detailContainer">
+                                        <div class="col-lg-12 detail">
+                                            <h4>Ticket Description</h4>
+                                            <p>I wish to change my website's main color to red. The color code is #ff3434. Please email me when my request is solved.</p>
+                                        </div>
+                                        <div class="col-lg-12 detail">
+                                            <h4>Solution</h4>
+                                            <p>Host is moved to new server on August 7th.</p>
+                                            <p>We're so sorry about this unconvenience. All of your data is restored successfully. Thank you for your impatience.</p>
+                                            <p><b>Person in charge:</b> Bui Van Loi</p>
+                                            <p>Sent: 9/8/2016 11:23:00</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="@(Url.Action("Index", "Home"))">
+            <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+            Back to Homepage
+        </a>
+    </div>
+</div>
+
+
+
+
+

@@ -201,9 +201,11 @@
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\FAQController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Controllers\TicketsController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
     <Compile Include="Global.asax.cs">
@@ -457,7 +459,6 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
@@ -479,13 +480,15 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\TMSLayout.cshtml" />
-    <Content Include="Views\Tickets\Create.cshtml" />
-    <Content Include="Views\Tickets\Delete.cshtml" />
-    <Content Include="Views\Tickets\Details.cshtml" />
-    <Content Include="Views\Tickets\Edit.cshtml" />
-    <Content Include="Views\Tickets\Index.cshtml" />
     <Content Include="Views\Account\CreateRequester.cshtml" />
     <Content Include="Views\Error\Error403.cshtml" />
+    <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
+    <Content Include="Views\Ticket\Index.cshtml" />
+    <Content Include="Views\Ticket\Create.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\FAQ\Index.cshtml" />
+    <Content Include="Views\Profile\Edit.cshtml" />
+    <Content Include="Views\Profile\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

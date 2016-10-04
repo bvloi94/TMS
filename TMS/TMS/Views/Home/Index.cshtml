@@ -1,31 +1,69 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
+}
+@{
+    ViewBag.Title = "Hello, Requester!";
 }
 
-<div class="jumbotron">
-    <h1> ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+<style>
+    .menu-item {
+        display: table;
+        text-align: center;
+        position: relative;
+        height: 250px;
+    }
+
+        .menu-item a {
+            color: #2a2a2a;
+            display: table-cell;
+            vertical-align: middle;
+            transition: all .2s ease-in-out;
+        }
+
+            .menu-item a:hover {
+                color: #1074bd;
+                transform: scale(1.05);
+            }
+</style>
 
 <div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-body">
+                <div class="col-sm-6 menu-item">
+                    <a href="@(Url.Action("Create", "Ticket"))">
+                        <i class="fa fa-tag fa-5x"></i>
+                        <br />
+                        <h3>Send Ticket</h3>
+                        Click here to send a ticket to help desk.
+                    </a>
+                </div>
+                <div class="col-sm-6 menu-item">
+                    <a href="@(Url.Action("Index", "Ticket"))">
+                        <i class="fa fa-tags fa-5x"></i>
+                        <br />
+                        <h3>View Ticket List</h3>
+                        Click here to view your ticket.
+                    </a>
+                </div>
+                <div class="col-sm-6 menu-item">
+                    <a href="@(Url.Action("Index", "Profile"))">
+                        <i class="fa fa-user fa-5x"></i>
+                        <br />
+                        <h3>View Profile</h3>
+                        Click here to view and edit your profile.
+                    </a>
+                </div>
+                <div class="col-sm-6 menu-item">
+                    <a href="@(Url.Action("Index", "FAQ"))">
+                        <i class="fa fa-question-circle fa-5x"></i>
+                        <br />
+                        <h3>FAQ</h3>
+                        See Frequently Asked Questions.
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+

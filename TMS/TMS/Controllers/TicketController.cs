@@ -13,13 +13,13 @@ using TMS.Services;
 
 namespace TMS.Controllers
 {
-    public class TicketsController : Controller
+    public class TicketController : Controller
     {
         private TMSEntities db = new TMSEntities();
         private UnitOfWork _unitOfWork;
         private TicketService _ticketService;
 
-        public TicketsController()
+        public TicketController()
         {
             _unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(_unitOfWork);
@@ -27,9 +27,6 @@ namespace TMS.Controllers
         // GET: Tickets
         public ActionResult Index()
         {
-            //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
-            //var tickets = _ticketService.GetAll();
-            //return View(tickets.ToList());
             return View();
         }
 
@@ -51,15 +48,6 @@ namespace TMS.Controllers
         // GET: Tickets/Create
         public ActionResult Create()
         {
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "Fullname");
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "Fullname");
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "Fullname");
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "Fullname");
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name");
-            ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
-            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name");
-            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name");
-            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name");
             return View();
         }
 
@@ -242,5 +230,6 @@ namespace TMS.Controllers
                 aaData = result
             }, JsonRequestBehavior.AllowGet);
         }
+        
     }
 }

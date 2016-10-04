@@ -1,0 +1,49 @@
+﻿@{
+    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
+}
+@{
+    ViewBag.Title = "CreateTicket";
+}
+
+<style>
+    .inputform {
+        padding: 20px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="form-horizontal inputform">
+                <h4>Ticket Information</h4>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Subject</label>
+                    <div class="col-md-10">
+                        <input type="text" class="form-control" placeholder="Enter subject of ticket" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Description</label>
+                    <div class="col-md-10">
+                        <textarea class="form-control" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Attach file</label>
+                    <div class="col-md-10">
+                        <input type="file" name="files" multiple class="form-control" placeholder="Drop file here" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <a class="btn btn-primary" href="#">Send</a>
+                        <a class="btn btn-default" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
