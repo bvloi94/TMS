@@ -198,9 +198,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-    <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
+<<<<<<< HEAD
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
+=======
+    <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
+    <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
+>>>>>>> 19e9e64d412da8fda484c7f0b6d6b3b06c71e3fe
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FAQController.cs" />
@@ -285,6 +289,7 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\DepartmentService.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
@@ -328,6 +333,8 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
+    <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.css" />
+    <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.js" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap.css" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap.min.css" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap4.css" />
@@ -368,6 +375,9 @@
     <Content Include="Content\Plugins\datatables\js\jquery.dataTables.js" />
     <Content Include="Content\Plugins\datatables\js\jquery.dataTables.min.js" />
     <Content Include="Content\Plugins\datatables\js\jquery.js" />
+    <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.full.min.js" />
+    <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.css" />
+    <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.min.js" />
     <Content Include="Content\skins\skin-black-light.css" />
     <Content Include="Content\skins\skin-black-light.min.css" />
     <Content Include="Content\skins\skin-black.css" />
@@ -435,17 +445,29 @@
     <Content Include="Models\TMSModel.edmx.diagram">
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
+<<<<<<< HEAD
     <Content Include="Areas\Admin\Views\ManageSC\View.cshtml" />
     <Content Include="Areas\Technician\Views\web.config" />
+=======
+    <Content Include="Areas\HelpDesk\Views\web.config" />
+    <Content Include="Areas\HelpDesk\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Create.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Delete.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
+>>>>>>> 19e9e64d412da8fda484c7f0b6d6b3b06c71e3fe
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-2.2.3.min.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\main.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -463,6 +485,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
@@ -484,23 +507,26 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\TMSLayout.cshtml" />
+    <Content Include="Views\Ticket\Create.cshtml" />
+    <Content Include="Views\Ticket\Index.cshtml" />
     <Content Include="Views\Account\CreateRequester.cshtml" />
     <Content Include="Views\Error\Error403.cshtml" />
-    <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
-    <Content Include="Views\Ticket\Index.cshtml" />
-    <Content Include="Views\Ticket\Create.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\FAQ\Index.cshtml" />
     <Content Include="Views\Profile\Edit.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
+<<<<<<< HEAD
     <Folder Include="Areas\Admin\Views\Manage\" />
     <Folder Include="Areas\Technician\Controllers\" />
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Areas\Technician\Views\Shared\" />
+=======
+    <Folder Include="Areas\HelpDesk\Models\" />
+>>>>>>> 19e9e64d412da8fda484c7f0b6d6b3b06c71e3fe
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

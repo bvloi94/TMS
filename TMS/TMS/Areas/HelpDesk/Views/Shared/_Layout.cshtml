@@ -140,8 +140,8 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
-                    <li class="treeview active">
-                        <a href="#">
+                    <li id="menu-ticket" class="treeview">
+                        <a  href="@Url.Action("Index","ManageTicket")" >
                             <i class="fa fa-files-o"></i>
                             <span>TICKET</span>
                             <span class="pull-right-container">
@@ -150,33 +150,21 @@
                         </a>
                     </li>
                     <li>
-                    <li class="treeview active">
+                    <li id="menu-knowledgebase" class="treeview">
                         <a href="/KnowledgeBase/">
                             <i class="fa fa-dashboard"></i> <span>KNOWLEDGE BASE</span>
                         </a>
                     </li>
-                    <li class="treeview active">
+                    <li id="menu-requester" class="treeview">
                         <a href="#">
                             <i class="fa fa-laptop"></i>
                             <span>REQUESTER</span>
                         </a>
                     </li>
-                    <li class="treeview active">
-                        <a href="#">
-                            <i class="fa fa-laptop"></i>
-                            <span>HELP DESK</span>
-                        </a>
-                    </li>
-                    <li class="treeview active">
-                        <a href="#">
+                    <li id="menu-report" class="treeview">
+                        <a href="@Url.Action("Create","ManageTicket")">
                             <i class="fa fa-pie-chart"></i>
                             <span>REPORT</span>
-                        </a>
-                    </li>
-                    <li class="treeview active">
-                        <a href="#">
-                            <i class="fa fa-gears"></i>
-                            <span>SYSTEM CONFIG</span>
                         </a>
                     </li>
                 </ul>
@@ -211,13 +199,5 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
     @RenderSection("scripts", required: false)
-    <script>
-        $(document).ready(function () {
-            $(".datetime").datetimepicker({
-                timepicker: false,
-                format: 'd/m/Y'
-            });
-        });
-    </script>
 </body>
 </html>
