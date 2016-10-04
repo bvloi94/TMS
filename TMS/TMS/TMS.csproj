@@ -199,12 +199,9 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
-<<<<<<< HEAD
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
-=======
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
->>>>>>> 19e9e64d412da8fda484c7f0b6d6b3b06c71e3fe
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FAQController.cs" />
@@ -445,10 +442,8 @@
     <Content Include="Models\TMSModel.edmx.diagram">
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
-<<<<<<< HEAD
     <Content Include="Areas\Admin\Views\ManageSC\View.cshtml" />
     <Content Include="Areas\Technician\Views\web.config" />
-=======
     <Content Include="Areas\HelpDesk\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Create.cshtml" />
@@ -456,7 +451,6 @@
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
->>>>>>> 19e9e64d412da8fda484c7f0b6d6b3b06c71e3fe
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -519,14 +513,11 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
-<<<<<<< HEAD
     <Folder Include="Areas\Admin\Views\Manage\" />
     <Folder Include="Areas\Technician\Controllers\" />
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Areas\Technician\Views\Shared\" />
-=======
     <Folder Include="Areas\HelpDesk\Models\" />
->>>>>>> 19e9e64d412da8fda484c7f0b6d6b3b06c71e3fe
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
