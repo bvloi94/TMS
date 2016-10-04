@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity.Owin;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using TMS.DAL;
 using TMS.Models;
+using TMS.Utils;
 
 namespace TMS.Services
 {
@@ -59,6 +61,11 @@ namespace TMS.Services
         public IEnumerable<AspNetUser> GetRequesters()
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.IsActive == true && r.AspNetRoles.FirstOrDefault().Name == "Requester");
+        }
+
+        public bool IsActive(string id)
+        {
+            return _unitOfWork.AspNetUserRepository.Get(m => m.Id == id && m.IsActive == true).Count() > 0;
         }
     }
 }

@@ -4,20 +4,30 @@
     ViewBag.Title = "Manage Requesters";
     Layout = "~/Views/Shared/TMSLayout.cshtml";
 }
-<p>@Html.ActionLink("Create New", "CreateRequester", null, new { @class = "btn btn-success" })</p>
-<input type="text" id="email-search-txt" />
-<table class="stripe" id="requester-table">
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Fullname</th>
-            <th>Email</th>
-            <th>Birthday</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body">
+                    <p>@Html.ActionLink("Create New", "CreateRequester", null, new { @class = "btn btn-success" })</p>
+                    <table class="table table-bordered table-striped dataTable" id="requester-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Fullname</th>
+                                <th>Email</th>
+                                <th>Birthday</th>
+                                <th>Active</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 @Styles.Render("~/Content/datatables")
 @section scripts{
@@ -25,59 +35,61 @@
     <script>
         var initDataTable = function () {
             $("#requester-table").DataTable({
-                "bRetrieve": true,
-                "bServerSide": true,
-                "bScrollCollapse": true,
-                "bSort": true,
-                "sAjaxSource": "/Admin/ManageUser/GetRequesters",
-                //"ajax": {
-                //    "type": "GET",
-                //    "url": "/Admin/ManageUser/GetRequesters",
-                //    "data": {
-                //        email_search_key: $("#email-search-txt").val()
-                //    }
-                //},
-                "bProcessing": true,
-                "fnServerParams": function (aoData) {
-                    aoData.push({ 'name': 'email_search_key', 'value': $("#email-search-txt").val() });
+                //"bRetrieve": true,
+                serverSide: true,
+                //"bScrollCollapse": true,
+                sort: true,
+                ajax: {
+                    url: "/Admin/ManageUser/GetRequesters",
+                    data: {
+                        email_search_key: $("#email-search-txt").val()
+                    }
                 },
-                //"fnServerParams": function (aoData) {
-                //    aoData.push({ "email_search_key": $("#email-search-txt").val() });
+                processing: true,
+                //fnServerParams: function (aoData) {
+                //    aoData.push({ 'name': 'email_search_key', 'value': $("#email-search-txt").val() });
                 //},
-                "aLengthMenu": [10, 20, 50],
-                "aoColumnDefs": [
+                lengthMenu: [10, 20, 50],
+                columnDefs: [
                     {
-                        "aTargets": [0],
-                        "mRender": function (data, type, row) {
+                        "targets": [0],
+                        "render": function (data, type, row) {
                             return row[1];
                         }
                     },
                     {
-                        "aTargets": [1],
-                        "mRender": function (data, type, row) {
+                        "targets": [1],
+                        "render": function (data, type, row) {
                             return row[2];
                         }
                     },
                     {
-                        "aTargets": [2],
-                        "bSortable": false,
-                        "mRender": function (data, type, row) {
+                        "targets": [2],
+                        "sortable": false,
+                        "render": function (data, type, row) {
                             return row[3];
                         }
                     },
                     {
-                        "aTargets": [3],
-                        "bSortable": false,
-                        "mRender": function (data, type, row) {
+                        "targets": [3],
+                        "sortable": false,
+                        "render": function (data, type, row) {
                             return row[4];
                         }
                     },
                     {
-                        "aTargets": [4],
-                        "bSortable": false,
-                        "mRender": function (data, type, row) {
-                            return '<a href="/Admin/ManageUser/EditRequester/"' + row[0] + '">Edit</a>'
-                            + '<a href="javascript:void(0)" onclick="removeRequester(\'' + row[0] + '\')">Remove</a>';
+                        "targets": [4],
+                        "sortable": false,
+                        "render": function (data, type, row) {
+                            return row[4];
+                        }
+                    },
+                    {
+                        "targets": [5],
+                        "sortable": false,
+                        "render": function (data, type, row) {
+                            return '<a href="/Admin/ManageUser/EditRequester/' + row[0] + '"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>&nbsp&nbsp'
+                            + '<a href="javascript:void(0)" onclick="removeRequester(\'' + row[0] + '\')"><i class="fa fa-trash" aria-hidden="true"></i></a>';
                         }
                     }
                 ]

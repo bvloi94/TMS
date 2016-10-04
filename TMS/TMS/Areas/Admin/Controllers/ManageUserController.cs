@@ -3,11 +3,13 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Security;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
@@ -79,12 +81,12 @@ namespace TMS.Areas.Admin.Controllers
         public ActionResult GetRequesters(jQueryDataTableParamModel param, string email_search_key)
         {
             var requesters = _userService.GetRequesters();
-
+            var default_search_key = Request["search[value]"];
             IEnumerable<AspNetUser> filteredListItems;
 
-            if (!string.IsNullOrEmpty(param.sSearch))
+            if (!string.IsNullOrEmpty(default_search_key))
             {
-                filteredListItems = requesters.Where(p => p.Fullname.ToLower().Contains(param.sSearch.ToLower()));
+                filteredListItems = requesters.Where(p => p.Fullname.ToLower().Contains(default_search_key.ToLower()));
             }
             else
             {
@@ -97,8 +99,10 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            var sortDirection = Request["sSortDir_0"]; // asc or desc
+            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortDirection = Request["order[0][dir]"];
+            //var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            //var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
             {
@@ -120,15 +124,18 @@ namespace TMS.Areas.Admin.Controllers
                 p.UserName,
                 p.Fullname,
                 p.Email,
-                p.Birthday.Value.ToShortDateString()
+                (p.Birthday == null) ? "" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy")
             }.ToArray());
 
             return Json(new
             {
                 param.sEcho,
-                iTotalRecords = result.Count(),
-                iTotalDisplayRecords = filteredListItems.Count(),
-                aaData = result
+                //iTotalRecords = result.Count(),
+                //iTotalDisplayRecords = filteredListItems.Count(),
+                //aaData = result
+                recordsTotal = result.Count(),
+                recordsFiltered = filteredListItems.Count(),
+                data = result
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -145,13 +152,14 @@ namespace TMS.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);
+                var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
+                string generatedPassword = GeneratePassword();
+                var result = await UserManager.CreateAsync(user, generatedPassword);
                 if (result.Succeeded)
                 {
                     AspNetUser requester = _userService.GetUserById(user.Id);
                     requester.Fullname = model.Fullname;
-                    requester.Birthday = Convert.ToDateTime(model.Birthday);
+                    requester.Birthday = string.IsNullOrEmpty(model.Birthday) ? (DateTime?)null : DateTime.ParseExact(model.Birthday, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                     requester.Address = model.Address;
                     requester.Gender = model.Gender;
                     requester.DepartmentName = model.DepartmentName;
@@ -173,10 +181,14 @@ namespace TMS.Areas.Admin.Controllers
                     UserManager.AddToRole(user.Id, "Requester");
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                     EmailUtil emailUtil = new EmailUtil();
+                    string emailSubject = "[TMS] Account Info";
                     string emailMessage = System.IO.File.ReadAllText(Server.MapPath(@"~/EmailTemplates/CreateRequesterEmailTemplate.txt"));
-                    emailMessage = emailMessage.Replace("$username", model.UserName);
-                    emailMessage = emailMessage.Replace("$password", model.Password);
-                    await emailUtil.SendEmail("huytcdse61256@fpt.edu.vn", "Test", emailMessage);
+                    emailMessage = emailMessage.Replace("$fullname", model.Fullname);
+                    emailMessage = emailMessage.Replace("$username", model.Username);
+                    emailMessage = emailMessage.Replace("$password", generatedPassword);
+                    // Send email asynchronously
+                    Thread thread = new Thread(() => emailUtil.SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage));
+                    thread.Start();
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -189,7 +201,6 @@ namespace TMS.Areas.Admin.Controllers
                 AddErrors(result);
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -198,10 +209,9 @@ namespace TMS.Areas.Admin.Controllers
         {
             AspNetUser requester = _userService.GetUserById(id);
             RequesterRegisterViewModel model = new RequesterRegisterViewModel();
-            model.UserName = requester.UserName;
             model.Fullname = requester.Fullname;
             model.Email = requester.Email;
-            model.Birthday = requester.Birthday.Value.ToShortDateString();
+            model.Birthday = (requester.Birthday == null) ? "" : ((DateTime)requester.Birthday).ToString("dd/MM/yyyy");
             model.Address = requester.Address;
             model.Gender = requester.Gender;
             model.DepartmentName = requester.DepartmentName;
@@ -210,6 +220,7 @@ namespace TMS.Areas.Admin.Controllers
             model.CompanyAddress = requester.CompanyAddress;
 
             ViewBag.id = id;
+            ViewBag.username = requester.UserName;
             return View(model);
         }
 
@@ -226,13 +237,12 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             AspNetUser requester = _userService.GetUserById(id);
-            model.UserName = requester.UserName;
 
             if (ModelState.IsValid)
             {
                 requester.Fullname = model.Fullname;
                 requester.Email = model.Email;
-                requester.Birthday = Convert.ToDateTime(model.Birthday);
+                requester.Birthday = string.IsNullOrEmpty(model.Birthday) ? (DateTime?)null : DateTime.ParseExact(model.Birthday, "dd/MM/yyyy", CultureInfo.InvariantCulture);
                 requester.Address = model.Address;
                 requester.Gender = model.Gender;
                 requester.DepartmentName = model.DepartmentName;
@@ -244,6 +254,7 @@ namespace TMS.Areas.Admin.Controllers
                 return RedirectToAction("Requester");
             }
             ViewBag.id = id;
+            ViewBag.username = requester.UserName;
             return View(model);
         }
 
@@ -265,6 +276,19 @@ namespace TMS.Areas.Admin.Controllers
             {
                 ModelState.AddModelError("", error);
             }
+        }
+
+        private string GeneratePassword()
+        {
+            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+            StringBuilder res = new StringBuilder();
+            Random rnd = new Random();
+            int length = 8;
+            while (0 < length--)
+            {
+                res.Append(valid[rnd.Next(valid.Length)]);
+            }
+            return res.ToString();
         }
     }
 }

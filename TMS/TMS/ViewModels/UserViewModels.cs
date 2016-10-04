@@ -8,9 +8,7 @@ namespace TMS.Models
     {
         [EmailAddress]
         [Required(ErrorMessage = "Please input username!")]
-        public string UserName { get; set; }
-        [Required(ErrorMessage = "Please input password!")]
-        public string Password { get; set; }
+        public string Username { get; set; }
         [EmailAddress]
         [Required(ErrorMessage = "Please input email!")]
         public string Email { get; set; }
