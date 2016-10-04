@@ -211,5 +211,13 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
     @RenderSection("scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            $(".datetime").datetimepicker({
+                timepicker: false,
+                format: 'd/m/Y'
+            });
+        });
+    </script>
 </body>
 </html>

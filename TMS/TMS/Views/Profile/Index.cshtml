@@ -6,88 +6,117 @@
 }
 
 <style>
+    .profileAvatar {
+        text-align: center;
+    }
+
+    .avatar {
+        color: #808080;
+        display: table;
+        position: relative;
+        background-color: #e8e8e8;
+        min-height: 240px;
+        min-width: 240px;
+    }
+
+    .profileInfo label {
+        text-align: right;
+    }
+
+    .avatar i {
+        font-size: 150px;
+        display: table-cell;
+        vertical-align: middle;
+    }
+
     .inputform {
         padding: 20px;
-    }
-    .rightButton {
-        text-align: right;
     }
 </style>
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
-            <div class="form-horizontal inputform">
-                <div class="form-group">
-                    <label class="col-md-2">Username</label>
-                    <div class="col-md-10">
-                        thynh1610@gmail.com
+            <div class="box box-body">
+                <div class="form-horizontal inputform">
+                    <div class="col-md-3 profileAvatar">
+                        <div class="avatar">
+                            <i class="fa fa-user fa-5x" aria-hidden="true"></i>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Email</label>
-                    <div class="col-md-10">
-                        thynh1610@gmail.com
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Fullname</label>
-                    <div class="col-md-10">
-                        Nguyen Hoang Thy
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Address</label>
-                    <div class="col-md-10">
-                        Quan 3 Thanh pho Ho Chi Minh
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Phone</label>
-                    <div class="col-md-10">
-                        0987654321
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Birthday</label>
-                    <div class="col-md-10">
-                        16/10/1994
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Gender</label>
-                    <div class="col-md-10">
-                        Female
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Job title</label>
-                    <div class="col-md-10">
-                        Student
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Department</label>
-                    <div class="col-md-10">
-                        Software Engineer
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Company name</label>
-                    <div class="col-md-10">
-                        FPT University
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-md-2">Company address</label>
-                    <div class="col-md-10">
-                        To Ky Quan 12 TPHCM
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <a class="btn btn-primary" href="@(Url.Action("Edit","Profile"))">Edit</a>
-                        <a class="btn btn-default" href="@(Url.Action("Index","Home"))">Back</a>
+                    <div class="col-md-8 profileInfo">
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Username</label>
+                            <div class="col-md-4">
+                                thynh1610@gmail.com
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Email</label>
+                            <div class="col-md-4">
+                                thynh1610@gmail.com
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Fullname</label>
+                            <div class="col-md-4">
+                                Nguyen Hoang Thy
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Address</label>
+                            <div class="col-md-4">
+                                Quan 3 Thanh pho Ho Chi Minh
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Phone</label>
+                            <div class="col-md-4">
+                                0987654321
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Birthday</label>
+                            <div class="col-md-4">
+                                16/10/1994
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Gender</label>
+                            <div class="col-md-4">
+                                Female
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Job title</label>
+                            <div class="col-md-4">
+                                Student
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Department</label>
+                            <div class="col-md-4">
+                                Software Engineer
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Company name</label>
+                            <div class="col-md-4">
+                                FPT University
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-offset-1 col-md-3">Company address</label>
+                            <div class="col-md-4">
+                                To Ky Quan 12 TPHCM
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-4">
+                                <a class="btn btn-primary" href="@(Url.Action("Edit","Profile"))">Edit</a>
+                                <a class="btn btn-default" href="@(Url.Action("Index","Home"))">Back</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
