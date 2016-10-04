@@ -200,6 +200,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
+    <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FAQController.cs" />
@@ -435,6 +436,7 @@
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
     <Content Include="Areas\Admin\Views\ManageSC\View.cshtml" />
+    <Content Include="Areas\Technician\Views\web.config" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -496,6 +498,9 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Manage\" />
+    <Folder Include="Areas\Technician\Controllers\" />
+    <Folder Include="Areas\Technician\Models\" />
+    <Folder Include="Areas\Technician\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
