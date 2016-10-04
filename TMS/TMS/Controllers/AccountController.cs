@@ -105,6 +105,7 @@ namespace TMS.Controllers
                     }
                     else
                     {
+                        AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
                         ModelState.AddModelError("Username", "This user is disabled.");
                         return View(model);
                     }

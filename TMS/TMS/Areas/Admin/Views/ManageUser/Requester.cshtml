@@ -49,6 +49,9 @@
                 //fnServerParams: function (aoData) {
                 //    aoData.push({ 'name': 'email_search_key', 'value': $("#email-search-txt").val() });
                 //},
+                fnDrawCallback: function () {
+                    $('.toggle').bootstrapToggle();
+                },
                 lengthMenu: [10, 20, 50],
                 columnDefs: [
                     {
@@ -81,7 +84,7 @@
                         "targets": [4],
                         "sortable": false,
                         "render": function (data, type, row) {
-                            return row[4];
+                            return '<input type="checkbox" checked data-toggle="toggle" class="toggle" data-onstyle="success">';
                         }
                     },
                     {

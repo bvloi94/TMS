@@ -26,7 +26,8 @@ namespace TMS
             bundles.Add(new ScriptBundle("~/bundles/app").Include(
                 "~/Scripts/app.js",
                 "~/Scripts/jquery-ui.min.js",
-                "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js"));
+                "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
+                "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
@@ -35,7 +36,8 @@ namespace TMS
                       "~/Content/bootstrap.css.map",
                       "~/Content/font-awesome.min.css",
                       "~/Content/Site.css",
-                      "~/Content/Plugins/datetimepicker/jquery.datetimepicker.css"));
+                      "~/Content/Plugins/datetimepicker/jquery.datetimepicker.css",
+                      "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.css"));
             // Datatable
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
                 "~/Content/Plugins/datatables/js/jquery.dataTables.min.js",

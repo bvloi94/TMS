@@ -198,7 +198,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-    <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -285,7 +284,6 @@
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Utils\AuthorizeAttribute.cs" />
-    <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -328,6 +326,8 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
+    <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.css" />
+    <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.js" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap.css" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap.min.css" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap4.css" />
@@ -438,7 +438,6 @@
     <Content Include="Models\TMSModel.edmx.diagram">
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Admin\Views\ManageSC\View.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -466,6 +465,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
@@ -487,15 +487,14 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\TMSLayout.cshtml" />
+    <Content Include="Views\Ticket\Create.cshtml" />
+    <Content Include="Views\Ticket\Index.cshtml" />
     <Content Include="Views\Account\CreateRequester.cshtml" />
     <Content Include="Views\Error\Error403.cshtml" />
-    <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
-    <Content Include="Views\Ticket\Index.cshtml" />
-    <Content Include="Views\Ticket\Create.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\FAQ\Index.cshtml" />
     <Content Include="Views\Profile\Edit.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
