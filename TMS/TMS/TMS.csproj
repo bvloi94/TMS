@@ -200,6 +200,8 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
+    <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FAQController.cs" />
@@ -284,6 +286,7 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\DepartmentService.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
@@ -435,6 +438,13 @@
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
     <Content Include="Areas\Admin\Views\ManageSC\View.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\web.config" />
+    <Content Include="Areas\HelpDesk\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Create.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Delete.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -444,6 +454,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\main.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
@@ -496,6 +507,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Manage\" />
+    <Folder Include="Areas\HelpDesk\Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
