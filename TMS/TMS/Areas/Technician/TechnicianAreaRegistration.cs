@@ -17,7 +17,7 @@ namespace TMS.Areas.Technician
             context.MapRoute(
                 "Technician_default",
                 "Technician/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { action = "Index", id = UrlParameter.Optional },
                 new[] { "TMS.Areas.Technician.Controllers" }
             );
         }
