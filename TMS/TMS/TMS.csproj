@@ -324,7 +324,6 @@
     <Content Include="Content\img\avatar2.png" />
     <Content Include="Content\img\avatar3.png" />
     <Content Include="Content\img\avatar5.png" />
-    <Content Include="Content\img\Avatar\avatar.png" />
     <Content Include="Content\img\boxed-bg.jpg" />
     <Content Include="Content\img\boxed-bg.png" />
     <Content Include="Content\img\default-50x50.gif" />
@@ -485,6 +484,8 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Uploads\Avatar\avatar_female.png" />
+    <Content Include="Uploads\Avatar\avatar_male.png" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

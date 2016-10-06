@@ -1,7 +1,7 @@
 ﻿@model TMS.Models.RequesterRegisterViewModel
 @{
     ViewBag.Title = "Create Requester";
-    Layout = "~/Views/Shared/TMSLayout.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 <section class="content">
     @using (Html.BeginForm("CreateRequester", "ManageUser", FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
@@ -12,8 +12,7 @@
                     <div class="box-body" style="text-align: center">
                         <span class="lead"><strong>Avatar</strong></span>
                         <br />
-                        <img src="~/Content/img/Avatar/avatar.png" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
-                        @*<input type="file" id="Avatar" name="Avatar" accept="image/gif, image/jpeg, image/png" onchange="readURL(this);" />*@
+                        <img src="~/Uploads/Avatar/avatar_male.png" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
                         @Html.TextBoxFor(m => m.Avatar, new { type = "file", accept = "image/gif, image/jpeg, image/png", onchange = "readURL(this);" })
                         @Html.ValidationMessageFor(m => m.Avatar, "", new { @class = "text-danger" })
                     </div>
@@ -21,8 +20,7 @@
             </div>
             <div class="col-xs-8">
                 <div class="box box-primary">
-                    <div class="box-body">
-
+                    <div class="box-body large-text-container">
                         @Html.AntiForgeryToken()
                         <div class="form-group">
                             <label class="col-sm-3 control-label">Email</label>

@@ -281,12 +281,20 @@ namespace TMS.Areas.Admin.Controllers
                     if (model.Avatar != null)
                     {
                         string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), user.Id);
-                        string filePath = Path.Combine(Server.MapPath("~/Content/img/Avatar"), fileName);
+                        string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                         model.Avatar.SaveAs(filePath);
                         requester.AvatarURL = fileName;
-                    } else
+                    }
+                    else
                     {
-                        requester.AvatarURL = "avatar.png";
+                        requester.AvatarURL = "avatar_male.png";
+                        if (requester.Gender != null)
+                        {
+                            if (requester.Gender == false)
+                            {
+                                requester.AvatarURL = "avatar_female.png";
+                            }
+                        }
                     }
                     _userService.EditUser(requester);
 
@@ -335,7 +343,7 @@ namespace TMS.Areas.Admin.Controllers
                 model.JobTitle = requester.JobTitle;
                 model.CompanyName = requester.CompanyName;
                 model.CompanyAddress = requester.CompanyAddress;
-                
+
                 ViewBag.id = id;
                 ViewBag.username = requester.UserName;
                 ViewBag.AvatarURL = requester.AvatarURL;
@@ -375,7 +383,7 @@ namespace TMS.Areas.Admin.Controllers
                 if (model.Avatar != null)
                 {
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), requester.Id);
-                    string filePath = Path.Combine(Server.MapPath("~/Content/img/Avatar"), fileName);
+                    string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
                     requester.AvatarURL = fileName;
                 }
