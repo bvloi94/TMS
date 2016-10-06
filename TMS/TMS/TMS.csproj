@@ -199,6 +199,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
+    <Compile Include="Areas\Technician\Controllers\TicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
@@ -206,6 +207,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FAQController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\KnowledgeBaseController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\TicketController.cs" />
@@ -451,6 +453,9 @@
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
+    <Content Include="Areas\Technician\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Technician\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Technician\Views\Ticket\Index.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -509,15 +514,15 @@
     <Content Include="Views\Profile\Edit.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
+    <Content Include="Views\KnowledgeBase\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Manage\" />
-    <Folder Include="Areas\Technician\Controllers\" />
-    <Folder Include="Areas\Technician\Models\" />
-    <Folder Include="Areas\Technician\Views\Shared\" />
     <Folder Include="Areas\HelpDesk\Models\" />
+    <Folder Include="Areas\Technician\Models\" />
+    <Folder Include="Content\Plugins\bootstrap-wysihtml5\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -20,6 +20,8 @@ namespace TMS
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
+                      "~/Content/Plugins/bootstrap3-wysihtml5.all.js",
+                      "~/Content/Plugins/bootstrap3-wysihtml5.all.min.js",
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
@@ -37,6 +39,8 @@ namespace TMS
                       "~/Content/bootstrap.css.map",
                       "~/Content/font-awesome.min.css",
                       "~/Content/Site.css",
+                      "~/Content/Plugins/bootstrap3-wysihtml5.css",
+                      "~/Content/Plugins/bootstrap3-wysihtml5.min.css",
                       "~/Content/Plugins/datetimepicker/jquery.datetimepicker.css",
                       "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.css"));
             // Datatable

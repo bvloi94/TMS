@@ -1,0 +1,357 @@
+﻿@{
+    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+}
+@{
+    ViewBag.Title = "Ticket List";
+}
+
+<style>
+    #custom-search-input {
+        padding: 3px;
+        border: solid 1px #E4E4E4;
+        border-radius: 6px;
+        background-color: #fff;
+    }
+
+        #custom-search-input input {
+            border: 0;
+            box-shadow: none;
+        }
+
+        #custom-search-input button {
+            margin: 2px 0 0 0;
+            background: none;
+            box-shadow: none;
+            border: 0;
+            color: #666666;
+            padding: 0 8px 0 10px;
+            border-left: solid 1px #ccc;
+        }
+
+        #custom-search-input .glyphicon-search {
+            font-size: 15px;
+        }
+
+    .table thead, h4 {
+        color: #1074bd;
+    }
+
+    .rightItems {
+        text-align: right;
+    }
+
+    .modal-title {
+        color: #ffffff;
+        text-align: center;
+    }
+
+    .modal-header {
+        background-color: #1074bd;
+    }
+
+    .modal-body {
+        background-color: #e6e6e6;
+    }
+
+    .shortInfoContainer {
+        margin: 5px auto;
+        display: flex;
+    }
+
+    .shortInfo {
+        margin: auto;
+        height: 85px;
+        text-align: center;
+        display: table;
+        background-color: #ffffff;
+    }
+
+    hr {
+        height: 10px;
+        border: 0;
+        box-shadow: 0 10px 10px -10px #8c8b8b inset;
+    }
+
+    .detail {
+        margin: 10px 20px 10px 0px;
+        padding: 8px 20px 8px 20px;
+        background-color: #ffffff;
+    }
+
+    .modal-footer {
+        text-align: center;
+    }
+
+    input {
+        max-height: 400px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-body">
+                <div class="col-md-offset-6 col-md-6">
+                    <div class="box-tools pull-right col-md-6">
+                        <div class="has-feedback">
+                            <input type="text" class="form-control input-sm" placeholder="Search solution..." />
+                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                        </div>
+                    </div>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date Opened</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Solution</th>
+                            <th>Last Modified</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>6/8/2016 11:23:00 PM</td>
+                            <td><a data-toggle="modal" data-target="#Modal1">Change website main color</a></td>
+                            <td>Open</td>
+                            <td>Color is changed to red.</td>
+                            <td>8/8/2016 11:23:00 PM</td>
+                            <td><a class="btn btn-primary" data-toggle="modal" data-target="#SolveModal1">Solve</a></td>
+                        </tr>
+                        <tr>
+                            <td>7/8/2016 11:23:00 PM</td>
+                            <td><a data-toggle="modal" data-target="#Modal2">Move host javi.net to new server</a></td>
+                            <td>Closed</td>
+                            <td>Host is moved to new server on August 7th.</td>
+                            <td>9/8/2016 11:23:00 PM</td>
+                            <td><a class="btn btn-default disabled">Solve</a></td>
+                        </tr>
+                        <tr>
+                            <td>8/8/2016 11:23:00 PM</td>
+                            <td><a data-toggle="modal" data-target="#Modal3">Request admin account</a></td>
+                            <td>Closed</td>
+                            <td>Account is now administrator.</td>
+                            <td>10/8/2016 11:23:00 PM</td>
+                            <td><a class="btn btn-default disabled">Solve</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="Modal1" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Change website main color</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="box-body">
+                                    <div class="shortInfoContainer">
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Date opened</h4>
+                                            6/8/2016 11:23:00
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Department</h4>
+                                            Technical support - Website Developer
+                                        </div>
+                                        <div class="col-sm-2 shortInfo">
+                                            <h4>Status</h4>
+                                            Open
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Last modified</h4>
+                                            8/8/2016 11:23:00
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="detailContainer">
+                                        <div class="col-lg-12 detail">
+                                            <h4>Ticket Description</h4>
+                                            <p>I wish to change my website's main color to red. The color code is #ff3434. Please email me when my request is solved.</p>
+                                        </div>
+                                        <div class="col-lg-12 detail">
+                                            <h4>Solution</h4>
+                                            <p><i>This ticket is not solved yet. Would you like to solve it now?</i>
+                                                <a class="btn btn-primary" data-toggle="modal" data-target="#SolveModal1">Yes</a>
+                                                <a class="btn btn-default" data-toggle="modal" data-dismiss="modal">No</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="Modal2" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Move host javi.net to new server</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="box-body">
+                                    <div class="shortInfoContainer">
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Date opened</h4>
+                                            7/8/2016 11:23:00
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Department</h4>
+                                            Technical support - Website Developer
+                                        </div>
+                                        <div class="col-sm-2 shortInfo">
+                                            <h4>Status</h4>
+                                            Closed
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Last modified</h4>
+                                            9/8/2016 11:23:00
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="detailContainer">
+                                        <div class="col-lg-12 detail">
+                                            <h4>Ticket Description</h4>
+                                            <p>I wish to change my website's main color to red. The color code is #ff3434. Please email me when my request is solved.</p>
+                                        </div>
+                                        <div class="col-lg-12 detail">
+                                            <h4>Solution</h4>
+                                            <p>Host is moved to new server on August 7th.</p>
+                                            <p>We're so sorry about this unconvenience. All of your data is restored successfully. Thank you for your impatience.</p>
+                                            <p><b>Person in charge:</b> Bui Van Loi</p>
+                                            <p>Sent: 9/8/2016 11:23:00</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Solve Modal -->
+                <div id="SolveModal1" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Change website main color</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="box box-body detailContainer">
+                                    <div class="col-sm-2 detail">
+                                        <h4><b>Solution:</b></h4>
+                                    </div>
+                                    <div class="col-sm-9 detail">
+                                        <textarea class="form-control" rows="4"></textarea>
+                                        <a data-toggle="modal" data-target="#ReferKBModal">Refer Knowledge base</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Save Changes</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Refer KB Modal -->
+                <div id="ReferKBModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Refer Knowledge base</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="box box-body">
+                                    <div class="box-tools col-sm-offset-8 col-sm-4">
+                                        <div class="has-feedback">
+                                            <input type="text" class="form-control input-sm" placeholder="Search solution..." />
+                                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                                        </div>
+                                    </div>
+                                    <p>We found 2 solutions that fit your problem.</p>
+                                    <div class="detailContainer">
+                                        <div class="col-sm-11 detail">
+                                            <div class="panel-group" id="accordion">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading">
+                                                        <a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#solution1">
+                                                            Change website font color
+                                                        </a>
+                                                        <a class="pull-right" data-dismiss="modal">Refer this solution</a>
+                                                    </div>
+                                                    <div class="panel-collapse collapse" id="solution1">
+                                                        <div class="panel-body">
+                                                            <p>To change the font color:</p> <br />
+                                                            <p>Click the menu button Menu and choose Options.</p>
+                                                            <p>Select the Content panel.</p>
+                                                            <p>Under Fonts & Colors, click the Colors… button.</p>
+                                                            <p>
+                                                                Clicking on any of the colored rectangles will show you the possible colors you can choose from. Select the color you want by clicking one of the colored rectangles.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading">
+                                                        <a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#solution2">
+                                                            Change website background color
+                                                        </a>
+                                                        <a class="pull-right" data-dismiss="modal">Refer this solution</a>
+                                                    </div>
+                                                    <div class="panel-collapse collapse" id="solution2">
+                                                        <div class="panel-body">
+                                                            <p>To change the background color:</p> <br />
+                                                            <p>Click the menu button Menu and choose Options.</p>
+                                                            <p>Select the Content panel.</p>
+                                                            <p>Click the Colors… button.</p>
+                                                            <p>
+                                                                Clicking on any of the colored rectangles will show you the possible colors you can choose from. Select the color you want by clicking one of the colored rectangles.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Refer</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <a href="@(Url.Action("Index", "Home"))">
+            <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+            Back to Homepage
+        </a>
+    </div>
+</div>
+
