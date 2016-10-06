@@ -322,7 +322,6 @@
     <Content Include="Content\img\photo2.png" />
     <Content Include="Content\img\photo3.jpg" />
     <Content Include="Content\img\photo4.jpg" />
-    <Content Include="Content\img\sprite.png" />
     <Content Include="Content\img\support_background.jpg" />
     <Content Include="Content\img\user1-128x128.jpg" />
     <Content Include="Content\img\user2-160x160.jpg" />
