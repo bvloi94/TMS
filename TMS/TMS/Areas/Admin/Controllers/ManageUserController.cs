@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -69,19 +70,27 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/ManageUser/Requester
+        [Utils.Authorize(Roles = "Admin")]
         public ActionResult Requester()
         {
-            IEnumerable<AspNetUser> requesters = _userService.GetRequesters();
-            //ViewBag.requesters = requesters.ToList();
-            return View(requesters);
+            return View();
+        }
+
+        // GET: Admin/ManageUser/HelpDesk
+        [Utils.Authorize(Roles = "Admin")]
+        public ActionResult HelpDesk()
+        {
+            return View();
         }
 
         // GET: Admin/ManageUser/GetRequesters
         [HttpGet]
-        public ActionResult GetRequesters(jQueryDataTableParamModel param, string email_search_key)
+        public ActionResult GetRequesters(jQueryDataTableParamModel param)
         {
             var requesters = _userService.GetRequesters();
             var default_search_key = Request["search[value]"];
+            var availability_select = Request["availability_select"];
+            var search_text = Request["search_text"];
             IEnumerable<AspNetUser> filteredListItems;
 
             if (!string.IsNullOrEmpty(default_search_key))
@@ -93,9 +102,26 @@ namespace TMS.Areas.Admin.Controllers
                 filteredListItems = requesters;
             }
             // Search by custom
-            if (!string.IsNullOrEmpty(email_search_key))
+            if (!string.IsNullOrEmpty(availability_select))
             {
-                filteredListItems = filteredListItems.Where(p => p.Email.ToLower().Contains(email_search_key.ToLower()));
+                switch (availability_select)
+                {
+                    case "0":
+                        filteredListItems = filteredListItems.Where(p => p.IsActive == false);
+                        break;
+                    case "1":
+                        filteredListItems = filteredListItems.Where(p => p.IsActive == true);
+                        break;
+                    case "2":
+                    default:
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(search_text))
+            {
+                filteredListItems = filteredListItems.Where(p => p.UserName.ToLower().Contains(search_text.ToLower())
+                    || p.Fullname.ToLower().Contains(search_text.ToLower()));
             }
 
             // Sort.
@@ -124,7 +150,91 @@ namespace TMS.Areas.Admin.Controllers
                 p.UserName,
                 p.Fullname,
                 p.Email,
-                (p.Birthday == null) ? "" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy")
+                (p.Birthday == null) ? "" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
+                p.IsActive
+            }.ToArray());
+
+            return Json(new
+            {
+                param.sEcho,
+                //iTotalRecords = result.Count(),
+                //iTotalDisplayRecords = filteredListItems.Count(),
+                //aaData = result
+                recordsTotal = result.Count(),
+                recordsFiltered = filteredListItems.Count(),
+                data = result
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        // GET: Admin/ManageUser/GetHelpDesks
+        [HttpGet]
+        public ActionResult GetHelpDesks(jQueryDataTableParamModel param)
+        {
+            var helpdesks = _userService.GetHelpDesks();
+            var default_search_key = Request["search[value]"];
+            var availability_select = Request["availability_select"];
+            var search_text = Request["search_text"];
+            IEnumerable<AspNetUser> filteredListItems;
+
+            if (!string.IsNullOrEmpty(default_search_key))
+            {
+                filteredListItems = helpdesks.Where(p => p.Fullname.ToLower().Contains(default_search_key.ToLower()));
+            }
+            else
+            {
+                filteredListItems = helpdesks;
+            }
+            // Search by custom
+            if (!string.IsNullOrEmpty(availability_select))
+            {
+                switch (availability_select)
+                {
+                    case "0":
+                        filteredListItems = filteredListItems.Where(p => p.IsActive == false);
+                        break;
+                    case "1":
+                        filteredListItems = filteredListItems.Where(p => p.IsActive == true);
+                        break;
+                    case "2":
+                    default:
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(search_text))
+            {
+                filteredListItems = filteredListItems.Where(p => p.UserName.ToLower().Contains(search_text.ToLower())
+                    || p.Fullname.ToLower().Contains(search_text.ToLower()));
+            }
+
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortDirection = Request["order[0][dir]"];
+            //var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            //var sortDirection = Request["sSortDir_0"]; // asc or desc
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.UserName)
+                        : filteredListItems.OrderByDescending(p => p.UserName);
+                    break;
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Fullname)
+                        : filteredListItems.OrderByDescending(p => p.Fullname);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var result = displayedList.Select(p => new IConvertible[]{
+                p.Id,
+                p.UserName,
+                p.Fullname,
+                p.Email,
+                (p.Birthday == null) ? "" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
+                p.IsActive
             }.ToArray());
 
             return Json(new
@@ -153,7 +263,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
-                string generatedPassword = GeneratePassword();
+                string generatedPassword = GeneralUtil.GeneratePassword();
                 var result = await UserManager.CreateAsync(user, generatedPassword);
                 if (result.Succeeded)
                 {
@@ -167,6 +277,17 @@ namespace TMS.Areas.Admin.Controllers
                     requester.CompanyName = model.CompanyName;
                     requester.CompanyAddress = model.CompanyAddress;
                     requester.IsActive = true;
+                    // handle avatar
+                    if (model.Avatar != null)
+                    {
+                        string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), user.Id);
+                        string filePath = Path.Combine(Server.MapPath("~/Content/img/Avatar"), fileName);
+                        model.Avatar.SaveAs(filePath);
+                        requester.AvatarURL = fileName;
+                    } else
+                    {
+                        requester.AvatarURL = "avatar.png";
+                    }
                     _userService.EditUser(requester);
 
                     ApplicationDbContext context = new ApplicationDbContext();
@@ -179,15 +300,9 @@ namespace TMS.Areas.Admin.Controllers
                         roleManager.Create(role);
                     }
                     UserManager.AddToRole(user.Id, "Requester");
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    EmailUtil emailUtil = new EmailUtil();
-                    string emailSubject = "[TMS] Account Info";
-                    string emailMessage = System.IO.File.ReadAllText(Server.MapPath(@"~/EmailTemplates/CreateRequesterEmailTemplate.txt"));
-                    emailMessage = emailMessage.Replace("$fullname", model.Fullname);
-                    emailMessage = emailMessage.Replace("$username", model.Username);
-                    emailMessage = emailMessage.Replace("$password", generatedPassword);
+                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                     // Send email asynchronously
-                    Thread thread = new Thread(() => emailUtil.SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage));
+                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
                     thread.Start();
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
@@ -207,21 +322,29 @@ namespace TMS.Areas.Admin.Controllers
         // GET: Admin/ManageUser/EditRequester/{id}
         public ActionResult EditRequester(string id)
         {
-            AspNetUser requester = _userService.GetUserById(id);
-            RequesterRegisterViewModel model = new RequesterRegisterViewModel();
-            model.Fullname = requester.Fullname;
-            model.Email = requester.Email;
-            model.Birthday = (requester.Birthday == null) ? "" : ((DateTime)requester.Birthday).ToString("dd/MM/yyyy");
-            model.Address = requester.Address;
-            model.Gender = requester.Gender;
-            model.DepartmentName = requester.DepartmentName;
-            model.JobTitle = requester.JobTitle;
-            model.CompanyName = requester.CompanyName;
-            model.CompanyAddress = requester.CompanyAddress;
-
-            ViewBag.id = id;
-            ViewBag.username = requester.UserName;
-            return View(model);
+            try
+            {
+                AspNetUser requester = _userService.GetUserById(id);
+                RequesterRegisterViewModel model = new RequesterRegisterViewModel();
+                model.Fullname = requester.Fullname;
+                model.Email = requester.Email;
+                model.Birthday = (requester.Birthday == null) ? "" : ((DateTime)requester.Birthday).ToString("dd/MM/yyyy");
+                model.Address = requester.Address;
+                model.Gender = requester.Gender;
+                model.DepartmentName = requester.DepartmentName;
+                model.JobTitle = requester.JobTitle;
+                model.CompanyName = requester.CompanyName;
+                model.CompanyAddress = requester.CompanyAddress;
+                
+                ViewBag.id = id;
+                ViewBag.username = requester.UserName;
+                ViewBag.AvatarURL = requester.AvatarURL;
+                return View(model);
+            }
+            catch
+            {
+                return RedirectToAction("Error500", "Error", new { area = "" });
+            }
         }
 
         // GET: Admin/ManageUser/EditRequester/{id}
@@ -237,7 +360,6 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             AspNetUser requester = _userService.GetUserById(id);
-
             if (ModelState.IsValid)
             {
                 requester.Fullname = model.Fullname;
@@ -249,46 +371,70 @@ namespace TMS.Areas.Admin.Controllers
                 requester.JobTitle = model.JobTitle;
                 requester.CompanyName = model.CompanyName;
                 requester.CompanyAddress = model.CompanyAddress;
+                // handle avatar
+                if (model.Avatar != null)
+                {
+                    string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), requester.Id);
+                    string filePath = Path.Combine(Server.MapPath("~/Content/img/Avatar"), fileName);
+                    model.Avatar.SaveAs(filePath);
+                    requester.AvatarURL = fileName;
+                }
                 _userService.EditUser(requester);
 
                 return RedirectToAction("Requester");
             }
             ViewBag.id = id;
             ViewBag.username = requester.UserName;
+            ViewBag.AvatarURL = requester.AvatarURL;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult RemoveRequester()
+        public ActionResult ToggleStatus()
         {
             string id = Request["id"];
-            _userService.RemoveUser(id);
-            return Json(new
+            try
             {
-                success = true,
-                message = "Remove requester successfully!"
-            });
+                bool isEnable = _userService.ToggleStatus(id);
+                var message = "";
+                if (isEnable)
+                {
+                    message = "Enable requester successfully!";
+                }
+                else
+                {
+                    message = "Disable requester successfully!";
+                }
+                return Json(new
+                {
+                    success = true,
+                    message = message
+                });
+            }
+            catch
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Some errors occured! Please try again later!"
+                });
+            }
         }
 
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError("", error);
+                if (error.StartsWith("Email", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ModelState.AddModelError("Email", error);
+                }
+                else if (error.StartsWith("Name", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ModelState.AddModelError("Username", error);
+                }
             }
         }
 
-        private string GeneratePassword()
-        {
-            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-            StringBuilder res = new StringBuilder();
-            Random rnd = new Random();
-            int length = 8;
-            while (0 < length--)
-            {
-                res.Append(valid[rnd.Next(valid.Length)]);
-            }
-            return res.ToString();
-        }
     }
 }

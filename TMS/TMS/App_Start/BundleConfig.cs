@@ -25,9 +25,10 @@ namespace TMS
 
             bundles.Add(new ScriptBundle("~/bundles/app").Include(
                 "~/Scripts/app.js",
-                "~/Scripts/jquery-ui.min.js",
                 "~/Scripts/main.js",
-                "~/Content/Plugins/datetimepickser/jquery.datetimepicker.full.min.js",
+                "~/Scripts/jquery-ui.min.js",
+                "~/Scripts/notify.min.js",
+                "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
                 "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
