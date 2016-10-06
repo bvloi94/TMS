@@ -319,6 +319,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\img\add-requester-icon.ico" />
     <Content Include="Content\img\avatar.png" />
     <Content Include="Content\img\avatar04.png" />
     <Content Include="Content\img\avatar2.png" />
@@ -342,6 +343,7 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
+    <Content Include="Content\js\jquery.noty.js" />
     <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.css" />
     <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.js" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap.css" />
@@ -537,8 +539,11 @@
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Manage\" />
     <Folder Include="Areas\HelpDesk\Models\" />
+    <Folder Include="Areas\Technician\Controllers\" />
     <Folder Include="Areas\Technician\Models\" />
+    <Folder Include="Areas\Technician\Views\Shared\" />
     <Folder Include="Content\Plugins\bootstrap-wysihtml5\" />
+    <Folder Include="Content\css\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

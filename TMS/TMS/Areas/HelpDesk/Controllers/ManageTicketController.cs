@@ -16,16 +16,16 @@ namespace TMS.Areas.HelpDesk.Controllers
     {
         private TMSEntities db = new TMSEntities();
 
-        public TicketService TicketService { get; set; }
-        public UserService UserService { get; set; }
-        public DepartmentService DepartmentService { get; set; }
+        public TicketService _ticketService { get; set; }
+        public UserService _userService { get; set; }
+        public DepartmentService _departmentService { get; set; }
 
         public ManageTicketController()
         {
             var unitOfWork = new UnitOfWork();
-            TicketService = new TicketService(unitOfWork);
-            UserService = new UserService(unitOfWork);
-            DepartmentService = new DepartmentService(unitOfWork);
+            _ticketService = new TicketService(unitOfWork);
+            _userService = new UserService(unitOfWork);
+            _departmentService = new DepartmentService(unitOfWork);
         }
 
         // GET: HelpDesk/ManageTicket
@@ -54,8 +54,8 @@ namespace TMS.Areas.HelpDesk.Controllers
         // GET: HelpDesk/ManageTicket/Create
         public ActionResult Create()
         {
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
+            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "Fullname");
+            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "Fullname");
             ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
             ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name");
@@ -82,7 +82,6 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
             ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
             ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
             ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
@@ -170,7 +169,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpGet]
         public ActionResult GetTickets(jQueryDataTableParamModel param)
         {
-            var ticketList = TicketService.GetAll();
+            var ticketList = _ticketService.GetAll();
 
             IEnumerable<Ticket> filteredListItems;
             if (!string.IsNullOrEmpty(param.sSearch))
@@ -197,13 +196,59 @@ namespace TMS.Areas.HelpDesk.Controllers
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
             var result = displayedList.Select(p => new IConvertible[]{
                 p.Subject,
-                p.RequesterID==null?"":UserService.GetUserById(p.RequesterID).Fullname,
-                p.TechnicianID==null?"":UserService.GetUserById(p.TechnicianID).Fullname,
-                p.DepartmentID==null?"":DepartmentService.GetDepartmentById(p.DepartmentID.ToString()).Name,
+                p.RequesterID==null?"":_userService.GetUserById(p.RequesterID).Fullname,
+                p.TechnicianID==null?"":_userService.GetUserById(p.TechnicianID).Fullname,
+                p.DepartmentID==null?"":_departmentService.GetDepartmentById(p.DepartmentID.ToString()).Name,
                 p.SolvedDate.ToString(),
                 p.Status,
                 p.CreatedTime.ToString(),
                 p.ID
+            }.ToArray());
+
+            return Json(new
+            {
+                param.sEcho,
+                iTotalRecords = result.Count(),
+                iTotalDisplayRecords = filteredListItems.Count(),
+                aaData = result
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetRequesterList(jQueryDataTableParamModel param)
+        {
+            var requesterList = _userService.GetRequesters();
+
+            IEnumerable<AspNetUser> filteredListItems;
+            if (!string.IsNullOrEmpty(param.sSearch))
+            {
+                filteredListItems = requesterList.Where(p => p.Fullname.ToLower().Contains(param.sSearch.ToLower()));
+            }
+            else
+            {
+                filteredListItems = requesterList;
+            }
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortDirection = Request["sSortDir_0"]; // asc or desc
+
+            switch (sortColumnIndex)
+            {
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Fullname)
+                        : filteredListItems.OrderByDescending(p => p.Fullname);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var result = displayedList.Select(p => new IConvertible[]{
+                p.Id,
+                p.Fullname,
+                p.Email,
+                p.DepartmentName,
+                p.PhoneNumber,
+                p.JobTitle
             }.ToArray());
 
             return Json(new

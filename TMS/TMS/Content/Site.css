@@ -23,6 +23,14 @@ textarea {
     max-width: 280px;
 }
 
+.userslookup {
+    background: url(../Content/img/add-requester-icon.ico);
+    width: 25px;
+    height: 25px;
+    margin-top: 5px;
+    margin-left: -50px;
+}
+
 .profile-avatar {
     width: 80%;
     min-height: 250px;
