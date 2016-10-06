@@ -44,6 +44,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.1\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
@@ -288,9 +292,15 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Schedulers\Job.cs" />
+    <Compile Include="Schedulers\JobManager.cs" />
+    <Compile Include="Schedulers\TestJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
+    <Compile Include="Utils\ConstantUtil.cs" />
+    <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -455,6 +465,8 @@
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Areas\Admin\Views\ManageUser\HelpDesk.cshtml" />
     <Content Include="Areas\Technician\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Technician\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Technician\Views\Ticket\Index.cshtml" />
@@ -470,9 +482,12 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\main.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\notify.min.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Uploads\Avatar\avatar_female.png" />
+    <Content Include="Uploads\Avatar\avatar_male.png" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -516,6 +531,7 @@
     <Content Include="Views\Profile\Edit.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
+    <Content Include="Views\Error\Error500.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>

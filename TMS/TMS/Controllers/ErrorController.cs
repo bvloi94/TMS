@@ -16,5 +16,9 @@ namespace TMS.Controllers
             return View();
         }
 
+        public ActionResult Error500()
+        {
+            return View();
+        }
     }
 }
