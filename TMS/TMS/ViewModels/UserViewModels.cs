@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace TMS.Models
+namespace TMS.ViewModels
 {
     public class RequesterRegisterViewModel
     {

@@ -282,6 +282,9 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\ImpactService.cs" />
+    <Compile Include="Services\PriorityService.cs" />
+    <Compile Include="Services\UrgencyService.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
@@ -421,7 +424,6 @@
     <Content Include="Content\Plugins\datatables\images\Sorting icons.psd" />
     <Content Include="Areas\Admin\Views\web.config" />
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Requester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateRequester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditRequester.cshtml" />
@@ -432,7 +434,10 @@
     <Content Include="Models\TMSModel.edmx.diagram">
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Admin\Views\ManageSC\View.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageSC\Priority.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageSC\Impact.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageSC\Urgency.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -492,7 +497,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\Manage\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

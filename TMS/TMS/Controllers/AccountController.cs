@@ -13,6 +13,7 @@ using TMS.DAL;
 using TMS.Services;
 using System.Web.Security;
 using Microsoft.AspNet.Identity.EntityFramework;
+using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
