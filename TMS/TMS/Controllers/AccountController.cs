@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -11,8 +8,6 @@ using Microsoft.Owin.Security;
 using TMS.Models;
 using TMS.DAL;
 using TMS.Services;
-using System.Web.Security;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace TMS.Controllers
 {
@@ -93,12 +88,15 @@ namespace TMS.Controllers
                     bool isActive = _userService.IsActive(user.Id);
                     if (isActive)
                     {
-                        string role = user.AspNetRoles.FirstOrDefault().Name;
+                        string role = user.AspNetRoles.FirstOrDefault().Name.ToLower();
                         switch (role)
                         {
-                            case "Admin":
+                            case "admin":
                                 return RedirectToAction("Requester", "ManageUser", new { area = "Admin" });
-                            case "Requester":
+                            case "technician":
+                                return RedirectToAction("Index", "Ticket", new { area = "Technician" });
+                            case "helpdesk":
+                            case "requester":
                             default:
                                 return RedirectToLocal(returnUrl);
                         }

@@ -47,7 +47,14 @@ namespace TMS.DAL
 
         public virtual TEntity GetByID(object id)
         {
-            return DbSet.Find(id);
+            try
+            {
+                return DbSet.Find(id);
+            }
+            catch (System.Data.Entity.Core.EntityException)
+            {
+                throw;
+            }
         }
 
         public TEntity GetFirst(Func<TEntity, bool> predicate)
