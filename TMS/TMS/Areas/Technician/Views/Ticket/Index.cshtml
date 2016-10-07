@@ -99,7 +99,7 @@
                         </div>
                     </div>
                 </div>
-                <table class="table">
+                <table class="table" id="ticket-table">
                     <thead>
                         <tr>
                             <th>Date Opened</th>
@@ -111,7 +111,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        @*<tr>
                             <td>6/8/2016 11:23:00 PM</td>
                             <td><a data-toggle="modal" data-target="#Modal1">Change website main color</a></td>
                             <td>Open</td>
@@ -134,7 +134,7 @@
                             <td>Account is now administrator.</td>
                             <td>10/8/2016 11:23:00 PM</td>
                             <td><a class="btn btn-default disabled">Solve</a></td>
-                        </tr>
+                        </tr>*@
                     </tbody>
                 </table>
                 <div id="Modal1" class="modal fade" role="dialog">
@@ -354,4 +354,66 @@
         </a>
     </div>
 </div>
+
+@Styles.Render("~/Content/datatables")
+@section scripts{
+    @Scripts.Render("~/bundles/datatables")
+    <script>
+        setActiveTicketMenu();
+        $("#ticket-table").DataTable({
+            processing: true,
+            serverSide: true,
+            paging: true,
+            sort: true,
+            ajax: {
+                url: "/Technician/Ticket/GetTickets"
+            },
+            "columnDefs": [
+                {
+                    "render": function (data, type, row) {
+                        return row[0];
+                    },
+                    "targets": 0
+                },
+                {
+                    "render": function (data, type, row) {
+                        return '<a data-toggle="modal" data-target="#Modal1">'+row[1]+'</a>';
+                    },
+                    "targets": 1
+                },
+                {
+                    "render": function (data, type, row) {
+                        return row[2];
+                    },
+                    "targets": 2
+                },
+                {
+                    "render": function (data, type, row) {
+                        return row[3];
+                    },
+                    "targets": 3
+                },
+                {
+                    "render": function (data, type, row) {
+                        return row[4];
+                    },
+                    "targets": 4
+                },
+       
+
+                {
+                    "render": function (data, type, row) {
+                        var url = "#";@*@Url.Action("", "");*@
+                        return "<a href='"+url+"'  class='btn btn-primary' >Solve</a>";
+                    },
+                    "targets": 5
+                }]
+        });
+
+
+    </script>
+}
+
+
+
 
