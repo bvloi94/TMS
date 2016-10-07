@@ -1,4 +1,12 @@
 ﻿<div>
-	<p>Your username: $username</p>
-	<p>Your password: $password</p>
+<p>Hello $fullname,</p>
+<br />
+<p>Thank you for registration on our site.</p>
+<p>Your login information:</p>
+<p>Username: $username</p>
+<p>Password: $password</p>
+<br />
+<p>You can login here: https://tms.com</p>
+<p>Contact us immediately if you did not authorize this registration.</p>
+<p>Thank you.</p>
 </div>

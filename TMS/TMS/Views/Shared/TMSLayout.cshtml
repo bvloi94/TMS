@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string actionName = this.ViewContext.RouteData.Values["action"].ToString();
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -140,7 +144,7 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
-                    <li class="treeview active">
+                    <li class="treeview">
                         <a href="#">
                             <i class="fa fa-files-o"></i>
                             <span>TICKET</span>
@@ -150,35 +154,50 @@
                         </a>
                     </li>
                     <li>
-                    <li class="treeview active">
+                    <li class="treeview">
                         <a href="/KnowledgeBase/">
                             <i class="fa fa-dashboard"></i> <span>KNOWLEDGE BASE</span>
                         </a>
                     </li>
-                    <li class="treeview active">
+                    <li class="treeview">
                         <a href="#">
                             <i class="fa fa-laptop"></i>
                             <span>REQUESTER</span>
                         </a>
                     </li>
-                    <li class="treeview active">
+                    <li class="treeview">
                         <a href="#">
                             <i class="fa fa-laptop"></i>
                             <span>HELP DESK</span>
                         </a>
                     </li>
-                    <li class="treeview active">
+                    <li class="treeview">
                         <a href="#">
                             <i class="fa fa-pie-chart"></i>
                             <span>REPORT</span>
                         </a>
                     </li>
-                    <li class="treeview active">
+                    <li class="treeview">
                         <a href="#">
                             <i class="fa fa-gears"></i>
                             <span>SYSTEM CONFIG</span>
                         </a>
                     </li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="treeview @Html.Raw((controllerName == "ManageUser") ? "active" : "")">
+                            <a href="#">
+                                <i class="fa fa-users" aria-hidden="true"></i>
+                                <span>MANAGE USER</span>
+                            </a>
+                            <ul class="treeview-menu">
+                                <li @Html.Raw((actionName == "Requester" || actionName == "CreateRequester" || actionName == "EditRequester") ? "class='active'" : "")><a href="/Admin/ManageUser/Requester"><i class="fa fa-circle-o"></i>Requester</a></li>
+                                <li @Html.Raw((actionName == "Helpdesk" || actionName == "CreateHelpdesk" || actionName == "EditHelpdesk") ? "class='active'" : "")><a href="#"><i class="fa fa-circle-o"></i>Help Desk</a></li>
+                                <li @Html.Raw((actionName == "Technician" || actionName == "CreateTechnician" || actionName == "EditTechnician") ? "class='active'" : "")><a href="#"><i class="fa fa-circle-o"></i>Technician</a></li>
+                                <li @Html.Raw((actionName == "Admin" || actionName == "CreateAdmin" || actionName == "EditAdmin") ? "class='active'" : "")><a href="#"><i class="fa fa-circle-o"></i>Admin</a></li>
+                            </ul>
+                        </li>
+    }
                 </ul>
             </section>
             <!-- /.sidebar -->
@@ -187,9 +206,11 @@
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
-                <h1>
-                    @ViewBag.Title
-                </h1>
+                <div class="page-header-custom">
+                    <h2>
+                        @ViewBag.Title
+                    </h2>
+                </div>
             </section>
             <!-- Main content -->
             <section class="content">
@@ -211,5 +232,13 @@
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
     @RenderSection("scripts", required: false)
+    <script>
+        $(document).ready(function () {
+            $(".datetime").datetimepicker({
+                timepicker: false,
+                format: 'd/m/Y'
+            });
+        });
+    </script>
 </body>
 </html>

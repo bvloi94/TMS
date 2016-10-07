@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -11,8 +8,6 @@ using Microsoft.Owin.Security;
 using TMS.Models;
 using TMS.DAL;
 using TMS.Services;
-using System.Web.Security;
-using Microsoft.AspNet.Identity.EntityFramework;
 using TMS.ViewModels;
 
 namespace TMS.Controllers
@@ -31,7 +26,7 @@ namespace TMS.Controllers
             _userService = new UserService(_unitOfWork);
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -45,9 +40,9 @@ namespace TMS.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -86,18 +81,40 @@ namespace TMS.Controllers
 
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    AspNetUser user = _userService.GetUserByUsername(model.Username);
+                    bool isActive = _userService.IsActive(user.Id);
+                    if (isActive)
+                    {
+                        string role = user.AspNetRoles.FirstOrDefault().Name.ToLower();
+                        switch (role)
+                        {
+                            case "admin":
+                                return RedirectToAction("Requester", "ManageUser", new { area = "Admin" });
+                            case "technician":
+                                return RedirectToAction("Index", "Ticket", new { area = "Technician" });
+                            case "helpdesk":
+                            case "requester":
+                            default:
+                                return RedirectToLocal(returnUrl);
+                        }
+                    }
+                    else
+                    {
+                        AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+                        ModelState.AddModelError("Username", "This user is disabled.");
+                        return View(model);
+                    }
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                    ModelState.AddModelError("Username", "Invalid login attempt.");
                     return View(model);
             }
         }
@@ -131,7 +148,7 @@ namespace TMS.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -166,8 +183,8 @@ namespace TMS.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -189,55 +206,55 @@ namespace TMS.Controllers
             return View();
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateRequester(RequesterRegisterViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> CreateRequester(RequesterRegisterViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
+        //        var result = await UserManager.CreateAsync(user, model.Password);
+        //        if (result.Succeeded)
+        //        {
 
-                    AspNetUser requester = _userService.GetUserByUsername(model.UserName);
-                    requester.Fullname = model.Fullname;
-                    //requester.Birthday = model.Birthday;
-                    requester.Address = model.Address;
-                    requester.Gender = model.Gender;
-                    requester.DepartmentName = model.DepartmentName;
-                    requester.JobTitle = model.JobTitle;
-                    requester.CompanyName = model.CompanyName;
-                    requester.CompanyAddress = model.CompanyAddress;
-                    _userService.EditUser(requester);
+        //            AspNetUser requester = _userService.GetUserByUsername(model.UserName);
+        //            requester.Fullname = model.Fullname;
+        //            //requester.Birthday = model.Birthday;
+        //            requester.Address = model.Address;
+        //            requester.Gender = model.Gender;
+        //            requester.DepartmentName = model.DepartmentName;
+        //            requester.JobTitle = model.JobTitle;
+        //            requester.CompanyName = model.CompanyName;
+        //            requester.CompanyAddress = model.CompanyAddress;
+        //            _userService.EditUser(requester);
 
-                    ApplicationDbContext context = new ApplicationDbContext();
+        //            ApplicationDbContext context = new ApplicationDbContext();
 
-                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-                    if (!roleManager.RoleExists("Admin"))
-                    {
-                        var role = new IdentityRole();
-                        role.Name = "Admin";
-                        roleManager.Create(role);
-                    }
-                    UserManager.AddToRole(user.Id, "Admin");
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+        //            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+        //            if (!roleManager.RoleExists("Admin"))
+        //            {
+        //                var role = new IdentityRole();
+        //                role.Name = "Admin";
+        //                roleManager.Create(role);
+        //            }
+        //            UserManager.AddToRole(user.Id, "Admin");
+        //            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+        //            // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+        //            // Send an email with this link
+        //            // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+        //            // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+        //            // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
-                }
-                AddErrors(result);
-            }
+        //            return RedirectToAction("Index", "Home");
+        //        }
+        //        AddErrors(result);
+        //    }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
+        //    // If we got this far, something failed, redisplay form
+        //    return View(model);
+        //}
 
         //
         // GET: /Account/ConfirmEmail

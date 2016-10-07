@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -11,29 +10,33 @@ using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
 
-namespace TMS.Controllers
+namespace TMS.Areas.HelpDesk.Controllers
 {
-    public class TicketsController : Controller
+    public class ManageTicketController : Controller
     {
         private TMSEntities db = new TMSEntities();
-        private UnitOfWork _unitOfWork;
-        private TicketService _ticketService;
 
-        public TicketsController()
+        public TicketService _ticketService { get; set; }
+        public UserService _userService { get; set; }
+        public DepartmentService _departmentService { get; set; }
+
+        public ManageTicketController()
         {
-            _unitOfWork = new UnitOfWork();
-            _ticketService = new TicketService(_unitOfWork);
+            var unitOfWork = new UnitOfWork();
+            _ticketService = new TicketService(unitOfWork);
+            _userService = new UserService(unitOfWork);
+            _departmentService = new DepartmentService(unitOfWork);
         }
-        // GET: Tickets
+
+        // GET: HelpDesk/ManageTicket
         public ActionResult Index()
         {
             //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
-            //var tickets = _ticketService.GetAll();
             //return View(tickets.ToList());
             return View();
         }
 
-        // GET: Tickets/Details/5
+        // GET: HelpDesk/ManageTicket/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -48,13 +51,13 @@ namespace TMS.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Create
+        // GET: HelpDesk/ManageTicket/Create
         public ActionResult Create()
         {
             ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "Fullname");
             ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "Fullname");
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "Fullname");
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "Fullname");
+            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
+            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name");
             ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
             ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name");
@@ -63,7 +66,7 @@ namespace TMS.Controllers
             return View();
         }
 
-        // POST: Tickets/Create
+        // POST: HelpDesk/ManageTicket/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -73,31 +76,12 @@ namespace TMS.Controllers
             if (ModelState.IsValid)
             {
                 db.Tickets.Add(ticket);
-                try
-                {
-
-                    db.SaveChanges();
-                }
-                catch (DbEntityValidationException e)
-                {
-                    foreach (var eve in e.EntityValidationErrors)
-                    {
-                        Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                        foreach (var ve in eve.ValidationErrors)
-                        {
-                            Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
-                                ve.PropertyName, ve.ErrorMessage);
-                        }
-                    }
-                    throw;
-                }
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
             ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
             ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
             ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
             ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
@@ -107,7 +91,7 @@ namespace TMS.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Edit/5
+        // GET: HelpDesk/ManageTicket/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -131,7 +115,7 @@ namespace TMS.Controllers
             return View(ticket);
         }
 
-        // POST: Tickets/Edit/5
+        // POST: HelpDesk/ManageTicket/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -156,7 +140,7 @@ namespace TMS.Controllers
             return View(ticket);
         }
 
-        // GET: Tickets/Delete/5
+        // GET: HelpDesk/ManageTicket/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -171,7 +155,7 @@ namespace TMS.Controllers
             return View(ticket);
         }
 
-        // POST: Tickets/Delete/5
+        // POST: HelpDesk/ManageTicket/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -182,25 +166,10 @@ namespace TMS.Controllers
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         [HttpGet]
         public ActionResult GetTickets(jQueryDataTableParamModel param)
         {
             var ticketList = _ticketService.GetAll();
-
-            //var jsonData = new
-            //{
-            //    data = ticketList
-            //};
-            //return Json(jsonData, JsonRequestBehavior.AllowGet);
 
             IEnumerable<Ticket> filteredListItems;
             if (!string.IsNullOrEmpty(param.sSearch))
@@ -226,12 +195,14 @@ namespace TMS.Controllers
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
             var result = displayedList.Select(p => new IConvertible[]{
-                p.CreatedTime.ToString(),
                 p.Subject,
-                p.Description,
+                p.RequesterID==null?"":_userService.GetUserById(p.RequesterID).Fullname,
+                p.TechnicianID==null?"":_userService.GetUserById(p.TechnicianID).Fullname,
+                p.DepartmentID==null?"":_departmentService.GetDepartmentById(p.DepartmentID.ToString()).Name,
+                p.SolvedDate.ToString(),
                 p.Status,
-                p.Solution,
-                p.ModifiedTime.ToString()
+                p.CreatedTime.ToString(),
+                p.ID
             }.ToArray());
 
             return Json(new
@@ -241,6 +212,61 @@ namespace TMS.Controllers
                 iTotalDisplayRecords = filteredListItems.Count(),
                 aaData = result
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetRequesterList(jQueryDataTableParamModel param)
+        {
+            var requesterList = _userService.GetRequesters();
+
+            IEnumerable<AspNetUser> filteredListItems;
+            if (!string.IsNullOrEmpty(param.sSearch))
+            {
+                filteredListItems = requesterList.Where(p => p.Fullname.ToLower().Contains(param.sSearch.ToLower()));
+            }
+            else
+            {
+                filteredListItems = requesterList;
+            }
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortDirection = Request["sSortDir_0"]; // asc or desc
+
+            switch (sortColumnIndex)
+            {
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Fullname)
+                        : filteredListItems.OrderByDescending(p => p.Fullname);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var result = displayedList.Select(p => new IConvertible[]{
+                p.Id,
+                p.Fullname,
+                p.Email,
+                p.DepartmentName,
+                p.PhoneNumber,
+                p.JobTitle
+            }.ToArray());
+
+            return Json(new
+            {
+                param.sEcho,
+                iTotalRecords = result.Count(),
+                iTotalDisplayRecords = filteredListItems.Count(),
+                aaData = result
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
