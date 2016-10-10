@@ -1,9 +1,9 @@
-﻿@model TMS.Models.RequesterRegisterViewModel
+﻿@model TMS.Models.AdminRegisterViewModel
 @{
-    ViewBag.Title = "Edit Requester";
+    ViewBag.Title = "Edit Admin";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
-@using (Html.BeginForm("EditRequester", "ManageUser", new { id = ViewBag.id }, FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
+@using (Html.BeginForm("EditAdmin", "ManageUser", new { id = ViewBag.id }, FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
 {
     <div class="row">
         <div class="col-xs-8">
@@ -54,37 +54,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Department Name</label>
-                        <div class="col-sm-9">
-                            @Html.TextBoxFor(m => m.DepartmentName, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.DepartmentName, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Job Title</label>
-                        <div class="col-sm-9">
-                            @Html.TextBoxFor(m => m.JobTitle, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.JobTitle, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Company Name</label>
-                        <div class="col-sm-9">
-                            @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Company Address</label>
-                        <div class="col-sm-9">
-                            @Html.TextBoxFor(m => m.CompanyAddress, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.CompanyAddress, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <div class="col-xs-offset-3 col-xs-9">
                             <input type="submit" class="btn btn-success" value="Save" />
-                            @Html.ActionLink("Cancel", "Requester", null, new { @class = "btn btn-default" })
+                            @Html.ActionLink("Cancel", "Admin", null, new { @class = "btn btn-default" })
                         </div>
                     </div>
 

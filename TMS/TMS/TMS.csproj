@@ -44,8 +44,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EAGetMail45, Version=4.6.0.3, Culture=neutral, PublicKeyToken=e10a0812eb29cf94, processorArchitecture=MSIL">
+      <HintPath>..\packages\EAGetMail.4.6.0.3\lib\net45\EAGetMail45.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LumiSoft.Net, Version=2.0.4492.11923, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LumiSoft.Net.2.0.4492.11923\lib\LumiSoft.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -363,6 +371,7 @@
     <Content Include="Content\Plugins\datatables\css\jquery.dataTables.css" />
     <Content Include="Content\Plugins\datatables\css\jquery.dataTables.min.css" />
     <Content Include="Content\Plugins\datatables\css\jquery.dataTables_themeroller.css" />
+    <Content Include="Content\Plugins\datatables\css\responsive.dataTables.min.css" />
     <Content Include="Content\Plugins\datatables\images\favicon.ico" />
     <Content Include="Content\Plugins\datatables\images\sort_asc.png" />
     <Content Include="Content\Plugins\datatables\images\sort_asc_disabled.png" />
@@ -379,6 +388,7 @@
     <Content Include="Content\Plugins\datatables\js\dataTables.jqueryui.min.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.material.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.material.min.js" />
+    <Content Include="Content\Plugins\datatables\js\dataTables.responsive.min.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.semanticui.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.semanticui.min.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.uikit.js" />
@@ -386,6 +396,7 @@
     <Content Include="Content\Plugins\datatables\js\jquery.dataTables.js" />
     <Content Include="Content\Plugins\datatables\js\jquery.dataTables.min.js" />
     <Content Include="Content\Plugins\datatables\js\jquery.js" />
+    <Content Include="Content\Plugins\datatables\js\responsive.bootstrap.min.js" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.full.min.js" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.css" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.min.js" />
@@ -444,7 +455,6 @@
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="Content\Plugins\datatables\images\Sorting icons.psd" />
     <Content Include="Areas\Admin\Views\web.config" />
-    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Requester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateRequester.cshtml" />
@@ -470,7 +480,27 @@
     <Content Include="Areas\Technician\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Technician\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Technician\Views\Ticket\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\CreateHelpDesk.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\EditHelpDesk.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\Technician.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\EditTechnician.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\CreateTechnician.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\Admin.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\CreateAdmin.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\EditAdmin.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\cldr.js" />
+    <Content Include="Scripts\cldr\event.js" />
+    <Content Include="Scripts\cldr\supplemental.js" />
+    <Content Include="Scripts\cldr\unresolved.js" />
+    <Content Include="Scripts\globalize.js" />
+    <Content Include="Scripts\globalize\currency.js" />
+    <Content Include="Scripts\globalize\date.js" />
+    <Content Include="Scripts\globalize\message.js" />
+    <Content Include="Scripts\globalize\number.js" />
+    <Content Include="Scripts\globalize\plural.js" />
+    <Content Include="Scripts\globalize\relative-time.js" />
+    <Content Include="Scripts\globalize\unit.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -488,7 +518,9 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Uploads\Avatar\avatar_female.png" />
     <Content Include="Uploads\Avatar\avatar_male.png" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -539,11 +571,9 @@
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Manage\" />
     <Folder Include="Areas\HelpDesk\Models\" />
-    <Folder Include="Areas\Technician\Controllers\" />
     <Folder Include="Areas\Technician\Models\" />
-    <Folder Include="Areas\Technician\Views\Shared\" />
-    <Folder Include="Content\Plugins\bootstrap-wysihtml5\" />
     <Folder Include="Content\css\" />
+    <Folder Include="Content\Plugins\bootstrap-wysihtml5\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -143,3 +143,471 @@ ERROR 2016-10-06 16:25:38,024   213ms JobManager             ExecuteAllJobs     
 DEBUG 2016-10-06 16:25:38,024   213ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
 DEBUG 2016-10-06 16:25:38,025   214ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
 DEBUG 2016-10-06 16:25:38,029   218ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 17:00:06,427    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 17:00:06,581   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 17:00:06,582   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 17:00:06,582   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 17:00:06,586   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 17:03:05,041   123ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 17:03:05,728   810ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 17:03:05,729   811ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 17:03:05,729   811ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 17:03:05,752   834ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 17:10:02,898    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 17:10:03,053   214ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 17:10:03,054   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 17:10:03,055   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 17:10:03,058   219ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 17:51:05,250   303ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 17:51:10,141  5194ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 17:51:10,141  5194ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 17:51:10,142  5195ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 17:51:10,144  5197ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 17:59:26,687   134ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 17:59:27,427   873ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 17:59:27,427   873ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 17:59:27,428   874ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 17:59:27,430   876ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 20:18:49,300    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 20:18:49,492   252ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 20:18:49,492   253ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 20:18:49,493   253ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 20:18:49,498   259ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 20:25:47,899    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 20:25:48,054   214ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 20:25:48,054   214ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 20:25:48,055   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 20:25:48,078   238ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 20:27:21,276    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 20:27:21,432   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 20:27:21,432   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 20:27:21,433   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 20:27:21,437   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 20:48:57,832    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 20:48:57,986   213ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 20:48:57,987   214ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 20:48:57,987   214ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 20:48:57,991   218ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 21:20:31,699    63ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 21:20:31,854   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 21:20:31,855   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 21:20:31,855   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 21:20:31,859   222ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 21:23:48,928    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 21:23:49,086   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 21:23:49,086   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 21:23:49,087   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 21:23:49,091   223ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 21:33:02,674    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 21:33:02,830   214ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 21:33:02,831   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 21:33:02,831   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 21:33:02,835   219ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 21:37:04,889    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 21:37:05,043   214ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 21:37:05,043   214ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 21:37:05,044   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 21:37:05,048   219ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 21:51:30,557    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 21:51:30,710   211ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 21:51:30,711   212ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 21:51:30,711   212ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 21:51:30,715   216ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 21:55:57,429    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 21:55:57,593   222ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 21:55:57,593   222ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 21:55:57,594   223ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 21:55:57,597   226ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 22:03:50,742    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 22:03:50,894   211ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 22:03:50,894   211ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 22:03:50,896   212ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 22:03:50,900   216ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 22:06:25,781    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 22:06:25,933   213ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 22:06:25,933   213ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 22:06:25,934   214ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 22:06:25,938   218ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 22:12:16,907    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 22:12:17,060   211ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 22:12:17,061   212ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 22:12:17,061   212ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 22:12:17,065   216ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 22:15:11,656    57ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 22:15:11,807   208ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 22:15:11,808   209ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 22:15:11,809   209ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 22:15:11,812   213ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 22:17:42,240    62ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 22:17:42,392   214ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 22:17:42,393   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 22:17:42,393   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 22:17:42,397   219ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 22:30:23,285    62ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 22:30:23,442   219ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 22:30:23,443   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 22:30:23,444   221ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 22:30:23,447   224ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-06 22:35:33,292    57ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-06 22:35:33,442   207ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-06 22:35:33,443   208ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-06 22:35:33,444   209ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-06 22:35:33,448   212ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 12:42:38,343    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 12:42:38,572   290ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 12:42:38,572   290ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 12:42:38,573   291ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 12:42:38,576   294ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 12:52:16,303    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 12:52:16,463   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 12:52:16,463   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 12:52:16,463   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 12:52:16,467   222ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 21:53:33,142    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 21:53:33,314   230ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 21:53:33,315   231ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 21:53:33,316   232ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 21:53:33,319   235ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 21:59:36,511    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 21:59:36,669   217ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 21:59:36,669   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 21:59:36,670   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 21:59:36,682   230ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 22:05:25,004    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 22:05:25,159   214ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 22:05:25,160   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 22:05:25,160   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 22:05:25,164   220ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 22:26:37,855    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 22:26:38,014   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 22:26:38,014   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 22:26:38,015   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 22:26:38,019   222ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 22:30:15,635    57ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 22:30:15,788   210ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 22:30:15,788   210ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 22:30:15,789   211ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 22:30:15,792   214ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 22:32:45,279    48ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 22:32:45,436   204ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 22:32:45,436   204ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 22:32:45,436   204ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 22:32:45,451   220ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 22:52:24,087   127ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 22:52:24,880   920ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 22:52:24,880   920ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 22:52:24,881   921ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 22:52:24,883   923ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 23:09:33,916    65ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 23:09:34,070   219ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 23:09:34,071   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 23:09:34,071   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 23:09:34,074   223ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 23:23:00,771    65ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 23:23:00,931   225ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 23:23:00,931   225ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 23:23:00,932   226ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 23:23:00,935   230ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 23:31:20,346    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 23:31:20,502   215ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 23:31:20,503   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 23:31:20,504   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 23:31:20,507   220ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 23:51:11,579    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 23:51:11,759   238ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 23:51:11,760   239ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 23:51:11,760   239ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 23:51:11,764   243ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 23:57:05,941    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 23:57:06,103   221ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 23:57:06,103   221ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 23:57:06,104   222ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 23:57:06,108   225ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-07 23:59:36,343    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-07 23:59:36,497   215ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-07 23:59:36,497   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-07 23:59:36,498   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-07 23:59:36,501   219ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 00:06:30,483    48ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 00:06:30,647   212ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 00:06:30,647   212ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 00:06:30,647   212ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 00:06:30,647   212ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 00:15:52,930    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 00:15:53,090   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 00:15:53,091   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 00:15:53,091   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 00:15:53,095   223ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 00:17:23,017    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 00:17:23,174   217ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 00:17:23,174   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 00:17:23,175   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 00:17:23,178   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 00:23:12,577    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 00:23:12,734   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 00:23:12,735   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 00:23:12,735   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 00:23:12,739   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 00:25:21,755    64ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 00:25:21,914   222ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 00:25:21,915   223ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 00:25:21,915   223ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 00:25:21,918   227ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 00:39:14,071    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 00:39:14,231   220ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 00:39:14,231   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 00:39:14,232   221ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 00:39:14,235   224ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 00:50:47,581    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 00:50:47,750   229ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 00:50:47,750   229ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 00:50:47,751   230ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 00:50:47,754   233ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 21:42:04,892    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 21:42:05,914  1082ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 21:42:05,915  1083ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 21:42:05,916  1084ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 21:42:05,919  1088ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 22:13:13,938    64ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 22:13:14,102   228ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 22:13:14,102   228ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 22:13:14,102   228ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 22:13:14,106   232ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 22:16:57,030    56ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 22:16:57,190   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 22:16:57,190   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 22:16:57,190   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 22:16:57,194   220ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-08 22:33:57,158    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-08 22:33:57,312   212ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-08 22:33:57,313   213ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-08 22:33:57,313   213ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-08 22:33:57,318   218ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 11:28:15,285    65ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 11:28:15,479   259ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 11:28:15,480   259ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 11:28:15,480   260ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 11:28:15,484   263ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 11:47:25,176    63ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 11:47:25,333   220ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 11:47:25,334   221ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 11:47:25,334   221ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 11:47:25,338   225ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 11:54:29,533    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 11:54:29,692   219ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 11:54:29,693   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 11:54:29,693   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 11:54:29,697   224ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:01:35,192    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:01:35,354   222ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:01:35,354   222ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:01:35,355   223ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:01:35,359   227ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:04:42,134    62ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:04:42,299   227ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:04:42,299   227ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:04:42,300   228ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:04:42,304   232ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:11:17,120    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:11:17,276   215ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:11:17,276   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:11:17,276   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:11:17,280   219ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:14:03,214    64ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:14:03,391   241ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:14:03,391   241ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:14:03,392   242ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:14:03,396   246ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:15:45,116    67ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:15:45,288   239ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:15:45,288   239ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:15:45,292   243ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:15:45,296   247ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:21:31,519    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:21:31,676   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:21:31,677   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:21:31,677   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:21:31,680   222ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:22:29,313    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:22:29,475   223ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:22:29,475   223ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:22:29,476   224ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:22:29,479   227ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:25:11,473    56ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:25:11,632   215ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:25:11,633   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:25:11,633   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:25:11,637   219ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:28:22,716    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:28:22,873   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:28:22,874   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:28:22,874   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:28:22,878   223ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:31:19,862    62ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:31:20,048   249ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:31:20,049   249ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:31:20,050   250ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:31:20,053   254ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:40:39,513    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:40:39,672   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:40:39,673   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:40:39,673   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:40:39,677   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:44:11,823    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:44:11,985   220ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:44:11,985   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:44:11,985   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:44:11,989   224ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:48:13,358    64ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:48:13,519   224ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:48:13,519   225ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:48:13,520   226ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:48:13,522   227ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 12:56:48,599    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 12:56:48,755   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 12:56:48,756   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 12:56:48,757   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 12:56:48,760   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 13:12:36,558    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 13:12:36,714   217ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 13:12:36,714   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 13:12:36,715   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 13:12:36,718   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 13:15:45,976    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 13:15:46,132   217ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 13:15:46,132   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 13:15:46,133   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 13:15:46,137   222ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 18:23:51,325    57ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 18:23:51,485   217ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 18:23:51,485   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 18:23:51,485   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 18:23:51,489   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 18:38:15,179    57ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 18:38:15,340   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 18:38:15,340   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 18:38:15,340   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 18:38:15,344   222ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 18:41:05,994    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 18:41:06,154   220ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 18:41:06,154   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 18:41:06,154   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 18:41:06,158   224ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 18:41:21,261 15326ms EmailUtil              EditTechnician     - System.InvalidOperationException: Nullable object must have a value.
+   at System.ThrowHelper.ThrowInvalidOperationException(ExceptionResource resource)
+   at System.Nullable`1.get_Value()
+   at TMS.Areas.Admin.Controllers.ManageUserController.EditTechnician(String id) in D:\Capstone\TMS\TMS\TMS\Areas\Admin\Controllers\ManageUserController.cs:line 662
+DEBUG 2016-10-09 18:42:38,067    54ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 18:42:38,224   210ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 18:42:38,224   210ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 18:42:38,224   210ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 18:42:38,248   234ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 18:48:49,431    57ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 18:48:49,590   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 18:48:49,591   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 18:48:49,591   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 18:48:49,594   220ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 18:50:48,089    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 18:50:48,245   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 18:50:48,245   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 18:50:48,246   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 18:50:48,250   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 19:19:21,059    83ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 19:19:21,271   294ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 19:19:21,271   295ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 19:19:21,272   295ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 19:19:21,277   300ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 20:04:50,586    59ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 20:04:50,765   237ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 20:04:50,765   237ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 20:04:50,766   238ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 20:04:50,770   242ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 20:15:13,698    66ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 20:15:13,864   232ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 20:15:13,865   233ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 20:15:13,865   233ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 20:15:13,868   236ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 20:19:30,682    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 20:19:30,842   220ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 20:19:30,842   220ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 20:19:30,843   221ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 20:19:30,846   224ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 20:19:31,277   655ms EmailUtil              EditAdmin          - System.NullReferenceException: Object reference not set to an instance of an object.
+   at TMS.Areas.Admin.Controllers.ManageUserController.EditAdmin(String id) in D:\Capstone\TMS\TMS\TMS\Areas\Admin\Controllers\ManageUserController.cs:line 848
+DEBUG 2016-10-09 20:26:13,093    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 20:26:13,248   215ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 20:26:13,248   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 20:26:13,249   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 20:26:13,252   219ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 20:30:41,053    64ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 20:30:41,210   221ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 20:30:41,211   222ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 20:30:41,212   223ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 20:30:41,215   226ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 20:42:53,271    70ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 20:42:53,425   225ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 20:42:53,426   226ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 20:42:53,427   227ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 20:42:53,430   230ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 20:42:53,850   650ms EmailUtil              EditTechnician     - System.NullReferenceException: Object reference not set to an instance of an object.
+   at TMS.Areas.Admin.Controllers.ManageUserController.EditTechnician(String id) in D:\Capstone\TMS\TMS\TMS\Areas\Admin\Controllers\ManageUserController.cs:line 822
+DEBUG 2016-10-09 21:00:50,096    62ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 21:00:50,271   236ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 21:00:50,272   237ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 21:00:50,272   237ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 21:00:50,276   241ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 21:09:22,671    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 21:09:22,829   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 21:09:22,829   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 21:09:22,830   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 21:09:22,833   222ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 21:26:22,543    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 21:26:22,705   223ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 21:26:22,705   223ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 21:26:22,706   224ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 21:26:22,710   228ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 21:27:28,642    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 21:27:28,799   217ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 21:27:28,799   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 21:27:28,800   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 21:27:28,803   221ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 21:29:12,355    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 21:29:12,512   217ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 21:29:12,513   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 21:29:12,513   218ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 21:29:12,517   222ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 21:35:18,204    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 21:35:18,367   221ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 21:35:18,367   221ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 21:35:18,368   222ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 21:35:18,371   225ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 21:35:55,079    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 21:35:55,235   216ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 21:35:55,235   216ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 21:35:55,236   217ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 21:35:55,239   220ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 21:40:27,426    58ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 21:40:27,586   218ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 21:40:27,587   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 21:40:27,587   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 21:40:27,591   223ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 22:55:31,701    64ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 22:55:31,886   248ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 22:55:31,886   249ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 22:55:31,887   249ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 22:55:31,890   253ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-09 23:21:27,722    60ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-09 23:21:27,876   214ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-09 23:21:27,876   214ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-09 23:21:27,877   215ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-09 23:21:27,880   218ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-10 12:44:12,701    62ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-10 12:44:12,863   224ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-10 12:44:12,863   224ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-10 12:44:12,864   225ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-10 12:44:12,867   228ms JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-10 12:47:25,865    61ms JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-10 12:47:26,023   219ms JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-10 12:47:26,023   219ms JobManager             ExecuteAllJobs     - The Job "TestJob" has been instantiated successfully.
+DEBUG 2016-10-10 12:47:26,024   221ms JobManager             ExecuteAllJobs     - The Job "TestJob" has its thread started successfully.
+DEBUG 2016-10-10 12:47:26,027   224ms JobManager             ExecuteAllJobs     - End Method

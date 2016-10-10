@@ -1,13 +1,13 @@
 ﻿@{
-    ViewBag.Title = "Manage Help Desks";
+    ViewBag.Title = "Manage Admins";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 <style>
-    #helpdesk-table th {
+    #admin-table th {
         font-size: 18px;
     }
 
-    #helpdesk-table td {
+    #admin-table td {
         font-size: 16px;
         vertical-align: middle;
     }
@@ -16,18 +16,18 @@
     <div class="col-xs-12">
         <div class="box box-primary">
             <div class="box-body large-text-container">
-                <p>@Html.ActionLink("Create New", "CreateHelpDesk", null, new { @class = "btn btn-success" })</p>
+                <p>@Html.ActionLink("Create New", "CreateAdmin", null, new { @class = "btn btn-success" })</p>
                 <div class="pull-right" style="margin-right: 20px">
                     <label>Availability:</label>
                     <select id="availability-dropdown">
                         <option value="2">All</option>
-                        <option value="1">Enabled Help Desks</option>
-                        <option value="0">Disabled Help Desks</option>
+                        <option value="1">Enabled Admins</option>
+                        <option value="0">Disabled Admins</option>
                     </select>&nbsp;&nbsp;
                     <label>Search:</label>
                     <input type="text" id="search-txt" />
                 </div>
-                <table class="table table-bordered table-striped dataTable" id="helpdesk-table" style="width: 100%">
+                <table class="table table-bordered table-striped dataTable" id="admin-table" style="width: 100%">
                     <thead>
                         <tr>
                             <th>Username</th>
@@ -50,7 +50,7 @@
     @Scripts.Render("~/bundles/datatables")
     <script>
         var initDataTable = function () {
-            $("#helpdesk-table").DataTable({
+            $("#admin-table").DataTable({
                 serverSide: true,
                 sort: true,
                 processing: true,
@@ -65,7 +65,7 @@
                     infoFiltered: ""
                 },
                 ajax: {
-                    url: "/Admin/ManageUser/GetHelpDesks",
+                    url: "/Admin/ManageUser/GetAdmins",
                     data: function (d) {
                         d.availability_select = $("#availability-dropdown").val(),
                         d.search_text = $("#search-txt").val()
@@ -113,7 +113,7 @@
                         "targets": [5],
                         "sortable": false,
                         "render": function (data, type, row) {
-                            return '<center><a href="/Admin/ManageUser/EditHelpDesk/' + row[0] + '"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a></center>';
+                            return '<center><a href="/Admin/ManageUser/EditAdmin/' + row[0] + '"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a></center>';
                         }
                     }
                 ]
@@ -121,7 +121,7 @@
         };
 
         var reloadDataTable = function () {
-            var oTable = $("#helpdesk-table").dataTable();
+            var oTable = $("#admin-table").dataTable();
             oTable.api().ajax.reload();
         };
 
@@ -148,7 +148,7 @@
                 success: function (data) {
                     if (data.success) {
                         $.notify(data.message, "success")
-                        $("#helpdesk-table").dataTable().api().ajax.reload(null, false);
+                        $("#admin-table").dataTable().api().ajax.reload(null, false);
                     } else {
                         $.notify(data.message, "error")
                     }
