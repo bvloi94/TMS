@@ -18,12 +18,18 @@ namespace TMS.Services
 
         public IEnumerable<Ticket> GetAll()
         {
-            return _unitOfWork.TicketRepository.Get();   
+            return _unitOfWork.TicketRepository.Get();
         }
-        
+
         public Ticket GetTicketByID(int id)
         {
             return _unitOfWork.TicketRepository.GetByID(id);
+        }
+
+        public bool UpdateTicket(Ticket ticket)
+        {
+            _unitOfWork.TicketRepository.Update(ticket);
+            return _unitOfWork.Save() > 0;
         }
     }
 }

@@ -344,6 +344,10 @@
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\jquery.noty.js" />
+    <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.js" />
+    <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.min.js" />
+    <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.css" />
+    <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.min.css" />
     <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.css" />
     <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.js" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap.css" />
@@ -542,7 +546,6 @@
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\css\" />
-    <Folder Include="Content\Plugins\bootstrap-wysihtml5\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

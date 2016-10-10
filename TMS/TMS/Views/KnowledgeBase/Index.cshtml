@@ -142,7 +142,7 @@
     }
 
     input, select, textarea {
-        max-width: 600px;
+        max-width: 750px;
     }
 
     .required {
@@ -244,28 +244,28 @@
                     </div>
                     <div class="modal-body">
                         <div class="box box-body">
-                            <form class="form-horizontal">
+                            <form class="form-horizontal" id="create-solution-form">
                                 <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Title</label>
-                                    <div class="col-md-9">
+                                    <label class="control-label col-md-2"><span class="required">(*)</span>Title</label>
+                                    <div class="col-md-10">
                                         <input type="text" class="form-control" placeholder="Enter title here" />
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Description</label>
-                                    <div class="col-md-9">
+                                    <label class="control-label col-md-2"><span class="required">(*)</span>Description</label>
+                                    <div class="col-md-10">
                                         <textarea class="form-control" rows="5" placeholder="Place some text here"></textarea>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-3">Attach file</label>
-                                    <div class="col-md-9">
+                                    <label class="control-label col-md-2">Attach file</label>
+                                    <div class="col-md-10">
                                         <input type="file" name="files" multiple class="form-control" />
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Topic</label>
-                                    <div class="col-md-9">
+                                    <label class="control-label col-md-2"><span class="required">(*)</span>Topic</label>
+                                    <div class="col-md-10">
                                         <select class="form-control">
                                             <option value="All topic">All topic</option>
                                             <option value="General">General</option>
@@ -276,8 +276,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-md-3">Keyword</label>
-                                    <div class="col-md-9">
+                                    <label class="control-label col-md-2">Keyword</label>
+                                    <div class="col-md-10">
                                         <input type="text" class="form-control" />
                                     </div>
                                 </div>
@@ -409,9 +409,8 @@ After making a change, click the ‘Update’ button to save the changes in the 
                     $(this).closest('.question-row').find('.question-detail').slideToggle(400);
                 }
             });
+            $('#create-solution-form textarea').wysihtml5();
         });
-
-        
     </script>
 }
 

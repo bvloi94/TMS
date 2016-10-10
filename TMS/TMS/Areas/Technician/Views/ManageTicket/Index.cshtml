@@ -41,9 +41,7 @@
     }
 
     hr {
-        height: 10px;
-        border: 0;
-        box-shadow: 0 10px 10px -10px #8c8b8b inset;
+        border: 1px solid #c7c7c7;
     }
 
     .detail {
@@ -58,6 +56,10 @@
 
     input {
         max-height: 400px;
+    }
+
+    #ticket-description, #ticket-solution {
+        white-space: pre-wrap;
     }
 </style>
 
@@ -274,7 +276,7 @@
                 },
                 {
                     "render": function (data, type, row) {
-                        return row[3];
+                        return row[3] == null ? "None" : row[3];
                     },
                     "targets": 3
                 },
@@ -288,10 +290,9 @@
 
                 {
                     "render": function (data, type, row) {
-                        var solveUrl = '@Url.Action("Solve", "ManageTicket", new { id = "-1"})';
-                        solveUrl = solveUrl.replace("-1", row[5]);
+                        var solveUrl = '@Url.Action("Solve", "ManageTicket")/' + row[5];
                         if (row[2] == 1) {
-                            return "<a target='_blank' href='" + solveUrl + "' class='btn btn-primary' >Solve</a>";
+                            return "<a href='" + solveUrl + "' class='btn btn-primary' >Solve</a>";
                         }
                         else {
                             return "<a class='btn btn-default' disabled>Solve</a>";
@@ -323,7 +324,7 @@
                     if (data.status == 1) {
                         $('#ticket-status').text('Open');
                         $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
-                                                    + "<a target='_blank' class='btn btn-primary' href='" + solveUrl + "'>Yes</a>"
+                                                    + "<a class='btn btn-primary' href='" + solveUrl + "'>Yes</a>"
                                                     + "<a class='btn btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
                     }
                     else {

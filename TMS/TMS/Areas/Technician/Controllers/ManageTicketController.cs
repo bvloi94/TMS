@@ -113,22 +113,30 @@ namespace TMS.Areas.Technician.Controllers
             Ticket ticket = _ticketService.GetTicketByID(id);
             AspNetUser solveUser = _userService.GetUserById(ticket.SolveID);
             AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
-
-            String solveUsername;
-            if (solveUser != null)
-            {
-                solveUsername = solveUser.Fullname;
-            }
-            else
-            {
-                solveUsername = "None";
-            }
-            
+                        
             ViewBag.Ticket = ticket;
             ViewBag.SolveUser = solveUser;
             ViewBag.CreatedUser = createdUser;
 
             return View();
         }
+
+        [HttpPost]
+        public ActionResult SolveTicket(int id, string content)
+        {
+            Ticket ticket = _ticketService.GetTicketByID(id);
+
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+            else
+            {
+                
+            }
+            
+            return RedirectToAction("Index");
+        }
+
     }
 }
