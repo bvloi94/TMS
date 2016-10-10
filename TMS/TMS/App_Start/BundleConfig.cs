@@ -30,7 +30,9 @@ namespace TMS
                 "~/Scripts/jquery-ui.min.js",
                 "~/Scripts/notify.min.js",
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
-                "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js"));
+                "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js",
+                "~/Scripts/globalize.js",
+                "~/Scripts/cldr.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
@@ -45,11 +47,14 @@ namespace TMS
             // Datatable
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
                 "~/Content/Plugins/datatables/js/jquery.dataTables.min.js",
-                "~/Content/Plugins/datatables/js/dataTables.bootstrap.js"));
+                "~/Content/Plugins/datatables/js/dataTables.bootstrap.js",
+                "~/Content/Plugins/datatables/js/dataTables.responsive.min.js",
+                "~/Content/Plugins/datatables/js/responsive.bootstrap.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/datatables").Include(
                       //"~/Content/Plugins/datatables/css/jquery.dataTables.min.css",
-                      "~/Content/Plugins/datatables/css/dataTables.bootstrap.min.css"));
+                      "~/Content/Plugins/datatables/css/dataTables.bootstrap.min.css",
+                      "~/Content/Plugins/datatables/css/responsive.dataTables.min.css"));
             // Login CSS
             bundles.Add(new StyleBundle("~/Content/login_css").Include(
                       "~/Content/login.css"));

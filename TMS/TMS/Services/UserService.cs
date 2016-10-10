@@ -81,6 +81,16 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "helpdesk");
         }
 
+        public IEnumerable<AspNetUser> GetTechnicians()
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician");
+        }
+
+        public IEnumerable<AspNetUser> GetAdmins()
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin");
+        }
+
         public bool IsActive(string id)
         {
             return _unitOfWork.AspNetUserRepository.Get(m => m.Id == id && m.IsActive == true).Count() > 0;
@@ -112,5 +122,6 @@ namespace TMS.Services
             }
             return isEnable;
         }
+
     }
 }

@@ -198,7 +198,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 p.Subject,
                 p.RequesterID==null?"":_userService.GetUserById(p.RequesterID).Fullname,
                 p.TechnicianID==null?"":_userService.GetUserById(p.TechnicianID).Fullname,
-                p.DepartmentID==null?"":_departmentService.GetDepartmentById(p.DepartmentID.ToString()).Name,
+                p.DepartmentID==null?"":_departmentService.GetDepartmentById((int) p.DepartmentID).Name,
                 p.SolvedDate.ToString(),
                 p.Status,
                 p.CreatedTime.ToString(),

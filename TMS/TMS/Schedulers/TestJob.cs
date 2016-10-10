@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using TMS.Utils;
 
 namespace TMS.Schedulers
 {
@@ -36,6 +37,7 @@ namespace TMS.Schedulers
               "This is the execution number \"{0}\" of the Job \"{1}\".",
               counter.ToString(), this.GetName()));
             counter++;
+            EmailUtil.GetUnreadMailsUsingEAGetMail();
         }
 
         /// <summary>
