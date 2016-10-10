@@ -211,7 +211,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
-    <Compile Include="Areas\Technician\Controllers\TicketController.cs" />
+    <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
@@ -479,7 +479,8 @@
     <Content Include="Areas\Admin\Views\ManageUser\HelpDesk.cshtml" />
     <Content Include="Areas\Technician\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Technician\Views\Shared\_Layout.cshtml" />
-    <Content Include="Areas\Technician\Views\Ticket\Index.cshtml" />
+    <Content Include="Areas\Technician\Views\ManageTicket\Index.cshtml" />
+    <Content Include="Areas\Technician\Views\ManageTicket\Solve.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateHelpDesk.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditHelpDesk.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Technician.cshtml" />

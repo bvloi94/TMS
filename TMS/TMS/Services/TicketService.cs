@@ -20,5 +20,10 @@ namespace TMS.Services
         {
             return _unitOfWork.TicketRepository.Get();   
         }
+        
+        public Ticket GetTicketByID(int id)
+        {
+            return _unitOfWork.TicketRepository.GetByID(id);
+        }
     }
 }
