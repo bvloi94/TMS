@@ -55,15 +55,29 @@ namespace TMS.Services
         {
             try
             {
-               _unitOfWork.ImpactRepository.Update(impact);
-               _unitOfWork.Save();
+                _unitOfWork.ImpactRepository.Update(impact);
+                _unitOfWork.Save();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        public void DeleteImpact(Impact impact)
+        {
+            try
+            {
+                _unitOfWork.ImpactRepository.Delete(impact);
+                _unitOfWork.Save();
             }
             catch (Exception)
             {
                 
                 throw;
             }
-           
         }
     }
 }

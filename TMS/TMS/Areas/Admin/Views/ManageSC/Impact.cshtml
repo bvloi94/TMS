@@ -1,15 +1,14 @@
 ﻿@model TMS.Models.Impact
 @{
     ViewBag.Title = "Impact";
-    Layout = "~/Views/Shared/TMSLayout.cshtml";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
-            <div class="box-header padding-bottom-20 pull-left ">
-                <button type="button" class="btn" data-toggle="modal" data-target="#myModal"
-                        onclick="clearModal(); $('#create-btn').attr('onclick', 'createImpact()');">
+            <div class="box-header padding-bottom-20">
+                <button type="button" class="btn" onclick="showCreateModal()">
                     Create New Impact
                 </button>
             </div>
@@ -93,46 +92,60 @@
                 },
                 "columnDefs": [
                     {
-                        "render": function(data, type, row) {
+                        "render": function (data, type, row) {
                             return row[1];
                         },
                         "targets": 0,
                         "type": "date"
                     },
                     {
-                        "render": function(data, type, row) {
+                        "render": function (data, type, row) {
                             return row[2];
                         },
                         "targets": 1
                     },
                     {
-                        "render": function(data, type, row) {
-                            return '<button type="button" class="fa fa-pencil" data-toggle="modal" onclick="getImpactDetail(\'' + row[0] + '\')"></button>';
+                        "render": function (data, type, row) {
+
+                            return (
+                                '<button type="button" class="fa fa-pencil" data-toggle="modal" onclick="getImpactDetail(\'' +
+                                    row[0] +
+                                    '\')">' +
+                                    '</button> <button type="button" class="glyphicon glyphicon-trash" onclick="getImpactId(\'' +
+                                    row[0] +
+                                    '\')"></button>');
+
                         },
                         "targets": 2
                     }
                 ]
             });
 
-        var reloadDataTable = function() {
+        var reloadDataTable = function () {
             var oTable = $("#impact-table").dataTable();
             oTable._fnPageChange(0);
             oTable._fnAjaxUpdate();
         };
 
-        var clearModal = function() {
+        var clearModal = function () {
             $("#myModal").find("input").val("");
             $("#myModal").find("textarea").val("");
-            $("#name-validation-message").hide();
+            $(".text-danger").hide();
         }
 
-        var createImpact = function() {
+        var showCreateModal = function () {
+            clearModal();
+            $("#myModal").modal('show');
+            $('#create-btn').attr('onclick', 'createImpact()');
+        };
+
+        var createImpact = function () {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required!");
                 $("#name-validation-message").show();
-            } else if (name.trim().length < 8) {
-                $("#name-validation-message").html("Name must be longer than 8 characters!");
+            } else if (name.trim().length < 4) {
+                $("#name-validation-message").html("Name must be longer than 4 characters!");
                 $("#name-validation-message").show();
             } else {
                 $.ajax({
@@ -143,19 +156,22 @@
                         name: $("#name-txt").val(),
                         description: $("#description-txt").val()
                     },
-                    success: function(data) {
+                    success: function (data) {
                         if (data.success) {
-                            alert(data.message);
+                            $.notify(data.message, "success");
                             $("#myModal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                alert(data.message);
+                                $.notify(data.message, "error");
                             } else {
                                 $("#name-validation-message").html(data.message);
                                 $("#name-validation-message").show();
                             }
                         }
+                    },
+                    error: function () {
+                        $.notify("Cannot connect to server!", "error");
                     }
                 });
             }
@@ -170,7 +186,7 @@
                 data: {
                     id: id
                 },
-                success: function(data) {
+                success: function (data) {
                     if (data.success) {
                         $("#myModal").modal("show");
                         $("#name-txt").val(data.name);
@@ -178,9 +194,12 @@
                         $("#create-btn").attr("onclick", "editImpact('" + id + "')");
                     } else {
                         if (data.error) {
-                            alert(data.message);
+                            $.notify(data.message, "error");
                         }
                     }
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
                 }
             });
         };
@@ -191,11 +210,11 @@
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required");
                 $("#name-validation-message").show();
-            } else if (name.trim().length < 8) {
-                $("#name-validation-message").html("Name must be longer than 8 characters! ");
+            } else if (name.trim().length < 4) {
+                $("#name-validation-message").html("Name must be longer than 4 characters! ");
                 $("#name-validation-message").show();
             } else {
-                //ajax syntax 
+                //ajax syntax
                 $.ajax(
                 {
                     url: "/Admin/ManageSC/EditImpact",
@@ -206,23 +225,47 @@
                         name: $("#name-txt").val(),
                         description: $("#description-txt").val()
                     },
-                    success: function(data) {
+                    success: function (data) {
                         if (data.success) {
-                            alert(data.message);
+                            $.notify(data.message, "success");
                             $("#myModal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                alert(data.message);
+                                $.notify(data.message, "error");
                             } else if (!data.error) {
                                 $("#name-validation-message").html(data.message);
                                 $("#name-validation-message").show();
                             }
                         }
+                    },
+                    error: function () {
+                        $.notify("Cannot connect to server!", "error");
                     }
-            });
+                });
             }
+        };
 
+        var getImpactId = function (id) {
+            $.ajax({
+                url: "/Admin/ManageSC/GetImpactId",
+                dataType: "json",
+                type: "GET",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $.notify(data.message, "success");
+                    } else if (data.error) {
+                        $.notify(data.message, "error");
+                    }
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
+            reloadDataTable();
         };
     </script>
 }

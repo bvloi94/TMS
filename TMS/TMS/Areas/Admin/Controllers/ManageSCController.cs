@@ -52,17 +52,12 @@ namespace TMS.Areas.Admin.Controllers
         public ActionResult GetImpacts(jQueryDataTableParamModel param)
         {
             var impactList = _impactService.GetAll();
-
-            //var jsonData = new
-            //{
-            //    data = ticketList
-            //};
-            //return Json(jsonData, JsonRequestBehavior.AllowGet);
+            var defaultSearchKey = Request["search[value]"];
 
             IEnumerable<Impact> filteredListItems;
-            if (!string.IsNullOrEmpty(param.sSearch))
+            if (!string.IsNullOrEmpty(defaultSearchKey))
             {
-                filteredListItems = impactList.Where(p => p.Name.ToLower().Contains(param.sSearch.ToLower()));
+                filteredListItems = impactList.Where(p => p.Name.ToLower().Contains(defaultSearchKey.ToLower()));
             }
             else
             {
@@ -267,28 +262,25 @@ namespace TMS.Areas.Admin.Controllers
 
         // POST: Admin/ManageSC/EditImpact
         [HttpPost]
-        public ActionResult EditImpact()
+        public ActionResult EditImpact(int? id, ImpactViewModel model)
         {
-            try
+            if (id.HasValue)
             {
-                var id = Int32.Parse(Request["id"]);
-                var name = Request["name"];
-                var description = Request["description"];
-                bool isDuplicatedName = _impactService.IsDuplicatedName(id, name);
+                bool isDuplicatedName = _impactService.IsDuplicatedName(id, model.Name);
                 if (isDuplicatedName)
                 {
                     return Json(new
                     {
                         success = false,
                         error = false,
-                        message = string.Format("'{0}' has already been used.", name)
+                        message = string.Format("'{0}' has already been used.", model.Name)
                     });
                 }
                 else
                 {
-                    Impact impact = _impactService.GetImpactByID(id);
-                    impact.Name = name;
-                    impact.Description = description;
+                    Impact impact = _impactService.GetImpactByID(id.Value);
+                    impact.Name = model.Name;
+                    impact.Description = model.Description;
 
                     _impactService.UpdateImpact(impact);
                     return Json(new
@@ -298,7 +290,7 @@ namespace TMS.Areas.Admin.Controllers
                     });
                 }
             }
-            catch (Exception ex) when (ex is FormatException || ex is ArgumentNullException)
+            else
             {
                 return Json(new
                 {
@@ -307,6 +299,32 @@ namespace TMS.Areas.Admin.Controllers
                     message = "Cannot update!"
                 });
             }
+        }
+
+        [HttpGet]
+        public ActionResult GetImpactId(int id)
+        {
+            Impact impact = new Impact();
+            impact.ID = id;
+            try
+            {
+                _impactService.DeleteImpact(impact);
+                return Json(new
+                {
+                    success = true,
+                    message = "Delete success"
+                }, JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Delete fail!"
+                }, JsonRequestBehavior.AllowGet);
+            }
+            
         }
 
         [HttpPost]
@@ -448,28 +466,25 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditUrgency()
+        public ActionResult EditUrgency(int? id, UrgencyViewModel model)
         {
-            try
+            if (id.HasValue)
             {
-                var id = int.Parse(Request["id"]);
-                var name = Request["name"];
-                var description = Request["description"];
-                bool isDuplicatedName = _urgencyService.IsDuplicatedName(id, name);
+                bool isDuplicatedName = _urgencyService.IsDuplicatedName(id, model.Name);
                 if (isDuplicatedName)
                 {
                     return Json(new
                     {
                         success = false,
                         error = false,
-                        message = string.Format("'{0}' has already been used.", name)
+                        message = String.Format("'{0}' has already been used.", model.Name)
                     });
                 }
                 else
                 {
-                    Urgency urgency = _urgencyService.GetUrgencyByID(id);
-                    urgency.Name = name;
-                    urgency.Description = description;
+                    Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
+                    urgency.Name = model.Name;
+                    urgency.Description = model.Description;
 
                     _urgencyService.UpdateUrgency(urgency);
                     return Json(new
@@ -479,40 +494,37 @@ namespace TMS.Areas.Admin.Controllers
                     });
                 }
             }
-            catch (Exception ex) when (ex is FormatException || ex is ArgumentNullException)
+            else
             {
                 return Json(new
                 {
                     success = false,
                     error = true,
-                    message = "Cannot update!"
+                    message = "Cannot update urgency!"
                 });
             }
         }
 
         [HttpPost]
-        public ActionResult EditPriority()
+        public ActionResult EditPriority(int? id, PriorityViewModel model)
         {
-            try
+            if (id.HasValue)
             {
-                int id = Int32.Parse(Request["id"]);
-                var name = Request["name"];
-                var description = Request["description"];
-                bool isDuplicatedName = _priorityService.IsDuplicatedName(id, name);
+                bool isDuplicatedName = _priorityService.IsDuplicatedName(id, model.Name);
                 if (isDuplicatedName)
                 {
                     return Json(new
                     {
                         success = false,
                         error = false,
-                        message = string.Format("'{0}' has already been used.", name)
+                        message = string.Format("'{0}' has already been used.", model.Name)
                     });
                 }
                 else
                 {
-                    Priority priority = _priorityService.GetPriorityByID(id);
-                    priority.Name = name;
-                    priority.Description = description;
+                    Priority priority = _priorityService.GetPriorityByID(id.Value);
+                    priority.Name = model.Name;
+                    priority.Description = model.Description;
 
                     _priorityService.UpdatePriority(priority);
                     return Json(new
@@ -522,17 +534,15 @@ namespace TMS.Areas.Admin.Controllers
                     });
                 }
             }
-            catch (Exception ex) when (ex is FormatException || ex is ArgumentNullException)
+            else
             {
                 return Json(new
                 {
                     success = false,
                     error = true,
-                    message = "Cannot update!"
+                    message = "Cannot update priority!"
                 });
             }
-
-
         }
     }
 }

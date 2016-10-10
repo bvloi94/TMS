@@ -1,15 +1,12 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Urgency";
     Layout = "~/Views/Shared/TMSLayout.cshtml";
 }
-
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
-            <div class="box-header padding-bottom-20 pull-left ">
-                <button type="button" class="btn" data-toggle="modal" data-target="#myModal"
-                        onclick="clearModal(); $('#create-btn').attr('onclick', 'createUrgency()');">
+            <div class="box-header padding-bottom-20">
+                <button type="button" class="btn" onclick="showCreateModal()">
                     Create New Urgency
                 </button>
             </div>
@@ -77,7 +74,6 @@
     </div>
     <!-- /.modal -->
 </div>
-
 <!-- /.example-modal -->
 @Styles.Render("~/Content/datatables")
 @section scripts{
@@ -123,15 +119,22 @@
         var clearModal = function () {
             $("#myModal").find("input").val("");
             $("#myModal").find("textarea").val("");
+            $(".text-danger").hide();
         }
+
+        var showCreateModal = function () {
+            clearModal();
+            $("#myModal").modal('show');
+            $('#create-btn').attr('onclick', 'createUrgency()');
+        };
 
         var createUrgency = function () {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required!");
                 $("#name-validation-message").show();
-            } else if (name.trim().length < 8) {
-                $("#name-validation-message").html("Name must be longer than 8 characters!");
+            } else if (name.trim().length < 4) {
+                $("#name-validation-message").html("Name must be longer than 4 characters!");
                 $("#name-validation-message").show();
             } else {
                 $.ajax({
@@ -144,23 +147,27 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            alert(data.message);
+                            $.notify(data.message, "success");
                             $("#myModal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                alert(data.message);
+                                $.notify(data.message, "error");
                             } else {
                                 $("#name-validation-message").html(data.message);
                                 $("#name-validation-message").show();
                             }
                         }
+                    },
+                    error: function () {
+                        $.notify("Cannot connect to server!", "error");
                     }
                 });
             }
         };
 
         var getUrgencyDetail = function (id) {
+            clearModal();
             $.ajax({
                 url: "/Admin/ManageSC/GetUrgencyDetail",
                 dataType: "json",
@@ -176,9 +183,12 @@
                         $("#create-btn").attr("onclick", "editUrgency('" + id + "')");
                     } else {
                         if (data.error) {
-                            alert(data.message);
+                            $.notify(data.message, "error");
                         }
                     }
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
                 }
             });
         };
@@ -189,8 +199,8 @@
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required");
                 $("#name-validation-message").show();
-            } else if (name.trim().length < 8) {
-                $("#name-validation-message").html("Name must be longer than 8 characters! ");
+            } else if (name.trim().length < 4) {
+                $("#name-validation-message").html("Name must be longer than 4 characters! ");
                 $("#name-validation-message").show();
             } else {
                 //ajax syntax
@@ -206,17 +216,20 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            alert(data.message);
+                            $.notify(data.message, "success");
                             $("#myModal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                alert(data.message);
+                                $.notify(data.message, "error");
                             } else if (!data.error) {
                                 $("#name-validation-message").html(data.message);
                                 $("#name-validation-message").show();
                             }
                         }
+                    },
+                    error: function () {
+                        $.notify("Cannot connect to server!", "error");
                     }
                 });
             }
