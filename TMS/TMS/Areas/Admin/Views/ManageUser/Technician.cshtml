@@ -1,0 +1,169 @@
+﻿@model IEnumerable<TMS.Models.AspNetUser>
+
+@{
+    ViewBag.Title = "Manage Technicians";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #technician-table th {
+        font-size: 18px;
+    }
+
+    #technician-table td {
+        font-size: 16px;
+        vertical-align: middle;
+    }
+</style>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-body large-text-container">
+                <p>@Html.ActionLink("Create New", "CreateTechnician", null, new { @class = "btn btn-success" })</p>
+                <div class="pull-right" style="margin-right: 20px">
+                    <label>Availability:</label>
+                    <select id="availability-dropdown">
+                        <option value="2">All</option>
+                        <option value="1">Enabled Technicians</option>
+                        <option value="0">Disabled Technicians</option>
+                    </select>&nbsp;&nbsp;
+                    <label>Search:</label>
+                    <input type="text" id="search-txt" />
+                </div>
+                <table class="table table-bordered table-striped dataTable" id="technician-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Fullname</th>
+                            <th>Email</th>
+                            <th>Birthday</th>
+                            <th>Department</th>
+                            <th>Active</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/datatables")
+@section scripts{
+    @Scripts.Render("~/bundles/datatables")
+    <script>
+        var initDataTable = function () {
+            $("#technician-table").DataTable({
+                serverSide: true,
+                sort: true,
+                processing: true,
+                fnDrawCallback: function () {
+                    $('.toggle').bootstrapToggle();
+                },
+                //lengthMenu: [10, 20, 50],
+                lengthMenu: [8],
+                lengthChange: false,
+                filter: false,
+                language: {
+                    infoFiltered: ""
+                },
+                ajax: {
+                    url: "/Admin/ManageUser/GetTechnicians",
+                    data: function (d) {
+                        d.availability_select = $("#availability-dropdown").val(),
+                        d.search_text = $("#search-txt").val()
+                    }
+                },
+                columnDefs: [
+                    {
+                        "targets": [0],
+                        "render": function (data, type, row) {
+                            return row[1];
+                        }
+                    },
+                    {
+                        "targets": [1],
+                        "render": function (data, type, row) {
+                            return row[2];
+                        }
+                    },
+                    {
+                        "targets": [2],
+                        "sortable": false,
+                        "render": function (data, type, row) {
+                            return row[3];
+                        }
+                    },
+                    {
+                        "targets": [3],
+                        "sortable": false,
+                        "render": function (data, type, row) {
+                            return row[4];
+                        }
+                    },
+                    {
+                        "targets": [4],
+                        "sortable": false,
+                        "render": function (data, type, row) {
+                            return row[6];
+                        }
+                    },
+                    {
+                        "targets": [5],
+                        "sortable": false,
+                        "render": function (data, type, row) {
+                            if (row[5] == true) {
+                                return '<input type="checkbox" checked data-toggle="toggle" class="toggle" data-onstyle="success" onchange="toggleStatus(\'' + row[0] + '\')">';
+                            } else {
+                                return '<input type="checkbox" data-toggle="toggle" class="toggle" data-onstyle="success" onchange="toggleStatus(\'' + row[0] + '\')">';
+                            }
+                        }
+                    },
+                    {
+                        "targets": [6],
+                        "sortable": false,
+                        "render": function (data, type, row) {
+                            return '<center><a href="/Admin/ManageUser/EditTechnician/' + row[0] + '"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></a></center>';
+                        }
+                    }
+                ]
+            })
+        };
+
+        var reloadDataTable = function () {
+            var oTable = $("#technician-table").dataTable();
+            oTable.api().ajax.reload();
+        };
+
+        $(document).ready(function () {
+            initDataTable();
+        });
+
+        $("#search-txt").keyup(function () {
+            reloadDataTable();
+        });
+
+        $("#availability-dropdown").change(function () {
+            reloadDataTable();
+        });
+
+        var toggleStatus = function (id) {
+            $.ajax({
+                url: "/Admin/ManageUser/ToggleStatus",
+                data: {
+                    id: id
+                },
+                dataType: "JSON",
+                type: "POST",
+                success: function (data) {
+                    if (data.success) {
+                        $.notify(data.message, "success");
+                        $("#technician-table").dataTable().api().ajax.reload(null, false);
+                    } else {
+                        $.notify(data.message, "error");
+                    }
+                }
+            });
+        };
+    </script>
+}

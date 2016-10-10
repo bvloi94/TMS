@@ -9,6 +9,7 @@ using TMS.Models;
 using TMS.DAL;
 using TMS.Services;
 using TMS.ViewModels;
+using System.Web.Security;
 
 namespace TMS.Controllers
 {
@@ -82,6 +83,15 @@ namespace TMS.Controllers
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: false);
+
+            int timeout = model.RememberMe ? 5 : 1; // Timeout in minutes, 525600 = 365 days.
+            var ticket = new FormsAuthenticationTicket(model.Username, model.RememberMe, timeout);
+            string encrypted = FormsAuthentication.Encrypt(ticket);
+            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encrypted);
+            cookie.Expires = System.DateTime.Now.AddMinutes(timeout);// Not my line
+            cookie.HttpOnly = true; // cookie not available in javascript.
+            Response.Cookies.Add(cookie);
+
             switch (result)
             {
                 case SignInStatus.Success:
@@ -97,6 +107,7 @@ namespace TMS.Controllers
                             case "technician":
                                 return RedirectToAction("Index", "Ticket", new { area = "Technician" });
                             case "helpdesk":
+                                return RedirectToAction("Index", "ManageTicket", new { area = "HelpDesk" });
                             case "requester":
                             default:
                                 return RedirectToLocal(returnUrl);
