@@ -217,6 +217,8 @@ namespace TMS.Areas.Technician.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    ticket.SolvedDate = DateTime.Now;
+                    ticket.ModifiedTime = DateTime.Now;
                     ticket.Solution = model.Solution;
                     _ticketService.SolveTicket(ticket);
                     return RedirectToAction("Index");
