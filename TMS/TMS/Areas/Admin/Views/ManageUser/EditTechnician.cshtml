@@ -1,4 +1,4 @@
-﻿@model TMS.Models.TechnicianRegisterViewModel
+﻿@model TMS.ViewModels.TechnicianRegisterViewModel
 @{
     ViewBag.Title = "Edit Technician";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
@@ -63,6 +63,7 @@
                     <div class="form-group">
                         <div class="col-xs-offset-3 col-xs-9">
                             <input type="submit" class="btn btn-success" value="Save" />
+                            <a href="javascript:void(0)" class="btn btn-info" id="resend-btn">Resend Account Email</a>
                             @Html.ActionLink("Cancel", "Technician", null, new { @class = "btn btn-default" })
                         </div>
                     </div>
@@ -86,4 +87,26 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $("#resend-btn").click(function () {
+            $.ajax({
+                url: "/Admin/ManageUser/ResendEmail",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    id: '@ViewBag.id'
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $.notify(data.message, "success");
+                    } else {
+                        $.notify(data.message, "error");
+                    }
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
+        });
+    </script>
 }

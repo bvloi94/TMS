@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web;
 using TMS.Utils;
 
-namespace TMS.Models
+namespace TMS.ViewModels
 {
     public class RequesterRegisterViewModel
     {

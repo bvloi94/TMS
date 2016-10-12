@@ -1,11 +1,14 @@
 ﻿using EAGetMail;
+using log4net;
 using LumiSoft.Net;
 using LumiSoft.Net.IMAP;
 using LumiSoft.Net.IMAP.Client;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 
@@ -13,8 +16,24 @@ namespace TMS.Utils
 {
     public class EmailUtil
     {
-        public static async Task<bool> SendToUserWhenCreate(string username, string password, string fullname, string email)
+        public static async void SendToUserWhenCreate(string username, string password, string fullname, string email)
         {
+            ILog log = LogManager.GetLogger(typeof(EmailUtil));
+            string emailSubject = "[TMS] Account Info";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CreateRequesterEmailTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", fullname);
+            emailMessage = emailMessage.Replace("$username", username);
+            emailMessage = emailMessage.Replace("$password", password);
+            bool sendMailResult = await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            if (!sendMailResult)
+            {
+                log.Error("Send account email unsuccessfully");
+            }
+        }
+
+        public static async Task<bool> ResendToUserWhenCreate(string username, string password, string fullname, string email)
+        {
+            ILog log = LogManager.GetLogger(typeof(EmailUtil));
             string emailSubject = "[TMS] Account Info";
             string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CreateRequesterEmailTemplate.txt"));
             emailMessage = emailMessage.Replace("$fullname", fullname);
@@ -29,26 +48,36 @@ namespace TMS.Utils
             {
                 var message = new MailMessage();
                 message.To.Add(toEmailAddress);
-
+                message.From = new System.Net.Mail.MailAddress(ConstantUtil.ContactEmailInfo.MailAddress, "TMS-Support-Service");
                 message.Subject = emailSubject;
                 message.Body = emailMessage;
                 message.IsBodyHtml = true;
                 using (var smtpClient = new SmtpClient())
                 {
+                    smtpClient.UseDefaultCredentials = false;
+                    smtpClient.Credentials = new System.Net.NetworkCredential
+                    {
+                        UserName = ConstantUtil.ContactEmailInfo.MailAddress,
+                        Password = ConstantUtil.ContactEmailInfo.Password
+                    };
+                    smtpClient.Host = "smtp.gmail.com";
+                    smtpClient.Port = 587;
+                    smtpClient.EnableSsl = true;
                     await smtpClient.SendMailAsync(message);
                 }
                 return true;
             }
-            catch
+            catch (Exception e)
             {
                 return false;
             }
         }
 
-        public static void GetUnreadMailsUsingEAGetMail()
+        public static List<Mail> GetUnreadMailsUsingEAGetMail()
         {
-            MailServer oServer = new MailServer("imap.gmail.com",
-                        "huytcd16@gmail.com", "huydaivuong", ServerProtocol.Imap4);
+            ILog log = LogManager.GetLogger(typeof(EmailUtil));
+            MailServer oServer = new MailServer("imap.gmail.com", ConstantUtil.ContactEmailInfo.MailAddress,
+                ConstantUtil.ContactEmailInfo.Password, ServerProtocol.Imap4);
             MailClient oClient = new MailClient("TryIt");
 
             // Set SSL connection,
@@ -57,6 +86,8 @@ namespace TMS.Utils
             oClient.GetMailInfosParam.GetMailInfosOptions = GetMailInfosOptionType.NewOnly;
             // Set 993 IMAP4 port
             oServer.Port = 993;
+
+            List<Mail> mailList = new List<Mail>();
             try
             {
                 oClient.Connect(oServer);
@@ -65,30 +96,21 @@ namespace TMS.Utils
                 {
                     MailInfo info = infos[i];
 
-                    // mark read email as unread 
-                    oClient.MarkAsRead(info, true);
-
-                    Debug.WriteLine("Index: {0}; Size: {1}; UIDL: {2}",
-                    info.Index, info.Size, info.UIDL);
+                    //Debug.WriteLine("Index: {0}; Size: {1}; UIDL: {2}",
+                    //info.Index, info.Size, info.UIDL);
 
                     // Download email from GMail IMAP4 server
                     Mail oMail = oClient.GetMail(info);
 
-                    Debug.WriteLine("From: " + oMail.From.ToString());
-                    Debug.WriteLine("Subject: " + oMail.Subject + "\r\n");
-                    Debug.WriteLine("Content: " + oMail.TextBody + "\r\n");
-                    Debug.WriteLine("Number of attachment: " + oMail.Attachments.Length + "\r\n");
+                    //Debug.WriteLine("From: " + oMail.From.ToString());
+                    //Debug.WriteLine("Subject: " + oMail.Subject + "\r\n");
+                    //Debug.WriteLine("Content: " + oMail.TextBody + "\r\n");
+                    //Debug.WriteLine("Number of attachment: " + oMail.Attachments.Length + "\r\n");
 
-                    //string fileTemp = HostingEnvironment.MapPath(@"~/Uploads/Attachments");
-                    //if (!Directory.Exists(fileTemp))
-                    //{
-                    //    Directory.CreateDirectory(fileTemp);
-                    //}
-                    //foreach (EAGetMail.Attachment att in oMail.Attachments)
-                    //{
-                    //    string attname = String.Format("{0}\\{1}", fileTemp, att.Name);
-                    //    att.SaveAs(attname, true);
-                    //}
+                    mailList.Add(oMail);
+
+                    // mark read email as unread 
+                    oClient.MarkAsRead(info, true);
                 }
 
                 // Quit and pure emails marked as deleted from Gmail IMAP4 server.
@@ -96,8 +118,9 @@ namespace TMS.Utils
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.Message);
+                log.Error(e.Message);
             }
+            return mailList;
         }
 
         //public static void GetUnreadMailsUsingLumiSoft()

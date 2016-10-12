@@ -246,6 +246,7 @@
     <Compile Include="Models\BusinessRuleCondition.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Class\BusinessRuleConditionCustom.cs" />
     <Compile Include="Models\BusinessRuleNotification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
@@ -302,7 +303,7 @@
     </Compile>
     <Compile Include="Schedulers\Job.cs" />
     <Compile Include="Schedulers\JobManager.cs" />
-    <Compile Include="Schedulers\TestJob.cs" />
+    <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
     <Compile Include="Utils\ConstantUtil.cs" />
