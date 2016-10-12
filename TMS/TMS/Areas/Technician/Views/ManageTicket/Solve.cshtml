@@ -1,12 +1,10 @@
 ﻿@using TMS.Models;
+@model TMS.ViewModels.TicketSolveViewModel
 @{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
 }
 @{
     ViewBag.Title = "Solve Ticket";
-    Ticket ticket = ViewBag.Ticket;
-    AspNetUser solveUser = ViewBag.SolveUser;
-    AspNetUser createdUser = ViewBag.CreatedUser;
 }
 
 <style>
@@ -30,104 +28,91 @@
 <div class="row col-md-12">
     <div class="box box-primary">
         <div class="box-header">
-            <h4><b>Ticket: @ticket.Subject</b></h4>
+            <h4><b>Ticket: @Html.DisplayFor(model => model.Subject)</b></h4>
         </div>
         <div class="box-body ticket-contents">
-            <div class="col-sm-2 labels">
-                <b>Created by: </b>
-            </div>
-            <div class="col-sm-4">@createdUser.Fullname</div>
 
-            <div class="col-sm-2 labels">
-                <b>Date opened: </b>
-            </div>
-            <div class="col-sm-4">@ticket.CreatedTime</div>
+            @using (Html.BeginForm("Solve", "ManageTicket", new { id = Model.ID }, FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="col-sm-2 labels">
+                    <b>Created by: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.CreatedBy)</div>
 
-            <div class="col-sm-2 labels">
-                <b>Status:  </b>
-            </div>
-            <div class="col-sm-4">
-                @{
-                    if (@ticket.Status == 1)
-                    {
-                        <span>Open</span>
+                <div class="col-sm-2 labels">
+                    <b>Date opened: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.CreateTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Status:  </b>
+                </div>
+                <div class="col-sm-4">
+                    @{
+                        if (Model.Status == 1)
+                        {
+                            <span>Open</span>
+                        }
+                        else
+                        {
+                            <span>Closed</span>
+                        }
                     }
-                    else
+                </div>
+
+                <div class="col-sm-2 labels">
+                    <b>Last modified: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ModifiedTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Subject: </b>
+                </div>
+                <div class="col-sm-10">@Html.DisplayFor(model => model.Subject)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Description: </b>
+                </div>
+                <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.Description)</div>
+                if (!string.IsNullOrEmpty(Model.Solution))
                     {
-                        <span>Closed</span>
-                    }
-                }
-            </div>
-
-            <div class="col-sm-2 labels">
-                <b>Last modified: </b>
-            </div>
-            <div class="col-sm-4">@ticket.ModifiedTime</div>
-
-            <div class="col-sm-2 labels">
-                <b>Subject: </b>
-            </div>
-            <div class="col-sm-10">@ticket.Subject</div>
-
-            <div class="col-sm-2 labels">
-                <b>Description: </b>
-            </div>
-            <div class="col-sm-10 pre-wrap">@ticket.Description</div>
-
-            @{
-                if (string.IsNullOrEmpty(ticket.Solution))
-                {
-                    <div class="col-sm-2 labels">
-                        <b>New solution: </b>
-                    </div>
-                    <div class="col-sm-10">
-                        <textarea class="form-control" rows="5"></textarea>
-                    </div>
-                }
-                else
-                {
-                    if (ticket.Status <= 2)
-                    {
-                        <div class="col-sm-2 labels">
-                            <b>Old solution: </b>
-                        </div>
-                        <div class="col-sm-10 pre-wrap">@ticket.Solution</div>
                         <div class="col-sm-2 labels">
                             <b>Solver:  </b>
                         </div>
-                        <div class="col-sm-10">@(solveUser == null ? "none" : solveUser.Fullname)</div>
-                        <div class="col-sm-2 labels">
-                            <b>New solution: </b>
-                        </div>
-                        <div class="col-sm-10">
-                            <textarea class="form-control" rows="5"></textarea>
-                        </div>
+                        <div class="col-sm-10">@(Model.SolvedBy == null ? "none" : Model.SolvedBy)</div>
                     }
-                    else
-                    {
-                        <div class="col-sm-2 labels">
-                            <b>Solution: </b>
-                        </div>
-                        <div class="col-sm-10 pre-wrap">@ticket.Solution</div>
-                    }
-                }
-            }
 
-        </div>
-        <div class="box box-footer">
-            <div class="col-sm-offset-5 col-sm-6">
-                @{
-                    if (ticket.Status <= 2)
-                    {
-                        <a class="btn btn-primary" href="#">Save</a>
-                        <a class="btn btn-default" href="#">Cancel</a>
+                    <div class="col-sm-2 labels">
+                        <b>Solution: </b>
+                    </div>
+                    <div class="col-sm-10">
+                        @Html.TextAreaFor(m => m.Solution, new { @class = "form-control", id = "new-solution", rows = "6" })
+                        @Html.ValidationMessageFor(m => m.Solution, "", new { @class = "text-danger" })
+                    </div>
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <a href="#" id="refer-solution">Refer knowledge base (Lợiiii)</a>
+                        </div>
+                        <div class="col-sm-12">
+                            <hr />
+                        </div>
+                        <div class="col-sm-offset-5 col-sm-7">
+                            <input type="submit" value="Save" id="save-button" class="btn btn-primary" />
+                            <a class="btn btn-default" href="@Url.Action("Index")">Cancel</a>
+                        </div>
                     }
-                    else
-                    {
-                        <a class="btn btn-default" href="#">Cancel</a>
-                    }
-                }
-            </div>
         </div>
     </div>
 </div>
+@section scripts{
+    <script>
+        $("#new-solution").on("focusin", function () {
+            if (!$.trim(("#new-solution").val())) {
+                $("save-button").addClass("disabled");
+            }
+            else {
+                $("save-button").removeClass("disabled");
+            }
+        });
+    </script>
+}

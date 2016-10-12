@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -6,6 +7,7 @@ using System.Web.Mvc;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
+using TMS.ViewModels;
 
 namespace TMS.Areas.Technician.Controllers
 {
@@ -33,28 +35,79 @@ namespace TMS.Areas.Technician.Controllers
         [HttpGet]
         public ActionResult GetTechnicianTickets(jQueryDataTableParamModel param)
         {
-            var ticketList = _ticketService.GetAll();
+            // 1. Get Parameters
+            string technicianId = User.Identity.GetUserId();
+            var ticketList = _ticketService.GetTechnicianTickets(technicianId);
+            var default_search_key = Request["search[value]"];
+            var select_status = Request["select_status"];
+            var search_text = Request["search_text"];
 
+
+            // Initial variables
             IEnumerable<Ticket> filteredListItems;
-            if (!string.IsNullOrEmpty(param.sSearch))
+
+            // Query data by params
+            if (!string.IsNullOrEmpty(default_search_key)) //user have inputed keyword to search textbox
             {
-                filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(param.sSearch.ToLower()));
+                //contains(keyword) = like "%keyword%" in SQL query
+                filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
             }
             else
             {
                 filteredListItems = ticketList;
             }
+
+            if (!string.IsNullOrEmpty(search_text))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(search_text.ToLower())
+                    || p.Description.ToLower().Contains(search_text.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(select_status))
+            {
+                switch (select_status)
+                {
+                    case "2":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 2);
+                        break;
+                    case "3":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 3);
+                        break;
+                    case "4":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 4);
+                        break;
+                    case "5":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 5);
+                        break;
+                    case "6":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 6);
+                        break;
+                    default: break;
+                }
+            }
+
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            var sortDirection = Request["sSortDir_0"]; // asc or desc
+            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortDirection = Request["order[0][dir]"];
 
             switch (sortColumnIndex)
             {
-                case 2:
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.CreatedTime)
+                        : filteredListItems.OrderByDescending(p => p.CreatedTime);
+                    break;
+                case 1:
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Subject)
                         : filteredListItems.OrderByDescending(p => p.Subject);
                     break;
+                case 4:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.ModifiedTime)
+                        : filteredListItems.OrderByDescending(p => p.ModifiedTime);
+                    break;
+                default: break;
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
@@ -77,7 +130,7 @@ namespace TMS.Areas.Technician.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetTicketDetail (int id)
+        public ActionResult GetTicketDetail(int id)
         {
             Ticket ticket = _ticketService.GetTicketByID(id);
             AspNetUser solveUser = _userService.GetUserById(ticket.SolveID);
@@ -103,7 +156,7 @@ namespace TMS.Areas.Technician.Controllers
                 solution = ticket.Solution,
                 solveUser = solveUsername,
                 createBy = createdUser.Fullname,
-                
+
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -111,20 +164,50 @@ namespace TMS.Areas.Technician.Controllers
         public ActionResult Solve(int id)
         {
             Ticket ticket = _ticketService.GetTicketByID(id);
-            AspNetUser solveUser = _userService.GetUserById(ticket.SolveID);
-            AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
-                        
-            ViewBag.Ticket = ticket;
-            ViewBag.SolveUser = solveUser;
-            ViewBag.CreatedUser = createdUser;
+            if (ticket.Status != 2) // Ticket status is not "Assigned"
+            {
+                return RedirectToAction("Index"); // Redirect to Index so the Technician cannot go to Solve view.
+            }
+            else
+            {
+                // Get Ticket information
+                AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
+                AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
+                TicketSolveViewModel model = new TicketSolveViewModel();
 
-            return View();
+                model.ID = ticket.ID;
+                model.Subject = ticket.Subject;
+                model.Description = ticket.Description;
+                model.Status = ticket.Status;
+                model.CreateTime = ticket.CreatedTime;
+                model.ModifiedTime = ticket.ModifiedTime;
+                model.CreatedBy = createdUser.Fullname;
+
+                if (!string.IsNullOrEmpty(ticket.SolveID))
+                {
+                    model.SolvedBy = solvedUser.Fullname;
+                    model.Solution = ticket.Solution;
+                }
+
+                return View(model);
+            }
         }
 
         [HttpPost]
-        public ActionResult SolveTicket(int id, string content)
+        public ActionResult Solve(int id, TicketSolveViewModel model)
         {
+            // Get Ticket information
             Ticket ticket = _ticketService.GetTicketByID(id);
+            AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
+            AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
+
+            model.ID = ticket.ID;
+            model.Subject = ticket.Subject;
+            model.Description = ticket.Description;
+            model.Status = ticket.Status;
+            model.CreateTime = ticket.CreatedTime;
+            model.ModifiedTime = ticket.ModifiedTime;
+            model.CreatedBy = createdUser.Fullname;
 
             if (ticket == null)
             {
@@ -132,10 +215,14 @@ namespace TMS.Areas.Technician.Controllers
             }
             else
             {
-                
+                if (ModelState.IsValid)
+                {
+                    ticket.Solution = model.Solution;
+                    _ticketService.SolveTicket(ticket);
+                    return RedirectToAction("Index");
+                }
             }
-            
-            return RedirectToAction("Index");
+            return View(model);
         }
 
     }

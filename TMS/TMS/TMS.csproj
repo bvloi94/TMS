@@ -309,6 +309,7 @@
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
+    <Compile Include="ViewModels\TicketSolveViewModel.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
