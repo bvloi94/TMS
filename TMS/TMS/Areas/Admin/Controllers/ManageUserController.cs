@@ -16,6 +16,7 @@ using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
 using TMS.Utils;
+using TMS.ViewModels;
 
 namespace TMS.Areas.Admin.Controllers
 {
@@ -75,7 +76,6 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/ManageUser/Requester
-        [Utils.Authorize(Roles = "Admin")]
         public ActionResult Requester()
         {
             return View();
@@ -94,7 +94,6 @@ namespace TMS.Areas.Admin.Controllers
             return View();
         }
 
-        [Utils.Authorize(Roles = "Admin")]
         public ActionResult Admin()
         {
             return View();
@@ -453,6 +452,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/ManageUser/CreateAdmin
+        [HttpGet]
         public ActionResult CreateAdmin()
         {
             return View();

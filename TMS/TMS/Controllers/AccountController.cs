@@ -8,6 +8,7 @@ using Microsoft.Owin.Security;
 using TMS.Models;
 using TMS.DAL;
 using TMS.Services;
+using TMS.ViewModels;
 using System.Web.Security;
 
 namespace TMS.Controllers
