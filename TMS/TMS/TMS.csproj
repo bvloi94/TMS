@@ -210,6 +210,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\DefaultController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
@@ -497,6 +498,7 @@
     <Content Include="Areas\Admin\Views\ManageUser\Admin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateAdmin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditAdmin.cshtml" />
+    <Content Include="Areas\Admin\Views\Profile\ViewProfile.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -578,7 +580,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\Profile\" />
+    <Folder Include="Areas\Admin\Views\Default\" />
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\css\" />

@@ -13,5 +13,10 @@ namespace TMS.Areas.Admin.Controllers
         {
             return View();
         }
+
+        public ActionResult UpdateProfie()
+        {
+            return View();
+        }
     }
 }
