@@ -36,44 +36,64 @@
     <!-- /.col -->
 </div>
 <!-- /.row -->
-<div class="example-modal">
-    <div class="modal" id="myModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">Priority</h4>
-                </div>
-                <div class="modal-body">
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">Name</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" placeholder="Name" id="name-txt">
-                                <p id="name-validation-message" class="text-danger" style="display: none"></p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <labeL class="col-sm-2 control-label">Description</labeL>
-                            <div class="col-sm-10">
-                                <textarea class="form-control" rows="3" placeholder="Description" id="description-txt"></textarea>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="create-btn" onclick="createPriority()">Save changes</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Priority</h4>
             </div>
-            <!-- /.modal-content -->
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Name" id="name-txt">
+                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <labeL class="col-sm-2 control-label">Description</labeL>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="3" placeholder="Description" id="description-txt"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="create-btn" onclick="createPriority()">Save changes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal-content -->
     </div>
-    <!-- /.modal -->
+    <!-- /.modal-dialog -->
 </div>
+<!-- /.modal -->
+
+<div class="modal" id="delete-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Are you sure?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="yes-btn">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 @Styles.Render("~/Content/datatables")
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
@@ -103,7 +123,8 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<button type="button" class="fa fa-pencil" data-toggle="modal" onclick="getPriorityDetail(\'' + row[0] + '\')"></button>';
+                            return '<button type="button" class="fa fa-pencil" data-toggle="modal" onclick="getPriorityDetail(\'' + row[0] + '\')"></button>' +
+                                   '<button type="button" class="fa fa-trash-o" onclick="showDeleteModal(\'' + row[0] + '\')"></button>';
                         },
                         "targets": 2
                     }
@@ -127,7 +148,7 @@
             $('#create-btn').attr('onclick', 'createPriority()');
         };
 
-        var createPriority = function() {
+        var createPriority = function () {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is requried!");
@@ -144,7 +165,7 @@
                         name: $("#name-txt").val(),
                         description: $("#description-txt").val()
                     },
-                    success: function(data) {
+                    success: function (data) {
                         if (data.success) {
                             $.notify(data.message, "success");
                             $("#myModal").modal("hide");
@@ -182,7 +203,7 @@
                         $("#create-btn").attr("onclick", "editPriority('" + id + "')");
                     } else {
                         if (data.error) {
-                          $.notify(data.message, "error");
+                            $.notify(data.message, "error");
                         }
                     }
                 },
@@ -192,7 +213,7 @@
             });
         };
 
-        var editPriority = function(id) {
+        var editPriority = function (id) {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required");
@@ -201,7 +222,7 @@
                 $("#name-validation-message").html("Name must be longer than 4 characters! ");
                 $("#name-validation-message").show();
             } else {
-                //ajax syntax 
+                //ajax syntax
                 $.ajax(
                 {
                     url: "/Admin/ManageSC/EditPriority",
@@ -232,6 +253,35 @@
                 });
             }
         };
+
+        var showDeleteModal = function (id) {
+            $("#yes-btn").attr("onclick", "deletePriority('" + id + "')");
+            $("#delete-modal").modal("show");
+        };
+
+        var deletePriority = function (id) {
+            $.ajax({
+                url: "/Admin/ManageSC/DeletePriority",
+                dataType: "json",
+                type: "POST",
+                data: { id: id },
+                success: function (data) {
+                    if (data.success) {
+                        $.notify(data.message, "success");
+                        $("#delete-modal").modal("hide");
+                        reloadDataTable();
+                    } else if (!data.success) {
+                        $.notify(data.message, "error");
+                        $("#delete-modal").modal("hide");
+                    }
+                },
+                error: function () {
+                    $.notify(data.message, "error");
+                }
+            });
+
+        };
+
     </script>
 
 }

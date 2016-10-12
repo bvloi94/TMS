@@ -64,5 +64,24 @@ namespace TMS.Services
             }
 
         }
+
+        internal bool IsInUse(Urgency urgency)
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.UrgencyID == urgency.ID).Any();
+        }
+
+        internal void DeleteUrgency(Urgency urgency)
+        {
+            try
+            {
+                _unitOfWork.UrgencyRepository.Delete(urgency);
+                _unitOfWork.Save();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+           
+        }
     }
 }

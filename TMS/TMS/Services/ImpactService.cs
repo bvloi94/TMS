@@ -46,7 +46,7 @@ namespace TMS.Services
             }
         }
 
-        public Impact GetImpactByID(int id)
+        public Impact GetImpactById(int id)
         {
             return _unitOfWork.ImpactRepository.GetByID(id);
         }
@@ -78,6 +78,11 @@ namespace TMS.Services
                 
                 throw;
             }
+        }
+
+        public bool IsInUse(Impact impact)
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.ImpactID == impact.ID).Any();
         }
     }
 }

@@ -79,5 +79,16 @@ namespace TMS.Services
                 throw;
             }
         }
+
+        public bool IsInUse(Priority priority)
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.PriorityID == priority.ID).Any();
+        }
+
+        internal void DeletePriority(Priority priority)
+        {
+           _unitOfWork.PriorityRepository.Delete(priority);
+           _unitOfWork.Save();
+        }
     }
 }

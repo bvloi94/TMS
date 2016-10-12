@@ -8,6 +8,7 @@ using System.Web.Helpers;
 using System.Web.Management;
 using System.Web.Mvc;
 using System.Web.Services.Description;
+using TMS.Controllers;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
@@ -241,7 +242,7 @@ namespace TMS.Areas.Admin.Controllers
             try
             {
                 int id = Int32.Parse(Request["id"]);
-                Impact impact = _impactService.GetImpactByID(id);
+                Impact impact = _impactService.GetImpactById(id);
                 return Json(new
                 {
                     success = true,
@@ -278,7 +279,7 @@ namespace TMS.Areas.Admin.Controllers
                 }
                 else
                 {
-                    Impact impact = _impactService.GetImpactByID(id.Value);
+                    Impact impact = _impactService.GetImpactById(id.Value);
                     impact.Name = model.Name;
                     impact.Description = model.Description;
 
@@ -301,19 +302,47 @@ namespace TMS.Areas.Admin.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult GetImpactId(int id)
+        [HttpPost]
+        public ActionResult DeleteImpact(int? id)
         {
-            Impact impact = new Impact();
-            impact.ID = id;
+            if (!id.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Delete impact unsuccessfully!"
+                });
+            }
+
+            Impact impact = _impactService.GetImpactById(id.Value);
+
+            if (impact == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    message = "Delete impact unsuccessfully!"
+                });
+            }
+
             try
             {
+                if (_impactService.IsInUse(impact))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Impact is being used! Can not be deleted!"
+                    });
+                }
                 _impactService.DeleteImpact(impact);
                 return Json(new
                 {
                     success = true,
-                    message = "Delete success"
-                }, JsonRequestBehavior.AllowGet);
+                    message = "Delete impact successfully!"
+                });
 
             }
             catch (Exception)
@@ -321,10 +350,10 @@ namespace TMS.Areas.Admin.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "Delete fail!"
-                }, JsonRequestBehavior.AllowGet);
+                    error = true,
+                    message = "Some error occured! Please try again later!"
+                });
             }
-            
         }
 
         [HttpPost]
@@ -542,6 +571,118 @@ namespace TMS.Areas.Admin.Controllers
                     error = true,
                     message = "Cannot update priority!"
                 });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeletePriority(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Delete priority unsuccessfully!"
+                });
+            }
+            Priority priority = _priorityService.GetPriorityByID(id.Value);
+            if (priority == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    message = "Delete priority unsuccessfully!"
+                });
+            }
+            else
+            {
+              
+                    if (_priorityService.IsInUse(priority))
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Priority is being used! Can not be deleted!"
+                        });
+                    }
+                try
+                {
+                    _priorityService.DeletePriority(priority);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Delete priority successfully!"
+                    });
+                }
+                catch (Exception)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        message = "Some error occured! Please try again later!"
+                    });
+                }
+
+
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteUrgency(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Delete urgency unsuccessfully!"
+                });
+            }
+            Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
+            if (urgency == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    message = "Delete urgency unsuccessfully!"
+                });
+            }
+            else
+            {
+
+                if (_urgencyService.IsInUse(urgency))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Urgency is being used! Can not be deleted!"
+                    });
+                }
+                try
+                {
+                    _urgencyService.DeleteUrgency(urgency);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Delete urgency successfully!"
+                    });
+                }
+                catch (Exception)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        message = "Some error occured! Please try again later!"
+                    });
+                }
+
+
             }
         }
     }
