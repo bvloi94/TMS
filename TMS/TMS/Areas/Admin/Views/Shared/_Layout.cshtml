@@ -199,7 +199,7 @@
     <script>
         $(document).ready(function () {
             $.validator.methods.date = function (value, element) {
-                Globalize.culture("en-AU");
+                Globalize.culture("en-GB");
                 return this.optional(element) || Globalize.parseDate(value) !== null;
             };
             $(".datetime").datetimepicker({

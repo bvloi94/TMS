@@ -210,7 +210,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
@@ -246,6 +248,7 @@
     <Compile Include="Models\BusinessRuleCondition.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Class\BusinessRuleConditionCustom.cs" />
     <Compile Include="Models\BusinessRuleNotification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
@@ -300,9 +303,12 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\ImpactService.cs" />
+    <Compile Include="Services\PriorityService.cs" />
+    <Compile Include="Services\UrgencyService.cs" />
     <Compile Include="Schedulers\Job.cs" />
     <Compile Include="Schedulers\JobManager.cs" />
-    <Compile Include="Schedulers\TestJob.cs" />
+    <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
     <Compile Include="Utils\ConstantUtil.cs" />
@@ -310,6 +316,7 @@
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\TicketSolveViewModel.cs" />
+    <Compile Include="ViewModels\SCItemViewModels.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -460,7 +467,6 @@
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="Content\Plugins\datatables\images\Sorting icons.psd" />
     <Content Include="Areas\Admin\Views\web.config" />
-    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Requester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateRequester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditRequester.cshtml" />
@@ -471,7 +477,10 @@
     <Content Include="Models\TMSModel.edmx.diagram">
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Admin\Views\ManageSC\View.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageSC\Priority.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageSC\Impact.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageSC\Urgency.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Technician\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\Shared\_Layout.cshtml" />
@@ -494,6 +503,7 @@
     <Content Include="Areas\Admin\Views\ManageUser\Admin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateAdmin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditAdmin.cshtml" />
+    <Content Include="Areas\Admin\Views\Profile\ViewProfile.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -575,7 +585,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\Manage\" />
+    <Folder Include="Areas\Admin\Views\Default\" />
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\css\" />

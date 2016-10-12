@@ -16,6 +16,7 @@ using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
 using TMS.Utils;
+using TMS.ViewModels;
 
 namespace TMS.Areas.Admin.Controllers
 {
@@ -75,7 +76,6 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/ManageUser/Requester
-        [Utils.Authorize(Roles = "Admin")]
         public ActionResult Requester()
         {
             return View();
@@ -94,7 +94,6 @@ namespace TMS.Areas.Admin.Controllers
             return View();
         }
 
-        [Utils.Authorize(Roles = "Admin")]
         public ActionResult Admin()
         {
             return View();
@@ -453,6 +452,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/ManageUser/CreateAdmin
+        [HttpGet]
         public ActionResult CreateAdmin()
         {
             return View();
@@ -513,14 +513,15 @@ namespace TMS.Areas.Admin.Controllers
                     }
                     UserManager.AddToRole(user.Id, "Requester");
                     //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
-                    if (!sendMailResult)
-                    {
-                        log.Debug("Send email unsuccessfully!");
-                    }
+
+                    //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
+                    //if (!sendMailResult)
+                    //{
+                    //    log.Debug("Send email unsuccessfully!");
+                    //}
                     // Send email asynchronously
-                    //Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
-                    //thread.Start();
+                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                    thread.Start();
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -587,14 +588,14 @@ namespace TMS.Areas.Admin.Controllers
                     }
                     UserManager.AddToRole(user.Id, "Helpdesk");
                     //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
-                    if (!sendMailResult)
-                    {
-                        log.Debug("Send email unsuccessfully!");
-                    }
+                    //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
+                    //if (!sendMailResult)
+                    //{
+                    //    log.Debug("Send email unsuccessfully!");
+                    //}
                     // Send email asynchronously
-                    //Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
-                    //thread.Start();
+                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                    thread.Start();
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -662,14 +663,14 @@ namespace TMS.Areas.Admin.Controllers
                     }
                     UserManager.AddToRole(user.Id, "Technician");
                     //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
-                    if (!sendMailResult)
-                    {
-                        log.Debug("Send email unsuccessfully!");
-                    }
+                    //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
+                    //if (!sendMailResult)
+                    //{
+                    //    log.Debug("Send email unsuccessfully!");
+                    //}
                     // Send email asynchronously
-                    //Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
-                    //thread.Start();
+                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                    thread.Start();
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -737,14 +738,14 @@ namespace TMS.Areas.Admin.Controllers
                     }
                     UserManager.AddToRole(user.Id, "Admin");
                     //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
-                    if (!sendMailResult)
-                    {
-                        log.Debug("Send email unsuccessfully!");
-                    }
+                    //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
+                    //if (!sendMailResult)
+                    //{
+                    //    log.Debug("Send email unsuccessfully!");
+                    //}
                     // Send email asynchronously
-                    //Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
-                    //thread.Start();
+                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                    thread.Start();
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -1051,6 +1052,39 @@ namespace TMS.Areas.Admin.Controllers
                 {
                     success = false,
                     message = "Some errors occured! Please try again later!"
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ResendEmail(string id)
+        {
+            AspNetUser user = _userService.GetUserById(id);
+            if (user == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "User is not found"
+                });
+            }
+            string generatedPassword = GeneralUtil.GeneratePassword();
+            // Send email asynchronously
+            bool sendEmailResult = await EmailUtil.ResendToUserWhenCreate(user.UserName, generatedPassword, user.Fullname, user.Email);
+            if (sendEmailResult)
+            {
+                return Json(new
+                {
+                    success = true,
+                    message = "Resend email successfully!"
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Resend email unsuccessfully!"
                 });
             }
         }
