@@ -41,9 +41,7 @@
     }
 
     hr {
-        height: 10px;
-        border: 0;
-        box-shadow: 0 10px 10px -10px #8c8b8b inset;
+        border: 1px solid #c7c7c7;
     }
 
     .detail {
@@ -59,177 +57,92 @@
     input {
         max-height: 400px;
     }
+
+    #ticket-description, #ticket-solution {
+        white-space: pre-wrap;
+    }
+    
+    .pre-wrap {
+        white-space: pre-wrap;
+    }
 </style>
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
             <div class="box-body">
+                <div class="pull-right" style="margin-right: 20px">
+                    <label>Status:</label>
+                    <select id="filter-by-status">
+                        <option value="1">All</option>
+                        <option value="2">Assigned</option>
+                        <option value="3">Solved</option>
+                        <option value="4">Unapproved</option>
+                        <option value="5">Cancelled</option>
+                        <option value="6">Closed</option>
+                    </select>&nbsp;&nbsp;
+                    <label>Search:</label>
+                    <input type="text" id="search-txt" />
+                </div>
                 <table class="table" id="ticket-table">
                     <thead>
                         <tr>
                             <th>Date Opened</th>
                             <th>Subject</th>
                             <th>Status</th>
-                            <th>Solution</th>
+                            <th style="max-width: 350px">Solution</th>
                             <th>Last Modified</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
 
                 <!-- View ticket detail modal -->
                 <div id="detail-modal" class="modal fade" role="dialog">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title" id="ticket-subject"></h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="box-body">
-                                        <div class="shortInfoContainer">
-                                            <div class="col-sm-3 shortInfo">
-                                                <h4>Date opened</h4>
-                                                <span id="ticket-created-date"></span>
-                                            </div>
-                                            <div class="col-sm-3 shortInfo">
-                                                <h4>Created By</h4>
-                                                <span id="ticket-created-by"></span>
-                                            </div>
-                                            <div class="col-sm-2 shortInfo">
-                                                <h4>Status</h4>
-                                                <span id="ticket-status"></span>
-                                            </div>
-                                            <div class="col-sm-3 shortInfo">
-                                                <h4>Last modified</h4>
-                                                <span id="ticket-modified-date"></span>
-                                            </div>
-                                        </div>
-                                        <hr />
-                                        <div class="detailContainer">
-                                            <div class="col-lg-12 detail">
-                                                <h4>Ticket Description</h4>
-                                                <p id="ticket-description"></p>
-                                            </div>
-                                            <div class="col-lg-12 detail" id="ticket-solution">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                <!-- Solve Modal -->
-                <div id="SolveModal1" class="modal fade" role="dialog">
-                    <div class="modal-dialog">
-
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Change website main color</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="box box-body detailContainer">
-                                    <div class="col-sm-2 detail">
-                                        <h4><b>Solution:</b></h4>
-                                    </div>
-                                    <div class="col-sm-9 detail">
-                                        <textarea class="form-control" rows="4"></textarea>
-                                        <a data-toggle="modal" data-target="#ReferKBModal">Refer Knowledge base</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">Save Changes</button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- Refer KB Modal -->
-                <div id="ReferKBModal" class="modal fade" role="dialog">
                     <div class="modal-dialog modal-lg">
-
-                        <!-- Modal content-->
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Refer Knowledge base</h4>
+                                <h4 class="modal-title" id="ticket-subject"></h4>
                             </div>
                             <div class="modal-body">
-                                <div class="box box-body">
-                                    <div class="box-tools col-sm-offset-8 col-sm-4">
-                                        <div class="has-feedback">
-                                            <input type="text" class="form-control input-sm" placeholder="Search solution..." />
-                                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
+                                <div class="box-body">
+                                    <div class="shortInfoContainer">
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Date opened</h4>
+                                            <span id="ticket-created-date"></span>
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Created By</h4>
+                                            <span id="ticket-created-by"></span>
+                                        </div>
+                                        <div class="col-sm-2 shortInfo">
+                                            <h4>Status</h4>
+                                            <span id="ticket-status"></span>
+                                        </div>
+                                        <div class="col-sm-3 shortInfo">
+                                            <h4>Last modified</h4>
+                                            <span id="ticket-modified-date"></span>
                                         </div>
                                     </div>
-                                    <p>We found 2 solutions that fit your problem.</p>
+                                    <hr />
                                     <div class="detailContainer">
-                                        <div class="col-sm-11 detail">
-                                            <div class="panel-group" id="accordion">
-                                                <div class="panel panel-default">
-                                                    <div class="panel-heading">
-                                                        <a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#solution1">
-                                                            Change website font color
-                                                        </a>
-                                                        <a class="pull-right" data-dismiss="modal">Refer this solution</a>
-                                                    </div>
-                                                    <div class="panel-collapse collapse" id="solution1">
-                                                        <div class="panel-body">
-                                                            <p>To change the font color:</p> <br />
-                                                            <p>Click the menu button Menu and choose Options.</p>
-                                                            <p>Select the Content panel.</p>
-                                                            <p>Under Fonts & Colors, click the Colors… button.</p>
-                                                            <p>
-                                                                Clicking on any of the colored rectangles will show you the possible colors you can choose from. Select the color you want by clicking one of the colored rectangles.
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="panel panel-default">
-                                                    <div class="panel-heading">
-                                                        <a class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#solution2">
-                                                            Change website background color
-                                                        </a>
-                                                        <a class="pull-right" data-dismiss="modal">Refer this solution</a>
-                                                    </div>
-                                                    <div class="panel-collapse collapse" id="solution2">
-                                                        <div class="panel-body">
-                                                            <p>To change the background color:</p> <br />
-                                                            <p>Click the menu button Menu and choose Options.</p>
-                                                            <p>Select the Content panel.</p>
-                                                            <p>Click the Colors… button.</p>
-                                                            <p>
-                                                                Clicking on any of the colored rectangles will show you the possible colors you can choose from. Select the color you want by clicking one of the colored rectangles.
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="col-lg-12 detail">
+                                            <h4>Ticket Description</h4>
+                                            <p id="ticket-description"></p>
+                                        </div>
+                                        <div class="col-lg-12 detail" id="ticket-solution">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">Refer</button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
 
                     </div>
-
                 </div>
             </div>
         </div>
@@ -245,60 +158,97 @@
     @Scripts.Render("~/bundles/datatables")
     <script>
         setActiveTicketMenu();
-        $("#ticket-table").DataTable({
-            processing: true,
-            serverSide: true,
-            paging: true,
-            sort: true,
-            ajax: {
-                url: "/Technician/ManageTicket/GetTechnicianTickets"
-            },
-            "columnDefs": [
-                {
-                    "render": function (data, type, row) {
-                        return row[0];
-                    },
-                    "targets": 0
+        var initDataTable = function () {
+            $("#ticket-table").DataTable({
+                processing: true,
+                serverSide: true,
+                paging: true,
+                sort: true,
+                lengthChange: false,
+                filter: false,
+                ajax: {
+                    url: "/Technician/ManageTicket/GetTechnicianTickets",
+                    data: function (d) {
+                        d.select_status = $("#filter-by-status").val(),
+                        d.search_text = $("#search-txt").val()
+                    }
                 },
-                {
-                    "render": function (data, type, row) {
-                        return '<a href="#" class="view-detail" data-id=' + row[5] + '>' + row[1] + '</a>';
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            return row[0];
+                        },
+                        "targets": 0
                     },
-                    "targets": 1
-                },
-                {
-                    "render": function (data, type, row) {
-                        return row[2] == 1 ? "Open" : "Closed";
+                    {
+                        "render": function (data, type, row) {
+                            return '<a href="#" class="view-detail" data-id=' + row[5] + '>' + row[1] + '</a>';
+                        },
+                        "targets": 1
                     },
-                    "targets": 2
-                },
-                {
-                    "render": function (data, type, row) {
-                        return row[3];
+                    {
+                        "render": function (data, type, row) {
+                            if (row[2] == 2) {
+                                return "Assigned";
+                            } else if (row[2] == 3) {
+                                return "Solved";
+                            } else if (row[2] == 4) {
+                                return "Unapproved";
+                            } else if (row[2] == 5) {
+                                return "Cancelled";
+                            } else if (row[2] == 6) {
+                                return "Closed";
+                            }
+                        },
+                        "sortable": false,
+                        "targets": 2
                     },
-                    "targets": 3
-                },
-                {
-                    "render": function (data, type, row) {
-                        return row[4];
+                    {
+                        "render": function (data, type, row) {
+                            return row[3] == null ? "None" : "<span class='pre-wrap'>" + row[3] + "</span>";
+                        },
+                        "sortable": false,
+                        "targets": 3
                     },
-                    "targets": 4
-                },
+                    {
+                        "render": function (data, type, row) {
+                            return row[4];
+                        },
+                        "targets": 4
+                    },
 
 
-                {
-                    "render": function (data, type, row) {
-                        var solveUrl = '@Url.Action("Solve", "ManageTicket", new { id = "-1"})';
-                        solveUrl = solveUrl.replace("-1", row[5]);
-                        if (row[2] == 1) {
-                            return "<a target='_blank' href='" + solveUrl + "' class='btn btn-primary' >Solve</a>";
-                        }
-                        else {
-                            return "<a class='btn btn-default' disabled>Solve</a>";
-                        }
-                    },
-                    "targets": 5
-                }]
+                    {
+                        "render": function (data, type, row) {
+                            var solveUrl = '@Url.Action("Solve", "ManageTicket")/' + row[5];
+                            if (row[2] == 2) {
+                                return "<a href='" + solveUrl + "' class='btn btn-primary' >Solve</a>";
+                            }
+                            else {
+                                return "<a class='btn btn-default' disabled>Solve</a>";
+                            }
+                        },
+                        "sortable": false,
+                        "targets": 5
+                    }]
+            });
+        }
+
+        var reloadDataTable = function () {
+            var oTable = $("#ticket-table").dataTable();
+            oTable.api().ajax.reload();
+        };
+
+        $(document).ready(function () {
+            initDataTable();
+        });
+
+        $("#search-txt").keyup(function () {
+            reloadDataTable();
+        });
+
+        $("#filter-by-status").change(function () {
+            reloadDataTable();
         });
 
         $("#ticket-table").on("click", ".view-detail", function () {
@@ -313,21 +263,33 @@
                     id: id
                 },
                 success: function (data) {
-                    var solveUrl = '@Url.Action("Solve", "ManageTicket", new { id = "-1"})';
-                    solveUrl = solveUrl.replace("-1", data.id);
+                    var solveUrl = '@Url.Action("Solve", "ManageTicket")/' + data.id;
 
                     $('#ticket-subject').text(data.subject);
                     $('#ticket-created-date').text(data.createdDate);
                     $('#ticket-created-by').text(data.createBy);
 
-                    if (data.status == 1) {
-                        $('#ticket-status').text('Open');
-                        $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
-                                                    + "<a target='_blank' class='btn btn-primary' href='" + solveUrl + "'>Yes</a>"
-                                                    + "<a class='btn btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
+                    if (data.status == 2) {
+                        $('#ticket-status').text('Assigned');
+                        if (data.solution == null) {
+                            $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
+                                                        + "<a class='btn btn-primary' href='" + solveUrl + "'>Yes</a>"
+                                                        + "<a class='btn btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
+                        }
+                        else {
+                            $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p>" + data.solution + "</p>");
+                        }
                     }
                     else {
-                        $('#ticket-status').text('Closed');
+                        if (data.status == 3) {
+                            $('#ticket-status').text('Solved');
+                        } else if (data.status == 4) {
+                            $('#ticket-status').text('Unapproved');
+                        } else if (data.status == 5) {
+                            $('#ticket-status').text('Cancelled');
+                        } else if (data.status == 6) {
+                            $('#ticket-status').text('Closed');
+                        }
                         $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p>" + data.solution + "</p>");
                     }
 

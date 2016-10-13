@@ -262,11 +262,11 @@ namespace TMS.DAL
 
 
 
-        public void Save()
+        public int Save()
         {
             try
             {
-                _context.SaveChanges();
+               return _context.SaveChanges();
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
             {

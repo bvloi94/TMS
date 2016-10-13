@@ -324,6 +324,8 @@
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\NewTicketViewModel.cs" />
+    <Compile Include="ViewModels\TicketSolveViewModel.cs" />
+    <Compile Include="ViewModels\ProfileAdminViewModel.cs" />
     <Compile Include="ViewModels\SCItemViewModels.cs" />
     <Compile Include="ViewModels\TicketViewModel.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
@@ -371,6 +373,10 @@
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\jquery.noty.js" />
+    <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.js" />
+    <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.min.js" />
+    <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.css" />
+    <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.min.css" />
     <Content Include="Content\js\jquery.noty.packaged.js" />
     <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.css" />
     <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.js" />
@@ -504,7 +510,8 @@
     <Content Include="Areas\Admin\Views\ManageUser\Admin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateAdmin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditAdmin.cshtml" />
-    <Content Include="Areas\Admin\Views\Profile\ViewProfile.cshtml" />
+    <Content Include="Areas\Admin\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Profile\UpdateProfile.cshtml" />
     <EntityDeploy Include="Models\TMSModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>TMSModel.Designer.cs</LastGenOutput>
@@ -599,7 +606,6 @@
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\css\" />
-    <Folder Include="Content\Plugins\bootstrap-wysihtml5\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -1,17 +1,143 @@
-﻿@{
+﻿@using TMS.Models;
+@using TMS.Utils;
+@model TMS.ViewModels.TicketSolveViewModel
+@{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
 }
 @{
     ViewBag.Title = "Solve Ticket";
-    var ticket = ViewBag.Ticket;
-    var solveUser = ViewBag.solveUser;
-    var createdUser = ViewBag.CreatedUser  ;
 }
 
+<style>
+    h4, h5, .labels {
+        color: #345aaa;
+    }
+
+    .ticket-contents {
+        line-height: 30px;
+    }
+
+    input, textarea {
+        max-width: 800px;
+    }
+
+    .pre-wrap {
+        white-space: pre-wrap;
+    }
+</style>
 
 <div class="row col-md-12">
     <div class="box box-primary">
-        
+        <div class="box-header">
+            <h4><b>Ticket: @Html.DisplayFor(model => model.Subject)</b></h4>
+        </div>
+        <div class="box-body ticket-contents">
+
+            @using (Html.BeginForm("Solve", "ManageTicket", new { id = Model.ID }, FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="col-sm-2 labels">
+                    <b>Created by: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.CreatedBy)</div>
+                <div class="col-sm-2 labels">
+                    <b>Date opened: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.CreateTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Status:  </b>
+                </div>
+                <div class="col-sm-4">
+                    @{
+                        if (Model.Status == ConstantUtil.TicketStatus.Assigned)
+                        {
+                            <span>Assigned</span>
+                        }
+                    }
+                </div>
+                <div class="col-sm-2 labels">
+                    <b>Last modified: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ModifiedTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Impact: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.Impact)</div>
+                <div class="col-sm-2 labels">
+                    <b>Schedule start time: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ScheduleStartTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Impact Detail: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ImpactDetail)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Schedule end time: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ScheduleEndTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Urgency: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.Urgency)</div>
+                <div class="col-sm-2 labels">
+                    <b>Actual start time: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ActualStartTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Priority: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.Priority)</div>
+                <div class="col-sm-2 labels">
+                    <b>Actual end time: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ActualEndTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Subject: </b>
+                </div>
+                <div class="col-sm-10">@Html.DisplayFor(model => model.Subject)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Description: </b>
+                </div>
+                <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.Description)</div>
+                if (!string.IsNullOrEmpty(Model.Solution))
+                    {
+                        <div class="col-sm-2 labels">
+                            <b>Solver:  </b>
+                        </div>
+                        <div class="col-sm-10">@(Model.SolvedBy == null ? "None" : Model.SolvedBy)</div>
+                    }
+
+                    <div class="col-sm-2 labels">
+                        <b>Solution: </b>
+                    </div>
+                    <div class="col-sm-10">
+                        @Html.TextAreaFor(m => m.Solution, new { @class = "form-control", id = "new-solution", rows = "6" })
+                        @Html.ValidationMessageFor(m => m.Solution, "", new { @class = "text-danger" })
+                    </div>
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <a href="#" id="refer-solution">Refer knowledge base (Lợiiii)</a>
+                        </div>
+                        <div class="col-sm-12">
+                            <hr />
+                        </div>
+                        <div class="col-sm-offset-5 col-sm-7">
+                            <input type="submit" value="Solve" name="command" class="btn btn-success" />
+                            <input type="submit" value="Save" name="command" class="btn btn-primary" />
+                            <a class="btn btn-default" href="@Url.Action("Index")">Cancel</a>
+                        </div>
+                    }
+        </div>
     </div>
 </div>
-
+@section scripts{
+    <script>
+    </script>
+}

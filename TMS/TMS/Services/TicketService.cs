@@ -371,5 +371,23 @@ namespace TMS.Services
             _unitOfWork.TicketRepository.Insert(ticket);
             _unitOfWork.Save();
         }
+
+        public bool UpdateTicket(Ticket ticket)
+        {
+            _unitOfWork.TicketRepository.Update(ticket);
+            return _unitOfWork.Save() > 0;
+        }
+
+        public void SolveTicket(Ticket ticket)
+        {
+            ticket.Status = ConstantUtil.TicketStatus.Solved; //Solved
+            _unitOfWork.TicketRepository.Update(ticket);
+            _unitOfWork.Save();
+        }
+
+        public IEnumerable<Ticket> GetTechnicianTickets(string id)
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.TechnicianID == id);
+        }
     }
 }
