@@ -44,5 +44,6 @@ namespace TMS.Models
         public virtual DbSet<TicketAttachment> TicketAttachments { get; set; }
         public virtual DbSet<TicketHistory> TicketHistories { get; set; }
         public virtual DbSet<Urgency> Urgencies { get; set; }
+        public virtual DbSet<C__MigrationHistory> C__MigrationHistory { get; set; }
     }
 }
