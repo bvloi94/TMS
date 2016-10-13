@@ -8,8 +8,10 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/datatables")
+
 </head>
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition skin-blue-light sidebar-mini">
     <div class="wrapper">
         <header class="main-header">
             <!-- Logo -->
@@ -140,8 +142,9 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
+                    @RenderSection("SidebarMenu", false)
                     <li id="menu-ticket" class="treeview">
-                        <a  href="@Url.Action("Index","ManageTicket")" >
+                        <a href="@Url.Action("Index","ManageTicket")">
                             <i class="fa fa-files-o"></i>
                             <span>TICKET</span>
                             <span class="pull-right-container">
@@ -167,18 +170,18 @@
                             <span>REPORT</span>
                         </a>
                     </li>
+                    </li>
                 </ul>
-            </section>
             <!-- /.sidebar -->
         </aside>
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
-            <section class="content-header">
+            @*<section class="content-header">
                 <h1>
                     @ViewBag.Title
                 </h1>
-            </section>
+            </section>*@
             <!-- Main content -->
             <section class="content">
                 @RenderBody()
@@ -194,11 +197,13 @@
             reserved.
         </footer>
     </div>
-    <!-- ./wrapper -->
+<!-- ./wrapper -->
+    @RenderSection("InitModal", false)
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
     @Scripts.Render("~/bundles/datatables")
-    @RenderSection("scripts", required: false)
+    @RenderSection("InitScript", false)
+    @RenderSection("Scripts", false)
 </body>
 </html>

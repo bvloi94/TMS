@@ -28,6 +28,7 @@ namespace TMS
                 "~/Scripts/app.js",
                 "~/Scripts/main.js",
                 "~/Scripts/jquery-ui.min.js",
+                "~/Content/js/jquery.noty.packaged.js",
                 "~/Scripts/notify.min.js",
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
                 "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js",
@@ -58,6 +59,9 @@ namespace TMS
             // Login CSS
             bundles.Add(new StyleBundle("~/Content/login_css").Include(
                       "~/Content/login.css"));
+
+            bundles.Add(new ScriptBundle("~/bundles/helpdesk-manage-ticket").Include(
+               "~/Scripts/helpdesk-manage-ticket.js"));
         }
     }
 }

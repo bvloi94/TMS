@@ -227,6 +227,7 @@
     <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
+    <Compile Include="Enumerator\TicketStatusEnum.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -256,6 +257,9 @@
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Category.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\C__MigrationHistory.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Department.cs">
@@ -316,9 +320,14 @@
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
+    <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
+    <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
+    <Compile Include="ViewModels\ModelErrorViewModel.cs" />
+    <Compile Include="ViewModels\NewTicketViewModel.cs" />
     <Compile Include="ViewModels\TicketSolveViewModel.cs" />
     <Compile Include="ViewModels\ProfileAdminViewModel.cs" />
     <Compile Include="ViewModels\SCItemViewModels.cs" />
+    <Compile Include="ViewModels\TicketViewModel.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -368,6 +377,7 @@
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.css" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.min.css" />
+    <Content Include="Content\js\jquery.noty.packaged.js" />
     <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.css" />
     <Content Include="Content\Plugins\bootstraptoggle\bootstrap-toggle.min.js" />
     <Content Include="Content\Plugins\datatables\css\dataTables.bootstrap.css" />
@@ -523,6 +533,7 @@
     <Content Include="Scripts\globalize\plural.js" />
     <Content Include="Scripts\globalize\relative-time.js" />
     <Content Include="Scripts\globalize\unit.js" />
+    <Content Include="Scripts\helpdesk-manage-ticket.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

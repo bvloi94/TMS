@@ -51,6 +51,7 @@
         <AssociationConnector Association="TMSModel.FK_TicketAttachment_Ticket" ManuallyRouted="false" />
         <AssociationConnector Association="TMSModel.FK_TicketHistory_Ticket" ManuallyRouted="false" />
         <AssociationConnector Association="TMSModel.AspNetUserRoles" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="TMSModel.C__MigrationHistory" Width="1.5" PointX="0.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

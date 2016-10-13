@@ -67,6 +67,10 @@ body {
     width: 100% !important;
 }
 
+.margin-left10 {
+    margin-left: 10px;
+}
+
 td.details-control {
     background: url(img/details_open.png) no-repeat center center;
     cursor: pointer;
