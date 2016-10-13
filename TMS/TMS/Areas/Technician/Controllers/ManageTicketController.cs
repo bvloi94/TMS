@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
+using TMS.Utils;
 using TMS.ViewModels;
 
 namespace TMS.Areas.Technician.Controllers
@@ -164,7 +165,7 @@ namespace TMS.Areas.Technician.Controllers
         public ActionResult Solve(int id)
         {
             Ticket ticket = _ticketService.GetTicketByID(id);
-            if (ticket.Status != 2) // Ticket status is not "Assigned"
+            if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
             {
                 return RedirectToAction("Index"); // Redirect to Index so the Technician cannot go to Solve view.
             }
@@ -178,54 +179,91 @@ namespace TMS.Areas.Technician.Controllers
                 model.ID = ticket.ID;
                 model.Subject = ticket.Subject;
                 model.Description = ticket.Description;
+                model.Mode = ticket.Mode;
+                model.Type = ticket.Type;
                 model.Status = ticket.Status;
+                model.Category = ticket.Category.Name;
+                model.Impact = (ticket.Impact == null) ? "" : ticket.Impact.Name;
+                model.ImpactDetail = ticket.ImpactDetail;
+                model.Urgency = ticket.Urgency.Name;
+                model.Priority = ticket.Priority.Name;
                 model.CreateTime = ticket.CreatedTime;
                 model.ModifiedTime = ticket.ModifiedTime;
+                model.ScheduleEndTime = ticket.ScheduleEndDate;
+                model.ScheduleStartTime = ticket.ScheduleStartDate;
+                model.ActualStartTime = ticket.ActualStartDate;
+                model.ActualEndTime = ticket.ActualEndDate;
                 model.CreatedBy = createdUser.Fullname;
-
-                if (!string.IsNullOrEmpty(ticket.SolveID))
-                {
-                    model.SolvedBy = solvedUser.Fullname;
-                    model.Solution = ticket.Solution;
-                }
-
+                model.SolvedBy = (string.IsNullOrEmpty(ticket.SolveID)) ? "" : solvedUser.Fullname;
+                model.Solution = (string.IsNullOrEmpty(ticket.Solution)) ? "" : ticket.Solution;
+                model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "" : ticket.UnapproveReason;
+                
                 return View(model);
             }
         }
 
         [HttpPost]
-        public ActionResult Solve(int id, TicketSolveViewModel model)
+        public ActionResult Solve(int id, TicketSolveViewModel model, string command)
         {
-            // Get Ticket information
             Ticket ticket = _ticketService.GetTicketByID(id);
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Get Ticket information
             AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
             AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
 
             model.ID = ticket.ID;
             model.Subject = ticket.Subject;
             model.Description = ticket.Description;
+            model.Mode = ticket.Mode;
+            model.Type = ticket.Type;
             model.Status = ticket.Status;
+            model.Category = ticket.Category.Name;
+            model.Impact = (ticket.Impact == null) ? "" : ticket.Impact.Name;
+            model.ImpactDetail = ticket.ImpactDetail;
+            model.Urgency = ticket.Urgency.Name;
+            model.Priority = ticket.Priority.Name;
             model.CreateTime = ticket.CreatedTime;
             model.ModifiedTime = ticket.ModifiedTime;
+            model.ScheduleEndTime = ticket.ScheduleEndDate;
+            model.ScheduleStartTime = ticket.ScheduleStartDate;
+            model.ActualStartTime = ticket.ActualStartDate;
+            model.ActualEndTime = ticket.ActualEndDate;
             model.CreatedBy = createdUser.Fullname;
+            model.SolvedBy = (string.IsNullOrEmpty(ticket.SolveID)) ? "" : solvedUser.Fullname;
+            model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "" : ticket.UnapproveReason;
 
-            if (ticket == null)
+
+
+            switch (command)
             {
-                return HttpNotFound();
+                case "Solve":
+                    if (ModelState.IsValid)
+                    {
+                        ticket.SolveID = User.Identity.GetUserId();
+                        ticket.SolvedDate = DateTime.Now;
+                        ticket.ModifiedTime = DateTime.Now;
+                        ticket.Solution = model.Solution;
+                        _ticketService.SolveTicket(ticket);
+                        return RedirectToAction("Index");
+                    }
+                    break;
+                case "Save":
+                    if (ModelState.IsValid)
+                    {
+                        ticket.ModifiedTime = DateTime.Now;
+                        ticket.Solution = model.Solution;
+                        _ticketService.UpdateTicket(ticket);
+                        return RedirectToAction("Index");
+                    }
+                    break;
             }
-            else
-            {
-                if (ModelState.IsValid)
-                {
-                    ticket.SolvedDate = DateTime.Now;
-                    ticket.ModifiedTime = DateTime.Now;
-                    ticket.Solution = model.Solution;
-                    _ticketService.SolveTicket(ticket);
-                    return RedirectToAction("Index");
-                }
-            }
+
             return View(model);
         }
-
+        
     }
 }

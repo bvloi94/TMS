@@ -1,4 +1,5 @@
 ﻿@using TMS.Models;
+@using TMS.Utils;
 @model TMS.ViewModels.TicketSolveViewModel
 @{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
@@ -13,7 +14,7 @@
     }
 
     .ticket-contents {
-        line-height: 40px;
+        line-height: 30px;
     }
 
     input, textarea {
@@ -39,7 +40,6 @@
                     <b>Created by: </b>
                 </div>
                 <div class="col-sm-4">@Html.DisplayFor(model => model.CreatedBy)</div>
-
                 <div class="col-sm-2 labels">
                     <b>Date opened: </b>
                 </div>
@@ -50,21 +50,53 @@
                 </div>
                 <div class="col-sm-4">
                     @{
-                        if (Model.Status == 1)
+                        if (Model.Status == ConstantUtil.TicketStatus.Assigned)
                         {
-                            <span>Open</span>
-                        }
-                        else
-                        {
-                            <span>Closed</span>
+                            <span>Assigned</span>
                         }
                     }
                 </div>
-
                 <div class="col-sm-2 labels">
                     <b>Last modified: </b>
                 </div>
                 <div class="col-sm-4">@Html.DisplayFor(model => model.ModifiedTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Impact: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.Impact)</div>
+                <div class="col-sm-2 labels">
+                    <b>Schedule start time: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ScheduleStartTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Impact Detail: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ImpactDetail)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Schedule end time: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ScheduleEndTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Urgency: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.Urgency)</div>
+                <div class="col-sm-2 labels">
+                    <b>Actual start time: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ActualStartTime)</div>
+
+                <div class="col-sm-2 labels">
+                    <b>Priority: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.Priority)</div>
+                <div class="col-sm-2 labels">
+                    <b>Actual end time: </b>
+                </div>
+                <div class="col-sm-4">@Html.DisplayFor(model => model.ActualEndTime)</div>
 
                 <div class="col-sm-2 labels">
                     <b>Subject: </b>
@@ -80,7 +112,7 @@
                         <div class="col-sm-2 labels">
                             <b>Solver:  </b>
                         </div>
-                        <div class="col-sm-10">@(Model.SolvedBy == null ? "none" : Model.SolvedBy)</div>
+                        <div class="col-sm-10">@(Model.SolvedBy == null ? "None" : Model.SolvedBy)</div>
                     }
 
                     <div class="col-sm-2 labels">
@@ -97,7 +129,8 @@
                             <hr />
                         </div>
                         <div class="col-sm-offset-5 col-sm-7">
-                            <input type="submit" value="Save" id="save-button" class="btn btn-primary" />
+                            <input type="submit" value="Solve" name="command" class="btn btn-success" />
+                            <input type="submit" value="Save" name="command" class="btn btn-primary" />
                             <a class="btn btn-default" href="@Url.Action("Index")">Cancel</a>
                         </div>
                     }
@@ -106,13 +139,5 @@
 </div>
 @section scripts{
     <script>
-        $("#new-solution").on("focusin", function () {
-            if (!$.trim(("#new-solution").val())) {
-                $("save-button").addClass("disabled");
-            }
-            else {
-                $("save-button").removeClass("disabled");
-            }
-        });
     </script>
 }

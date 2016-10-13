@@ -376,7 +376,7 @@ namespace TMS.Services
 
         public void SolveTicket(Ticket ticket)
         {
-            ticket.Status = 3; //Solved
+            ticket.Status = ConstantUtil.TicketStatus.Solved; //Solved
             _unitOfWork.TicketRepository.Update(ticket);
             _unitOfWork.Save();
         }
