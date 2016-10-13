@@ -182,20 +182,20 @@ namespace TMS.Areas.Technician.Controllers
                 model.Mode = ticket.Mode;
                 model.Type = ticket.Type;
                 model.Status = ticket.Status;
-                model.Category = ticket.Category.Name;
+                model.Category = (ticket.Category == null) ? "" : ticket.Category.Name;
                 model.Impact = (ticket.Impact == null) ? "" : ticket.Impact.Name;
-                model.ImpactDetail = ticket.ImpactDetail;
-                model.Urgency = ticket.Urgency.Name;
-                model.Priority = ticket.Priority.Name;
+                model.ImpactDetail = (ticket.ImpactDetail == null) ? "" : ticket.ImpactDetail;
+                model.Urgency = (ticket.Urgency == null) ? "" : ticket.Urgency.Name;
+                model.Priority = (ticket.Priority == null) ? "" : ticket.Priority.Name;
                 model.CreateTime = ticket.CreatedTime;
                 model.ModifiedTime = ticket.ModifiedTime;
                 model.ScheduleEndTime = ticket.ScheduleEndDate;
                 model.ScheduleStartTime = ticket.ScheduleStartDate;
                 model.ActualStartTime = ticket.ActualStartDate;
                 model.ActualEndTime = ticket.ActualEndDate;
-                model.CreatedBy = createdUser.Fullname;
-                model.SolvedBy = (string.IsNullOrEmpty(ticket.SolveID)) ? "" : solvedUser.Fullname;
-                model.Solution = (string.IsNullOrEmpty(ticket.Solution)) ? "" : ticket.Solution;
+                model.CreatedBy = (createdUser == null) ? "" : createdUser.Fullname;
+                model.SolvedBy = (solvedUser == null) ? "" : solvedUser.Fullname;
+                model.Solution = ticket.Solution;
                 model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "" : ticket.UnapproveReason;
                 
                 return View(model);
@@ -221,19 +221,20 @@ namespace TMS.Areas.Technician.Controllers
             model.Mode = ticket.Mode;
             model.Type = ticket.Type;
             model.Status = ticket.Status;
-            model.Category = ticket.Category.Name;
+            model.Category = (ticket.Category == null) ? "" : ticket.Category.Name;
             model.Impact = (ticket.Impact == null) ? "" : ticket.Impact.Name;
-            model.ImpactDetail = ticket.ImpactDetail;
-            model.Urgency = ticket.Urgency.Name;
-            model.Priority = ticket.Priority.Name;
+            model.ImpactDetail = (ticket.ImpactDetail == null) ? "" : ticket.ImpactDetail;
+            model.Urgency = (ticket.Urgency == null) ? "" : ticket.Urgency.Name;
+            model.Priority = (ticket.Priority == null) ? "" : ticket.Priority.Name;
             model.CreateTime = ticket.CreatedTime;
             model.ModifiedTime = ticket.ModifiedTime;
             model.ScheduleEndTime = ticket.ScheduleEndDate;
             model.ScheduleStartTime = ticket.ScheduleStartDate;
             model.ActualStartTime = ticket.ActualStartDate;
             model.ActualEndTime = ticket.ActualEndDate;
-            model.CreatedBy = createdUser.Fullname;
-            model.SolvedBy = (string.IsNullOrEmpty(ticket.SolveID)) ? "" : solvedUser.Fullname;
+            model.CreatedBy = (createdUser == null) ? "" : createdUser.Fullname;
+            model.SolvedBy = (solvedUser == null) ? "" : solvedUser.Fullname;
+            model.Solution = ticket.Solution;
             model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "" : ticket.UnapproveReason;
 
 
