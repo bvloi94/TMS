@@ -61,7 +61,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
             ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name");
-            ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
+            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
             ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name");
             ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name");
             ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name");
@@ -73,11 +73,12 @@ namespace TMS.Areas.HelpDesk.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Type,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Subject,Description,Solution")] Ticket ticket)
+        public ActionResult Create([Bind(Include = "Type,TechnicianID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Subject,Description,Solution")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
-                ticket.Status = (int?) TicketStatusEnum.Open;
+                ticket.Status = (int?)TicketStatusEnum.Open;
+                ticket.CreatedTime = DateTime.Now;
                 db.Tickets.Add(ticket);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -87,7 +88,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
             ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
+            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
             ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
             ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
             ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
@@ -123,7 +124,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
+        public ActionResult Edit([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
@@ -234,8 +235,19 @@ namespace TMS.Areas.HelpDesk.Controllers
                 s.Id = item.ID;
                 s.Subject = item.Subject;
                 s.Requester = item.RequesterID == null ? "" : _userService.GetUserById(item.RequesterID).Fullname;
-                s.AssignedTo = item.TechnicianID == null ? "" : _userService.GetUserById(item.TechnicianID).Fullname;
-                s.Department = item.DepartmentID == null ? "" : _departmentService.GetDepartmentById((int)item.DepartmentID).Name;
+                if (item.TechnicianID != null)
+                {
+                    AspNetUser technician = _userService.GetUserById(item.TechnicianID);
+                    s.AssignedTo = technician.Fullname;
+                    s.Department = technician.DepartmentID == null
+                        ? ""
+                        : _departmentService.GetDepartmentById((int) technician.DepartmentID).Name;
+                }
+                else
+                {
+                    s.AssignedTo = "";
+                    s.Department = "";
+                }
                 s.SolvedDate = item.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
                 s.Status = item.Status.HasValue ? ((TicketStatusEnum)item.Status).ToString() : "";
                 s.CreatedTime = item.CreatedTime?.ToString("dd/MM/yyyy") ?? "";

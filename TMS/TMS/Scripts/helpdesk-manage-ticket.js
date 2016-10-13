@@ -104,7 +104,11 @@ function initTicketTable() {
             },
             {
                 "aTargets": [5],
-                "mData": "Department"
+                //"mData": "Department"
+                "mRender": function (data, type, row) {
+                    return "None";
+                }
+
             },
             {
                 "aTargets": [6],
@@ -211,6 +215,8 @@ function checkSelectedCheckbox() {
                 checked = true;
             }
         });
+
+
 }
 
 $(document)
@@ -221,10 +227,17 @@ $(document)
             $("a[data-role='btn-merge-ticket'")
                 .on("click",
                     function () {
-
+                        var selected = [];
+                        $('input[data-role="cbo-ticket"]').each(function () {
+                            if ($(this).is(":checked")) {
+                                selected.push($(this).data("id"));
+                            }
+                        });
+                        var i = 0;
+                        i++;
                     });
             var i = 1;
             $('#ticket-table tbody').on('click', 'input[data-role="cbo-ticket"]', function (e) {
-                alert($(this).data("requester"));
+                //alert($(this).data("requester"));
             });
         });
