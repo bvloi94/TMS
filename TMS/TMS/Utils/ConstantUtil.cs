@@ -79,5 +79,11 @@ namespace TMS.Utils
             public const int Contains = 5;
             public const int DoesNotContain = 6;
         }
+
+        public class CategoryLevel
+        {
+            public const int Category = 1;
+            public const int SubCategory = 2;
+        }
     }
 }

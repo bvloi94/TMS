@@ -87,7 +87,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
             ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
+            ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
             ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
             ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
             ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
@@ -111,7 +111,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.RequesterID);
             ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.CreatedID);
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
+            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
             ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
             ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
             ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
@@ -136,7 +136,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
             ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
+            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
             ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
             ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
             ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
@@ -201,7 +201,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                 p.Subject,
                 p.RequesterID==null?"":_userService.GetUserById(p.RequesterID).Fullname,
                 p.TechnicianID==null?"":_userService.GetUserById(p.TechnicianID).Fullname,
-                p.DepartmentID==null?"":_departmentService.GetDepartmentById((int) p.DepartmentID).Name,
+                //p.DepartmentID==null?"":_departmentService.GetDepartmentById((int) p.DepartmentID).Name,
+                "",
                 p.SolvedDate.ToString(),
                 p.Status,
                 p.CreatedTime.ToString(),

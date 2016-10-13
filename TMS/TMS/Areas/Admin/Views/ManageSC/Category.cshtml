@@ -1,0 +1,399 @@
+﻿@model TMS.Models.Category
+@{
+    ViewBag.Title = "Manage Category";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+<style>
+    div.slider {
+        display: none;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary large-text-container">
+            <div class="box-body">
+                <a href="javascript:void(0)" class="btn btn-primary" onclick="showCreateCategoryModal()"><i class="fa fa-plus"></i> New Category</a>
+                <a href="javascript:void(0)" class="btn btn-primary" onclick="showCreateSubCategoryModal()"><i class="fa fa-plus"></i> New Sub Category</a>
+                <table class="table table-bordered table-hover" id="category-table">
+                    <thead>
+                        <tr>
+                            <th width="50px"></th>
+                            <th width="200px">Name</th>
+                            <th>Description</th>
+                            <th width="100px">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="category-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Category</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Name" id="category-name-txt">
+                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="3" placeholder="Description" id="category-description-txt"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="category-action-btn">Save changes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="sub-category-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Category</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Name" id="sub-category-name-txt">
+                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="3" placeholder="Description" id="sub-category-description-txt"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Category&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <select id="sub-category-category-dropdown" class="form-control"></select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="sub-category-action-btn">Save changes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="delete-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Are you sure?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="yes-btn">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Styles.Render("~/Content/datatables")
+@section scripts{
+    @Scripts.Render("~/bundles/datatables")
+    <script>
+        $("#category-table").DataTable({
+            processing: true,
+            serverSide: true,
+            paging: true,
+            sort: true,
+            lengthMenu: [8],
+            lengthChange: false,
+            language: {
+                infoFiltered: ""
+            },
+            ajax: {
+                url: "/Admin/ManageSC/GetCategoriesDataTable"
+            },
+            order: [[1, 'asc']],
+            columnDefs: [
+                {
+                    "targets": [0],
+                    "className": "details-control",
+                    "sortable": false,
+                    "data": null,
+                    "defaultContent": ''
+                },
+                {
+                    "targets": [1],
+                    "sortable": true,
+                    "render": function (data, type, row) {
+                        return row[1];
+                    }
+                },
+                {
+                    "targets": [2],
+                    "sortable": false,
+                    "render": function (data, type, row) {
+                        return row[2];
+                    }
+                },
+                {
+                    "targets": [3],
+                    "sortable": false,
+                    "render": function (data, type, row) {
+                        return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="getCategoryDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
+                            + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
+                    }
+
+                }
+            ]
+        });
+
+        var reloadDataTable = function () {
+            var oTable = $("#category-table").dataTable();
+            oTable._fnPageChange(0);
+            oTable._fnAjaxUpdate();
+        };
+
+        $('#category-table tbody').on('click', 'td.details-control', function () {
+            var tr = $(this).closest('tr');
+            var row = $("#category-table").dataTable().api().row(tr);
+
+            if (row.child.isShown()) {
+                // This row is already open - close it
+                $('div.slider', row.child()).slideUp(function () {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                });
+            }
+            else {
+                // Open this row
+                row.child(drawDetailTable(row.data()[3])).show();
+                tr.next().css("background-color", "#f1f1f1");
+                tr.addClass('shown');
+                $('div.slider', row.child()).slideDown();
+            }
+        });
+
+        var drawDetailTable = function (data) {
+            if (data.length == 0) {
+                return '<div class="slider"><h3>No sub category available</h3></div>';
+            } else {
+                var table = "<div class='slider'>";
+                table += "<table class='table table-bordered table-hover'>";
+                table += "<thead>";
+                table += "<tr>";
+                table += "<th width='200px'>Name</th>";
+                table += "<th>Description</th>";
+                table += "<th width='100px'>Action</th>";
+                table += "</tr>";
+                table += "</thead>";
+                table += "<tbody>";
+                for (i = 0; i < data.length; i++) {
+                    var row = data[i];
+                    table += "<tr>";
+                    table += "<td>" + row.Name + "</td>";
+                    table += "<td>" + row.Description + "</td>";
+                    table += '<td><a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="getCategoryDetail(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
+                            + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a></td>';
+                    table += "</tr>";
+                }
+                table += "</tbody>";
+                table += "</table>";
+                table += "</div>";
+                return table;
+            }
+        }
+
+        var clearModal = function () {
+            $(".modal").find("input").val("");
+            $(".modal").find("textarea").val("");
+            $(".modal").find(".text-danger").hide();
+        }
+
+        var showCreateCategoryModal = function () {
+            clearModal();
+            $("#category-modal").modal('show');
+            $('#category-action-btn').attr('onclick', 'createCategory()');
+        };
+
+        var showCreateSubCategoryModal = function () {
+            clearModal();
+            $.ajax({
+                url: "/Admin/ManageSC/GetCategories",
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var content = '<option>--Select Category--</option>';
+                    for (i = 0; i < data.data.length; i++) {
+                        var row = data.data[i];
+                        content += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    }
+                    $("#sub-category-category-dropdown").html(content);
+                    $("#sub-category-modal").modal('show');
+                    $('#sub-category-action-btn').attr('onclick', 'createSubCategory()');
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
+        };
+
+        var createCategory = function () {
+            var name = $("#category-name-txt").val();
+            if (name.trim() === "") {
+                $("#name-validation-message").html("Name is required!");
+                $("#name-validation-message").show();
+            } else {
+                $.ajax({
+                    url: "/Admin/ManageSC/CreateCategory",
+                    dataType: "json",
+                    type: "POST",
+                    data: {
+                        name: $("#category-name-txt").val(),
+                        description: $("#category-description-txt").val()
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $.notify(data.message, "success");
+                            $("#category-modal").modal("hide");
+                            reloadDataTable();
+                        } else {
+                            if (data.error) {
+                                $.notify(data.message, "error");
+                            } else {
+                                $("#name-validation-message").html(data.message);
+                                $("#name-validation-message").show();
+                            }
+                        }
+                    },
+                    error: function () {
+                        $.notify("Cannot connect to server!", "error");
+                    }
+                });
+            }
+        };
+
+        var getImpactDetail = function (id) {
+            clearModal();
+            $.ajax({
+                url: "/Admin/ManageSC/GetImpactDetail",
+                dataType: "json",
+                type: "GET",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $("#myModal").modal("show");
+                        $("#name-txt").val(data.name);
+                        $("#description-txt").val(data.description);
+                        $("#create-btn").attr("onclick", "editImpact('" + id + "')");
+                    } else {
+                        if (data.error) {
+                            $.notify(data.message, "error");
+                        }
+                    }
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
+        };
+
+        var editImpact = function (id) {
+            //jquery
+            var name = $("#name-txt").val();
+            if (name.trim() === "") {
+                $("#name-validation-message").html("Name is required");
+                $("#name-validation-message").show();
+            } else if (name.trim().length < 4) {
+                $("#name-validation-message").html("Name must be longer than 4 characters! ");
+                $("#name-validation-message").show();
+            } else {
+                //ajax syntax
+                $.ajax(
+                {
+                    url: "/Admin/ManageSC/EditImpact",
+                    dataType: "json",
+                    type: "POST",
+                    data: {
+                        id: id,
+                        name: $("#name-txt").val(),
+                        description: $("#description-txt").val()
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $.notify(data.message, "success");
+                            $("#myModal").modal("hide");
+                            reloadDataTable();
+                        } else {
+                            if (data.error) {
+                                $.notify(data.message, "error");
+                            } else if (!data.error) {
+                                $("#name-validation-message").html(data.message);
+                                $("#name-validation-message").show();
+                            }
+                        }
+                    },
+                    error: function () {
+                        $.notify("Cannot connect to server!", "error");
+                    }
+                });
+            }
+        };
+
+        var showDeleteModal = function (id) {
+            $("#yes-btn").attr("onclick", "deleteImpact('" + id + "')");
+            $("#delete-modal").modal("show");
+        };
+
+        var deleteImpact = function (id) {
+            $.ajax({
+                url: "/Admin/ManageSC/DeleteImpact",
+                dataType: "json",
+                type: "POST",
+                data: { id: id },
+                success: function (data) {
+                    if (data.success) {
+                        $.notify(data.message, "success");
+                        $("#delete-modal").modal("hide");
+                        reloadDataTable();
+                    } else if (!data.success) {
+                        $.notify(data.message, "error");
+                        $("#delete-modal").modal("hide");
+                    }
+                },
+                error: function () {
+                    $.notify(data.message, "error");
+                }
+            });
+
+        };
+    </script>
+}

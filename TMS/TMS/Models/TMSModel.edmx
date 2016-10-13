@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="TMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="TMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
@@ -113,9 +113,9 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Description" Type="nvarchar" MaxLength="256" />
           <Property Name="ParentID" Type="int" />
           <Property Name="CategoryLevel" Type="int" />
-          <Property Name="IsActive" Type="bit" />
         </EntityType>
         <EntityType Name="Department">
           <Key>
@@ -180,7 +180,7 @@
           <Property Name="Mode" Type="int" Nullable="false" />
           <Property Name="SolveID" Type="nvarchar" MaxLength="128" />
           <Property Name="TechnicianID" Type="nvarchar" MaxLength="128" />
-          <Property Name="DepartmentID" Type="int" />
+          <Property Name="AssignedByID" Type="nvarchar" MaxLength="128" />
           <Property Name="RequesterID" Type="nvarchar" MaxLength="128" />
           <Property Name="ImpactID" Type="int" />
           <Property Name="ImpactDetail" Type="nvarchar" MaxLength="255" />
@@ -488,18 +488,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Ticket_Department">
-          <End Role="Department" Type="Self.Department" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Department">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Ticket">
-              <PropertyRef Name="DepartmentID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Ticket_Impact">
           <End Role="Impact" Type="Self.Impact" Multiplicity="0..1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
@@ -689,10 +677,6 @@
             <End Role="Category" EntitySet="Category" />
             <End Role="Ticket" EntitySet="Ticket" />
           </AssociationSet>
-          <AssociationSet Name="FK_Ticket_Department" Association="Self.FK_Ticket_Department">
-            <End Role="Department" EntitySet="Department" />
-            <End Role="Ticket" EntitySet="Ticket" />
-          </AssociationSet>
           <AssociationSet Name="FK_Ticket_Impact" Association="Self.FK_Ticket_Impact">
             <End Role="Impact" EntitySet="Impact" />
             <End Role="Ticket" EntitySet="Ticket" />
@@ -722,7 +706,8 @@
             <End Role="TicketHistory" EntitySet="TicketHistory" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TMSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -775,6 +760,7 @@
           <Property Name="Birthday" Type="DateTime" Precision="3" />
           <Property Name="Address" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="Gender" Type="Boolean" />
+          <Property Name="AvatarURL" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DepartmentID" Type="Int32" />
           <Property Name="DepartmentName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="JobTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
@@ -793,7 +779,6 @@
           <NavigationProperty Name="TicketHistories" Relationship="Self.FK_TicketHistory_AspNetUsers" FromRole="AspNetUsers" ToRole="TicketHistory" />
           <NavigationProperty Name="TicketHistories1" Relationship="Self.FK_TicketHistory_AspNetUsers1" FromRole="AspNetUsers" ToRole="TicketHistory" />
           <NavigationProperty Name="AspNetRoles" Relationship="Self.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
-          <Property Name="AvatarURL" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="BusinessRule">
           <Key>
@@ -849,9 +834,9 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="ParentID" Type="Int32" />
           <Property Name="CategoryLevel" Type="Int32" />
-          <Property Name="IsActive" Type="Boolean" />
           <NavigationProperty Name="Category1" Relationship="Self.FK_Category_Category" FromRole="Category" ToRole="Category1" />
           <NavigationProperty Name="Category2" Relationship="Self.FK_Category_Category" FromRole="Category1" ToRole="Category" />
           <NavigationProperty Name="Solutions" Relationship="Self.FK_KnowledgeBase_Category" FromRole="Category" ToRole="Solution" />
@@ -866,7 +851,6 @@
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="IsActive" Type="Boolean" />
           <NavigationProperty Name="AspNetUsers" Relationship="Self.FK_AspNetUsers_Department" FromRole="Department" ToRole="AspNetUsers" />
-          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Department" FromRole="Department" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="Impact">
           <Key>
@@ -932,7 +916,7 @@
           <Property Name="Mode" Type="Int32" Nullable="false" />
           <Property Name="SolveID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="TechnicianID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="DepartmentID" Type="Int32" />
+          <Property Name="AssignedByID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="RequesterID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ImpactID" Type="Int32" />
           <Property Name="ImpactDetail" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
@@ -957,7 +941,6 @@
           <NavigationProperty Name="AspNetUser2" Relationship="Self.FK_Ticket_AspNetUsers2" FromRole="Ticket" ToRole="AspNetUsers" />
           <NavigationProperty Name="AspNetUser3" Relationship="Self.FK_Ticket_AspNetUsers3" FromRole="Ticket" ToRole="AspNetUsers" />
           <NavigationProperty Name="Category" Relationship="Self.FK_Ticket_Category" FromRole="Ticket" ToRole="Category" />
-          <NavigationProperty Name="Department" Relationship="Self.FK_Ticket_Department" FromRole="Ticket" ToRole="Department" />
           <NavigationProperty Name="Impact" Relationship="Self.FK_Ticket_Impact" FromRole="Ticket" ToRole="Impact" />
           <NavigationProperty Name="Priority" Relationship="Self.FK_Ticket_Priority" FromRole="Ticket" ToRole="Priority" />
           <NavigationProperty Name="Urgency" Relationship="Self.FK_Ticket_Urgency" FromRole="Ticket" ToRole="Urgency" />
@@ -1205,18 +1188,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Ticket_Department">
-          <End Role="Department" Type="Self.Department" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Department">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Ticket">
-              <PropertyRef Name="DepartmentID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_PriorityMatrixItem_Impact">
           <End Role="Impact" Type="Self.Impact" Multiplicity="1" />
           <End Role="PriorityMatrixItem" Type="Self.PriorityMatrixItem" Multiplicity="*" />
@@ -1417,10 +1388,6 @@
             <End Role="Category" EntitySet="Categories" />
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
-          <AssociationSet Name="FK_Ticket_Department" Association="Self.FK_Ticket_Department">
-            <End Role="Department" EntitySet="Departments" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
           <AssociationSet Name="FK_PriorityMatrixItem_Impact" Association="Self.FK_PriorityMatrixItem_Impact">
             <End Role="Impact" EntitySet="Impacts" />
             <End Role="PriorityMatrixItem" EntitySet="PriorityMatrixItems" />
@@ -1498,7 +1465,6 @@
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="TMSModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
-                <ScalarProperty Name="AvatarURL" ColumnName="AvatarURL" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
                 <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
@@ -1515,6 +1481,7 @@
                 <ScalarProperty Name="Birthday" ColumnName="Birthday" />
                 <ScalarProperty Name="Address" ColumnName="Address" />
                 <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="AvatarURL" ColumnName="AvatarURL" />
                 <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
                 <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
                 <ScalarProperty Name="JobTitle" ColumnName="JobTitle" />
@@ -1573,9 +1540,9 @@
               <MappingFragment StoreEntitySet="Category">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="ParentID" ColumnName="ParentID" />
                 <ScalarProperty Name="CategoryLevel" ColumnName="CategoryLevel" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1647,7 +1614,7 @@
                 <ScalarProperty Name="Mode" ColumnName="Mode" />
                 <ScalarProperty Name="SolveID" ColumnName="SolveID" />
                 <ScalarProperty Name="TechnicianID" ColumnName="TechnicianID" />
-                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
+                <ScalarProperty Name="AssignedByID" ColumnName="AssignedByID" />
                 <ScalarProperty Name="RequesterID" ColumnName="RequesterID" />
                 <ScalarProperty Name="ImpactID" ColumnName="ImpactID" />
                 <ScalarProperty Name="ImpactDetail" ColumnName="ImpactDetail" />

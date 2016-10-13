@@ -23,6 +23,7 @@ namespace TMS.Areas.Admin.Controllers
         private ImpactService _impactService;
         private UrgencyService _urgencyService;
         private PriorityService _priorityService;
+        private CategoryService _categoryService;
 
         public ManageSCController()
         {
@@ -30,9 +31,10 @@ namespace TMS.Areas.Admin.Controllers
             _impactService = new ImpactService(_unitOfWork);
             _urgencyService = new UrgencyService(_unitOfWork);
             _priorityService = new PriorityService(_unitOfWork);
+            _categoryService = new CategoryService(_unitOfWork);
         }
 
-        // GET: Admin/ManageSC
+        // GET: Admin/ManageSC/Priority
         public ActionResult Priority()
         {
             return View();
@@ -45,6 +47,13 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         public ActionResult Urgency()
+        {
+            return View();
+        }
+
+        // GET: Admin/ManageSC/Category
+        [HttpGet]
+        public ActionResult Category()
         {
             return View();
         }
@@ -191,6 +200,71 @@ namespace TMS.Areas.Admin.Controllers
                 iTotalRecords = result.Count(),
                 iTotalDisplayRecords = filteredListItems.Count(),
                 aaData = result
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetCategoriesDataTable(jQueryDataTableParamModel param)
+        {
+            var categoryList = _categoryService.GetCategories();
+            var default_search_key = Request["search[value]"];
+
+            IEnumerable<Category> filteredListItems;
+            if (!string.IsNullOrEmpty(default_search_key))
+            {
+                filteredListItems = categoryList.Where(p => p.Name.ToLower().Contains(default_search_key.ToLower()));
+            }
+            else
+            {
+                filteredListItems = categoryList;
+            }
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortDirection = Request["order[0][dir]"];
+
+            switch (sortColumnIndex)
+            {
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Name)
+                        : filteredListItems.OrderByDescending(p => p.Name);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var result = displayedList.Select(p => new Object[]
+            {
+                p.ID,
+                p.Name,
+                p.Description,
+                _categoryService.GetSubCategories(p.ID).Select(m => new
+                {
+                    m.ID,
+                    m.Name,
+                    m.Description
+                }).ToArray()
+            }).ToArray();
+
+            return Json(new
+            {
+                param.sEcho,
+                recordsTotal = result.Count(),
+                recordsFiltered = filteredListItems.Count(),
+                data = result
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetCategories()
+        {
+            var categoryList = _categoryService.GetCategories().Select(m => new
+            {
+                m.ID,
+                m.Name
+            }).ToArray();
+            return Json(new
+            {
+                data = categoryList
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -598,15 +672,15 @@ namespace TMS.Areas.Admin.Controllers
             }
             else
             {
-              
-                    if (_priorityService.IsInUse(priority))
+
+                if (_priorityService.IsInUse(priority))
+                {
+                    return Json(new
                     {
-                        return Json(new
-                        {
-                            success = false,
-                            message = "Priority is being used! Can not be deleted!"
-                        });
-                    }
+                        success = false,
+                        message = "Priority is being used! Can not be deleted!"
+                    });
+                }
                 try
                 {
                     _priorityService.DeletePriority(priority);

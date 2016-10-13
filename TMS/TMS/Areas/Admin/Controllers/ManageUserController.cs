@@ -82,13 +82,11 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/ManageUser/HelpDesk
-        [Utils.Authorize(Roles = "Admin")]
         public ActionResult HelpDesk()
         {
             return View();
         }
 
-        [Utils.Authorize(Roles = "Admin")]
         public ActionResult Technician()
         {
             return View();

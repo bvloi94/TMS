@@ -231,6 +231,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Class\BusinessRuleConditionCustom.cs" />
     <Compile Include="Models\AspNetRole.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
@@ -249,7 +250,6 @@
     <Compile Include="Models\BusinessRuleCondition.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Class\BusinessRuleConditionCustom.cs" />
     <Compile Include="Models\BusinessRuleNotification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
@@ -304,6 +304,7 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ImpactService.cs" />
     <Compile Include="Services\PriorityService.cs" />
     <Compile Include="Services\UrgencyService.cs" />
@@ -349,6 +350,8 @@
     <Content Include="Content\img\boxed-bg.jpg" />
     <Content Include="Content\img\boxed-bg.png" />
     <Content Include="Content\img\default-50x50.gif" />
+    <Content Include="Content\img\details_close.png" />
+    <Content Include="Content\img\details_open.png" />
     <Content Include="Content\img\icons.png" />
     <Content Include="Content\img\page403.png" />
     <Content Include="Content\img\photo1.png" />
@@ -472,13 +475,6 @@
     <Content Include="Areas\Admin\Views\ManageUser\Requester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateRequester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditRequester.cshtml" />
-    <EntityDeploy Include="Models\TMSModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>TMSModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\TMSModel.edmx.diagram">
-      <DependentUpon>TMSModel.edmx</DependentUpon>
-    </Content>
     <Content Include="Areas\Admin\Views\ManageSC\Priority.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\Impact.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\Urgency.cshtml" />
@@ -506,6 +502,14 @@
     <Content Include="Areas\Admin\Views\ManageUser\CreateAdmin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditAdmin.cshtml" />
     <Content Include="Areas\Admin\Views\Profile\ViewProfile.cshtml" />
+    <EntityDeploy Include="Models\TMSModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>TMSModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\TMSModel.edmx.diagram">
+      <DependentUpon>TMSModel.edmx</DependentUpon>
+    </Content>
+    <Content Include="Areas\Admin\Views\ManageSC\Category.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

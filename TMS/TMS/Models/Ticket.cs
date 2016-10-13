@@ -26,7 +26,7 @@ namespace TMS.Models
         public int Mode { get; set; }
         public string SolveID { get; set; }
         public string TechnicianID { get; set; }
-        public Nullable<int> DepartmentID { get; set; }
+        public string AssignedByID { get; set; }
         public string RequesterID { get; set; }
         public Nullable<int> ImpactID { get; set; }
         public string ImpactDetail { get; set; }
@@ -52,7 +52,6 @@ namespace TMS.Models
         public virtual AspNetUser AspNetUser2 { get; set; }
         public virtual AspNetUser AspNetUser3 { get; set; }
         public virtual Category Category { get; set; }
-        public virtual Department Department { get; set; }
         public virtual Impact Impact { get; set; }
         public virtual Priority Priority { get; set; }
         public virtual Urgency Urgency { get; set; }
