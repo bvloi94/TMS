@@ -221,24 +221,28 @@ namespace TMS.Services
                     }
                     break;
                 case ConstantUtil.CriteriaOfBusinessRuleCondition.Department:
-                    Department department = handlingTicket.Department;
-                    if (department != null)
+                    AspNetUser technician = _unitOfWork.AspNetUserRepository.GetByID(handlingTicket.TechnicianID);
+                    if (technician != null)
                     {
-                        string departmentName = department.Name;
-                        switch (businessRuleCondition.Condition)
+                        Department department = technician.Department;
+                        if (department != null)
                         {
-                            case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                                if (departmentName.Equals(businessRuleCondition.Value))
-                                {
-                                    isSatisfied = true;
-                                }
-                                break;
-                            case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                                if (!departmentName.Equals(businessRuleCondition.Value))
-                                {
-                                    isSatisfied = true;
-                                }
-                                break;
+                            string departmentName = department.Name;
+                            switch (businessRuleCondition.Condition)
+                            {
+                                case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
+                                    if (departmentName.Equals(businessRuleCondition.Value))
+                                    {
+                                        isSatisfied = true;
+                                    }
+                                    break;
+                                case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
+                                    if (!departmentName.Equals(businessRuleCondition.Value))
+                                    {
+                                        isSatisfied = true;
+                                    }
+                                    break;
+                            }
                         }
                     }
                     break;

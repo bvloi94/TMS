@@ -1,11 +1,7 @@
 ﻿using EAGetMail;
 using log4net;
-using LumiSoft.Net;
-using LumiSoft.Net.IMAP;
-using LumiSoft.Net.IMAP.Client;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net.Mail;
 using System.Threading;
@@ -24,16 +20,11 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$fullname", fullname);
             emailMessage = emailMessage.Replace("$username", username);
             emailMessage = emailMessage.Replace("$password", password);
-            bool sendMailResult = await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
-            if (!sendMailResult)
-            {
-                log.Error("Send account email unsuccessfully");
-            }
+            await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
         }
 
         public static async Task<bool> ResendToUserWhenCreate(string username, string password, string fullname, string email)
         {
-            ILog log = LogManager.GetLogger(typeof(EmailUtil));
             string emailSubject = "[TMS] Account Info";
             string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CreateRequesterEmailTemplate.txt"));
             emailMessage = emailMessage.Replace("$fullname", fullname);
@@ -44,6 +35,7 @@ namespace TMS.Utils
 
         private static async Task<bool> SendEmail(string toEmailAddress, string emailSubject, string emailMessage)
         {
+            ILog log = LogManager.GetLogger(typeof(EmailUtil));
             try
             {
                 var message = new MailMessage();
@@ -69,6 +61,7 @@ namespace TMS.Utils
             }
             catch (Exception e)
             {
+                log.Debug(e);
                 return false;
             }
         }
@@ -122,49 +115,6 @@ namespace TMS.Utils
             }
             return mailList;
         }
-
-        //public static void GetUnreadMailsUsingLumiSoft()
-        //{
-        //    IMAP_Client client = new IMAP_Client();
-        //    client.Connect("imap.gmail.com", 993, true);
-        //    client.Login("huytcd16@gmail.com", "huydaivuong");
-        //    client.SelectFolder("INBOX");
-
-        //    IMAP_SequenceSet sequence = new IMAP_SequenceSet();
-        //    sequence.Parse("*:1"); // from first to last
-
-        //    IMAP_Client_FetchHandler fetchHandler = new IMAP_Client_FetchHandler();
-
-        //    fetchHandler.NextMessage += new EventHandler(delegate (object s, EventArgs e)
-        //    {
-        //        Debug.WriteLine("next message");
-        //    });
-
-        //    fetchHandler.Envelope += new EventHandler<EventArgs<IMAP_Envelope>>(delegate (object s, EventArgs<IMAP_Envelope> e) {
-        //        IMAP_Envelope envelope = e.Value;
-        //        if (envelope.From != null && !String.IsNullOrWhiteSpace(envelope.Subject))
-        //        {
-        //            Debug.WriteLine(envelope.Subject);
-        //            Debug.WriteLine(envelope.MessageID);
-        //        }
-
-        //    });
-
-        //    // the best way to find unread emails is to perform server search
-
-        //    int[] unseen_ids = client.Search(false, "UTF-8", "unseen");
-        //    Console.WriteLine("unseen count: " + unseen_ids.Length.ToString());
-
-        //    // now we need to initiate our sequence of messages to be fetched
-        //    sequence.Parse(string.Join(",", unseen_ids));
-
-        //    // fetch messages now
-        //    client.Fetch(false, sequence, new IMAP_Fetch_DataItem[] { new IMAP_Fetch_DataItem_Envelope() }, fetchHandler);
-
-        //    // uncomment this line to mark messages as read
-        //    client.StoreMessageFlags(false, sequence, IMAP_Flags_SetType.Add, IMAP_MessageFlags.Seen);
-        //}
-
 
     }
 }
