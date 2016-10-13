@@ -68,7 +68,7 @@ namespace TMS.Services
 
         public bool IsDuplicatedEmail(string id, string email)
         {
-            return _unitOfWork.AspNetUserRepository.Get(m => m.Id != id && m.Email == email).Count() > 0;
+            return _unitOfWork.AspNetUserRepository.Get(m => m.Id != id && m.Email == email).Any();
         }
 
         public IEnumerable<AspNetUser> GetRequesters()

@@ -210,7 +210,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-    <Compile Include="Areas\Admin\Controllers\DefaultController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
@@ -256,6 +255,9 @@
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Category.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\C__MigrationHistory.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Department.cs">
@@ -315,6 +317,7 @@
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
+    <Compile Include="ViewModels\ProfileAdminViewModel.cs" />
     <Compile Include="ViewModels\SCItemViewModels.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -498,7 +501,8 @@
     <Content Include="Areas\Admin\Views\ManageUser\Admin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateAdmin.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditAdmin.cshtml" />
-    <Content Include="Areas\Admin\Views\Profile\ViewProfile.cshtml" />
+    <Content Include="Areas\Admin\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Profile\UpdateProfile.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
