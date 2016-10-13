@@ -146,7 +146,7 @@
                     <li class="header">MAIN NAVIGATION</li>
                     <li class="treeview @Html.Raw((controllerName == "ManageUser") ? "active" : "")">
                         <a href="#">
-                            <i class="fa fa-users" aria-hidden="true"></i>
+                            <i class="fa fa-users"></i>
                             <span>MANAGE USER</span>
                         </a>
                         <ul class="treeview-menu">
@@ -156,11 +156,17 @@
                             <li @Html.Raw((actionName == "Admin" || actionName == "CreateAdmin" || actionName == "EditAdmin") ? "class='active'" : "")><a href="/Admin/ManageUser/Admin"><i class="fa fa-circle-o"></i>Admin</a></li>
                         </ul>
                     </li>
-                    <li class="treeview">
+                    <li class="treeview @Html.Raw((controllerName == "ManageSC") ? "active" : "")">
                         <a href="#">
                             <i class="fa fa-gears"></i>
-                            <span>SYSTEM CONFIG</span>
+                            <span>MANAGE SYSTEM CONFIG</span>
                         </a>
+                        <ul class="treeview-menu">
+                            <li @Html.Raw((actionName == "Impact") ? "class='active'" : "")><a href="/Admin/ManageSC/Impact"><i class="fa fa-circle-o"></i>Impact</a></li>
+                            <li @Html.Raw((actionName == "Urgency") ? "class='active'" : "")><a href="/Admin/ManageSC/Urgency"><i class="fa fa-circle-o"></i>Urgency</a></li>
+                            <li @Html.Raw((actionName == "Priority") ? "class='active'" : "")><a href="/Admin/ManageSC/Priority"><i class="fa fa-circle-o"></i>Priority</a></li>
+                            <li @Html.Raw((actionName == "Category") ? "class='active'" : "")><a href="/Admin/ManageSC/Category"><i class="fa fa-circle-o"></i>Category</a></li>
+                        </ul>
                     </li>
                 </ul>
             </section>
@@ -199,7 +205,7 @@
     <script>
         $(document).ready(function () {
             $.validator.methods.date = function (value, element) {
-                Globalize.culture("en-AU");
+                Globalize.culture("en-GB");
                 return this.optional(element) || Globalize.parseDate(value) !== null;
             };
             $(".datetime").datetimepicker({
