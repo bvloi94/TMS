@@ -258,9 +258,6 @@
     <Compile Include="Models\Category.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\C__MigrationHistory.cs">
-      <DependentUpon>TMSModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Department.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
