@@ -40,7 +40,7 @@ textarea {
 }
 
 .page-header-custom {
-    margin: 0px 15px -10px 15px;
+    margin-bottom: 10px;
     padding: 10px 15px;
     border-left: 20px double green;
     background-color: white;
@@ -53,4 +53,20 @@ textarea {
 
 .large-text-container * {
     font-size: 16px;
+}
+
+.wrapper {
+    min-width: 1360px;
+}
+
+body {
+    overflow: unset;
+}
+
+.dataTable {
+    width: 100% !important;
+}
+
+.margin-left10 {
+    margin-left: 10px;
 }

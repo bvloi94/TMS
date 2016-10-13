@@ -198,6 +198,10 @@
     @RenderSection("scripts", required: false)
     <script>
         $(document).ready(function () {
+            $.validator.methods.date = function (value, element) {
+                Globalize.culture("en-GB");
+                return this.optional(element) || Globalize.parseDate(value) !== null;
+            };
             $(".datetime").datetimepicker({
                 timepicker: false,
                 format: 'd/m/Y'

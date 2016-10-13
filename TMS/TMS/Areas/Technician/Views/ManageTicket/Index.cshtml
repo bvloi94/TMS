@@ -6,32 +6,6 @@
 }
 
 <style>
-    #custom-search-input {
-        padding: 3px;
-        border: solid 1px #E4E4E4;
-        border-radius: 6px;
-        background-color: #fff;
-    }
-
-        #custom-search-input input {
-            border: 0;
-            box-shadow: none;
-        }
-
-        #custom-search-input button {
-            margin: 2px 0 0 0;
-            background: none;
-            box-shadow: none;
-            border: 0;
-            color: #666666;
-            padding: 0 8px 0 10px;
-            border-left: solid 1px #ccc;
-        }
-
-        #custom-search-input .glyphicon-search {
-            font-size: 15px;
-        }
-
     .table thead, h4 {
         color: #1074bd;
     }
@@ -91,15 +65,7 @@
     <div class="col-xs-12">
         <div class="box box-primary">
             <div class="box-body">
-                <div class="col-md-offset-6 col-md-6">
-                    <div class="box-tools pull-right col-md-6">
-                        <div class="has-feedback">
-                            <input type="text" class="form-control input-sm" placeholder="Search solution..." />
-                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                        </div>
-                    </div>
-                </div>
-                <table class="table">
+                <table class="table" id="ticket-table">
                     <thead>
                         <tr>
                             <th>Date Opened</th>
@@ -111,136 +77,55 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>6/8/2016 11:23:00 PM</td>
-                            <td><a data-toggle="modal" data-target="#Modal1">Change website main color</a></td>
-                            <td>Open</td>
-                            <td>Color is changed to red.</td>
-                            <td>8/8/2016 11:23:00 PM</td>
-                            <td><a class="btn btn-primary" data-toggle="modal" data-target="#SolveModal1">Solve</a></td>
-                        </tr>
-                        <tr>
-                            <td>7/8/2016 11:23:00 PM</td>
-                            <td><a data-toggle="modal" data-target="#Modal2">Move host javi.net to new server</a></td>
-                            <td>Closed</td>
-                            <td>Host is moved to new server on August 7th.</td>
-                            <td>9/8/2016 11:23:00 PM</td>
-                            <td><a class="btn btn-default disabled">Solve</a></td>
-                        </tr>
-                        <tr>
-                            <td>8/8/2016 11:23:00 PM</td>
-                            <td><a data-toggle="modal" data-target="#Modal3">Request admin account</a></td>
-                            <td>Closed</td>
-                            <td>Account is now administrator.</td>
-                            <td>10/8/2016 11:23:00 PM</td>
-                            <td><a class="btn btn-default disabled">Solve</a></td>
-                        </tr>
                     </tbody>
                 </table>
-                <div id="Modal1" class="modal fade" role="dialog">
-                    <div class="modal-dialog modal-lg">
 
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Change website main color</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="box-body">
-                                    <div class="shortInfoContainer">
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Date opened</h4>
-                                            6/8/2016 11:23:00
+                <!-- View ticket detail modal -->
+                <div id="detail-modal" class="modal fade" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title" id="ticket-subject"></h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="box-body">
+                                        <div class="shortInfoContainer">
+                                            <div class="col-sm-3 shortInfo">
+                                                <h4>Date opened</h4>
+                                                <span id="ticket-created-date"></span>
+                                            </div>
+                                            <div class="col-sm-3 shortInfo">
+                                                <h4>Created By</h4>
+                                                <span id="ticket-created-by"></span>
+                                            </div>
+                                            <div class="col-sm-2 shortInfo">
+                                                <h4>Status</h4>
+                                                <span id="ticket-status"></span>
+                                            </div>
+                                            <div class="col-sm-3 shortInfo">
+                                                <h4>Last modified</h4>
+                                                <span id="ticket-modified-date"></span>
+                                            </div>
                                         </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Department</h4>
-                                            Technical support - Website Developer
-                                        </div>
-                                        <div class="col-sm-2 shortInfo">
-                                            <h4>Status</h4>
-                                            Open
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Last modified</h4>
-                                            8/8/2016 11:23:00
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div class="detailContainer">
-                                        <div class="col-lg-12 detail">
-                                            <h4>Ticket Description</h4>
-                                            <p>I wish to change my website's main color to red. The color code is #ff3434. Please email me when my request is solved.</p>
-                                        </div>
-                                        <div class="col-lg-12 detail">
-                                            <h4>Solution</h4>
-                                            <p><i>This ticket is not solved yet. Would you like to solve it now?</i>
-                                                <a class="btn btn-primary" data-toggle="modal" data-target="#SolveModal1">Yes</a>
-                                                <a class="btn btn-default" data-toggle="modal" data-dismiss="modal">No</a>
-                                            </p>
+                                        <hr />
+                                        <div class="detailContainer">
+                                            <div class="col-lg-12 detail">
+                                                <h4>Ticket Description</h4>
+                                                <p id="ticket-description"></p>
+                                            </div>
+                                            <div class="col-lg-12 detail" id="ticket-solution">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div id="Modal2" class="modal fade" role="dialog">
-                    <div class="modal-dialog modal-lg">
-
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Move host javi.net to new server</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="box-body">
-                                    <div class="shortInfoContainer">
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Date opened</h4>
-                                            7/8/2016 11:23:00
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Department</h4>
-                                            Technical support - Website Developer
-                                        </div>
-                                        <div class="col-sm-2 shortInfo">
-                                            <h4>Status</h4>
-                                            Closed
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Last modified</h4>
-                                            9/8/2016 11:23:00
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div class="detailContainer">
-                                        <div class="col-lg-12 detail">
-                                            <h4>Ticket Description</h4>
-                                            <p>I wish to change my website's main color to red. The color code is #ff3434. Please email me when my request is solved.</p>
-                                        </div>
-                                        <div class="col-lg-12 detail">
-                                            <h4>Solution</h4>
-                                            <p>Host is moved to new server on August 7th.</p>
-                                            <p>We're so sorry about this unconvenience. All of your data is restored successfully. Thank you for your impatience.</p>
-                                            <p><b>Person in charge:</b> Bui Van Loi</p>
-                                            <p>Sent: 9/8/2016 11:23:00</p>
-                                        </div>
-                                    </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
 
+                        </div>
                     </div>
-                </div>
                 <!-- Solve Modal -->
                 <div id="SolveModal1" class="modal fade" role="dialog">
                     <div class="modal-dialog">
@@ -354,4 +239,114 @@
         </a>
     </div>
 </div>
+
+@Styles.Render("~/Content/datatables")
+@section scripts{
+    @Scripts.Render("~/bundles/datatables")
+    <script>
+        setActiveTicketMenu();
+        $("#ticket-table").DataTable({
+            processing: true,
+            serverSide: true,
+            paging: true,
+            sort: true,
+            ajax: {
+                url: "/Technician/ManageTicket/GetTechnicianTickets"
+            },
+            "columnDefs": [
+                {
+                    "render": function (data, type, row) {
+                        return row[0];
+                    },
+                    "targets": 0
+                },
+                {
+                    "render": function (data, type, row) {
+                        return '<a href="#" class="view-detail" data-id=' + row[5] + '>' + row[1] + '</a>';
+                    },
+                    "targets": 1
+                },
+                {
+                    "render": function (data, type, row) {
+                        return row[2] == 1 ? "Open" : "Closed";
+                    },
+                    "targets": 2
+                },
+                {
+                    "render": function (data, type, row) {
+                        return row[3];
+                    },
+                    "targets": 3
+                },
+                {
+                    "render": function (data, type, row) {
+                        return row[4];
+                    },
+                    "targets": 4
+                },
+
+
+                {
+                    "render": function (data, type, row) {
+                        var solveUrl = '@Url.Action("Solve", "ManageTicket", new { id = "-1"})';
+                        solveUrl = solveUrl.replace("-1", row[5]);
+                        if (row[2] == 1) {
+                            return "<a target='_blank' href='" + solveUrl + "' class='btn btn-primary' >Solve</a>";
+                        }
+                        else {
+                            return "<a class='btn btn-default' disabled>Solve</a>";
+                        }
+                    },
+                    "targets": 5
+                }]
+        });
+
+        $("#ticket-table").on("click", ".view-detail", function () {
+            var id = $(this).attr('data-id'),
+                $modal = $('#detail-modal');
+
+            $.ajax({
+                url: '@Url.Action("GetTicketDetail", "ManageTicket")',
+                type: "GET",
+                dataType: "json",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    var solveUrl = '@Url.Action("Solve", "ManageTicket", new { id = "-1"})';
+                    solveUrl = solveUrl.replace("-1", data.id);
+
+                    $('#ticket-subject').text(data.subject);
+                    $('#ticket-created-date').text(data.createdDate);
+                    $('#ticket-created-by').text(data.createBy);
+
+                    if (data.status == 1) {
+                        $('#ticket-status').text('Open');
+                        $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
+                                                    + "<a target='_blank' class='btn btn-primary' href='" + solveUrl + "'>Yes</a>"
+                                                    + "<a class='btn btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
+                    }
+                    else {
+                        $('#ticket-status').text('Closed');
+                        $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p>" + data.solution + "</p>");
+                    }
+
+                    $('#ticket-modified-date').text(data.lastModified);
+                    $('#ticket-description').text(data.description);
+                    $('#ticket-solveUser').text(data.solveUser);
+
+                    $modal.modal("show");
+                },
+                failure: function (data) {
+                    alert(data.d);
+                }
+            });
+
+        });
+
+    </script>
+}
+
+
+
 

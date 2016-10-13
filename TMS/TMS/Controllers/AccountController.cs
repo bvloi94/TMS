@@ -8,6 +8,8 @@ using Microsoft.Owin.Security;
 using TMS.Models;
 using TMS.DAL;
 using TMS.Services;
+using TMS.ViewModels;
+using System.Web.Security;
 
 namespace TMS.Controllers
 {
@@ -94,8 +96,9 @@ namespace TMS.Controllers
                             case "admin":
                                 return RedirectToAction("Requester", "ManageUser", new { area = "Admin" });
                             case "technician":
-                                return RedirectToAction("Index", "Ticket", new { area = "Technician" });
+                                return RedirectToAction("Index", "ManageTicket", new { area = "Technician" });
                             case "helpdesk":
+                                return RedirectToAction("Index", "ManageTicket", new { area = "HelpDesk" });
                             case "requester":
                             default:
                                 return RedirectToLocal(returnUrl);

@@ -45,6 +45,12 @@ namespace TMS.Services
             }
         }
 
+        public bool IsValidEmail(string email)
+        {
+            return _unitOfWork.AspNetUserRepository.Get(m => m.Email.Equals(email.ToLower()) && m.IsActive == true
+                        && m.AspNetRoles.FirstOrDefault().Name.ToLower().Equals("requester")).Any();
+        }
+
         public void EditUser(AspNetUser user)
         {
             _unitOfWork.AspNetUserRepository.Update(user);
@@ -66,9 +72,14 @@ namespace TMS.Services
             }
         }
 
+        public AspNetUser GetUserByEmail(string email)
+        {
+            return _unitOfWork.AspNetUserRepository.Get(m => m.Email.Equals(email.ToLower())).FirstOrDefault();
+        }
+
         public bool IsDuplicatedEmail(string id, string email)
         {
-            return _unitOfWork.AspNetUserRepository.Get(m => m.Id != id && m.Email == email).Count() > 0;
+            return _unitOfWork.AspNetUserRepository.Get(m => m.Id != id && m.Email == email).Any();
         }
 
         public IEnumerable<AspNetUser> GetRequesters()
@@ -79,6 +90,16 @@ namespace TMS.Services
         public IEnumerable<AspNetUser> GetHelpDesks()
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "helpdesk");
+        }
+
+        public IEnumerable<AspNetUser> GetTechnicians()
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician");
+        }
+
+        public IEnumerable<AspNetUser> GetAdmins()
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin");
         }
 
         public bool IsActive(string id)
@@ -112,5 +133,6 @@ namespace TMS.Services
             }
             return isEnable;
         }
+
     }
 }

@@ -7,8 +7,10 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using TMS.DAL;
+using TMS.Enumerator;
 using TMS.Models;
 using TMS.Services;
+using TMS.ViewModels;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -71,10 +73,11 @@ namespace TMS.Areas.HelpDesk.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
+        public ActionResult Create([Bind(Include = "Type,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Subject,Description,Solution")] Ticket ticket)
         {
             if (ModelState.IsValid)
             {
+                ticket.Status = (int?) TicketStatusEnum.Open;
                 db.Tickets.Add(ticket);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -103,10 +106,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
+            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.SolveID);
+            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.TechnicianID);
+            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.RequesterID);
+            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.CreatedID);
             ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
             ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
             ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
@@ -198,7 +201,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 p.Subject,
                 p.RequesterID==null?"":_userService.GetUserById(p.RequesterID).Fullname,
                 p.TechnicianID==null?"":_userService.GetUserById(p.TechnicianID).Fullname,
-                p.DepartmentID==null?"":_departmentService.GetDepartmentById(p.DepartmentID.ToString()).Name,
+                p.DepartmentID==null?"":_departmentService.GetDepartmentById((int) p.DepartmentID).Name,
                 p.SolvedDate.ToString(),
                 p.Status,
                 p.CreatedTime.ToString(),
@@ -212,6 +215,34 @@ namespace TMS.Areas.HelpDesk.Controllers
                 iTotalDisplayRecords = filteredListItems.Count(),
                 aaData = result
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult LoadAllTickets(JqueryDatatableParameterViewModel model)
+        {
+            JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
+            rsModel.sEcho = model.sEcho;
+            var queriedResult = _ticketService.GetAll();
+            rsModel.iTotalRecords = queriedResult.Count();
+            var result = queriedResult.Skip(model.iDisplayStart).Take(model.iDisplayLength).ToList();
+            var tickets = new List<TicketViewModel>();
+            int startNo = model.iDisplayStart;
+            foreach (var item in result)
+            {
+                var s = new TicketViewModel();
+                s.No = ++startNo;
+                s.Id = item.ID;
+                s.Subject = item.Subject;
+                s.Requester = item.RequesterID == null ? "" : _userService.GetUserById(item.RequesterID).Fullname;
+                s.AssignedTo = item.TechnicianID == null ? "" : _userService.GetUserById(item.TechnicianID).Fullname;
+                s.Department = item.DepartmentID == null ? "" : _departmentService.GetDepartmentById((int)item.DepartmentID).Name;
+                s.SolvedDate = item.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
+                s.Status = item.Status.HasValue ? ((TicketStatusEnum)item.Status).ToString() : "";
+                s.CreatedTime = item.CreatedTime?.ToString("dd/MM/yyyy") ?? "";
+                tickets.Add(s);
+            }
+            rsModel.aaData = tickets;
+            rsModel.iTotalDisplayRecords = queriedResult.Count();
+            return Json(rsModel, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

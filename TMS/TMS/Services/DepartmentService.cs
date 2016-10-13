@@ -27,7 +27,7 @@ namespace TMS.Services
             _unitOfWork.Save();
         }
 
-        public Department GetDepartmentById(string id)
+        public Department GetDepartmentById(int id)
         {
             return _unitOfWork.DepartmentRepository.GetByID(id);
         }

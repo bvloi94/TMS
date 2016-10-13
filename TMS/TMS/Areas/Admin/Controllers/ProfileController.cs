@@ -4,12 +4,17 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace TMS.Areas.Technician.Controllers
+namespace TMS.Areas.Admin.Controllers
 {
-    public class TicketController : Controller
+    public class ProfileController : Controller
     {
-        // GET: Technician/Ticket
+        // GET: Admin/Profile
         public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult UpdateProfie()
         {
             return View();
         }
