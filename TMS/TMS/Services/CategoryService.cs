@@ -48,7 +48,7 @@ namespace TMS.Services
         {
             if (id.HasValue)
             {
-                return _unitOfWork.CategoryRepository.Get(m => m.ID.Equals(id.Value) && m.Name.ToLower().Equals(name.ToLower())
+                return _unitOfWork.CategoryRepository.Get(m => !m.ID.Equals(id.Value) && m.Name.ToLower().Equals(name.ToLower())
                     && m.ParentID == parentId).Any();
             }
             else
@@ -63,6 +63,19 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.CategoryRepository.Insert(category);
+                _unitOfWork.Save();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public void UpdateCategory(Category category)
+        {
+            try
+            {
+                _unitOfWork.CategoryRepository.Update(category);
                 _unitOfWork.Save();
             }
             catch

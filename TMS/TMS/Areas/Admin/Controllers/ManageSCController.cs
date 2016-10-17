@@ -856,5 +856,232 @@ namespace TMS.Areas.Admin.Controllers
                 }
             }
         }
+
+        [HttpPost]
+        public ActionResult CreateItem(CategoryViewModel model)
+        {
+            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name, model.ParentId);
+            if (isDuplicatedName)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = string.Format("'{0}' has already been used.", model.Name)
+                });
+            }
+            else
+            {
+                Category category = new Category();
+                category.Name = model.Name;
+                category.Description = model.Description;
+                category.CategoryLevel = ConstantUtil.CategoryLevel.Item;
+                category.ParentID = model.ParentId;
+                try
+                {
+                    _categoryService.AddCategory(category);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create new item successfully!"
+                    });
+                }
+                catch
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        message = "Some errors occured. Please try again later!"
+                    });
+                }
+            }
+        }
+
+        [HttpGet]
+        public ActionResult GetCategoryDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Category category = _categoryService.GetCategoryById(id.Value);
+                return Json(new
+                {
+                    success = true,
+                    name = category.Name,
+                    description = category.Description
+                }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Cannot get category detail!"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        [HttpGet]
+        public ActionResult GetSubCategoryDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Category category = _categoryService.GetCategoryById(id.Value);
+                return Json(new
+                {
+                    success = true,
+                    name = category.Name,
+                    description = category.Description,
+                    parentId = category.ParentID,
+                    categories = _categoryService.GetCategories().Select(m => new {
+                        m.ID,
+                        m.Name
+                    }).ToArray()
+                }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Cannot get sub category detail!"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        [HttpGet]
+        public ActionResult GetItemDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Category category = _categoryService.GetCategoryById(id.Value);
+                return Json(new
+                {
+                    success = true,
+                    name = category.Name,
+                    description = category.Description,
+                    parentId = category.ParentID,
+                    categories = _categoryService.GetSubCategories().OrderBy(m => m.ParentID).Select(m => new CategoryViewModel
+                    {
+                        ID = m.ID,
+                        Name = _categoryService.GetCategoryById(m.ParentID.Value).Name + " > " + m.Name
+                    }).ToArray()
+                }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Cannot get sub category detail!"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult EditCategory(CategoryViewModel model)
+        {
+            if (model.ID.HasValue)
+            {
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, null);
+                if (isDuplicatedName)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = false,
+                        message = string.Format("'{0}' has already been used.", model.Name)
+                    });
+                }
+                else
+                {
+                    Category category = _categoryService.GetCategoryById(model.ID.Value);
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    try
+                    {
+                        _categoryService.UpdateCategory(category);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Edit category successfully!"
+                        });
+                    }
+                    catch
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = "Some errors occured. Please try again later!"
+                        });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Cannot get category detail!"
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EditSubCategory(CategoryViewModel model)
+        {
+            if (model.ID.HasValue)
+            {
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, model.ParentId);
+                if (isDuplicatedName)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = false,
+                        message = string.Format("'{0}' has already been used.", model.Name)
+                    });
+                }
+                else
+                {
+                    Category category = _categoryService.GetCategoryById(model.ID.Value);
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    category.ParentID = model.ParentId;
+                    try
+                    {
+                        _categoryService.UpdateCategory(category);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Edit category successfully!"
+                        });
+                    }
+                    catch
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = "Some errors occured. Please try again later!"
+                        });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Cannot get sub category detail!"
+                });
+            }
+        }
     }
 }

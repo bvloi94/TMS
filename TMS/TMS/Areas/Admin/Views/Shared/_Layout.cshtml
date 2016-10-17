@@ -129,18 +129,8 @@
                         <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                     </div>
                 </div>
-                <!-- search form -->
-                <form action="#" method="get" class="sidebar-form">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control" placeholder="Search...">
-                        <span class="input-group-btn">
-                            <button type="submit" name="search" id="search-btn" class="btn btn-flat">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </span>
-                    </div>
-                </form>
-                <!-- /.search form -->
+                <br />
+                <br />
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
@@ -167,6 +157,12 @@
                             <li @Html.Raw((actionName == "Priority") ? "class='active'" : "")><a href="/Admin/ManageSC/Priority"><i class="fa fa-circle-o"></i>Priority</a></li>
                             <li @Html.Raw((actionName == "Category") ? "class='active'" : "")><a href="/Admin/ManageSC/Category"><i class="fa fa-circle-o"></i>Category</a></li>
                         </ul>
+                    </li>
+                    <li class="treeview @Html.Raw((controllerName == "Profile") ? "active" : "")">
+                        <a href="/Admin/Profile">
+                            <i class="fa fa-user"></i>
+                            <span>MANAGE PROFILE</span>
+                        </a>
                     </li>
                 </ul>
             </section>
