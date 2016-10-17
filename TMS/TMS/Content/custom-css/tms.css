@@ -1,0 +1,24 @@
+﻿.container-box .form-group {
+    margin-bottom: 5px;
+}
+
+.form-label .form-group label:nth-child(2) {
+    text-align: left;
+    font-weight: normal;
+}
+
+.form-label .form-group label:nth-child(1) {
+    text-align: right;
+}
+
+.form-label .form-group:after {
+    content: " ";
+    display: table;
+    clear: both;
+}
+
+.userslookup {
+    width: 25px;
+    height: 25px;
+    margin-top: 5px;
+}

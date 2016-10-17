@@ -7,10 +7,11 @@ namespace TMS.Enumerator
 {
     public enum TicketStatusEnum
     {
-        Open = 1,
+        New = 1,
         Assigned = 2,
         Solved = 3,
-        Closed = 4,
-        Canceled = 5
+        Unapproved = 4,
+        Canceled = 5,
+        Closed = 6,
     }
 }

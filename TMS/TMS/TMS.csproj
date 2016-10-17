@@ -218,6 +218,7 @@
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DropdownController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FAQController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -227,6 +228,8 @@
     <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
+    <Compile Include="Enumerator\TicketModeEnum.cs" />
+    <Compile Include="Enumerator\TicketTypeEnum.cs" />
     <Compile Include="Enumerator\TicketStatusEnum.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -304,6 +307,7 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\TicketAttachmentService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ImpactService.cs" />
     <Compile Include="Services\PriorityService.cs" />
@@ -312,16 +316,19 @@
     <Compile Include="Schedulers\JobManager.cs" />
     <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
+    <Compile Include="Uploads\FileUploader.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
-    <Compile Include="ViewModels\NewTicketViewModel.cs" />
+    <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
+    <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
     <Compile Include="ViewModels\TicketSolveViewModel.cs" />
     <Compile Include="ViewModels\ProfileAdminViewModel.cs" />
     <Compile Include="ViewModels\SCItemViewModels.cs" />
@@ -343,6 +350,10 @@
     <Content Include="Content\AdminLTE.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\css\select2.min.css" />
+    <Content Include="Content\custom-css\tms.css" />
+    <Content Include="Content\custom-css\tms-dropdown.css" />
+    <Content Include="Content\custom-js\tms-dropdown.js" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\img\add-requester-icon.ico" />
     <Content Include="Content\img\avatar.png" />
@@ -371,6 +382,7 @@
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\jquery.noty.js" />
+    <Content Include="Content\js\select2.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.css" />
@@ -518,6 +530,8 @@
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
     <Content Include="Areas\Admin\Views\ManageSC\Category.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\CreateNewTicket.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -531,6 +545,7 @@
     <Content Include="Scripts\globalize\plural.js" />
     <Content Include="Scripts\globalize\relative-time.js" />
     <Content Include="Scripts\globalize\unit.js" />
+    <Content Include="Scripts\tms-dropdown.js" />
     <Content Include="Scripts\helpdesk-manage-ticket.js" />
     <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -597,6 +612,7 @@
     <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
     <Content Include="Views\Error\Error500.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
+    <Content Include="Views\Ticket\Solve.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -604,7 +620,6 @@
     <Folder Include="Areas\Admin\Views\Default\" />
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
-    <Folder Include="Content\css\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

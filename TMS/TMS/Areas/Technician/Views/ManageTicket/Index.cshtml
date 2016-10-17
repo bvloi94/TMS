@@ -1,13 +1,34 @@
 ﻿@{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
 }
-@{
-    ViewBag.Title = "Ticket List";
-}
 
 <style>
+    .title {
+        margin-top: -20px;
+        margin-bottom: 12px;
+    }
+
+    .btitle {
+        display: table;
+    }
+
     .table thead, h4 {
         color: #1074bd;
+        font-weight: bold;
+    }
+
+    h5 {
+        color: #171fb0;
+        font-weight: bold;
+    }
+
+    .white-title {
+        text-transform: uppercase;
+        font-weight: bold;
+        display: table-cell;
+        padding: 8px;
+        vertical-align: middle;
+        color: #ffffff;
     }
 
     .rightItems {
@@ -19,41 +40,29 @@
         text-align: center;
     }
 
+    .ticket-contents {
+        padding: 0px;
+        margin-bottom: 20px;
+    }
+
     .modal-header {
         background-color: #1074bd;
-    }
-
-    .modal-body {
-        background-color: #e6e6e6;
-    }
-
-    .shortInfoContainer {
-        margin: 5px auto;
-        display: flex;
-    }
-
-    .shortInfo {
-        margin: auto;
-        height: 85px;
-        text-align: center;
-        display: table;
-        background-color: #ffffff;
-    }
-
-    hr {
-        border: 1px solid #c7c7c7;
-    }
-
-    .detail {
-        margin: 10px 20px 10px 0px;
-        padding: 8px 20px 8px 20px;
-        background-color: #ffffff;
     }
 
     .modal-footer {
         text-align: center;
     }
+        
+    .header-content {
+        background-color: #c9e0fa;
+        padding: 0px 10px 0px 25px;
+        margin: 4px;
+    }
 
+    .row-content {
+        padding: 3px 0px;
+    }
+    
     input {
         max-height: 400px;
     }
@@ -61,7 +70,7 @@
     #ticket-description, #ticket-solution {
         white-space: pre-wrap;
     }
-    
+
     .pre-wrap {
         white-space: pre-wrap;
     }
@@ -69,7 +78,13 @@
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="box box-primary">
+        <div class="box box-solid bg-blue title">
+            <div class="box-header btitle">
+                <h3 class="white-title">TICKET LIST</h3>
+            </div>
+        </div>
+        <div class="box box-solid">
+            <div class="box-header"></div>
             <div class="box-body">
                 <div class="pull-right" style="margin-right: 20px">
                     <label>Status:</label>
@@ -87,12 +102,13 @@
                 <table class="table" id="ticket-table">
                     <thead>
                         <tr>
-                            <th>Date Opened</th>
+                            <th>Create Date</th>
+                            <th>Requester</th>
                             <th>Subject</th>
+                            <th style="max-width: 250px">Solution</th>
                             <th>Status</th>
-                            <th style="max-width: 350px">Solution</th>
                             <th>Last Modified</th>
-                            <th></th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -107,43 +123,129 @@
                                 <h4 class="modal-title" id="ticket-subject"></h4>
                             </div>
                             <div class="modal-body">
-                                <div class="box-body">
-                                    <div class="shortInfoContainer">
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Date opened</h4>
-                                            <span id="ticket-created-date"></span>
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Created By</h4>
-                                            <span id="ticket-created-by"></span>
-                                        </div>
-                                        <div class="col-sm-2 shortInfo">
-                                            <h4>Status</h4>
-                                            <span id="ticket-status"></span>
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Last modified</h4>
-                                            <span id="ticket-modified-date"></span>
+                                <div class="box-body ticket-contents">
+                                    <div class="col-sm-12 header-content">
+                                        <h5><i class="fa fa-file-text"></i>  Information</h5>
+                                    </div>
+                                    <div class="col-sm-12 row-content ">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-2 labels"><b>Description: </b></div>
+                                            <div class="col-sm-10 pre-wrap" id="ticket-description" style="padding-left: 10px"></div>
                                         </div>
                                     </div>
-                                    <hr />
-                                    <div class="detailContainer">
-                                        <div class="col-lg-12 detail">
-                                            <h4>Ticket Description</h4>
-                                            <p id="ticket-description"></p>
+                                    <div class="col-sm-12 row-content ">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-2 labels"><b>Solution: </b></div>
+                                            <div class="col-sm-10 pre-wrap" id="ticket-solution" style="padding-left: 10px"></div>
                                         </div>
-                                        <div class="col-lg-12 detail" id="ticket-solution">
+                                    </div>
+                                    <div class="col-sm-12 row-content ">
+                                        <div class="col-sm-6 ">
+                                            <div class="col-sm-4 labels"><b>Attachment: </b></div>
+                                            <div class="col-sm-8"><span id="ticket-attachment">None</span></div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-4 labels"><b>Created by: </b></div>
+                                            <div class="col-sm-8"><span id="ticket-created-by"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content ">
+                                        <div class="col-sm-6 ">
+                                            <div class="col-sm-4 labels"><b>Assigned by: </b></div>
+                                            <div class="col-sm-8"><span id="ticket-assigned-by"></span></div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-4 labels"><b>Solved by:  </b></div>
+                                            <div class="col-sm-8"><span id="ticket-solved-by"></span></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12 header-content">
+                                        <h5><i class="fa fa-info-circle"></i>  Detail</h5>
+                                    </div>
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-4 ">
+                                            <div class="col-sm-6 labels"><b>Type: </b></div>
+                                            <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-type"></span></div>
+                                        </div>
+                                        <div class="col-sm-4 ">
+                                            <div class="col-sm-6 labels"><b>Mode: </b></div>
+                                            <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-mode"></span></div>
+                                        </div>
+                                        <div class="col-sm-4 " style="padding-left: 40px">
+                                            <div class="col-sm-6 labels"><b>Status: </b></div>
+                                            <div class="col-sm-6"><span id="ticket-status"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-4 ">
+                                            <div class="col-sm-6 labels"><b>Category: </b></div>
+                                            <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-category"></span></div>
+                                        </div>
+                                        <div class="col-sm-4 ">
+                                            <div class="col-sm-6 labels"><b>Urgency: </b></div>
+                                            <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-urgency"></span></div>
+                                        </div>
+                                        <div class="col-sm-4 " style="padding-left: 40px">
+                                            <div class="col-sm-6 labels"><b>Priority: </b></div>
+                                            <div class="col-sm-6"><span id="ticket-priority"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-4 ">
+                                            <div class="col-sm-6 labels"><b>Impact: </b></div>
+                                            <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-impact"></span></div>
+                                        </div>
+                                        <div class="col-sm-8 ">
+                                            <div class="col-sm-3 labels"><b>Impact Detail: </b></div>
+                                            <div class="col-sm-9" style="padding-left: 22px"><span id="ticket-impact-detail"></span></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-12 header-content">
+                                        <h5><i class="fa fa-clock-o"></i>  Date and time</h5>
+                                    </div>
+
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-5 labels"><b>Created date: </b></div>
+                                            <div class="col-sm-7"><span id="ticket-created-date"></span></div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-5 labels"><b>Last modified date: </b></div>
+                                            <div class="col-sm-7"><span id="ticket-modified-date"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-5 labels"><b>Scheduled start time: </b></div>
+                                            <div class="col-sm-7"><span id="ticket-schedule-start"></span></div>
+                                        </div>
+                                        <div class="col-sm-6 ">
+                                            <div class="col-sm-5 labels"><b>Schedule end time: </b></div>
+                                            <div class="col-sm-7"><span id="ticket-schedule-end"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-6 ">
+                                            <div class="col-sm-5 labels"><b>Actual start time: </b></div>
+                                            <div class="col-sm-7"><span id="ticket-actual-start"></span></div>
+                                        </div>
+                                        <div class="col-sm-6 ">
+                                            <div class="col-sm-5 labels"><b>Actual end time: </b></div>
+                                            <div class="col-sm-7"><span id="ticket-actual-end"></span></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
+                            @*<div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
+                            </div>*@
                         </div>
 
                     </div>
                 </div>
+                <!-- Het detail-->
             </div>
         </div>
         <a href="@(Url.Action("Index", "Home"))">
@@ -182,25 +284,14 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="#" class="view-detail" data-id=' + row[5] + '>' + row[1] + '</a>';
+                            return row[1];
                         },
                         "targets": 1
                     },
                     {
                         "render": function (data, type, row) {
-                            if (row[2] == 2) {
-                                return "Assigned";
-                            } else if (row[2] == 3) {
-                                return "Solved";
-                            } else if (row[2] == 4) {
-                                return "Unapproved";
-                            } else if (row[2] == 5) {
-                                return "Cancelled";
-                            } else if (row[2] == 6) {
-                                return "Closed";
-                            }
+                            return '<a href="#" class="view-detail" data-id=' + row[6] + '>' + row[2] + '</a>';
                         },
-                        "sortable": false,
                         "targets": 2
                     },
                     {
@@ -212,16 +303,33 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[4];
+                            if (row[4] == 2) {
+                                return "<label class='label label-warning'>Assigned</label>";
+                            } else if (row[4] == 3) {
+                                return "<label class='label label-success'>Solved</label>";
+                            } else if (row[4] == 4) {
+                                return "<label class='label label-danger'>Unapproved</label>";
+                            } else if (row[4] == 5) {
+                                return "<label class='label label-default'>Cancelled</label>";
+                            } else if (row[4] == 6) {
+                                return "<label class='label label-default'>Closed</label>";
+                            }
                         },
+                        "sortable": false,
                         "targets": 4
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[5];
+                        },
+                        "targets": 5
                     },
 
 
                     {
                         "render": function (data, type, row) {
-                            var solveUrl = '@Url.Action("Solve", "ManageTicket")/' + row[5];
-                            if (row[2] == 2) {
+                            var solveUrl = '@Url.Action("Solve", "ManageTicket")/' + row[6];
+                            if (row[4] == 2) {
                                 return "<a href='" + solveUrl + "' class='btn btn-primary' >Solve</a>";
                             }
                             else {
@@ -229,7 +337,7 @@
                             }
                         },
                         "sortable": false,
-                        "targets": 5
+                        "targets": 6
                     }]
             });
         }
@@ -256,28 +364,38 @@
                 $modal = $('#detail-modal');
 
             $.ajax({
-                url: '@Url.Action("GetTicketDetail", "ManageTicket")',
+                url: '@Url.Action("GetTicketDetail", "Ticket", new { area=""})',
                 type: "GET",
                 dataType: "json",
                 data: {
                     id: id
                 },
                 success: function (data) {
-                    var solveUrl = '@Url.Action("Solve", "ManageTicket")/' + data.id;
+                    var solveUrl = '@Url.Action("Solve", "Ticket", new { area = "" })/' + data.id;
 
-                    $('#ticket-subject').text(data.subject);
-                    $('#ticket-created-date').text(data.createdDate);
-                    $('#ticket-created-by').text(data.createBy);
+                    $('#ticket-subject').text("Subject: " + data.subject);
+                    $('#ticket-description').text(data.description);
+                    $('#ticket-created-by').text(data.creater);
+                    $('#ticket-assigned-by').text(data.assigner);
+                    $('#ticket-solved-by').text(data.solver);
+                    $('#ticket-type').text(data.type);
+                    $('#ticket-mode').text(data.mode);
+                    $('#ticket-urgency').text(data.urgency);
+                    $('#ticket-priority').text(data.priority);
+                    $('#ticket-category').text(data.category);
+                    $('#ticket-impact').text(data.impact);
+                    $('#ticket-impact-detail').text(data.impactDetail);
 
+                    
                     if (data.status == 2) {
                         $('#ticket-status').text('Assigned');
-                        if (data.solution == null) {
-                            $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
-                                                        + "<a class='btn btn-primary' href='" + solveUrl + "'>Yes</a>"
-                                                        + "<a class='btn btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
+                        if (data.solution == "None") {
+                            $('#ticket-solution').empty().append("<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
+                                                        + "<a class='btn-sm btn-primary' href='" + solveUrl + "'>Yes</a>"
+                                                        + "<a class='btn-sm btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
                         }
                         else {
-                            $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p>" + data.solution + "</p>");
+                            $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
                         }
                     }
                     else {
@@ -290,11 +408,16 @@
                         } else if (data.status == 6) {
                             $('#ticket-status').text('Closed');
                         }
-                        $('#ticket-solution').empty().append("<h4>Solution</h4>" + "<p>" + data.solution + "</p>");
+                        $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
                     }
 
+                    $('#ticket-created-date').text(data.createdDate);
                     $('#ticket-modified-date').text(data.lastModified);
-                    $('#ticket-description').text(data.description);
+                    $('#ticket-schedule-start').text(data.scheduleStart);
+                    $('#ticket-schedule-end').text(data.scheduleEnd);
+                    $('#ticket-actual-start').text(data.actualStart);
+                    $('#ticket-actual-end').text(data.actualEnd);
+
                     $('#ticket-solveUser').text(data.solveUser);
 
                     $modal.modal("show");

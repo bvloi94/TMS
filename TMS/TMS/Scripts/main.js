@@ -25,6 +25,35 @@ function setActiveReportMenu() {
     $("#menu-report").addClass("active");
 }
 
+function getStatusLabel(status) {
+    var cssClass = "label-default";
+    switch (status) {
+        case "New":
+            cssClass = "label-info";
+            break;
+        case "Assigned":
+            cssClass = "label-warning";
+            break;
+        case "Solved":
+            cssClass = "label-success";
+            break;
+        case "Unapproved":
+            cssClass = "label-danger";
+            break;
+        case "Canceled":
+            cssClass = "label-default";
+            break;
+        case "Closed":
+            cssClass = "label-default";
+            break;
+    }
+    return lbl = $("<small/>",
+    {
+        "class": "label " + cssClass,
+        "html": status
+    });
+}
+
 function readURL(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
@@ -36,3 +65,11 @@ function readURL(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+$(document).ready(function () {
+
+    $(".datetime").datetimepicker({
+        timepicker: false,
+        format: 'd/m/Y'
+    });
+});
