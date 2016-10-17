@@ -8,6 +8,7 @@ function initTicketTable() {
         sort: true,
         filter: false,
         lengthMenu: [8],
+        "order": [[ 2, 'asc' ]],
         lengthChange: false,
         ajax: {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",

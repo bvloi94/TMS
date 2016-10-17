@@ -64,21 +64,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View(ticket);
         }
 
-        // GET: HelpDesk/ManageTicket/Create
-        public ActionResult Create()
-        {
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "Fullname");
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "Fullname");
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp");
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name");
-            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
-            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name");
-            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name");
-            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name");
-            return View();
-        }
-
         public ActionResult CreateNewTicket()
         {
             return View();
@@ -142,7 +127,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 ticket.CategoryID = model.CategoryId;
             }
 
-            if (model.TechnicianId != null && model.TechnicianId.ToString().Trim() != "")
+            if (!string.IsNullOrEmpty(model.TechnicianId))
             {
                 ticket.TechnicianID = model.TechnicianId;
                 ticket.Status = (int?)TicketStatusEnum.Assigned;
@@ -170,7 +155,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 _ticketService.AddTicket(ticket);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 return Json(new
                 {
@@ -184,58 +169,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 success = true
             });
-        }
-
-
-        // POST: HelpDesk/ManageTicket/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Type,TechnicianID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Subject,Description,Solution")] Ticket ticket)
-        {
-            if (ModelState.IsValid)
-            {
-                ticket.Status = (int?)TicketStatusEnum.New;
-                ticket.CreatedTime = DateTime.Now;
-                db.Tickets.Add(ticket);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name");
-            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
-            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
-            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
-            return View(ticket);
-        }
-
-        // GET: HelpDesk/ManageTicket/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.SolveID);
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.TechnicianID);
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.RequesterID);
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "Fullname", ticket.CreatedID);
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
-            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
-            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
-            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
-            return View(ticket);
         }
 
         public ActionResult EditTicket(int? id)
@@ -508,109 +441,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             });
         }
 
-
-
-        // POST: HelpDesk/ManageTicket/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(ticket).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
-            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
-            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
-            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
-            return View(ticket);
-        }
-
-
-        // GET: HelpDesk/ManageTicket/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            return View(ticket);
-        }
-
-        // POST: HelpDesk/ManageTicket/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Ticket ticket = db.Tickets.Find(id);
-            db.Tickets.Remove(ticket);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        [HttpGet]
-        public ActionResult GetTickets(jQueryDataTableParamModel param)
-        {
-            var ticketList = _ticketService.GetAll();
-
-            IEnumerable<Ticket> filteredListItems;
-            if (!string.IsNullOrEmpty(param.sSearch))
-            {
-                filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(param.sSearch.ToLower()));
-            }
-            else
-            {
-                filteredListItems = ticketList;
-            }
-            // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            var sortDirection = Request["sSortDir_0"]; // asc or desc
-
-            switch (sortColumnIndex)
-            {
-                case 2:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.Subject)
-                        : filteredListItems.OrderByDescending(p => p.Subject);
-                    break;
-            }
-
-            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
-            var result = displayedList.Select(p => new IConvertible[]{
-                p.Subject,
-                p.RequesterID==null?"":_userService.GetUserById(p.RequesterID).Fullname,
-                p.TechnicianID==null?"":_userService.GetUserById(p.TechnicianID).Fullname,
-                //p.DepartmentID==null?"":_departmentService.GetDepartmentById((int) p.DepartmentID).Name,
-                "",
-                p.SolvedDate.ToString(),
-                p.Status,
-                p.CreatedTime.ToString(),
-                p.ID
-            }.ToArray());
-
-            return Json(new
-            {
-                param.sEcho,
-                iTotalRecords = result.Count(),
-                iTotalDisplayRecords = filteredListItems.Count(),
-                aaData = result
-            }, JsonRequestBehavior.AllowGet);
-        }
-
         [HttpPost]
         public ActionResult LoadAllTickets(JqueryDatatableParameterViewModel model)
         {
@@ -774,7 +604,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 success = true,
                 data = model,
             });
-
         }
 
         [HttpGet]

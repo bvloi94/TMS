@@ -19,17 +19,19 @@ namespace TMS.Controllers
 {
     public class TicketController : Controller
     {
+        UnitOfWork unitOfWork = new UnitOfWork();
         private TMSEntities db = new TMSEntities();
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
         public DepartmentService _departmentService { get; set; }
+        public TicketAttachmentService _ticketAttachmentService { get; set; }
 
         public TicketController()
         {
-            var unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(unitOfWork);
             _userService = new UserService(unitOfWork);
             _departmentService = new DepartmentService(unitOfWork);
+            _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
         }
 
         // GET: Tickets
@@ -65,11 +67,13 @@ namespace TMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Create(RequesterTicketViewModel model)
+        public ActionResult Create(RequesterTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
         {
             if (ModelState.IsValid)
             {
                 Ticket ticket = new Ticket();
+                TicketAttachment ticketFiles = new TicketAttachment();
+
                 ticket.Subject = model.Subject;
                 ticket.Description = model.Description;
                 ticket.Status = (int?)TicketStatusEnum.New;
@@ -78,6 +82,16 @@ namespace TMS.Controllers
                 ticket.CreatedTime = DateTime.Now;
                 db.Tickets.Add(ticket);
                 db.SaveChanges();
+
+                if (uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
+                {
+                    _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
+                    List<TicketAttachment> listFile = unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
+                    ticketFiles.Path = listFile[0].Path;
+                    
+                }
+
+
 
                 return RedirectToAction("Index");
             }
@@ -359,6 +373,49 @@ namespace TMS.Controllers
             model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "None" : ticket.UnapproveReason;
 
             return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult SolveTicket(int id, string solution, string command)
+        {
+            Ticket ticket = _ticketService.GetTicketByID(id);
+
+            string createdId = "";
+            AspNetUser user;
+            if (User.Identity.GetUserId() != null)
+            {
+                user = _userService.GetUserById(createdId);
+                createdId = User.Identity.GetUserId();
+            }
+
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+
+            var message = "";
+            switch (command)
+            {
+                case "Solve":
+                    ticket.SolveID = User.Identity.GetUserId();
+                    ticket.SolvedDate = DateTime.Now;
+                    ticket.ModifiedTime = DateTime.Now;
+                    ticket.Solution = solution;
+                    _ticketService.SolveTicket(ticket);
+                    message = "Ticket was solved!";
+                    break;
+                case "Save":
+                    ticket.ModifiedTime = DateTime.Now;
+                    ticket.Solution = solution;
+                    _ticketService.UpdateTicket(ticket);
+                    message = "Solution saved!";
+                    break;
+            }
+            return Json(new
+            {
+                success = true,
+                msg = message,
+            });
         }
 
         protected override void Dispose(bool disposing)
