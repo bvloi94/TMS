@@ -403,5 +403,10 @@ namespace TMS.Services
         {
             return _unitOfWork.TicketRepository.Get(m => m.TechnicianID == id);
         }
+
+        public IEnumerable<Ticket> GetRequesterTickets(string id)
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.RequesterID == id);
+        }
     }
 }
