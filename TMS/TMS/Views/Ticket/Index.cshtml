@@ -1,11 +1,35 @@
 ﻿@{
     Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
 }
-@{
-    ViewBag.Title = "View Ticket";
-}
-
 <style>
+    .title {
+        margin-top: -20px;
+        margin-bottom: 12px;
+    }
+
+    .btitle {
+        display: table;
+    }
+
+    .table thead, h4 {
+        color: #1074bd;
+        font-weight: bold;
+    }
+
+    h5 {
+        color: #171fb0;
+        font-weight: bold;
+    }
+
+    .white-title {
+        text-transform: uppercase;
+        font-weight: bold;
+        display: table-cell;
+        padding: 8px;
+        vertical-align: middle;
+        color: #ffffff;
+    }
+
     .table thead, h4 {
         color: #1074bd;
     }
@@ -51,156 +75,46 @@
         padding: 8px 20px 8px 20px;
         background-color: #ffffff;
     }
+
+    input {
+        max-width: 500px;
+    }
 </style>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="box box-primary">
+        <div class="box box-solid bg-blue title">
+            <div class="box-header btitle">
+                <h3 class="white-title">TICKET LIST</h3>
+            </div>
+        </div>
+        <div class="box box-solid">
             <div class="box-body">
-                <a class="btn btn-primary" href="@(Url.Action("Create", "Ticket"))">Create new ticket</a>
-                <table class="table">
+                <a class="btn btn-primary btn-flat" href="@(Url.Action("Create", "Ticket"))">Create new ticket</a>
+                <div class="pull-right">
+                    <div class="input-group">
+                        <input type="text" id="search-txt" class="form-control" placeholder="Search...">
+                        <span class="input-group-btn">
+                            <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                    @*<label>Search:</label>
+                    <input type="text" id="search-txt" />*@
+                </div>
+                <table class="table" id="ticket-table">
                     <thead>
                         <tr>
-                            <th>Date Opened</th>
-                            <th>Subject</th>
+                            <th>Create Date</th>
+                            <th style="max-width: 400px">Subject</th>
                             <th>Status</th>
-                            <th>Solution</th>
-                            <th>Last Modified</th>
+                            <th style="max-width: 400px">Solution</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>6/8/2016 11:23:00 PM</td>
-                            <td><a data-toggle="modal" data-target="#Modal1">Change website main color</a></td>
-                            <td>Open</td>
-                            <td>Color is changed to red.</td>
-                            <td>8/8/2016 11:23:00 PM</td>
-                        </tr>
-                        <tr>
-                            <td>7/8/2016 11:23:00 PM</td>
-                            <td><a data-toggle="modal" data-target="#Modal2">Move host javi.net to new server</a></td>
-                            <td>Closed</td>
-                            <td>Host is moved to new server on August 7th.</td>
-                            <td>9/8/2016 11:23:00 PM</td>
-                        </tr>
-                        <tr>
-                            <td>8/8/2016 11:23:00 PM</td>
-                            <td><a data-toggle="modal" data-target="#Modal3">Request admin account</a></td>
-                            <td>Closed</td>
-                            <td>Account is now administrator.</td>
-                            <td>10/8/2016 11:23:00 PM</td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
-                <div id="Modal1" class="modal fade" role="dialog">
-                    <div class="modal-dialog modal-lg">
 
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Change website main color</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="box-body">
-                                    <div class="shortInfoContainer">
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Date opened</h4>
-                                            6/8/2016 11:23:00
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Department</h4>
-                                            Technical support - Website Developer
-                                        </div>
-                                        <div class="col-sm-2 shortInfo">
-                                            <h4>Status</h4>
-                                            Open
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Last modified</h4>
-                                            8/8/2016 11:23:00
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div class="detailContainer">
-                                        <div class="col-lg-12 detail">
-                                            <h4>Ticket Description</h4>
-                                            <p>I wish to change my website's main color to red. The color code is #ff3434. Please email me when my request is solved.</p>
-                                        </div>
-                                        <div class="col-lg-12 detail">
-                                            <h4>Solution</h4>
-                                            <p>Main color is changes to red.</p>
-                                            <p>Thank you for using our services.</p>
-                                            <p><b>Person in charge:</b> Bui Van Loi</p>
-                                            <p>Sent: 8/8/2016 11:23:00</p>
-                                            <div class="rightItems">
-                                                <b>Are you sastified with this solution?</b>
-                                                <a class="btn btn-primary" href="@(Url.Action("ViewTicketList", "Tickets"))">Yes</a>
-                                                <a class="btn btn-default" href="@(Url.Action("ViewTicketList", "Tickets"))">No</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-                <div id="Modal2" class="modal fade" role="dialog">
-                    <div class="modal-dialog modal-lg">
-
-                        <!-- Modal content-->
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Move host javi.net to new server</h4>
-                            </div>
-                            <div class="modal-body">
-                                <div class="box-body">
-                                    <div class="shortInfoContainer">
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Date opened</h4>
-                                            7/8/2016 11:23:00
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Department</h4>
-                                            Technical support - Website Developer
-                                        </div>
-                                        <div class="col-sm-2 shortInfo">
-                                            <h4>Status</h4>
-                                            Closed
-                                        </div>
-                                        <div class="col-sm-3 shortInfo">
-                                            <h4>Last modified</h4>
-                                            9/8/2016 11:23:00
-                                        </div>
-                                    </div>
-                                    <hr />
-                                    <div class="detailContainer">
-                                        <div class="col-lg-12 detail">
-                                            <h4>Ticket Description</h4>
-                                            <p>I wish to change my website's main color to red. The color code is #ff3434. Please email me when my request is solved.</p>
-                                        </div>
-                                        <div class="col-lg-12 detail">
-                                            <h4>Solution</h4>
-                                            <p>Host is moved to new server on August 7th.</p>
-                                            <p>We're so sorry about this unconvenience. All of your data is restored successfully. Thank you for your impatience.</p>
-                                            <p><b>Person in charge:</b> Bui Van Loi</p>
-                                            <p>Sent: 9/8/2016 11:23:00</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
             </div>
         </div>
         <a href="@(Url.Action("Index", "Home"))">
@@ -209,6 +123,94 @@
         </a>
     </div>
 </div>
+
+@Styles.Render("~/Content/datatables")
+@section scripts{
+    @Scripts.Render("~/bundles/datatables")
+    <script>
+        setActiveTicketMenu();
+        var initDataTable = function () {
+            $("#ticket-table").DataTable({
+                processing: true,
+                serverSide: true,
+                paging: true,
+                sort: true,
+                "order": [[0, 'dsc']],
+                lengthChange: false,
+                filter: false,
+                ajax: {
+                    url: "/Ticket/GetRequesterTickets",
+                    data: function (d) {
+                        d.select_status = $("#filter-by-status").val(),
+                        d.search_text = $("#search-txt").val()
+                    }
+                },
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            return row[0];
+                        },
+                        "targets": 0
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return '<a href="#" class="view-detail" data-id=' + row[4] + '>' + row[1] + '</a>';
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "render": function (data, type, row) {
+
+                            if (row[2] == 1) {
+                                return "<label class='label label-info'>New</label>";
+                            } else if (row[2] == 2) {
+                                return "<label class='label label-warning'>Assigned</label>";
+                            } else if (row[2] == 3) {
+                                return "<label class='label label-success'>Solved</label>";
+                            } else if (row[2] == 4) {
+                                return "<label class='label label-danger'>Unapproved</label>";
+                            } else if (row[2] == 5) {
+                                return "<label class='label label-default'>Cancelled</label>";
+                            } else if (row[2] == 6) {
+                                return "<label class='label label-default'>Closed</label>";
+                            }
+                        },
+                        "sortable": false,
+                        "targets": 2
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[3] == null ? "None" : "<span class='pre-wrap'>" + (row[3]) + "</span>";
+                        },
+                        "sortable": false,
+                        "targets": 3
+                    }]
+            });
+        }
+
+        var reloadDataTable = function () {
+            var oTable = $("#ticket-table").dataTable();
+            oTable.api().ajax.reload();
+        };
+
+        $(document).ready(function () {
+            initDataTable();
+        });
+
+        $("#search-txt").keyup(function () {
+            reloadDataTable();
+        });
+
+    </script>
+}
+
+
+
+
+
+
+
+
 
 
 

@@ -5,16 +5,6 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="TMSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="__MigrationHistory">
-          <Key>
-            <PropertyRef Name="MigrationId" />
-            <PropertyRef Name="ContextKey" />
-          </Key>
-          <Property Name="MigrationId" Type="nvarchar" MaxLength="150" Nullable="false" />
-          <Property Name="ContextKey" Type="nvarchar" MaxLength="300" Nullable="false" />
-          <Property Name="Model" Type="varbinary(max)" Nullable="false" />
-          <Property Name="ProductVersion" Type="nvarchar" MaxLength="32" Nullable="false" />
-        </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
@@ -186,12 +176,13 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" MaxLength="8" />
           <Property Name="Type" Type="int" />
           <Property Name="Mode" Type="int" Nullable="false" />
           <Property Name="SolveID" Type="nvarchar" MaxLength="128" />
           <Property Name="TechnicianID" Type="nvarchar" MaxLength="128" />
           <Property Name="AssignedByID" Type="nvarchar" MaxLength="128" />
-          <Property Name="RequesterID" Type="nvarchar" MaxLength="128" />
+          <Property Name="RequesterID" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="ImpactID" Type="int" />
           <Property Name="ImpactDetail" Type="nvarchar" MaxLength="255" />
           <Property Name="UrgencyID" Type="int" />
@@ -207,9 +198,9 @@
           <Property Name="ActualStartDate" Type="datetime" />
           <Property Name="ActualEndDate" Type="datetime" />
           <Property Name="SolvedDate" Type="datetime" />
-          <Property Name="CreatedTime" Type="datetime" />
-          <Property Name="ModifiedTime" Type="datetime" />
-          <Property Name="CreatedID" Type="nvarchar" MaxLength="128" />
+          <Property Name="CreatedTime" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedTime" Type="datetime" Nullable="false" />
+          <Property Name="CreatedID" Type="nvarchar" MaxLength="128" Nullable="false" />
         </EntityType>
         <EntityType Name="TicketAttachment">
           <Key>
@@ -463,7 +454,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_AspNetUsers2">
-          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AspNetUsers">
@@ -475,7 +466,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_AspNetUsers3">
-          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="AspNetUsers">
@@ -583,7 +574,6 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="TMSModelStoreContainer">
-          <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
@@ -721,23 +711,152 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="TMSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="TMSEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="AspNetRoles" EntityType="TMSModel.AspNetRole" />
+          <EntitySet Name="AspNetUserClaims" EntityType="TMSModel.AspNetUserClaim" />
+          <EntitySet Name="AspNetUserLogins" EntityType="TMSModel.AspNetUserLogin" />
+          <EntitySet Name="AspNetUsers" EntityType="TMSModel.AspNetUser" />
+          <EntitySet Name="BusinessRules" EntityType="TMSModel.BusinessRule" />
+          <EntitySet Name="BusinessRuleConditions" EntityType="TMSModel.BusinessRuleCondition" />
+          <EntitySet Name="BusinessRuleNotifications" EntityType="TMSModel.BusinessRuleNotification" />
+          <EntitySet Name="BusinessRuleTriggers" EntityType="TMSModel.BusinessRuleTrigger" />
+          <EntitySet Name="Categories" EntityType="TMSModel.Category" />
+          <EntitySet Name="Departments" EntityType="TMSModel.Department" />
+          <EntitySet Name="Impacts" EntityType="TMSModel.Impact" />
+          <EntitySet Name="Priorities" EntityType="TMSModel.Priority" />
+          <EntitySet Name="PriorityMatrixItems" EntityType="TMSModel.PriorityMatrixItem" />
+          <EntitySet Name="Solutions" EntityType="TMSModel.Solution" />
+          <EntitySet Name="SolutionAttachments" EntityType="TMSModel.SolutionAttachment" />
+          <EntitySet Name="Tickets" EntityType="TMSModel.Ticket" />
+          <EntitySet Name="TicketAttachments" EntityType="TMSModel.TicketAttachment" />
+          <EntitySet Name="TicketHistories" EntityType="TMSModel.TicketHistory" />
+          <EntitySet Name="Urgencies" EntityType="TMSModel.Urgency" />
+          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="TMSModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserClaim" EntitySet="AspNetUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="TMSModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserLogin" EntitySet="AspNetUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_AspNetUsers_Department" Association="TMSModel.FK_AspNetUsers_Department">
+            <End Role="Department" EntitySet="Departments" />
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BusinessRuleNotification_AspNetUsers" Association="TMSModel.FK_BusinessRuleNotification_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="BusinessRuleNotification" EntitySet="BusinessRuleNotifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_AspNetUsers" Association="TMSModel.FK_Ticket_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_AspNetUsers1" Association="TMSModel.FK_Ticket_AspNetUsers1">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_AspNetUsers2" Association="TMSModel.FK_Ticket_AspNetUsers2">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_AspNetUsers3" Association="TMSModel.FK_Ticket_AspNetUsers3">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketHistory_AspNetUsers" Association="TMSModel.FK_TicketHistory_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="TicketHistory" EntitySet="TicketHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketHistory_AspNetUsers1" Association="TMSModel.FK_TicketHistory_AspNetUsers1">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="TicketHistory" EntitySet="TicketHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BusinessRuleCondition_BusinessRule" Association="TMSModel.FK_BusinessRuleCondition_BusinessRule">
+            <End Role="BusinessRule" EntitySet="BusinessRules" />
+            <End Role="BusinessRuleCondition" EntitySet="BusinessRuleConditions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BusinessRuleNotification_BusinessRule" Association="TMSModel.FK_BusinessRuleNotification_BusinessRule">
+            <End Role="BusinessRule" EntitySet="BusinessRules" />
+            <End Role="BusinessRuleNotification" EntitySet="BusinessRuleNotifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BusinessRuleTrigger_BusinessRule" Association="TMSModel.FK_BusinessRuleTrigger_BusinessRule">
+            <End Role="BusinessRule" EntitySet="BusinessRules" />
+            <End Role="BusinessRuleTrigger" EntitySet="BusinessRuleTriggers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BusinessRuleCondition_BusinessRuleCondition" Association="TMSModel.FK_BusinessRuleCondition_BusinessRuleCondition">
+            <End Role="BusinessRuleCondition" EntitySet="BusinessRuleConditions" />
+            <End Role="BusinessRuleCondition1" EntitySet="BusinessRuleConditions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Category_Category" Association="TMSModel.FK_Category_Category">
+            <End Role="Category" EntitySet="Categories" />
+            <End Role="Category1" EntitySet="Categories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_KnowledgeBase_Category" Association="TMSModel.FK_KnowledgeBase_Category">
+            <End Role="Category" EntitySet="Categories" />
+            <End Role="Solution" EntitySet="Solutions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Category" Association="TMSModel.FK_Ticket_Category">
+            <End Role="Category" EntitySet="Categories" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PriorityMatrixItem_Impact" Association="TMSModel.FK_PriorityMatrixItem_Impact">
+            <End Role="Impact" EntitySet="Impacts" />
+            <End Role="PriorityMatrixItem" EntitySet="PriorityMatrixItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Impact" Association="TMSModel.FK_Ticket_Impact">
+            <End Role="Impact" EntitySet="Impacts" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PriorityMatrixItem_Priority" Association="TMSModel.FK_PriorityMatrixItem_Priority">
+            <End Role="Priority" EntitySet="Priorities" />
+            <End Role="PriorityMatrixItem" EntitySet="PriorityMatrixItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Priority" Association="TMSModel.FK_Ticket_Priority">
+            <End Role="Priority" EntitySet="Priorities" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PriorityMatrixItem_Urgency1" Association="TMSModel.FK_PriorityMatrixItem_Urgency1">
+            <End Role="Urgency" EntitySet="Urgencies" />
+            <End Role="PriorityMatrixItem" EntitySet="PriorityMatrixItems" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SolutionAttachment_Solution" Association="TMSModel.FK_SolutionAttachment_Solution">
+            <End Role="Solution" EntitySet="Solutions" />
+            <End Role="SolutionAttachment" EntitySet="SolutionAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Urgency" Association="TMSModel.FK_Ticket_Urgency">
+            <End Role="Urgency" EntitySet="Urgencies" />
+            <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketAttachment_Ticket" Association="TMSModel.FK_TicketAttachment_Ticket">
+            <End Role="Ticket" EntitySet="Tickets" />
+            <End Role="TicketAttachment" EntitySet="TicketAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketHistory_Ticket" Association="TMSModel.FK_TicketHistory_Ticket">
+            <End Role="Ticket" EntitySet="Tickets" />
+            <End Role="TicketHistory" EntitySet="TicketHistories" />
+          </AssociationSet>
+          <AssociationSet Name="AspNetUserRoles" Association="TMSModel.AspNetUserRoles">
+            <End Role="AspNetRole" EntitySet="AspNetRoles" />
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="AspNetRole">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="AspNetUsers" Relationship="Self.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUsers" Relationship="TMSModel.AspNetUserRoles" FromRole="AspNetRole" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="AspNetUserClaim">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaims" ToRole="AspNetUsers" />
+          <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaim" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="AspNetUserLogin">
           <Key>
@@ -745,16 +864,16 @@
             <PropertyRef Name="ProviderKey" />
             <PropertyRef Name="UserId" />
           </Key>
-          <Property Name="LoginProvider" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ProviderKey" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogins" ToRole="AspNetUsers" />
+          <Property Name="LoginProvider" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ProviderKey" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogin" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="AspNetUser">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
           <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
@@ -762,7 +881,7 @@
           <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
           <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
           <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
-          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="Fullname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
@@ -778,17 +897,17 @@
           <Property Name="CompanyAddress" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="JoinedDate" Type="DateTime" Precision="3" />
           <Property Name="IsActive" Type="Boolean" />
-          <NavigationProperty Name="AspNetUserClaims" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
-          <NavigationProperty Name="AspNetUserLogins" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
-          <NavigationProperty Name="Department" Relationship="Self.FK_AspNetUsers_Department" FromRole="AspNetUsers" ToRole="Department" />
-          <NavigationProperty Name="BusinessRuleNotifications" Relationship="Self.FK_BusinessRuleNotification_AspNetUsers" FromRole="AspNetUsers" ToRole="BusinessRuleNotification" />
-          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_AspNetUsers" FromRole="AspNetUsers" ToRole="Ticket" />
-          <NavigationProperty Name="Tickets1" Relationship="Self.FK_Ticket_AspNetUsers1" FromRole="AspNetUsers" ToRole="Ticket" />
-          <NavigationProperty Name="Tickets2" Relationship="Self.FK_Ticket_AspNetUsers2" FromRole="AspNetUsers" ToRole="Ticket" />
-          <NavigationProperty Name="Tickets3" Relationship="Self.FK_Ticket_AspNetUsers3" FromRole="AspNetUsers" ToRole="Ticket" />
-          <NavigationProperty Name="TicketHistories" Relationship="Self.FK_TicketHistory_AspNetUsers" FromRole="AspNetUsers" ToRole="TicketHistory" />
-          <NavigationProperty Name="TicketHistories1" Relationship="Self.FK_TicketHistory_AspNetUsers1" FromRole="AspNetUsers" ToRole="TicketHistory" />
-          <NavigationProperty Name="AspNetRoles" Relationship="Self.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
+          <NavigationProperty Name="AspNetUserClaims" Relationship="TMSModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserClaim" />
+          <NavigationProperty Name="AspNetUserLogins" Relationship="TMSModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserLogin" />
+          <NavigationProperty Name="Department" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="AspNetUser" ToRole="Department" />
+          <NavigationProperty Name="BusinessRuleNotifications" Relationship="TMSModel.FK_BusinessRuleNotification_AspNetUsers" FromRole="AspNetUser" ToRole="BusinessRuleNotification" />
+          <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_AspNetUsers" FromRole="AspNetUser" ToRole="Ticket" />
+          <NavigationProperty Name="Tickets1" Relationship="TMSModel.FK_Ticket_AspNetUsers1" FromRole="AspNetUser" ToRole="Ticket" />
+          <NavigationProperty Name="Tickets2" Relationship="TMSModel.FK_Ticket_AspNetUsers2" FromRole="AspNetUser" ToRole="Ticket" />
+          <NavigationProperty Name="Tickets3" Relationship="TMSModel.FK_Ticket_AspNetUsers3" FromRole="AspNetUser" ToRole="Ticket" />
+          <NavigationProperty Name="TicketHistories" Relationship="TMSModel.FK_TicketHistory_AspNetUsers" FromRole="AspNetUser" ToRole="TicketHistory" />
+          <NavigationProperty Name="TicketHistories1" Relationship="TMSModel.FK_TicketHistory_AspNetUsers1" FromRole="AspNetUser" ToRole="TicketHistory" />
+          <NavigationProperty Name="AspNetRoles" Relationship="TMSModel.AspNetUserRoles" FromRole="AspNetUser" ToRole="AspNetRole" />
         </EntityType>
         <EntityType Name="BusinessRule">
           <Key>
@@ -798,9 +917,9 @@
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="IsActive" Type="Boolean" />
-          <NavigationProperty Name="BusinessRuleConditions" Relationship="Self.FK_BusinessRuleCondition_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleCondition" />
-          <NavigationProperty Name="BusinessRuleNotifications" Relationship="Self.FK_BusinessRuleNotification_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleNotification" />
-          <NavigationProperty Name="BusinessRuleTriggers" Relationship="Self.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleTrigger" />
+          <NavigationProperty Name="BusinessRuleConditions" Relationship="TMSModel.FK_BusinessRuleCondition_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleCondition" />
+          <NavigationProperty Name="BusinessRuleNotifications" Relationship="TMSModel.FK_BusinessRuleNotification_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleNotification" />
+          <NavigationProperty Name="BusinessRuleTriggers" Relationship="TMSModel.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleTrigger" />
         </EntityType>
         <EntityType Name="BusinessRuleCondition">
           <Key>
@@ -814,9 +933,9 @@
           <Property Name="BusinessRuleID" Type="Int32" />
           <Property Name="BusinessRuleConditionID" Type="Int32" />
           <Property Name="BusinessRuleConditionLevel" Type="Int32" />
-          <NavigationProperty Name="BusinessRule" Relationship="Self.FK_BusinessRuleCondition_BusinessRule" FromRole="BusinessRuleCondition" ToRole="BusinessRule" />
-          <NavigationProperty Name="BusinessRuleCondition1" Relationship="Self.FK_BusinessRuleCondition_BusinessRuleCondition" FromRole="BusinessRuleCondition" ToRole="BusinessRuleCondition1" />
-          <NavigationProperty Name="BusinessRuleCondition2" Relationship="Self.FK_BusinessRuleCondition_BusinessRuleCondition" FromRole="BusinessRuleCondition1" ToRole="BusinessRuleCondition" />
+          <NavigationProperty Name="BusinessRule" Relationship="TMSModel.FK_BusinessRuleCondition_BusinessRule" FromRole="BusinessRuleCondition" ToRole="BusinessRule" />
+          <NavigationProperty Name="BusinessRuleCondition1" Relationship="TMSModel.FK_BusinessRuleCondition_BusinessRuleCondition" FromRole="BusinessRuleCondition" ToRole="BusinessRuleCondition1" />
+          <NavigationProperty Name="BusinessRuleCondition2" Relationship="TMSModel.FK_BusinessRuleCondition_BusinessRuleCondition" FromRole="BusinessRuleCondition1" ToRole="BusinessRuleCondition" />
         </EntityType>
         <EntityType Name="BusinessRuleNotification">
           <Key>
@@ -825,8 +944,8 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="BusinessRuleID" Type="Int32" />
           <Property Name="ReceiverID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_BusinessRuleNotification_AspNetUsers" FromRole="BusinessRuleNotification" ToRole="AspNetUsers" />
-          <NavigationProperty Name="BusinessRule" Relationship="Self.FK_BusinessRuleNotification_BusinessRule" FromRole="BusinessRuleNotification" ToRole="BusinessRule" />
+          <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_BusinessRuleNotification_AspNetUsers" FromRole="BusinessRuleNotification" ToRole="AspNetUser" />
+          <NavigationProperty Name="BusinessRule" Relationship="TMSModel.FK_BusinessRuleNotification_BusinessRule" FromRole="BusinessRuleNotification" ToRole="BusinessRule" />
         </EntityType>
         <EntityType Name="BusinessRuleTrigger">
           <Key>
@@ -836,7 +955,7 @@
           <Property Name="Action" Type="Int32" />
           <Property Name="Value" Type="Int32" />
           <Property Name="BusinessRuleID" Type="Int32" />
-          <NavigationProperty Name="BusinessRule" Relationship="Self.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRuleTrigger" ToRole="BusinessRule" />
+          <NavigationProperty Name="BusinessRule" Relationship="TMSModel.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRuleTrigger" ToRole="BusinessRule" />
         </EntityType>
         <EntityType Name="Category">
           <Key>
@@ -847,20 +966,20 @@
           <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="ParentID" Type="Int32" />
           <Property Name="CategoryLevel" Type="Int32" />
-          <NavigationProperty Name="Category1" Relationship="Self.FK_Category_Category" FromRole="Category" ToRole="Category1" />
-          <NavigationProperty Name="Category2" Relationship="Self.FK_Category_Category" FromRole="Category1" ToRole="Category" />
-          <NavigationProperty Name="Solutions" Relationship="Self.FK_KnowledgeBase_Category" FromRole="Category" ToRole="Solution" />
-          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Category" FromRole="Category" ToRole="Ticket" />
+          <NavigationProperty Name="Category1" Relationship="TMSModel.FK_Category_Category" FromRole="Category" ToRole="Category1" />
+          <NavigationProperty Name="Category2" Relationship="TMSModel.FK_Category_Category" FromRole="Category1" ToRole="Category" />
+          <NavigationProperty Name="Solutions" Relationship="TMSModel.FK_KnowledgeBase_Category" FromRole="Category" ToRole="Solution" />
+          <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Category" FromRole="Category" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="Department">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="IsActive" Type="Boolean" />
-          <NavigationProperty Name="AspNetUsers" Relationship="Self.FK_AspNetUsers_Department" FromRole="Department" ToRole="AspNetUsers" />
+          <NavigationProperty Name="AspNetUsers" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="Department" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="Impact">
           <Key>
@@ -869,8 +988,8 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="PriorityMatrixItems" Relationship="Self.FK_PriorityMatrixItem_Impact" FromRole="Impact" ToRole="PriorityMatrixItem" />
-          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Impact" FromRole="Impact" ToRole="Ticket" />
+          <NavigationProperty Name="PriorityMatrixItems" Relationship="TMSModel.FK_PriorityMatrixItem_Impact" FromRole="Impact" ToRole="PriorityMatrixItem" />
+          <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Impact" FromRole="Impact" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="Priority">
           <Key>
@@ -879,8 +998,8 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="PriorityMatrixItems" Relationship="Self.FK_PriorityMatrixItem_Priority" FromRole="Priority" ToRole="PriorityMatrixItem" />
-          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Priority" FromRole="Priority" ToRole="Ticket" />
+          <NavigationProperty Name="PriorityMatrixItems" Relationship="TMSModel.FK_PriorityMatrixItem_Priority" FromRole="Priority" ToRole="PriorityMatrixItem" />
+          <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Priority" FromRole="Priority" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="PriorityMatrixItem">
           <Key>
@@ -890,23 +1009,23 @@
           <Property Name="ImpactID" Type="Int32" Nullable="false" />
           <Property Name="UrgencyID" Type="Int32" Nullable="false" />
           <Property Name="PriorityID" Type="Int32" />
-          <NavigationProperty Name="Impact" Relationship="Self.FK_PriorityMatrixItem_Impact" FromRole="PriorityMatrixItem" ToRole="Impact" />
-          <NavigationProperty Name="Priority" Relationship="Self.FK_PriorityMatrixItem_Priority" FromRole="PriorityMatrixItem" ToRole="Priority" />
-          <NavigationProperty Name="Urgency" Relationship="Self.FK_PriorityMatrixItem_Urgency1" FromRole="PriorityMatrixItem" ToRole="Urgency" />
+          <NavigationProperty Name="Impact" Relationship="TMSModel.FK_PriorityMatrixItem_Impact" FromRole="PriorityMatrixItem" ToRole="Impact" />
+          <NavigationProperty Name="Priority" Relationship="TMSModel.FK_PriorityMatrixItem_Priority" FromRole="PriorityMatrixItem" ToRole="Priority" />
+          <NavigationProperty Name="Urgency" Relationship="TMSModel.FK_PriorityMatrixItem_Urgency1" FromRole="PriorityMatrixItem" ToRole="Urgency" />
         </EntityType>
         <EntityType Name="Solution">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Subject" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="ContentText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CategoryID" Type="Int32" />
           <Property Name="IsDeleted" Type="Boolean" />
           <Property Name="CreatedTime" Type="DateTime" Precision="3" />
           <Property Name="ModifiedTime" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Category" Relationship="Self.FK_KnowledgeBase_Category" FromRole="Solution" ToRole="Category" />
-          <NavigationProperty Name="SolutionAttachments" Relationship="Self.FK_SolutionAttachment_Solution" FromRole="Solution" ToRole="SolutionAttachment" />
+          <NavigationProperty Name="Category" Relationship="TMSModel.FK_KnowledgeBase_Category" FromRole="Solution" ToRole="Category" />
+          <NavigationProperty Name="SolutionAttachments" Relationship="TMSModel.FK_SolutionAttachment_Solution" FromRole="Solution" ToRole="SolutionAttachment" />
         </EntityType>
         <EntityType Name="SolutionAttachment">
           <Key>
@@ -915,26 +1034,27 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Path" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="SolutionID" Type="Int32" />
-          <NavigationProperty Name="Solution" Relationship="Self.FK_SolutionAttachment_Solution" FromRole="SolutionAttachment" ToRole="Solution" />
+          <NavigationProperty Name="Solution" Relationship="TMSModel.FK_SolutionAttachment_Solution" FromRole="SolutionAttachment" ToRole="Solution" />
         </EntityType>
         <EntityType Name="Ticket">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Code" Type="String" MaxLength="8" FixedLength="false" Unicode="true" />
           <Property Name="Type" Type="Int32" />
           <Property Name="Mode" Type="Int32" Nullable="false" />
           <Property Name="SolveID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="TechnicianID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="AssignedByID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="RequesterID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="RequesterID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="ImpactID" Type="Int32" />
           <Property Name="ImpactDetail" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="UrgencyID" Type="Int32" />
           <Property Name="PriorityID" Type="Int32" />
           <Property Name="CategoryID" Type="Int32" />
           <Property Name="Status" Type="Int32" />
-          <Property Name="Subject" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Solution" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="UnapproveReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -943,19 +1063,19 @@
           <Property Name="ActualStartDate" Type="DateTime" Precision="3" />
           <Property Name="ActualEndDate" Type="DateTime" Precision="3" />
           <Property Name="SolvedDate" Type="DateTime" Precision="3" />
-          <Property Name="CreatedTime" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedTime" Type="DateTime" Precision="3" />
-          <Property Name="CreatedID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_Ticket_AspNetUsers" FromRole="Ticket" ToRole="AspNetUsers" />
-          <NavigationProperty Name="AspNetUser1" Relationship="Self.FK_Ticket_AspNetUsers1" FromRole="Ticket" ToRole="AspNetUsers" />
-          <NavigationProperty Name="AspNetUser2" Relationship="Self.FK_Ticket_AspNetUsers2" FromRole="Ticket" ToRole="AspNetUsers" />
-          <NavigationProperty Name="AspNetUser3" Relationship="Self.FK_Ticket_AspNetUsers3" FromRole="Ticket" ToRole="AspNetUsers" />
-          <NavigationProperty Name="Category" Relationship="Self.FK_Ticket_Category" FromRole="Ticket" ToRole="Category" />
-          <NavigationProperty Name="Impact" Relationship="Self.FK_Ticket_Impact" FromRole="Ticket" ToRole="Impact" />
-          <NavigationProperty Name="Priority" Relationship="Self.FK_Ticket_Priority" FromRole="Ticket" ToRole="Priority" />
-          <NavigationProperty Name="Urgency" Relationship="Self.FK_Ticket_Urgency" FromRole="Ticket" ToRole="Urgency" />
-          <NavigationProperty Name="TicketAttachments" Relationship="Self.FK_TicketAttachment_Ticket" FromRole="Ticket" ToRole="TicketAttachment" />
-          <NavigationProperty Name="TicketHistories" Relationship="Self.FK_TicketHistory_Ticket" FromRole="Ticket" ToRole="TicketHistory" />
+          <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_Ticket_AspNetUsers" FromRole="Ticket" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser1" Relationship="TMSModel.FK_Ticket_AspNetUsers1" FromRole="Ticket" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser2" Relationship="TMSModel.FK_Ticket_AspNetUsers2" FromRole="Ticket" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser3" Relationship="TMSModel.FK_Ticket_AspNetUsers3" FromRole="Ticket" ToRole="AspNetUser" />
+          <NavigationProperty Name="Category" Relationship="TMSModel.FK_Ticket_Category" FromRole="Ticket" ToRole="Category" />
+          <NavigationProperty Name="Impact" Relationship="TMSModel.FK_Ticket_Impact" FromRole="Ticket" ToRole="Impact" />
+          <NavigationProperty Name="Priority" Relationship="TMSModel.FK_Ticket_Priority" FromRole="Ticket" ToRole="Priority" />
+          <NavigationProperty Name="Urgency" Relationship="TMSModel.FK_Ticket_Urgency" FromRole="Ticket" ToRole="Urgency" />
+          <NavigationProperty Name="TicketAttachments" Relationship="TMSModel.FK_TicketAttachment_Ticket" FromRole="Ticket" ToRole="TicketAttachment" />
+          <NavigationProperty Name="TicketHistories" Relationship="TMSModel.FK_TicketHistory_Ticket" FromRole="Ticket" ToRole="TicketHistory" />
         </EntityType>
         <EntityType Name="TicketAttachment">
           <Key>
@@ -964,7 +1084,7 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Path" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="TicketID" Type="Int32" />
-          <NavigationProperty Name="Ticket" Relationship="Self.FK_TicketAttachment_Ticket" FromRole="TicketAttachment" ToRole="Ticket" />
+          <NavigationProperty Name="Ticket" Relationship="TMSModel.FK_TicketAttachment_Ticket" FromRole="TicketAttachment" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="TicketHistory">
           <Key>
@@ -976,9 +1096,9 @@
           <Property Name="Action" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ActedTime" Type="DateTime" Precision="3" />
           <Property Name="TicketID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_TicketHistory_AspNetUsers" FromRole="TicketHistory" ToRole="AspNetUsers" />
-          <NavigationProperty Name="AspNetUser1" Relationship="Self.FK_TicketHistory_AspNetUsers1" FromRole="TicketHistory" ToRole="AspNetUsers" />
-          <NavigationProperty Name="Ticket" Relationship="Self.FK_TicketHistory_Ticket" FromRole="TicketHistory" ToRole="Ticket" />
+          <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_TicketHistory_AspNetUsers" FromRole="TicketHistory" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser1" Relationship="TMSModel.FK_TicketHistory_AspNetUsers1" FromRole="TicketHistory" ToRole="AspNetUser" />
+          <NavigationProperty Name="Ticket" Relationship="TMSModel.FK_TicketHistory_Ticket" FromRole="TicketHistory" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="Urgency">
           <Key>
@@ -987,54 +1107,54 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="PriorityMatrixItems" Relationship="Self.FK_PriorityMatrixItem_Urgency1" FromRole="Urgency" ToRole="PriorityMatrixItem" />
-          <NavigationProperty Name="Tickets" Relationship="Self.FK_Ticket_Urgency" FromRole="Urgency" ToRole="Ticket" />
+          <NavigationProperty Name="PriorityMatrixItems" Relationship="TMSModel.FK_PriorityMatrixItem_Urgency1" FromRole="Urgency" ToRole="PriorityMatrixItem" />
+          <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Urgency" FromRole="Urgency" ToRole="Ticket" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1">
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="AspNetUserClaims" Type="Self.AspNetUserClaim" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUserClaim" Role="AspNetUserClaim" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AspNetUserClaims">
+            <Dependent Role="AspNetUserClaim">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1">
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="AspNetUserLogins" Type="Self.AspNetUserLogin" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUserLogin" Role="AspNetUserLogin" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AspNetUserLogins">
+            <Dependent Role="AspNetUserLogin">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_AspNetUsers_Department">
-          <End Role="Department" Type="Self.Department" Multiplicity="0..1" />
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="*" />
+          <End Type="TMSModel.Department" Role="Department" Multiplicity="0..1" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Department">
               <PropertyRef Name="ID" />
             </Principal>
-            <Dependent Role="AspNetUsers">
+            <Dependent Role="AspNetUser">
               <PropertyRef Name="DepartmentID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_BusinessRuleNotification_AspNetUsers">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="BusinessRuleNotification" Type="Self.BusinessRuleNotification" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="TMSModel.BusinessRuleNotification" Role="BusinessRuleNotification" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="BusinessRuleNotification">
@@ -1043,10 +1163,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_AspNetUsers">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Ticket">
@@ -1055,10 +1175,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_AspNetUsers1">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Ticket">
@@ -1067,10 +1187,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_AspNetUsers2">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Ticket">
@@ -1079,10 +1199,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_AspNetUsers3">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Ticket">
@@ -1091,10 +1211,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_TicketHistory_AspNetUsers">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="TicketHistory" Type="Self.TicketHistory" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="TMSModel.TicketHistory" Role="TicketHistory" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="TicketHistory">
@@ -1103,10 +1223,10 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_TicketHistory_AspNetUsers1">
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="0..1" />
-          <End Role="TicketHistory" Type="Self.TicketHistory" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="TMSModel.TicketHistory" Role="TicketHistory" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
+            <Principal Role="AspNetUser">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="TicketHistory">
@@ -1115,8 +1235,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_BusinessRuleCondition_BusinessRule">
-          <End Role="BusinessRule" Type="Self.BusinessRule" Multiplicity="0..1" />
-          <End Role="BusinessRuleCondition" Type="Self.BusinessRuleCondition" Multiplicity="*" />
+          <End Type="TMSModel.BusinessRule" Role="BusinessRule" Multiplicity="0..1" />
+          <End Type="TMSModel.BusinessRuleCondition" Role="BusinessRuleCondition" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BusinessRule">
               <PropertyRef Name="ID" />
@@ -1127,8 +1247,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_BusinessRuleNotification_BusinessRule">
-          <End Role="BusinessRule" Type="Self.BusinessRule" Multiplicity="0..1" />
-          <End Role="BusinessRuleNotification" Type="Self.BusinessRuleNotification" Multiplicity="*" />
+          <End Type="TMSModel.BusinessRule" Role="BusinessRule" Multiplicity="0..1" />
+          <End Type="TMSModel.BusinessRuleNotification" Role="BusinessRuleNotification" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BusinessRule">
               <PropertyRef Name="ID" />
@@ -1139,8 +1259,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_BusinessRuleTrigger_BusinessRule">
-          <End Role="BusinessRule" Type="Self.BusinessRule" Multiplicity="0..1" />
-          <End Role="BusinessRuleTrigger" Type="Self.BusinessRuleTrigger" Multiplicity="*" />
+          <End Type="TMSModel.BusinessRule" Role="BusinessRule" Multiplicity="0..1" />
+          <End Type="TMSModel.BusinessRuleTrigger" Role="BusinessRuleTrigger" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BusinessRule">
               <PropertyRef Name="ID" />
@@ -1151,8 +1271,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_BusinessRuleCondition_BusinessRuleCondition">
-          <End Role="BusinessRuleCondition" Type="Self.BusinessRuleCondition" Multiplicity="0..1" />
-          <End Role="BusinessRuleCondition1" Type="Self.BusinessRuleCondition" Multiplicity="*" />
+          <End Type="TMSModel.BusinessRuleCondition" Role="BusinessRuleCondition" Multiplicity="0..1" />
+          <End Type="TMSModel.BusinessRuleCondition" Role="BusinessRuleCondition1" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="BusinessRuleCondition">
               <PropertyRef Name="ID" />
@@ -1163,8 +1283,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Category_Category">
-          <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
-          <End Role="Category1" Type="Self.Category" Multiplicity="*" />
+          <End Type="TMSModel.Category" Role="Category" Multiplicity="0..1" />
+          <End Type="TMSModel.Category" Role="Category1" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Category">
               <PropertyRef Name="ID" />
@@ -1175,8 +1295,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_KnowledgeBase_Category">
-          <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
-          <End Role="Solution" Type="Self.Solution" Multiplicity="*" />
+          <End Type="TMSModel.Category" Role="Category" Multiplicity="0..1" />
+          <End Type="TMSModel.Solution" Role="Solution" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Category">
               <PropertyRef Name="ID" />
@@ -1187,8 +1307,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Category">
-          <End Role="Category" Type="Self.Category" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <End Type="TMSModel.Category" Role="Category" Multiplicity="0..1" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Category">
               <PropertyRef Name="ID" />
@@ -1199,8 +1319,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PriorityMatrixItem_Impact">
-          <End Role="Impact" Type="Self.Impact" Multiplicity="1" />
-          <End Role="PriorityMatrixItem" Type="Self.PriorityMatrixItem" Multiplicity="*" />
+          <End Type="TMSModel.Impact" Role="Impact" Multiplicity="1" />
+          <End Type="TMSModel.PriorityMatrixItem" Role="PriorityMatrixItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Impact">
               <PropertyRef Name="ID" />
@@ -1211,8 +1331,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Impact">
-          <End Role="Impact" Type="Self.Impact" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <End Type="TMSModel.Impact" Role="Impact" Multiplicity="0..1" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Impact">
               <PropertyRef Name="ID" />
@@ -1223,8 +1343,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PriorityMatrixItem_Priority">
-          <End Role="Priority" Type="Self.Priority" Multiplicity="0..1" />
-          <End Role="PriorityMatrixItem" Type="Self.PriorityMatrixItem" Multiplicity="*" />
+          <End Type="TMSModel.Priority" Role="Priority" Multiplicity="0..1" />
+          <End Type="TMSModel.PriorityMatrixItem" Role="PriorityMatrixItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Priority">
               <PropertyRef Name="ID" />
@@ -1235,8 +1355,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Priority">
-          <End Role="Priority" Type="Self.Priority" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <End Type="TMSModel.Priority" Role="Priority" Multiplicity="0..1" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Priority">
               <PropertyRef Name="ID" />
@@ -1247,8 +1367,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PriorityMatrixItem_Urgency1">
-          <End Role="Urgency" Type="Self.Urgency" Multiplicity="1" />
-          <End Role="PriorityMatrixItem" Type="Self.PriorityMatrixItem" Multiplicity="*" />
+          <End Type="TMSModel.Urgency" Role="Urgency" Multiplicity="1" />
+          <End Type="TMSModel.PriorityMatrixItem" Role="PriorityMatrixItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Urgency">
               <PropertyRef Name="ID" />
@@ -1259,8 +1379,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_SolutionAttachment_Solution">
-          <End Role="Solution" Type="Self.Solution" Multiplicity="0..1" />
-          <End Role="SolutionAttachment" Type="Self.SolutionAttachment" Multiplicity="*" />
+          <End Type="TMSModel.Solution" Role="Solution" Multiplicity="0..1" />
+          <End Type="TMSModel.SolutionAttachment" Role="SolutionAttachment" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Solution">
               <PropertyRef Name="ID" />
@@ -1271,8 +1391,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Urgency">
-          <End Role="Urgency" Type="Self.Urgency" Multiplicity="0..1" />
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
+          <End Type="TMSModel.Urgency" Role="Urgency" Multiplicity="0..1" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Urgency">
               <PropertyRef Name="ID" />
@@ -1283,8 +1403,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_TicketAttachment_Ticket">
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="0..1" />
-          <End Role="TicketAttachment" Type="Self.TicketAttachment" Multiplicity="*" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="0..1" />
+          <End Type="TMSModel.TicketAttachment" Role="TicketAttachment" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Ticket">
               <PropertyRef Name="ID" />
@@ -1295,8 +1415,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_TicketHistory_Ticket">
-          <End Role="Ticket" Type="Self.Ticket" Multiplicity="1" />
-          <End Role="TicketHistory" Type="Self.TicketHistory" Multiplicity="*" />
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="1" />
+          <End Type="TMSModel.TicketHistory" Role="TicketHistory" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Ticket">
               <PropertyRef Name="ID" />
@@ -1307,149 +1427,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="AspNetUserRoles">
-          <End Role="AspNetRoles" Type="Self.AspNetRole" Multiplicity="*" />
-          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="*" />
+          <End Type="TMSModel.AspNetRole" Role="AspNetRole" Multiplicity="*" />
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
         </Association>
-        <EntityContainer Name="TMSEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRole" />
-          <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaim" />
-          <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogin" />
-          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUser" />
-          <EntitySet Name="BusinessRules" EntityType="Self.BusinessRule" />
-          <EntitySet Name="BusinessRuleConditions" EntityType="Self.BusinessRuleCondition" />
-          <EntitySet Name="BusinessRuleNotifications" EntityType="Self.BusinessRuleNotification" />
-          <EntitySet Name="BusinessRuleTriggers" EntityType="Self.BusinessRuleTrigger" />
-          <EntitySet Name="Categories" EntityType="Self.Category" />
-          <EntitySet Name="Departments" EntityType="Self.Department" />
-          <EntitySet Name="Impacts" EntityType="Self.Impact" />
-          <EntitySet Name="Priorities" EntityType="Self.Priority" />
-          <EntitySet Name="PriorityMatrixItems" EntityType="Self.PriorityMatrixItem" />
-          <EntitySet Name="Solutions" EntityType="Self.Solution" />
-          <EntitySet Name="SolutionAttachments" EntityType="Self.SolutionAttachment" />
-          <EntitySet Name="Tickets" EntityType="Self.Ticket" />
-          <EntitySet Name="TicketAttachments" EntityType="Self.TicketAttachment" />
-          <EntitySet Name="TicketHistories" EntityType="Self.TicketHistory" />
-          <EntitySet Name="Urgencies" EntityType="Self.Urgency" />
-          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
-          </AssociationSet>
-          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
-          </AssociationSet>
-          <AssociationSet Name="FK_AspNetUsers_Department" Association="Self.FK_AspNetUsers_Department">
-            <End Role="Department" EntitySet="Departments" />
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_BusinessRuleNotification_AspNetUsers" Association="Self.FK_BusinessRuleNotification_AspNetUsers">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="BusinessRuleNotification" EntitySet="BusinessRuleNotifications" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_AspNetUsers" Association="Self.FK_Ticket_AspNetUsers">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_AspNetUsers1" Association="Self.FK_Ticket_AspNetUsers1">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_AspNetUsers2" Association="Self.FK_Ticket_AspNetUsers2">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_AspNetUsers3" Association="Self.FK_Ticket_AspNetUsers3">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TicketHistory_AspNetUsers" Association="Self.FK_TicketHistory_AspNetUsers">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="TicketHistory" EntitySet="TicketHistories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TicketHistory_AspNetUsers1" Association="Self.FK_TicketHistory_AspNetUsers1">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="TicketHistory" EntitySet="TicketHistories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_BusinessRuleCondition_BusinessRule" Association="Self.FK_BusinessRuleCondition_BusinessRule">
-            <End Role="BusinessRule" EntitySet="BusinessRules" />
-            <End Role="BusinessRuleCondition" EntitySet="BusinessRuleConditions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_BusinessRuleNotification_BusinessRule" Association="Self.FK_BusinessRuleNotification_BusinessRule">
-            <End Role="BusinessRule" EntitySet="BusinessRules" />
-            <End Role="BusinessRuleNotification" EntitySet="BusinessRuleNotifications" />
-          </AssociationSet>
-          <AssociationSet Name="FK_BusinessRuleTrigger_BusinessRule" Association="Self.FK_BusinessRuleTrigger_BusinessRule">
-            <End Role="BusinessRule" EntitySet="BusinessRules" />
-            <End Role="BusinessRuleTrigger" EntitySet="BusinessRuleTriggers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_BusinessRuleCondition_BusinessRuleCondition" Association="Self.FK_BusinessRuleCondition_BusinessRuleCondition">
-            <End Role="BusinessRuleCondition" EntitySet="BusinessRuleConditions" />
-            <End Role="BusinessRuleCondition1" EntitySet="BusinessRuleConditions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Category_Category" Association="Self.FK_Category_Category">
-            <End Role="Category" EntitySet="Categories" />
-            <End Role="Category1" EntitySet="Categories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_KnowledgeBase_Category" Association="Self.FK_KnowledgeBase_Category">
-            <End Role="Category" EntitySet="Categories" />
-            <End Role="Solution" EntitySet="Solutions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_Category" Association="Self.FK_Ticket_Category">
-            <End Role="Category" EntitySet="Categories" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PriorityMatrixItem_Impact" Association="Self.FK_PriorityMatrixItem_Impact">
-            <End Role="Impact" EntitySet="Impacts" />
-            <End Role="PriorityMatrixItem" EntitySet="PriorityMatrixItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_Impact" Association="Self.FK_Ticket_Impact">
-            <End Role="Impact" EntitySet="Impacts" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PriorityMatrixItem_Priority" Association="Self.FK_PriorityMatrixItem_Priority">
-            <End Role="Priority" EntitySet="Priorities" />
-            <End Role="PriorityMatrixItem" EntitySet="PriorityMatrixItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_Priority" Association="Self.FK_Ticket_Priority">
-            <End Role="Priority" EntitySet="Priorities" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PriorityMatrixItem_Urgency1" Association="Self.FK_PriorityMatrixItem_Urgency1">
-            <End Role="Urgency" EntitySet="Urgencies" />
-            <End Role="PriorityMatrixItem" EntitySet="PriorityMatrixItems" />
-          </AssociationSet>
-          <AssociationSet Name="FK_SolutionAttachment_Solution" Association="Self.FK_SolutionAttachment_Solution">
-            <End Role="Solution" EntitySet="Solutions" />
-            <End Role="SolutionAttachment" EntitySet="SolutionAttachments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Ticket_Urgency" Association="Self.FK_Ticket_Urgency">
-            <End Role="Urgency" EntitySet="Urgencies" />
-            <End Role="Ticket" EntitySet="Tickets" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TicketAttachment_Ticket" Association="Self.FK_TicketAttachment_Ticket">
-            <End Role="Ticket" EntitySet="Tickets" />
-            <End Role="TicketAttachment" EntitySet="TicketAttachments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TicketHistory_Ticket" Association="Self.FK_TicketHistory_Ticket">
-            <End Role="Ticket" EntitySet="Tickets" />
-            <End Role="TicketHistory" EntitySet="TicketHistories" />
-          </AssociationSet>
-          <AssociationSet Name="AspNetUserRoles" Association="Self.AspNetUserRoles">
-            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-          </AssociationSet>
-          <EntitySet Name="C__MigrationHistory" EntityType="TMSModel.C__MigrationHistory" />
-        </EntityContainer>
-        <EntityType Name="C__MigrationHistory">
-          <Key>
-            <PropertyRef Name="MigrationId" />
-            <PropertyRef Name="ContextKey" />
-          </Key>
-          <Property Name="MigrationId" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
-          <Property Name="ContextKey" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="true" />
-          <Property Name="Model" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
-          <Property Name="ProductVersion" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
-        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1459,253 +1439,244 @@
           <EntitySetMapping Name="AspNetRoles">
             <EntityTypeMapping TypeName="TMSModel.AspNetRole">
               <MappingFragment StoreEntitySet="AspNetRoles">
-                <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserClaims">
             <EntityTypeMapping TypeName="TMSModel.AspNetUserClaim">
               <MappingFragment StoreEntitySet="AspNetUserClaims">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
                 <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
+                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserLogins">
             <EntityTypeMapping TypeName="TMSModel.AspNetUserLogin">
               <MappingFragment StoreEntitySet="AspNetUserLogins">
-                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
-                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
+                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="TMSModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
-                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
-                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
-                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
-                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
-                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
-                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Fullname" ColumnName="Fullname" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="Birthday" ColumnName="Birthday" />
-                <ScalarProperty Name="Address" ColumnName="Address" />
-                <ScalarProperty Name="Gender" ColumnName="Gender" />
-                <ScalarProperty Name="AvatarURL" ColumnName="AvatarURL" />
-                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
-                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
-                <ScalarProperty Name="JobTitle" ColumnName="JobTitle" />
-                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
-                <ScalarProperty Name="CompanyAddress" ColumnName="CompanyAddress" />
-                <ScalarProperty Name="JoinedDate" ColumnName="JoinedDate" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="JoinedDate" ColumnName="JoinedDate" />
+                <ScalarProperty Name="CompanyAddress" ColumnName="CompanyAddress" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="JobTitle" ColumnName="JobTitle" />
+                <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
+                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
+                <ScalarProperty Name="AvatarURL" ColumnName="AvatarURL" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Birthday" ColumnName="Birthday" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="Fullname" ColumnName="Fullname" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BusinessRules">
             <EntityTypeMapping TypeName="TMSModel.BusinessRule">
               <MappingFragment StoreEntitySet="BusinessRule">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BusinessRuleConditions">
             <EntityTypeMapping TypeName="TMSModel.BusinessRuleCondition">
               <MappingFragment StoreEntitySet="BusinessRuleCondition">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Criteria" ColumnName="Criteria" />
-                <ScalarProperty Name="Condition" ColumnName="Condition" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
-                <ScalarProperty Name="BusinessRuleID" ColumnName="BusinessRuleID" />
-                <ScalarProperty Name="BusinessRuleConditionID" ColumnName="BusinessRuleConditionID" />
                 <ScalarProperty Name="BusinessRuleConditionLevel" ColumnName="BusinessRuleConditionLevel" />
+                <ScalarProperty Name="BusinessRuleConditionID" ColumnName="BusinessRuleConditionID" />
+                <ScalarProperty Name="BusinessRuleID" ColumnName="BusinessRuleID" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Condition" ColumnName="Condition" />
+                <ScalarProperty Name="Criteria" ColumnName="Criteria" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BusinessRuleNotifications">
             <EntityTypeMapping TypeName="TMSModel.BusinessRuleNotification">
               <MappingFragment StoreEntitySet="BusinessRuleNotification">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="BusinessRuleID" ColumnName="BusinessRuleID" />
                 <ScalarProperty Name="ReceiverID" ColumnName="ReceiverID" />
+                <ScalarProperty Name="BusinessRuleID" ColumnName="BusinessRuleID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="BusinessRuleTriggers">
             <EntityTypeMapping TypeName="TMSModel.BusinessRuleTrigger">
               <MappingFragment StoreEntitySet="BusinessRuleTrigger">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Action" ColumnName="Action" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="BusinessRuleID" ColumnName="BusinessRuleID" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Categories">
             <EntityTypeMapping TypeName="TMSModel.Category">
               <MappingFragment StoreEntitySet="Category">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="ParentID" ColumnName="ParentID" />
                 <ScalarProperty Name="CategoryLevel" ColumnName="CategoryLevel" />
+                <ScalarProperty Name="ParentID" ColumnName="ParentID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Departments">
             <EntityTypeMapping TypeName="TMSModel.Department">
               <MappingFragment StoreEntitySet="Department">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Impacts">
             <EntityTypeMapping TypeName="TMSModel.Impact">
               <MappingFragment StoreEntitySet="Impact">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Priorities">
             <EntityTypeMapping TypeName="TMSModel.Priority">
               <MappingFragment StoreEntitySet="Priority">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="PriorityMatrixItems">
             <EntityTypeMapping TypeName="TMSModel.PriorityMatrixItem">
               <MappingFragment StoreEntitySet="PriorityMatrixItem">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="ImpactID" ColumnName="ImpactID" />
-                <ScalarProperty Name="UrgencyID" ColumnName="UrgencyID" />
                 <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
+                <ScalarProperty Name="UrgencyID" ColumnName="UrgencyID" />
+                <ScalarProperty Name="ImpactID" ColumnName="ImpactID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Solutions">
             <EntityTypeMapping TypeName="TMSModel.Solution">
               <MappingFragment StoreEntitySet="Solution">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Subject" ColumnName="Subject" />
-                <ScalarProperty Name="ContentText" ColumnName="ContentText" />
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
-                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
-                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
                 <ScalarProperty Name="ModifiedTime" ColumnName="ModifiedTime" />
+                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="ContentText" ColumnName="ContentText" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SolutionAttachments">
             <EntityTypeMapping TypeName="TMSModel.SolutionAttachment">
               <MappingFragment StoreEntitySet="SolutionAttachment">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Path" ColumnName="Path" />
                 <ScalarProperty Name="SolutionID" ColumnName="SolutionID" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Tickets">
             <EntityTypeMapping TypeName="TMSModel.Ticket">
               <MappingFragment StoreEntitySet="Ticket">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Type" ColumnName="Type" />
-                <ScalarProperty Name="Mode" ColumnName="Mode" />
-                <ScalarProperty Name="SolveID" ColumnName="SolveID" />
-                <ScalarProperty Name="TechnicianID" ColumnName="TechnicianID" />
-                <ScalarProperty Name="AssignedByID" ColumnName="AssignedByID" />
-                <ScalarProperty Name="RequesterID" ColumnName="RequesterID" />
-                <ScalarProperty Name="ImpactID" ColumnName="ImpactID" />
-                <ScalarProperty Name="ImpactDetail" ColumnName="ImpactDetail" />
-                <ScalarProperty Name="UrgencyID" ColumnName="UrgencyID" />
-                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
-                <ScalarProperty Name="Status" ColumnName="Status" />
-                <ScalarProperty Name="Subject" ColumnName="Subject" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="Solution" ColumnName="Solution" />
-                <ScalarProperty Name="UnapproveReason" ColumnName="UnapproveReason" />
-                <ScalarProperty Name="ScheduleStartDate" ColumnName="ScheduleStartDate" />
-                <ScalarProperty Name="ScheduleEndDate" ColumnName="ScheduleEndDate" />
-                <ScalarProperty Name="ActualStartDate" ColumnName="ActualStartDate" />
-                <ScalarProperty Name="ActualEndDate" ColumnName="ActualEndDate" />
-                <ScalarProperty Name="SolvedDate" ColumnName="SolvedDate" />
-                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
-                <ScalarProperty Name="ModifiedTime" ColumnName="ModifiedTime" />
                 <ScalarProperty Name="CreatedID" ColumnName="CreatedID" />
+                <ScalarProperty Name="ModifiedTime" ColumnName="ModifiedTime" />
+                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="SolvedDate" ColumnName="SolvedDate" />
+                <ScalarProperty Name="ActualEndDate" ColumnName="ActualEndDate" />
+                <ScalarProperty Name="ActualStartDate" ColumnName="ActualStartDate" />
+                <ScalarProperty Name="ScheduleEndDate" ColumnName="ScheduleEndDate" />
+                <ScalarProperty Name="ScheduleStartDate" ColumnName="ScheduleStartDate" />
+                <ScalarProperty Name="UnapproveReason" ColumnName="UnapproveReason" />
+                <ScalarProperty Name="Solution" ColumnName="Solution" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="PriorityID" ColumnName="PriorityID" />
+                <ScalarProperty Name="UrgencyID" ColumnName="UrgencyID" />
+                <ScalarProperty Name="ImpactDetail" ColumnName="ImpactDetail" />
+                <ScalarProperty Name="ImpactID" ColumnName="ImpactID" />
+                <ScalarProperty Name="RequesterID" ColumnName="RequesterID" />
+                <ScalarProperty Name="AssignedByID" ColumnName="AssignedByID" />
+                <ScalarProperty Name="TechnicianID" ColumnName="TechnicianID" />
+                <ScalarProperty Name="SolveID" ColumnName="SolveID" />
+                <ScalarProperty Name="Mode" ColumnName="Mode" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="TicketAttachments">
             <EntityTypeMapping TypeName="TMSModel.TicketAttachment">
               <MappingFragment StoreEntitySet="TicketAttachment">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Path" ColumnName="Path" />
                 <ScalarProperty Name="TicketID" ColumnName="TicketID" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="TicketHistories">
             <EntityTypeMapping TypeName="TMSModel.TicketHistory">
               <MappingFragment StoreEntitySet="TicketHistory">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="ActID" ColumnName="ActID" />
-                <ScalarProperty Name="ActedID" ColumnName="ActedID" />
-                <ScalarProperty Name="Action" ColumnName="Action" />
-                <ScalarProperty Name="ActedTime" ColumnName="ActedTime" />
                 <ScalarProperty Name="TicketID" ColumnName="TicketID" />
+                <ScalarProperty Name="ActedTime" ColumnName="ActedTime" />
+                <ScalarProperty Name="Action" ColumnName="Action" />
+                <ScalarProperty Name="ActedID" ColumnName="ActedID" />
+                <ScalarProperty Name="ActID" ColumnName="ActID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Urgencies">
             <EntityTypeMapping TypeName="TMSModel.Urgency">
               <MappingFragment StoreEntitySet="Urgency">
-                <ScalarProperty Name="ID" ColumnName="ID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <AssociationSetMapping Name="AspNetUserRoles" TypeName="TMSModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
-            <EndProperty Name="AspNetRoles">
-              <ScalarProperty Name="Id" ColumnName="RoleId" />
-            </EndProperty>
-            <EndProperty Name="AspNetUsers">
+            <EndProperty Name="AspNetUser">
               <ScalarProperty Name="Id" ColumnName="UserId" />
             </EndProperty>
+            <EndProperty Name="AspNetRole">
+              <ScalarProperty Name="Id" ColumnName="RoleId" />
+            </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="C__MigrationHistory">
-            <EntityTypeMapping TypeName="TMSModel.C__MigrationHistory">
-              <MappingFragment StoreEntitySet="__MigrationHistory">
-                <ScalarProperty Name="ProductVersion" ColumnName="ProductVersion" />
-                <ScalarProperty Name="Model" ColumnName="Model" />
-                <ScalarProperty Name="ContextKey" ColumnName="ContextKey" />
-                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

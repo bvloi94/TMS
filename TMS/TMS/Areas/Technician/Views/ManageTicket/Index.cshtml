@@ -342,7 +342,7 @@
 
                     {
                         "render": function (data, type, row) {
-                            var solveUrl = '@Url.Action("Solve", "ManageTicket")/' + row[6];
+                            var solveUrl = '/Ticket/Solve/' + row[6];
                             if (row[4] == 2) {
                                 return "<a href='" + solveUrl + "' class='btn btn-primary' >Solve</a>";
                             }
@@ -385,7 +385,7 @@
                     id: id
                 },
                 success: function (data) {
-                    var solveUrl = '@Url.Action("Solve", "Ticket", new { area = "" })/' + data.id;
+                    var solveUrl = '/Ticket/Solve/' + data.id;
 
                     $('#ticket-subject').text("Subject: " + data.subject);
                     $('#ticket-description').text(data.description);

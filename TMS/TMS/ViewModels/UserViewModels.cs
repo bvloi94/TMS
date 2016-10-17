@@ -21,6 +21,7 @@ namespace TMS.ViewModels
         public string AvatarURL { get; set; }
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
+        [ValidateDate(-16, ErrorMessage = "User must older than 16 years old")]
         public Nullable<DateTime> Birthday { get; set; }
         public string Address { get; set; }
         public Nullable<bool> Gender { get; set; }
@@ -46,6 +47,7 @@ namespace TMS.ViewModels
         public string AvatarURL { get; set; }
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
+        [ValidateDate(-16, ErrorMessage = "User must older than 16 years old")]
         public Nullable<DateTime> Birthday { get; set; }
         public string Address { get; set; }
         public Nullable<bool> Gender { get; set; }
@@ -66,6 +68,7 @@ namespace TMS.ViewModels
         public string AvatarURL { get; set; }
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
+        [ValidateDate(-16, ErrorMessage = "User must older than 16 years old")]
         public Nullable<DateTime> Birthday { get; set; }
         public string Address { get; set; }
         public Nullable<bool> Gender { get; set; }
@@ -88,6 +91,7 @@ namespace TMS.ViewModels
         public string AvatarURL { get; set; }
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
+        [ValidateDate(-16, ErrorMessage = "User must older than 16 years old")]
         public Nullable<DateTime> Birthday { get; set; }
         public string Address { get; set; }
         public Nullable<bool> Gender { get; set; }
