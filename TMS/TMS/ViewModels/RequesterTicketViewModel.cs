@@ -15,18 +15,10 @@ namespace TMS.ViewModels
         public string Description { get; set; }
         public string AttachmentURL { get; set; }
         public string CreatedBy { get; set; }
-        public string Impact { get; set; }
-        public string ImpactDetail { get; set; }
-        public string Urgency { get; set; }
-        public string Priority { get; set; }
         public string Category { get; set; }
         public string Subcategory { get; set; }
         public Nullable<DateTime> CreateTime { get; set; }
         public Nullable<DateTime> ModifiedTime { get; set; }
-        public Nullable<DateTime> ScheduleStartTime { get; set; }
-        public Nullable<DateTime> ScheduleEndTime { get; set; }
-        public Nullable<DateTime> ActualStartTime { get; set; }
-        public Nullable<DateTime> ActualEndTime { get; set; }
         public string Solution { get; set; }
         public string SolvedBy { get; set; }
         public string UnapproveReason { get; set; }
