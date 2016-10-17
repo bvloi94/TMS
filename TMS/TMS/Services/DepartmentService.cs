@@ -18,7 +18,7 @@ namespace TMS.Services
 
         public IEnumerable<Department> GetAll()
         {
-            return _unitOfWork.DepartmentRepository.Get();
+            return _unitOfWork.DepartmentRepository.Get(a => (bool) a.IsActive);
         }
 
         public void AddDepartment(Department dep)

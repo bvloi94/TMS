@@ -27,5 +27,10 @@ namespace TMS.Services
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory
                 && m.ParentID == categoryId);
         }
+
+        public Category GetCategoryById(int id)
+        {
+            return _unitOfWork.CategoryRepository.GetByID(id);
+        }
     }
 }

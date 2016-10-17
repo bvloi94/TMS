@@ -21,7 +21,7 @@ namespace TMS.ViewModels
         /// Total records, before filtering (i.e. the 
         /// total number of records in the database)
         /// </summary>
-        public int iTotalRecords { get; set; }
+        public int recordsTotal { get; set; }
         /// <summary>
         /// Total records, after filtering (i.e. the 
         /// total number of records after filtering 
@@ -29,12 +29,12 @@ namespace TMS.ViewModels
         /// of records being returned in this result 
         /// set)
         /// </summary>
-        public int iTotalDisplayRecords { get; set; }
+        public int recordsFiltered { get; set; }
         /// <summary>
         /// The data in a 2D array. Note that you can 
         /// change the name of this parameter with 
         /// sAjaxDataProp.
         /// </summary>
-        public object aaData { get; set; }
+        public object data { get; set; }
     }
 }

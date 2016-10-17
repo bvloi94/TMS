@@ -1,0 +1,23 @@
+﻿.technician-dropdown .technician-name {
+    font-weight: bold;
+}
+
+.technician-dropdown .technician-email {
+    margin-left: 10px;
+}
+
+.category-dropdown .category-1 {
+    margin-left: 10px;
+    height: 10px;
+    font-weight: bold;
+}
+
+.category-dropdown .category-2 {
+    margin-left: 25px;
+    height: 5px;
+    font-weight: normal;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 22px !important;
+}

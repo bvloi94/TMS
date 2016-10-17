@@ -5,10 +5,11 @@ using System.Web;
 
 namespace TMS.Enumerator
 {
-    public enum TicketModeEnum
+    public enum TicketTypeEnum
     {
-        PhoneCall = 1,
-        WebForm = 2,
-        Email = 3
+        None = 0,
+        Request = 1,
+        Problem = 2,
+        Change = 3
     }
 }
