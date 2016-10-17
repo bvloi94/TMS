@@ -12,6 +12,5 @@ namespace TMS.ViewModels
         public string Description { get; set; }
         public int ParentId { get; set; }
         public int CategoryLevel { get; set; }
-
     }
 }
