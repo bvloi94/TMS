@@ -55,6 +55,110 @@ namespace TMS.Controllers
             return View(ticket);
         }
 
+        [HttpGet]
+        public ActionResult GetRequesterTickets(jQueryDataTableParamModel param)
+        {
+            // 1. Get Parameters
+            string requesterID = User.Identity.GetUserId();
+            var ticketList = _ticketService.GetRequesterTickets(requesterID);
+            var default_search_key = Request["search[value]"];
+            var select_status = Request["select_status"];
+            var search_text = Request["search_text"];
+
+
+            // Initial variables
+            IEnumerable<Ticket> filteredListItems;
+
+            // Query data by params
+            if (!string.IsNullOrEmpty(default_search_key)) //user have inputed keyword to search textbox
+            {
+                //contains(keyword) = like "%keyword%" in SQL query
+                filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
+            }
+            else
+            {
+                filteredListItems = ticketList;
+            }
+
+            if (!string.IsNullOrEmpty(search_text))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(search_text.ToLower())
+                    || p.Description.ToLower().Contains(search_text.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(select_status))
+            {
+                switch (select_status)
+                {
+                    case "1":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 1);
+                        break;
+                    case "2":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 2);
+                        break;
+                    case "3":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 3);
+                        break;
+                    case "4":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 4);
+                        break;
+                    case "5":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 5);
+                        break;
+                    case "6":
+                        filteredListItems = filteredListItems.Where(p => p.Status == 6);
+                        break;
+                    default: break;
+                }
+            }
+
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortDirection = Request["order[0][dir]"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.CreatedTime)
+                        : filteredListItems.OrderByDescending(p => p.CreatedTime);
+                    break;
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.RequesterID)
+                        : filteredListItems.OrderByDescending(p => p.RequesterID);
+                    break;
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Subject)
+                        : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+                case 5:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.ModifiedTime)
+                        : filteredListItems.OrderByDescending(p => p.ModifiedTime);
+                    break;
+                default: break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var result = displayedList.Select(p => new IConvertible[]{
+                p.CreatedTime.ToString(),
+                p.Subject,
+                p.Status,
+                p.Solution,
+                p.ID
+            }.ToArray());
+
+            return Json(new
+            {
+                param.sEcho,
+                iTotalRecords = result.Count(),
+                iTotalDisplayRecords = filteredListItems.Count(),
+                aaData = result
+            }, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Tickets/Create
         public ActionResult Create()
         {
@@ -90,9 +194,7 @@ namespace TMS.Controllers
                     ticketFiles.Path = listFile[0].Path;
                     
                 }
-
-
-
+                
                 return RedirectToAction("Index");
             }
             return View(model);
