@@ -30,6 +30,7 @@ namespace TMS.Controllers
             _ticketService = new TicketService(unitOfWork);
             _userService = new UserService(unitOfWork);
             _departmentService = new DepartmentService(unitOfWork);
+            _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
         }
 
         // GET: Tickets
@@ -65,11 +66,13 @@ namespace TMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Create(RequesterTicketViewModel model)
+        public ActionResult Create(RequesterTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
         {
             if (ModelState.IsValid)
             {
                 Ticket ticket = new Ticket();
+                TicketAttachment ticketFiles = new TicketAttachment();
+
                 ticket.Subject = model.Subject;
                 ticket.Description = model.Description;
                 ticket.Status = (int?)TicketStatusEnum.New;
@@ -78,6 +81,96 @@ namespace TMS.Controllers
                 ticket.CreatedTime = DateTime.Now;
                 db.Tickets.Add(ticket);
                 db.SaveChanges();
+
+                if (uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
+                {
+                    _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
+                    List<TicketAttachment> listFile = _unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
+                    ticketFiles.Path = listFile[0].Path;
+                    
+                }
+
+
+
+                return RedirectToAction("Index");
+            }
+            return View(model);
+        }
+
+        // GET: Tickets/Edit/5
+        public ActionResult Edit(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Ticket ticket = db.Tickets.Find(id);
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
+            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
+            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
+            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
+            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
+            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
+            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
+            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
+            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
+            return View(ticket);
+        }
+
+        // POST: Tickets/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
+        {
+            if (ModelState.IsValid)
+            {
+                db.Entry(ticket).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
+            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
+            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
+            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
+            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
+            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
+            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
+            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
+            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
+            return View(ticket);
+        }
+
+        // GET: Tickets/Delete/5
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Ticket ticket = db.Tickets.Find(id);
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+            return View(ticket);
+        }
+
+        // POST: Tickets/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Ticket ticket = db.Tickets.Find(id);
+            db.Tickets.Remove(ticket);
+            db.SaveChanges();
+            return RedirectToAction("Index");
+        }
 
                 return RedirectToAction("Index");
             }

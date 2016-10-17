@@ -1,5 +1,4 @@
-﻿@*@using TMS.ViewModels*@
-@model TMS.ViewModels.ProfileAdminViewModel
+﻿@model TMS.ViewModels.ProfileAdminViewModel
 @{
     ViewBag.Title = "View Profile";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
@@ -59,7 +58,10 @@
                     <div class="form-group">
                         <label class="col-sm-offset-2 col-sm-3 ">Birthday</label>
                         <div class="col-sm-7">
-                            @Model.DayOfBirth.Value.ToString("dd/MM/yyyy")
+                            @if (Model.DayOfBirth.HasValue)
+                            {
+                                @Model.DayOfBirth.Value.ToString("dd/MM/yyyy")
+                            }
                         </div>
                     </div>
                     <div class="form-group">

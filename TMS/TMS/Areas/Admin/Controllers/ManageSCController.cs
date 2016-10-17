@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Validation;
 using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Helpers;
-using System.Web.Management;
 using System.Web.Mvc;
-using System.Web.Services.Description;
-using TMS.Controllers;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
+using TMS.Utils;
 using TMS.ViewModels;
 
 namespace TMS.Areas.Admin.Controllers
@@ -232,16 +226,25 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
-            var result = displayedList.Select(p => new Object[]
+            var result = displayedList.Select(p => new CategoryViewModel
             {
-                p.ID,
-                p.Name,
-                p.Description,
-                _categoryService.GetSubCategories(p.ID).Select(m => new
+                ID = p.ID,
+                Name = p.Name,
+                Description = p.Description,
+                Level = p.CategoryLevel.Value,
+                Categories = _categoryService.GetSubCategories(p.ID).Select(m => new CategoryViewModel
                 {
-                    m.ID,
-                    m.Name,
-                    m.Description
+                    ID = m.ID,
+                    Name = m.Name,
+                    Description = m.Description,
+                    Level = m.CategoryLevel.Value,
+                    Categories = _categoryService.GetItems(m.ID).Select(n => new CategoryViewModel
+                    {
+                        ID = n.ID,
+                        Name = n.Name,
+                        Description = n.Description,
+                        Level = n.CategoryLevel.Value
+                    }).ToArray()
                 }).ToArray()
             }).ToArray();
 
@@ -261,6 +264,20 @@ namespace TMS.Areas.Admin.Controllers
             {
                 m.ID,
                 m.Name
+            }).ToArray();
+            return Json(new
+            {
+                data = categoryList
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetSubCategories()
+        {
+            var categoryList = _categoryService.GetSubCategories().OrderBy(m => m.ParentID).Select(m => new Category
+            {
+                ID = m.ID,
+                Name = _categoryService.GetCategoryById(m.ParentID.Value).Name + " > " + m.Name
             }).ToArray();
             return Json(new
             {
@@ -757,6 +774,87 @@ namespace TMS.Areas.Admin.Controllers
                 }
 
 
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CreateCategory(CategoryViewModel model)
+        {
+            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name, null);
+            if (isDuplicatedName)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = string.Format("'{0}' has already been used.", model.Name)
+                });
+            }
+            else
+            {
+                Category category = new Category();
+                category.Name = model.Name;
+                category.Description = model.Description;
+                category.CategoryLevel = ConstantUtil.CategoryLevel.Category;
+                try
+                {
+                    _categoryService.AddCategory(category);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create new category successfully!"
+                    });
+                }
+                catch
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        message = "Some errors occured. Please try again later!"
+                    });
+                }
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CreateSubCategory(CategoryViewModel model)
+        {
+            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name, model.ParentId);
+            if (isDuplicatedName)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = string.Format("'{0}' has already been used.", model.Name)
+                });
+            }
+            else
+            {
+                Category category = new Category();
+                category.Name = model.Name;
+                category.Description = model.Description;
+                category.CategoryLevel = ConstantUtil.CategoryLevel.SubCategory;
+                category.ParentID = model.ParentId;
+                try
+                {
+                    _categoryService.AddCategory(category);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create new sub category successfully!"
+                    });
+                }
+                catch
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        message = "Some errors occured. Please try again later!"
+                    });
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿@model TMS.Models.Category
+﻿@using TMS.Utils
+@model TMS.Models.Category
 @{
     ViewBag.Title = "Manage Category";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
@@ -6,6 +7,15 @@
 <style>
     div.slider {
         display: none;
+    }
+
+    table.dataTable, table.dataTable th, table.dataTable td {
+        border-color: black !important;
+    }
+
+    table.table-bordered.dataTable > thead > tr > th {
+        border-bottom-width: 0 !important;
+        background-color: aliceblue;
     }
 </style>
 
@@ -15,13 +25,14 @@
             <div class="box-body">
                 <a href="javascript:void(0)" class="btn btn-primary" onclick="showCreateCategoryModal()"><i class="fa fa-plus"></i> New Category</a>
                 <a href="javascript:void(0)" class="btn btn-primary" onclick="showCreateSubCategoryModal()"><i class="fa fa-plus"></i> New Sub Category</a>
-                <table class="table table-bordered table-hover" id="category-table">
+                <a href="javascript:void(0)" class="btn btn-primary" onclick="showCreateItemModal()"><i class="fa fa-plus"></i> New Item</a>
+                <table class="table table-bordered dataTable" id="category-table">
                     <thead>
                         <tr>
-                            <th width="50px"></th>
-                            <th width="200px">Name</th>
+                            <th style="width: 35px"></th>
+                            <th>Name</th>
                             <th>Description</th>
-                            <th width="100px">Action</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -46,7 +57,7 @@
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="category-name-txt">
-                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
+                            <p id="category-name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -72,7 +83,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Category</h4>
+                <h4 class="modal-title">Sub Category</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
@@ -80,7 +91,7 @@
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="sub-category-name-txt">
-                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
+                            <p id="sub-category-name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -93,12 +104,54 @@
                         <label class="col-sm-2 control-label">Category&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <select id="sub-category-category-dropdown" class="form-control"></select>
+                            <p id="sub-category-category-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="sub-category-action-btn">Save changes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="item-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Item</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Name&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Name" id="sub-category-name-txt">
+                            <p id="item-name-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Description</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="3" placeholder="Description" id="sub-category-description-txt"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Sub Category&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-9">
+                            <select id="item-sub-category-dropdown" class="form-control"></select>
+                            <p id="item-sub-category-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="item-action-btn">Save changes</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -152,22 +205,22 @@
                     "targets": [1],
                     "sortable": true,
                     "render": function (data, type, row) {
-                        return row[1];
+                        return row.Name;
                     }
                 },
                 {
                     "targets": [2],
                     "sortable": false,
                     "render": function (data, type, row) {
-                        return row[2];
+                        return row.Description;
                     }
                 },
                 {
                     "targets": [3],
                     "sortable": false,
                     "render": function (data, type, row) {
-                        return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="getCategoryDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
-                            + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
+                        return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showCategoryModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
+                            + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a>';
                     }
 
                 }
@@ -176,13 +229,14 @@
 
         var reloadDataTable = function () {
             var oTable = $("#category-table").dataTable();
-            oTable._fnPageChange(0);
-            oTable._fnAjaxUpdate();
+            oTable.api().ajax.reload();
         };
 
         $('#category-table tbody').on('click', 'td.details-control', function () {
             var tr = $(this).closest('tr');
-            var row = $("#category-table").dataTable().api().row(tr);
+            var table = $(this).closest('table');
+            //var row = $("#category-table").dataTable().api().row(tr);
+            var row = table.dataTable().api().row(tr);
 
             if (row.child.isShown()) {
                 // This row is already open - close it
@@ -190,49 +244,151 @@
                     row.child.hide();
                     tr.removeClass('shown');
                 });
-            }
-            else {
-                // Open this row
-                row.child(drawDetailTable(row.data()[3])).show();
-                tr.next().css("background-color", "#f1f1f1");
-                tr.addClass('shown');
-                $('div.slider', row.child()).slideDown();
-            }
-        });
-
-        var drawDetailTable = function (data) {
-            if (data.length == 0) {
-                return '<div class="slider"><h3>No sub category available</h3></div>';
             } else {
-                var table = "<div class='slider'>";
-                table += "<table class='table table-bordered table-hover'>";
-                table += "<thead>";
-                table += "<tr>";
-                table += "<th width='200px'>Name</th>";
-                table += "<th>Description</th>";
-                table += "<th width='100px'>Action</th>";
-                table += "</tr>";
-                table += "</thead>";
-                table += "<tbody>";
-                for (i = 0; i < data.length; i++) {
-                    var row = data[i];
-                    table += "<tr>";
-                    table += "<td>" + row.Name + "</td>";
-                    table += "<td>" + row.Description + "</td>";
-                    table += '<td><a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="getCategoryDetail(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
-                            + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a></td>';
-                    table += "</tr>";
+                var level = row.data().Level;
+                var categories = row.data().Categories;
+                if (categories.length > 0) {
+                    // Open this row
+                    if (level == '@ConstantUtil.CategoryLevel.Category') {
+                        var content = "<div class='slider'>";
+                        content += "<h3>Sub Categories</h3>";
+                        content += "<table class='table table-bordered dataTable cell-border'>";
+                        content += "<thead>";
+                        content += "<tr>";
+                        content += "<th style='width: 35px'></th>";
+                        content += "<th>Name</th>";
+                        content += "<th>Description</th>";
+                        content += "<th>Action</th>";
+                        content += "</tr>";
+                        content += "</thead>";
+                        content += "<tbody>";
+                        content += "</tbody>";
+                        content += "</table>";
+                        row.child(content).show();
+                        tr.next().find("table").DataTable({
+                            processing: true,
+                            serverSide: false,
+                            paging: false,
+                            filter: false,
+                            info: false,
+                            sort: true,
+                            lengthChange: false,
+                            language: {
+                                infoFiltered: ""
+                            },
+                            data: categories,
+                            order: [[1, 'asc']],
+                            columnDefs: [
+                                {
+                                    "targets": [0],
+                                    "className": "details-control",
+                                    "sortable": false,
+                                    "data": null,
+                                    "defaultContent": ''
+                                },
+                                {
+                                    "targets": [1],
+                                    "sortable": true,
+                                    "render": function (data, type, row) {
+                                        return row.Name;
+                                    }
+                                },
+                                {
+                                    "targets": [2],
+                                    "sortable": false,
+                                    "render": function (data, type, row) {
+                                        return row.Description;
+                                    }
+                                },
+                                {
+                                    "targets": [3],
+                                    "sortable": false,
+                                    "render": function (data, type, row) {
+                                        return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showSubCategoryModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
+                                            + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a>';
+                                    }
+                                }
+                            ]
+                        });
+                        tr.next().css("background-color", "#f7f7f7");
+                    } else if (level == '@ConstantUtil.CategoryLevel.SubCategory') {
+                        var content = "<div class='slider'>";
+                        content += "<h3>Items</h3>";
+                        content += "<table class='table table-bordered dataTable'>";
+                        content += "<thead>";
+                        content += "<tr>";
+                        content += "<th width='200px'>Name</th>";
+                        content += "<th>Description</th>";
+                        content += "<th width='100px'>Action</th>";
+                        content += "</tr>";
+                        content += "</thead>";
+                        content += "<tbody>";
+                        content += "</tbody>";
+                        content += "</table>";
+                        row.child(content).show();
+                        tr.next().find("table").DataTable({
+                            processing: true,
+                            serverSide: false,
+                            paging: false,
+                            filter: false,
+                            info: false,
+                            sort: true,
+                            lengthChange: false,
+                            data: categories,
+                            order: [[0, 'asc']],
+                            columnDefs: [
+                                {
+                                    "targets": [0],
+                                    "sortable": true,
+                                    "render": function (data, type, row) {
+                                        return row.Name;
+                                    }
+                                },
+                                {
+                                    "targets": [1],
+                                    "sortable": false,
+                                    "render": function (data, type, row) {
+                                        return row.Description;
+                                    }
+                                },
+                                {
+                                    "targets": [2],
+                                    "sortable": false,
+                                    "render": function (data, type, row) {
+                                        return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showItemModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
+                                            + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a>';
+                                    }
+
+                                }
+                            ]
+                        });
+                        tr.next().css("background-color", "#f0f0f0");
+                    }
                 }
-                table += "</tbody>";
-                table += "</table>";
-                table += "</div>";
-                return table;
+                else {
+                    if (level == '@ConstantUtil.CategoryLevel.Category') {
+                        var content = "<div class='slider'><h3>No sub category available</h3></div>";
+                        row.child(content).show();
+                        tr.next().css("background-color", "#f7f7f7");
+                    } else if (level == '@ConstantUtil.CategoryLevel.SubCategory') {
+                        var content = "<div class='slider'><h3>No item available</h3></div>";
+                        row.child(content).show();
+                        tr.next().css("background-color", "#f0f0f0");
+                    }
+                }
             }
-        }
+
+            tr.addClass('shown');
+            $('div.slider', row.child()).slideDown();
+        });
 
         var clearModal = function () {
             $(".modal").find("input").val("");
             $(".modal").find("textarea").val("");
+            $(".modal").find(".text-danger").hide();
+        }
+
+        var clearValidationError = function () {
             $(".modal").find(".text-danger").hide();
         }
 
@@ -249,7 +405,7 @@
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
-                    var content = '<option>--Select Category--</option>';
+                    var content = '<option value>--Select Category--</option>';
                     for (i = 0; i < data.data.length; i++) {
                         var row = data.data[i];
                         content += '<option value="' + row.ID + '">' + row.Name + '</option>';
@@ -264,19 +420,45 @@
             });
         };
 
+        var showCreateItemModal = function () {
+            clearModal();
+            $.ajax({
+                url: "/Admin/ManageSC/GetSubCategories",
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var content = '<option value>--Select Sub Category--</option>';
+                    for (i = 0; i < data.data.length; i++) {
+                        var row = data.data[i];
+                        content += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    }
+                    $("#item-sub-category-dropdown").html(content);
+                    $("#item-modal").modal('show');
+                    $('#item-action-btn').attr('onclick', 'createItem()');
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
+        };
+
         var createCategory = function () {
+            clearValidationError();
             var name = $("#category-name-txt").val();
+            var valid = true;
             if (name.trim() === "") {
-                $("#name-validation-message").html("Name is required!");
-                $("#name-validation-message").show();
-            } else {
+                $("#category-name-validation-message").html("Name is required!");
+                $("#category-name-validation-message").show();
+                valid = false;
+            }
+            if (valid) {
                 $.ajax({
                     url: "/Admin/ManageSC/CreateCategory",
                     dataType: "json",
                     type: "POST",
                     data: {
-                        name: $("#category-name-txt").val(),
-                        description: $("#category-description-txt").val()
+                        Name: $("#category-name-txt").val(),
+                        Description: $("#category-description-txt").val()
                     },
                     success: function (data) {
                         if (data.success) {
@@ -287,8 +469,55 @@
                             if (data.error) {
                                 $.notify(data.message, "error");
                             } else {
-                                $("#name-validation-message").html(data.message);
-                                $("#name-validation-message").show();
+                                $("#category-name-validation-message").html(data.message);
+                                $("#category-name-validation-message").show();
+                            }
+                        }
+                    },
+                    error: function () {
+                        $.notify("Cannot connect to server!", "error");
+                    }
+                });
+            }
+        };
+
+        var createSubCategory = function () {
+            clearValidationError();
+            var name = $("#sub-category-name-txt").val();
+            var category = $("#sub-category-category-dropdown").val();
+            var valid = true;
+            if (name.trim() === "") {
+                $("#sub-category-name-validation-message").html("Name is required!");
+                $("#sub-category-name-validation-message").show();
+                valid = false;
+            }
+            if (category === "") {
+                $("#sub-category-category-validation-message").html("Category is required!");
+                $("#sub-category-category-validation-message").show();
+                valid = false;
+            }
+
+            if (valid) {
+                $.ajax({
+                    url: "/Admin/ManageSC/CreateSubCategory",
+                    dataType: "json",
+                    type: "POST",
+                    data: {
+                        Name: name,
+                        Description: $("#category-description-txt").val(),
+                        ParentId: category
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $.notify(data.message, "success");
+                            $("#sub-category-modal").modal("hide");
+                            reloadDataTable();
+                        } else {
+                            if (data.error) {
+                                $.notify(data.message, "error");
+                            } else {
+                                $("#sub-category-name-validation-message").html(data.message);
+                                $("#sub-category-name-validation-message").show();
                             }
                         }
                     },

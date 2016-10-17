@@ -148,8 +148,8 @@ namespace TMS.Controllers
                 CategoryViewModel model = new CategoryViewModel();
                 model.Name = cate.Name;
                 model.Description = cate.Description;
-                model.Id = cate.ID;
-                if (cate.CategoryLevel != null) model.CategoryLevel = (int)cate.CategoryLevel;
+                model.ID = cate.ID;
+                if (cate.CategoryLevel != null) model.Level = (int)cate.CategoryLevel;
                 if (cate.ParentID != null) model.ParentId = (int)cate.ParentID;
                 result.Add(model);
                 IEnumerable<Category> subCategories = _categoryService.GetSubCategories(cate.ID);
@@ -159,8 +159,8 @@ namespace TMS.Controllers
                     CategoryViewModel ca = new CategoryViewModel();
                     ca.Name = subCate.Name;
                     ca.Description = subCate.Description;
-                    ca.Id = subCate.ID;
-                    if (subCate.CategoryLevel != null) ca.CategoryLevel = (int)subCate.CategoryLevel;
+                    ca.ID = subCate.ID;
+                    if (subCate.CategoryLevel != null) ca.Level = (int)subCate.CategoryLevel;
                     if (subCate.ParentID != null) ca.ParentId = (int)subCate.ParentID;
                     result.Add(ca);
                 }
