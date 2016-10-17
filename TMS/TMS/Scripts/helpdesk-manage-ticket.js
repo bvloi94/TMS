@@ -36,7 +36,14 @@ function initTicketTable() {
             },
              {
                  "targets": [2],
-                 "data": "Subject"
+                 "render": function (data, type, row) {
+                     //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
+                     return $("<a/>",
+                     {
+                         "href": "javascript:openTicketDetailModal(" + row.Id + ")",
+                         "html": row.Subject,
+                     })[0].outerHTML;
+                 }
              },
             {
                 "targets": [3],
@@ -88,7 +95,7 @@ function initTicketTable() {
                             solveBtn = $("<a/>",
                             {
                                 "class": "btn btn-sm btn-default margin-left10",
-                                "data-role": "btn-show-solve-modal",
+                                //"data-role": "btn-show-solve-modal",
                                 "html": "Solve",
                                 "disabled": "disabled",
                                 "data-id": row.Id
@@ -100,7 +107,7 @@ function initTicketTable() {
                             solveBtn = $("<a/>",
                             {
                                 "class": "btn btn-sm btn-default margin-left10",
-                                "data-role": "btn-show-solve-modal",
+                                "href": "/Ticket/Solve/" + row.Id,
                                 "html": "Solve",
                                 "data-id": row.Id
                             });
@@ -164,6 +171,73 @@ function checkSelectedCheckbox() {
 
 
 }
+
+function openTicketDetailModal(ticketId) {
+    $.ajax({
+        url: '/Ticket/GetTicketDetail',
+        type: "GET",
+        dataType: "json",
+        data: {
+            id: ticketId
+        },
+        success: function (data) {
+            var solveUrl = '/Ticket/Solve/' + data.id;
+
+            $('#ticket-subject').text("Subject: " + data.subject);
+            $('#ticket-description').text(data.description);
+            $('#ticket-created-by').text(data.creater);
+            $('#ticket-assigned-by').text(data.assigner);
+            $('#ticket-solved-by').text(data.solver);
+            $('#ticket-type').text(data.type);
+            $('#ticket-mode').text(data.mode);
+            $('#ticket-urgency').text(data.urgency);
+            $('#ticket-priority').text(data.priority);
+            $('#ticket-category').text(data.category);
+            $('#ticket-impact').text(data.impact);
+            $('#ticket-impact-detail').text(data.impactDetail);
+
+
+            if (data.status == 2) {
+                $('#ticket-status').text('Assigned');
+                if (data.solution == "None") {
+                    $('#ticket-solution').empty().append("<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
+                                                + "<a class='btn-sm btn-primary' href='" + solveUrl + "'>Yes</a>"
+                                                + "<a class='btn-sm btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
+                }
+                else {
+                    $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
+                }
+            }
+            else {
+                if (data.status == 3) {
+                    $('#ticket-status').text('Solved');
+                } else if (data.status == 4) {
+                    $('#ticket-status').text('Unapproved');
+                } else if (data.status == 5) {
+                    $('#ticket-status').text('Cancelled');
+                } else if (data.status == 6) {
+                    $('#ticket-status').text('Closed');
+                }
+                $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
+            }
+
+            $('#ticket-created-date').text(data.createdDate);
+            $('#ticket-modified-date').text(data.lastModified);
+            $('#ticket-schedule-start').text(data.scheduleStart);
+            $('#ticket-schedule-end').text(data.scheduleEnd);
+            $('#ticket-actual-start').text(data.actualStart);
+            $('#ticket-actual-end').text(data.actualEnd);
+
+            $('#ticket-solveUser').text(data.solveUser);
+
+            $('#detail-modal').modal("show");
+        },
+        failure: function (data) {
+            alert(data.d);
+        }
+    });
+}
+
 function getSelectedTickets() {
     var selected = [];
     $('input[data-role="cbo-ticket"]').each(function () {
@@ -173,6 +247,7 @@ function getSelectedTickets() {
     });
     return selected;
 }
+
 $(document)
         .ready(function () {
 

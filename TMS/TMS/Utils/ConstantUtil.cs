@@ -98,6 +98,7 @@ namespace TMS.Utils
         {
             public const int Category = 1;
             public const int SubCategory = 2;
+            public const int Item = 3;
         }
     }
 }

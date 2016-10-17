@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 using TMS.DAL;
 using TMS.Enumerator;
 using TMS.Models;
@@ -120,7 +121,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             };
 
             //TO-DO
-            // ticket.CreatedID = 
+            if (User.Identity.GetUserId() != null) ticket.CreatedID = User.Identity.GetUserId();
 
             // Attachment
 
@@ -699,6 +700,81 @@ namespace TMS.Areas.HelpDesk.Controllers
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = tickets;
             return Json(rsModel, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult LoadTicketById(int? id)
+        {
+            Ticket ticket = _ticketService.GetTicketByID((int)id);
+            TicketViewModel model = new TicketViewModel();
+            model.Id = ticket.ID;
+            model.Subject = ticket.Subject;
+            model.Description = ticket.Description;
+            model.Solution = ticket.Solution;
+            if (!string.IsNullOrEmpty(ticket.RequesterID))
+            {
+                model.RequesterId = ticket.RequesterID;
+                model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
+            }
+            if (ticket.Type != null) model.Type = (int)ticket.Type;
+            model.Mode = ticket.Mode;
+            if (ticket.Status != null)
+            {
+                model.StatusId = (int)ticket.Status;
+                model.Status = ((TicketStatusEnum)ticket.Status).ToString();
+            }
+            if (ticket.CategoryID != null)
+            {
+                model.CategoryId = (int)ticket.CategoryID;
+                model.Category = _categoryService.GetCategoryById((int)ticket.CategoryID).Name;
+            }
+            if (ticket.UrgencyID != null)
+            {
+                model.UrgencyId = (int)ticket.UrgencyID;
+                model.Urgency = ticket.UrgencyID == null ? "" : _urgencyService.GetUrgencyByID((int)ticket.UrgencyID).Name;
+            }
+            if (ticket.PriorityID != null)
+            {
+                model.PriorityId = (int)ticket.PriorityID;
+                model.Priority = ticket.PriorityID == null
+                    ? ""
+                    : _priorityService.GetPriorityByID((int)ticket.PriorityID).Name;
+            }
+            if (ticket.ImpactID != null)
+            {
+                model.ImpactId = (int)ticket.ImpactID;
+                model.Impact = ticket.ImpactID == null ? "" : _impactService.GetImpactById((int)ticket.ImpactID).Name;
+            }
+            model.ImpactDetail = ticket.ImpactDetail;
+            model.UnapproveReason = ticket.UnapproveReason;
+            model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString("dd/MM/yyyy") ?? "";
+            model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString("dd/MM/yyyy") ?? "";
+            model.ActualStartDate = ticket.ActualStartDate?.ToString("dd/MM/yyyy") ?? "";
+            model.ActualEndDate = ticket.ActualEndDate?.ToString("dd/MM/yyyy") ?? "";
+            model.SolvedDate = ticket.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
+            model.CreatedTime = ticket.CreatedTime?.ToString("dd/MM/yyyy") ?? "";
+            model.ModifiedTime = ticket.ModifiedTime?.ToString("dd/MM/yyyy") ?? "";
+            if (!string.IsNullOrEmpty(ticket.CreatedID))
+            {
+                model.CreatedId = ticket.CreatedID;
+                model.CreatedBy = _userService.GetUserById(ticket.CreatedID).Fullname;
+            }
+            if (!string.IsNullOrEmpty(ticket.TechnicianID))
+            {
+                AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                model.TechnicianId = technician.Id;
+                model.Technician = technician.Fullname;
+                if (technician.DepartmentID.HasValue)
+                {
+                    model.DepartmentId = (int)technician.DepartmentID;
+                    model.Department = _departmentService.GetDepartmentById((int)technician.DepartmentID).Name;
+                }
+            }
+            return Json(new
+            {
+                success = true,
+                data = model,
+            });
+
         }
 
         [HttpGet]

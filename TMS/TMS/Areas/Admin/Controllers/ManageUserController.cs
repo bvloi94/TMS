@@ -526,7 +526,7 @@ namespace TMS.Areas.Admin.Controllers
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Requester account successfully!") { Path = "/" });
                     return RedirectToAction("Requester", "ManageUser");
                 }
                 AddErrors(result);
@@ -600,7 +600,7 @@ namespace TMS.Areas.Admin.Controllers
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Help Desk account successfully!") { Path = "/" });
                     return RedirectToAction("HelpDesk", "ManageUser");
                 }
                 AddErrors(result);
@@ -675,7 +675,7 @@ namespace TMS.Areas.Admin.Controllers
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Technician account successfully!") { Path = "/" });
                     return RedirectToAction("Technician", "ManageUser");
                 }
                 AddErrors(result);
@@ -750,7 +750,7 @@ namespace TMS.Areas.Admin.Controllers
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Admin account successfully!") { Path = "/" });
                     return RedirectToAction("Admin", "ManageUser");
                 }
                 AddErrors(result);
@@ -897,7 +897,7 @@ namespace TMS.Areas.Admin.Controllers
                     requester.AvatarURL = fileName;
                 }
                 _userService.EditUser(requester);
-
+                Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Requester account successfully!") { Path = "/" });
                 return RedirectToAction("Requester");
             }
             ViewBag.id = id;
@@ -935,7 +935,7 @@ namespace TMS.Areas.Admin.Controllers
                     helpdesk.AvatarURL = fileName;
                 }
                 _userService.EditUser(helpdesk);
-
+                Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Help Desk account successfully!") { Path = "/" });
                 return RedirectToAction("HelpDesk");
             }
             ViewBag.id = id;
@@ -974,7 +974,7 @@ namespace TMS.Areas.Admin.Controllers
                     technician.AvatarURL = fileName;
                 }
                 _userService.EditUser(technician);
-
+                Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Technician account successfully!") { Path = "/" });
                 return RedirectToAction("Technician");
             }
             ViewBag.id = id;
@@ -1013,7 +1013,7 @@ namespace TMS.Areas.Admin.Controllers
                     admin.AvatarURL = fileName;
                 }
                 _userService.EditUser(admin);
-
+                Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Admin account successfully!") { Path = "/" });
                 return RedirectToAction("Admin");
             }
             ViewBag.id = id;

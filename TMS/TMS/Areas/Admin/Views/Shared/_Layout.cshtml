@@ -13,7 +13,7 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
-<body class="hold-transition skin-black-light sidebar-mini">
+<body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
         <header class="main-header">
             <!-- Logo -->
@@ -151,7 +151,7 @@
                         </a>
                         <ul class="treeview-menu">
                             <li @Html.Raw((actionName == "Requester" || actionName == "CreateRequester" || actionName == "EditRequester") ? "class='active'" : "")><a href="/Admin/ManageUser/Requester"><i class="fa fa-circle-o"></i>Requester</a></li>
-                            <li @Html.Raw((actionName == "HelpDesk" || actionName == "CreateHelpdesk" || actionName == "EditHelpdesk") ? "class='active'" : "")><a href="/Admin/ManageUser/HelpDesk"><i class="fa fa-circle-o"></i>Help Desk</a></li>
+                            <li @Html.Raw((actionName == "HelpDesk" || actionName == "CreateHelpDesk" || actionName == "EditHelpDesk") ? "class='active'" : "")><a href="/Admin/ManageUser/HelpDesk"><i class="fa fa-circle-o"></i>Help Desk</a></li>
                             <li @Html.Raw((actionName == "Technician" || actionName == "CreateTechnician" || actionName == "EditTechnician") ? "class='active'" : "")><a href="/Admin/ManageUser/Technician"><i class="fa fa-circle-o"></i>Technician</a></li>
                             <li @Html.Raw((actionName == "Admin" || actionName == "CreateAdmin" || actionName == "EditAdmin") ? "class='active'" : "")><a href="/Admin/ManageUser/Admin"><i class="fa fa-circle-o"></i>Admin</a></li>
                         </ul>
@@ -182,6 +182,9 @@
                     </h2>
                 </div>
             </section>
+            <div id="flash-message" class="alert alert-success" style="display: none">
+                <i class="fa fa-check fa-2"></i>
+            </div>
             <!-- Main content -->
             <section class="content">
                 @RenderBody()
@@ -201,16 +204,70 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
+    @Scripts.Render("~/bundles/jqueryval")
     @RenderSection("scripts", required: false)
     <script>
+        $.fn.flashMessage = function (options) {
+            var target = this;
+            options = $.extend({}, options, { timeout: 3000 });
+            if (!options.message) {
+                options.message = getFlashMessageFromCookie();
+                deleteFlashMessageCookie();
+            }
+            if (options.message) {
+                target.show();
+                if (typeof options.message === "string") {
+                    target.html("<span>" + options.message + "</span>");
+                } else {
+                    target.empty().append(options.message);
+                }
+            }
+
+            if (!options.message) return;
+
+            target.fadeIn().one("click", function () {
+                $(this).fadeOut();
+            });
+
+            if (options.timeout > 0) {
+                setTimeout(function () { target.fadeOut(); }, options.timeout);
+            }
+
+            return this;
+        };
+
+        var notifyFlashMessage = function (options) {
+            options = $.extend({}, options, { timeout: 3000 });
+            if (!options.message) {
+                options.message = getFlashMessageFromCookie();
+                deleteFlashMessageCookie();
+            }
+            if (options.message) {
+                $.notify(options.message, "success");
+            }
+        };
+
+        function getFlashMessageFromCookie() {
+            return $.cookie("FlashMessage");
+        }
+
+        function deleteFlashMessageCookie() {
+            $.removeCookie('FlashMessage', { path: '/' });
+        }
         $(document).ready(function () {
-            $.validator.methods.date = function (value, element) {
-                Globalize.culture("en-GB");
-                return this.optional(element) || Globalize.parseDate(value) !== null;
-            };
             $(".datetime").datetimepicker({
                 timepicker: false,
                 format: 'd/m/Y'
+            });
+            //$("#flash-message").flashMessage();
+            notifyFlashMessage();
+            //$.validator.methods.date = function (value, element) {
+            //    Globalize.culture("en-GB");
+            //    return this.optional(element) || Globalize.parseDate(value) !== null;
+            //};
+            $.validator.addMethod("date", function (value, element) {
+                Globalize.culture("en-GB");
+                return this.optional(element) || Globalize.parseDate(value) !== null;
             });
         });
     </script>
