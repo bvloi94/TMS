@@ -24,6 +24,8 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/Profile
+        [Utils.Authorize(Roles = "Admin")]
+        [HttpGet]
         public ActionResult Index()
         {
             string userId = User.Identity.GetUserId();
@@ -42,6 +44,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         //GET: /Admin/Profile/UpdateProfile
+        [Utils.Authorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult UpdateProfile()
         {
@@ -61,6 +64,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // POST: Admin/Profile/UpdateProfile
+        [Utils.Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult EditProfie(ProfileAdminViewModel model)

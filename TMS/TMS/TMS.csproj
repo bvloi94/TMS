@@ -259,9 +259,6 @@
     <Compile Include="Models\Category.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\C__MigrationHistory.cs">
-      <DependentUpon>TMSModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\Department.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
@@ -320,6 +317,7 @@
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
+    <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
@@ -534,6 +532,7 @@
     <Content Include="Scripts\globalize\relative-time.js" />
     <Content Include="Scripts\globalize\unit.js" />
     <Content Include="Scripts\helpdesk-manage-ticket.js" />
+    <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />

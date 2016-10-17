@@ -33,7 +33,8 @@ namespace TMS
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
                 "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js",
                 "~/Scripts/globalize.js",
-                "~/Scripts/cldr.js"));
+                "~/Scripts/cldr.js",
+                "~/Scripts/jquery.cookie.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",

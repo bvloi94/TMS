@@ -56,7 +56,8 @@ textarea {
 }
 
 .wrapper {
-    min-width: 1360px;
+    display: table;
+    width: 100%;
 }
 
 body {
@@ -78,4 +79,10 @@ td.details-control {
 
 tr.shown td.details-control {
     background: url(img/details_close.png) no-repeat center center;
+}
+
+#flash-message {
+    margin: 10px 10px 10px 15px;
+    font-size: 18px;
+    padding: 10px;
 }
