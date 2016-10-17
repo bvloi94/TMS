@@ -1,31 +1,68 @@
 ﻿@{
     Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
 }
-@{
-    ViewBag.Title = "CreateTicket";
-}
+@model TMS.ViewModels.NewTicketViewModel
 
 <style>
+    .title {
+        margin-top: -20px;
+        margin-bottom: 12px;
+    }
+
+    .btitle {
+        display: table;
+    }
+
+    h4, h5 {
+        color: #345aaa;
+        font-weight: bold;
+    }
+
+    .white-title {
+        text-transform: uppercase;
+        font-weight: bold;
+        display: table-cell;
+        padding: 8px;
+        vertical-align: middle;
+        color: #ffffff;
+    }
+
     .inputform {
         padding: 20px;
+    }
+
+    input, textarea, select {
+        max-width: 674px;
+    }
+
+    .required {
+        color: #ff0000;
     }
 </style>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="box box-primary">
-            <div class="form-horizontal inputform">
-                <h4>Ticket Information</h4>
+        <div class="box box-solid bg-blue title">
+            <div class="box-header btitle">
+                <h3 class="white-title">Create ticket</h3>
+            </div>
+        </div>
+        <div class="box box-solid">
+            @using (Html.BeginForm("Create", "Ticket", FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
                 <div class="form-group">
-                    <label class="control-label col-md-2">Subject</label>
+                    <label class="control-label col-md-2"><span class="required">*</span> Subject</label>
                     <div class="col-md-10">
-                        <input type="text" class="form-control" placeholder="Enter subject of ticket" />
+                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", id = "subject" })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="description">
                     <label class="control-label col-md-2">Description</label>
                     <div class="col-md-10">
-                        <textarea class="form-control" rows="4"></textarea>
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", id = "description", rows = "10" })
+                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="form-group">
@@ -36,14 +73,22 @@
                 </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        <a class="btn btn-primary" href="#">Send</a>
-                        <a class="btn btn-default" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
+                        <input type="submit" value="Save" class="btn btn-primary btn-flat" />
+                        <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
                     </div>
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>
+@section scripts{
+    <script>
+        jQuery(document).ready(function () {
+            $('#description textarea').wysihtml5();
+        });
+    </script>
+}
+
 
 
 

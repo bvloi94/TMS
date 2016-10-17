@@ -21,6 +21,20 @@ namespace TMS.Utils
             public static readonly string Technician = "Technician";
         }
 
+        public class TicketType
+        {
+            public static readonly int Request = 1;
+            public static readonly int Problem = 2;
+            public static readonly int Change = 3;
+        }
+
+        public class TicketTypeString
+        {
+            public static readonly string Request = "Request";
+            public static readonly string Problem = "Problem";
+            public static readonly string Change = "Change";
+        }
+
         public class TicketMode
         {
             public static readonly int PhoneCall = 1;
@@ -44,7 +58,7 @@ namespace TMS.Utils
             public static readonly int Cancelled = 5;
             public static readonly int Closed = 6;
         }
-
+        
         public class ContactEmailInfo
         {
             public static readonly string MailAddress = "huytcd16@gmail.com";

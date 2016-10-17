@@ -126,7 +126,7 @@
                     </div>
                 </div>
                 <!-- search form -->
-                <form action="#" method="get" class="sidebar-form">
+                @*<form action="#" method="get" class="sidebar-form">
                     <div class="input-group">
                         <input type="text" name="q" class="form-control" placeholder="Search...">
                         <span class="input-group-btn">
@@ -135,13 +135,13 @@
                             </button>
                         </span>
                     </div>
-                </form>
+                </form>*@
                 <!-- /.search form -->
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN MENU</li>
                     <li class="treeview">
-                        <a href="@(Url.Action("Index", "Ticket"))">
+                        <a href="@(Url.Action("Index", "ManageTicket", new { area = "Technician" }))">
                             <i class="fa fa-files-o"></i>
                             <span>TICKET</span>
                         </a>

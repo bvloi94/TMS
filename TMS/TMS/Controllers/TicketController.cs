@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -8,8 +9,10 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using TMS.DAL;
+using TMS.Enumerator;
 using TMS.Models;
 using TMS.Services;
+using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
@@ -18,6 +21,7 @@ namespace TMS.Controllers
         private TMSEntities db = new TMSEntities();
         private UnitOfWork _unitOfWork;
         private TicketService _ticketService;
+        private TicketAttachmentService _ticketAttachmentService;
 
         public TicketController()
         {
@@ -56,43 +60,24 @@ namespace TMS.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
+        [ValidateInput(false)]
+        public ActionResult Create(NewTicketViewModel model)
         {
             if (ModelState.IsValid)
             {
+                Ticket ticket = new Ticket();
+                ticket.Subject = model.Subject;
+                ticket.Description = model.Description;
+                ticket.Status = (int?)TicketStatusEnum.New;
+                ticket.CreatedID = ticket.RequesterID = User.Identity.GetUserId();
+                ticket.Mode = (int)TicketModeEnum.WebForm;
+                ticket.CreatedTime = DateTime.Now;
                 db.Tickets.Add(ticket);
-                try
-                {
-
-                    db.SaveChanges();
-                }
-                catch (DbEntityValidationException e)
-                {
-                    foreach (var eve in e.EntityValidationErrors)
-                    {
-                        Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
-                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
-                        foreach (var ve in eve.ValidationErrors)
-                        {
-                            Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
-                                ve.PropertyName, ve.ErrorMessage);
-                        }
-                    }
-                    throw;
-                }
+                db.SaveChanges();
+                
                 return RedirectToAction("Index");
             }
-
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
-            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
-            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
-            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
-            return View(ticket);
+            return View(model);
         }
 
         // GET: Tickets/Edit/5
@@ -183,13 +168,7 @@ namespace TMS.Controllers
         public ActionResult GetTickets(jQueryDataTableParamModel param)
         {
             var ticketList = _ticketService.GetAll();
-
-            //var jsonData = new
-            //{
-            //    data = ticketList
-            //};
-            //return Json(jsonData, JsonRequestBehavior.AllowGet);
-
+            
             IEnumerable<Ticket> filteredListItems;
             if (!string.IsNullOrEmpty(param.sSearch))
             {

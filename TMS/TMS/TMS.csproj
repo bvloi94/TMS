@@ -227,6 +227,7 @@
     <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
+    <Compile Include="Enumerator\TicketModeEnum.cs" />
     <Compile Include="Enumerator\TicketStatusEnum.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -307,6 +308,7 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\TicketAttachmentService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ImpactService.cs" />
     <Compile Include="Services\PriorityService.cs" />
@@ -315,6 +317,7 @@
     <Compile Include="Schedulers\JobManager.cs" />
     <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
+    <Compile Include="Uploads\FileUploader.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
