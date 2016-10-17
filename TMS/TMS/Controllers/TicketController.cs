@@ -61,7 +61,7 @@ namespace TMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Create(NewTicketViewModel model)
+        public ActionResult Create(RequesterTicketViewModel model)
         {
             if (ModelState.IsValid)
             {
