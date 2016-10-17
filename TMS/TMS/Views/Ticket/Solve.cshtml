@@ -262,5 +262,16 @@
 </div>
 @section scripts{
     <script>
+        $.ajax({
+            url: '/Ticket/SolveTicket/',
+            type: "GET",
+            dataType: "json",
+            data: {
+                id: id
+            },
+            success: function(data) {
+                
+            }
+        });
     </script>
 }
