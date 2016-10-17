@@ -361,6 +361,49 @@ namespace TMS.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public ActionResult SolveTicket(int id, string solution, string command)
+        {
+            Ticket ticket = _ticketService.GetTicketByID(id);
+
+            string createdId = "";
+            AspNetUser user;
+            if (User.Identity.GetUserId() != null)
+            {
+                user = _userService.GetUserById(createdId);
+                createdId = User.Identity.GetUserId();
+            }
+
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+
+            var message = "";
+            switch (command)
+            {
+                case "Solve":
+                    ticket.SolveID = User.Identity.GetUserId();
+                    ticket.SolvedDate = DateTime.Now;
+                    ticket.ModifiedTime = DateTime.Now;
+                    ticket.Solution = solution;
+                    _ticketService.SolveTicket(ticket);
+                    message = "Ticket was solved!";
+                    break;
+                case "Save":
+                    ticket.ModifiedTime = DateTime.Now;
+                    ticket.Solution = solution;
+                    _ticketService.UpdateTicket(ticket);
+                    message = "Solution saved!";
+                    break;
+            }
+            return Json(new
+            {
+                success = true,
+                msg = message,
+            });
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
