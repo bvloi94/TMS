@@ -19,18 +19,19 @@ namespace TMS.Controllers
 {
     public class TicketController : Controller
     {
+        UnitOfWork unitOfWork = new UnitOfWork();
         private TMSEntities db = new TMSEntities();
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
         public DepartmentService _departmentService { get; set; }
+        public TicketAttachmentService _ticketAttachmentService { get; set; }
 
         public TicketController()
         {
-            var unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(unitOfWork);
             _userService = new UserService(unitOfWork);
             _departmentService = new DepartmentService(unitOfWork);
-            _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
+            _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
         }
 
         // GET: Tickets
@@ -85,7 +86,7 @@ namespace TMS.Controllers
                 if (uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                 {
                     _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
-                    List<TicketAttachment> listFile = _unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
+                    List<TicketAttachment> listFile = unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
                     ticketFiles.Path = listFile[0].Path;
                     
                 }
