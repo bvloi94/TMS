@@ -97,6 +97,13 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician");
         }
 
+        public IEnumerable<AspNetUser> GetTechnicianByPattern(string query, int? departmentId)
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician"
+                                     && r.DepartmentID==departmentId
+                                     && (query == null || r.Fullname.Contains(query)));
+        }
+
         public IEnumerable<AspNetUser> GetAdmins()
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin");

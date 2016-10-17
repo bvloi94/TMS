@@ -1,0 +1,478 @@
+﻿@using TMS.Models
+@model TMS.ViewModels.TicketViewModel
+@{
+    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h4 class="box-title">Edit Ticket</h4>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <form class="form-horizontal" role="form" id="form-edit-ticket" method="POST">
+                    <input type="hidden" name="Id" />
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Subject <font color="red">*</font></label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control" name="Subject" placeholder="Subject"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Type <font color="red">*</font></label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="Type">
+                                <option value="0">None</option>
+                                <option value="1">Request</option>
+                                <option value="2">Problem</option>
+                                <option value="3">Change</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Mode</label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="Mode">
+                                <option value="0">None</option>
+                                <option value="1">Email</option>
+                                <option value="2">Phone</option>
+                                <option value="3">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Status</label>
+                        <div class="col-md-10" id="div-status">
+                            <input type="hidden" name="statusId"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Description</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" cols="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input class="form-control" type="file" name="file" multiple>
+                            @*<div class="btn btn-default btn-file">
+                                    <i class="fa fa-paperclip"></i> Attachment
+                                    <input type="file" name="file" multiple>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Urgency</label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="UrgencyId" data-role="ddl-urgency"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Priority</label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="PriorityId" data-role="ddl-priority"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Impact</label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Impact Detail</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Category</label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Department</label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="DepartmentId" data-role="ddl-department"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Technician</label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="TechnicianId" data-role="ddl-technician"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Requester</label>
+                        <div class="col-md-4">
+                            <input type="hidden" id="requesterId" name="RequesterId">
+                            <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico"/></a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Unapprove Reason</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control" name="UnapproveReason" placeholder="Unapprove Reason" cols="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Schedule Start Date</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control datetime" name="ScheduleStartDate"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Schedule End Date</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control datetime" name="ScheduleEndDate"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Actual Start Date</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control datetime" name="ActualStartDate"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Actual End Date</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control datetime" name="ActualEndDate"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Solved Date</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control datetime" name="SolvedDate" readonly/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Created Time</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control datetime" name="CreatedTime" readonly/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Modified Time</label>
+                        <div class="col-md-10">
+                            <input type="text" class="form-control datetime" name="ModifiedTime" readonly/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Created By</label>
+                        <div class="col-md-4">
+                            <input type="hidden" id="createdId" name="CreatedId">
+                            <input class="form-control text-box single-line" id="createdBy" name="CreatedBy" type="text" value="" readonly>
+                        </div>
+                        <div class="col-md-6">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Solution</label>
+                        <div class="col-md-10">
+                            <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" cols="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input class="form-control" type="file" name="file" multiple>
+
+                            @*<div class="btn btn-default btn-file">
+                                    <i class="fa fa-paperclip"></i> Attachment
+                                    <input type="file" name="file" multiple>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <div class="form-error-messages" data-role="group-form-error"></div>
+                        </div>
+                    </div>
+                </form>
+                <div class="form-group">
+                    <label class="control-label col-md-2"></label>
+                    <div class="col-md-10 pull-left">
+                        <input type="submit" value="Update" data-role="btn-update-ticket" class="btn btn-default bg-olive btn-flat" />
+                        <input type="button" value="Cancel" data-role="btn-cancel" class="btn btn-default bg-olive btn-flat" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+<div id="modal-add-requester" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Select requester</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped" id="requester-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                            <th>
+                                Department Name
+                            </th>
+                            <th>
+                                Phone
+                            </th>
+                            <th>
+                                Job Title
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        var requesterTable = null;
+
+        $("[data-role=btn-cancel]")
+            .on("click",
+                function() {
+                    window.location.href = "/HelpDesk/ManageTicket";
+                });
+
+        $("[data-role=btn-update-ticket]")
+            .on("click",
+                function() {
+                    //var formData = new FormData($("#form-new-ticket")[0]);
+                    //formData.append('description', $("#descriptionEditor").val());
+                    var formData = $("#form-edit-ticket").serialize();
+                    $.ajax({
+                        "url": "/HelpDesk/ManageTicket/UpdateTicket",
+                        "method": "POST",
+                        "data": formData,
+                        "success": function(data) {
+                            if (data.success) {
+                                noty({
+                                    text: "Ticket was updated successfully!",
+                                    layout: "top",
+                                    type: "success",
+                                    timeout: 2000
+                                });
+                                window.location.href = "/HelpDesk/ManageTicket";
+                            } else {
+                                noty({
+                                    text: data.msg,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });
+                                if (data.data != null) {
+                                    $("#form-new-ticket [data-role=group-form-error]").html("");
+                                    for (var i = 0; i < data.data.length; i++) {
+                                        $("#form-new-ticket [data-role=group-form-error]")
+                                            .append($("<p/>",
+                                            {
+                                                "html": $("<font/>",
+                                                {
+                                                    "color": "red",
+                                                    "html": "*" + data.data[i].Message
+                                                })
+                                            }));
+                                    }
+                                }
+                            }
+                        },
+                        //contentType: false,
+                        processData: false,
+                        //enctype: 'multipart/form-data',
+                        "error": function(e) {
+                            noty({
+                                text: "Failed! Please try again!",
+                                type: "error",
+                                layout: "topRight",
+                                timeout: 2000
+                            });
+                        }
+                    });
+                });
+
+        function initDropdownControl() {
+            initUrgencyDropdown({
+                control: $("[data-role=ddl-urgency]"),
+                ignore: function() {
+                    return [];
+                }
+            });
+            initPriorityDropdown({
+                control: $("[data-role=ddl-priority]"),
+                ignore: function() {
+                    return [];
+                }
+            });
+            initImpactDropdown({
+                control: $("[data-role=ddl-impact]"),
+                ignore: function() {
+                    return [];
+                }
+            });
+            initDepartmentDropdown({
+                control: $("[data-role=ddl-department]"),
+                ignore: function() {
+                    return [];
+                }
+            });
+            initCategoryDropdown({
+                control: $("[data-role=ddl-category]"),
+                ignore: function () {
+                    return [];
+                }
+            });
+            initTechnicianDropdown({
+                control: $("[data-role=ddl-technician]"),
+                ignore: function() {
+                    return [];
+                },
+                departmentId: function() {
+                    return $("[data-role=ddl-department]").val();
+                }
+            });
+        }
+
+        function showRequester() {
+            requesterTable.fnDraw();
+            $("#modal-add-requester").modal("show");
+        }
+
+        function initRequesterTable() {
+            requesterTable = $("#requester-table")
+                .dataTable({
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    sort: true,
+                    autoWidth: true,
+                    ajax: {
+                        url: "/HelpDesk/ManageTicket/GetRequesterList"
+                    },
+                    "columnDefs": [
+                        {
+                            "render": function(data, type, row) {
+                                return '<a href="javascript:addSelectedUserToForm(\'' +
+                                    row[0] +
+                                    "\',\'" +
+                                    row[1] +
+                                    '\')">' +
+                                    row[1] +
+                                    '</a>';
+                            },
+                            "targets": 0
+                        },
+                        {
+                            "render": function(data, type, row) {
+                                return row[2];
+                            },
+                            "targets": 1
+                        },
+                        {
+                            "render": function(data, type, row) {
+                                return row[3];
+                            },
+                            "targets": 2
+                        },
+                        {
+                            "render": function(data, type, row) {
+                                return row[4];
+                            },
+                            "targets": 3
+                        },
+                        {
+                            "render": function(data, type, row) {
+                                return row[5];
+                            },
+                            "targets": 4
+                        }
+                    ]
+                });
+        }
+
+        function addSelectedUserToForm(requesterId, requesterName) {
+            $("#requesterId").val(requesterId);
+            $("#requesterName").val(requesterName);
+            $("#modal-add-requester").modal("hide");
+        }
+
+        function loadInitDropdown(selector,text, value) {
+            var option = new Option(text, value, true, true);
+            $("[data-role='"+selector+"']").append(option);
+            $("[data-role='"+selector+"']").trigger("change");
+        }
+
+        function loadEditData() {
+            $("[name='Id']").val(@Model.Id);
+            $("[name='Subject']:eq(0)").val('@Model.Subject');
+            $("[name='Type']").val(@Model.Type);
+            $("[name='Mode']").val(@Model.Mode);
+            $("#descriptionEditor").html('@Model.Description');
+            loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
+            loadInitDropdown('ddl-priority', '@Model.Priority', @Model.PriorityId);
+            loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
+            $("[name='ImpactDetail']").val('@Model.ImpactDetail');
+            loadInitDropdown('ddl-category', '@Model.Category', @Model.CategoryId);
+            loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
+            loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
+            $("#requesterId").val('@Model.RequesterId');
+            $("#requesterName").val('@Model.Requester');
+            $("[name='UnapproveReason']").val('@Model.UnapproveReason');
+            $("[name='ScheduleStartDate']").val('@Model.ScheduleStartDate');
+            $("[name='ScheduleEndDate']").val('@Model.ScheduleEndDate');
+            $("[name='ActualStartDate']").val('@Model.ActualStartDate');
+            $("[name='ActualEndDate']").val('@Model.ActualEndDate');
+            $("[name='SolvedDate']").val('@Model.SolvedDate');
+            $("[name='CreatedTime']").val('@Model.CreatedTime');
+            $("[name='ModifiedTime']").val('@Model.ModifiedTime');
+            $("#createdId").val('@Model.CreatedId');
+            $("#createdBy").val('@Model.CreatedBy');
+            $("#solutionEditor").html('@Model.Solution');
+
+            $("[name='statusId']").val(@Model.StatusId);
+            $("#div-status").html(getStatusLabel('@Model.Status')[0].outerHTML);
+        }
+
+        $(document)
+            .ready(function() {
+                $(".textarea").wysihtml5();
+                setActiveTicketMenu();
+                initDropdownControl();
+                initRequesterTable();
+                loadEditData();
+            });
+    </script>
+}

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 
-namespace SAS.Core.Common
+namespace TMS.ViewModels
 {
     public class ModelErrorViewModel : List<ModelError>
     {

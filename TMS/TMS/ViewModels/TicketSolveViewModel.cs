@@ -12,7 +12,6 @@ namespace TMS.ViewModels
         public int? Type { get; set; }
         public int? Mode { get; set; }
         public int? Status { get; set; }
-        [Required]
         public string Subject { get; set; }
         public string Description { get; set; }
         public string CreatedBy { get; set; }

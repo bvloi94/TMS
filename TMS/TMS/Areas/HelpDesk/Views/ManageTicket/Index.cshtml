@@ -5,10 +5,53 @@
 }
 
 @section SidebarMenu {
- 
+
 }
 
 @section InitModal {
+    <div id="modal-cancel-ticket" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Cancel ticket</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to cancel this ticket?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-role="btn-confirm-cancel">Confirm</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    
+<div id="modal-merge-ticket" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Merge ticket</h4>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to merge these tickets?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-role="btn-confirm-merge">Confirm</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 
 }
 
@@ -22,33 +65,49 @@
         <div class="box box-solid">
             <div class="box-header with-border">
                 <h4 class="box-title">Ticket Management</h4>
-                
+
             </div>
             <!-- /.box-header -->
             <div class="box-body">
+                <a class="btn bg-olive btn-flat" style="width: 135px;" href='@Url.Action("CreateNewTicket", "ManageTicket")' >
+                    Create New Ticket
+                </a>
+                <a class="btn bg-olive btn-flat margin-left10" style="width: 100px;" data-role="btn-merge-ticket">
+                    Merge
+                </a>
+                <br />
+                <br />
+                <div class="pull-right" style="margin-right: 20px">
+                    <label>Status: </label>
+                    <select id="status-dropdown">
+                        <option value="0">All</option>
+                        <option value="1">New</option>
+                        <option value="2">Assigned</option>
+                        <option value="3">Solved</option>
+                        <option value="4">Unapproved</option>
+                        @*<option value="5">Canceled</option>*@
+                        <option value="6">Closed</option>
+                    </select>&nbsp;&nbsp;
+                    <label>Search:</label>
+                    <input type="text" id="search-txt" />
+                </div>
                 <table class="table" id="ticket-table">
                     <thead>
-                    <tr>
-                        <th/>
-                        <th>No</th>
-                        <th>Subject</th>
-                        <th>Requester</th>
-                        <th>Assigned To</th>
-                        <th>Department</th>
-                        <th>Solved Date</th>
-                        <th>Status</th>
-                        <th>Created Date</th>
-                        <th>Options</th>
-                    </tr>
+                        <tr>
+                            <th />
+                            <th>No</th>
+                            <th>Subject</th>
+                            <th>Requester</th>
+                            <th>Assigned To</th>
+                            <th>Solved Date</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Options</th>
+                        </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
-                <a class="btn bg-olive btn-flat" style="width: 135px;" href='@Url.Action("Create", "ManageTicket")' ">
-                    Create New Ticket
-                </a>
-                <a class="btn bg-olive btn-flat" style="width: 100px;" data-role="btn-merge-ticket">
-                    Merge
-                </a>
+
             </div>
             <!-- /.box-body -->
         </div>

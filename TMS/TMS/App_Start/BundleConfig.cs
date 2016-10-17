@@ -20,8 +20,8 @@ namespace TMS
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Content/Plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js",
                       "~/Scripts/bootstrap.js",
+                      "~/Content/Plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js",
                       "~/Scripts/respond.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/app").Include(
@@ -30,6 +30,8 @@ namespace TMS
                 "~/Scripts/jquery-ui.min.js",
                 "~/Content/js/jquery.noty.packaged.js",
                 "~/Scripts/notify.min.js",
+                "~/Content/js/select2.min.js",
+                "~/Content/custom-js/tms-dropdown.js",
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
                 "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js",
                 "~/Scripts/globalize.js",
@@ -42,6 +44,9 @@ namespace TMS
                       "~/Content/bootstrap.css.map",
                       "~/Content/font-awesome.min.css",
                       "~/Content/Site.css",
+                      "~/Content/css/select2.min.css",
+                      "~/Content/custom-css/tms.css",
+                      "~/Content/custom-css/tms-dropdown.css",
                       "~/Content/Plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css",
                       "~/Content/Plugins/datetimepicker/jquery.datetimepicker.css",
                       "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.css"));

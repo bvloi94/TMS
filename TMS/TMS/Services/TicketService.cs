@@ -378,6 +378,20 @@ namespace TMS.Services
             return _unitOfWork.Save() > 0;
         }
 
+        public bool CancelTicket(int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                Ticket ticket = GetTicketByID((int)ticketId);
+                ticket.Status = ConstantUtil.TicketStatus.Cancelled; //Solved
+                ticket.ModifiedTime = DateTime.Now;
+                _unitOfWork.TicketRepository.Update(ticket);
+                _unitOfWork.Save();
+                return true;
+            }
+            return false;
+        }
+
         public void SolveTicket(Ticket ticket)
         {
             ticket.Status = ConstantUtil.TicketStatus.Solved; //Solved
