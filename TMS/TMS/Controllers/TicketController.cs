@@ -181,11 +181,12 @@ namespace TMS.Controllers
                 ticket.Subject = model.Subject;
                 ticket.Description = model.Description;
                 ticket.Status = (int?)TicketStatusEnum.New;
-                ticket.CreatedID = ticket.RequesterID = User.Identity.GetUserId();
+                ticket.CreatedID = User.Identity.GetUserId();
+                ticket.RequesterID = User.Identity.GetUserId();
                 ticket.Mode = (int)TicketModeEnum.WebForm;
                 ticket.CreatedTime = DateTime.Now;
-                db.Tickets.Add(ticket);
-                db.SaveChanges();
+                ticket.ModifiedTime = DateTime.Now;
+                _ticketService.AddTicket(ticket);
 
                 if (uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                 {
@@ -382,7 +383,7 @@ namespace TMS.Controllers
                 model.ActualStartTime = ticket.ActualStartDate;
                 model.ActualEndTime = ticket.ActualEndDate;
                 model.CreatedBy = (createdUser == null) ? "None" : createdUser.Fullname;
-                model.AssignedBy = (createdUser == null) ? "None" : assigner.Fullname;
+                model.AssignedBy = (assigner == null) ? "None" : assigner.Fullname;
                 model.SolvedBy = (solvedUser == null) ? "None" : solvedUser.Fullname;
                 model.Solution = ticket.Solution;
                 model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "None" : ticket.UnapproveReason;
@@ -470,7 +471,7 @@ namespace TMS.Controllers
             model.ActualStartTime = ticket.ActualStartDate;
             model.ActualEndTime = ticket.ActualEndDate;
             model.CreatedBy = (createdUser == null) ? "None" : createdUser.Fullname;
-            model.AssignedBy = (createdUser == null) ? "None" : assigner.Fullname;
+            model.AssignedBy = (assigner == null) ? "None" : assigner.Fullname;
             model.SolvedBy = (solvedUser == null) ? "None" : solvedUser.Fullname;
             model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "None" : ticket.UnapproveReason;
 

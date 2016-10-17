@@ -55,14 +55,13 @@
                     <label class="control-label col-md-2"><span class="required">*</span> Subject</label>
                     <div class="col-md-10">
                         @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", id = "subject" })
-                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                        @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="form-group" id="description">
                     <label class="control-label col-md-2">Description</label>
                     <div class="col-md-10">
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", id = "description", rows = "10" })
-                        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="form-group">
