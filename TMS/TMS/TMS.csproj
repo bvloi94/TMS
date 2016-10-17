@@ -614,6 +614,7 @@
     <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
     <Content Include="Views\Error\Error500.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
+    <Content Include="Views\Ticket\Solve.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

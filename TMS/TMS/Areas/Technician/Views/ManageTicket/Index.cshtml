@@ -245,6 +245,7 @@
 
                     </div>
                 </div>
+                <!-- Het detail-->
             </div>
         </div>
         <a href="@(Url.Action("Index", "Home"))">
@@ -363,14 +364,14 @@
                 $modal = $('#detail-modal');
 
             $.ajax({
-                url: '@Url.Action("GetTicketDetail", "ManageTicket")',
+                url: '@Url.Action("GetTicketDetail", "Ticket", new { area=""})',
                 type: "GET",
                 dataType: "json",
                 data: {
                     id: id
                 },
                 success: function (data) {
-                    var solveUrl = '@Url.Action("Solve", "ManageTicket")/' + data.id;
+                    var solveUrl = '@Url.Action("Solve", "Ticket", new { area = "" })/' + data.id;
 
                     $('#ticket-subject').text("Subject: " + data.subject);
                     $('#ticket-description').text(data.description);
