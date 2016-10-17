@@ -27,6 +27,7 @@ namespace TMS.Controllers
         {
             _unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(_unitOfWork);
+            _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
         }
         // GET: Tickets
         public ActionResult Index()
@@ -61,11 +62,13 @@ namespace TMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ValidateInput(false)]
-        public ActionResult Create(RequesterTicketViewModel model)
+        public ActionResult Create(RequesterTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
         {
             if (ModelState.IsValid)
             {
                 Ticket ticket = new Ticket();
+                TicketAttachment ticketFiles = new TicketAttachment();
+
                 ticket.Subject = model.Subject;
                 ticket.Description = model.Description;
                 ticket.Status = (int?)TicketStatusEnum.New;
@@ -75,6 +78,16 @@ namespace TMS.Controllers
                 db.Tickets.Add(ticket);
                 db.SaveChanges();
                 
+                if (uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
+                {
+                    _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
+                    List<TicketAttachment> listFile = _unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
+                    ticketFiles.Path = listFile[0].Path;
+                    
+                }
+
+
+
                 return RedirectToAction("Index");
             }
             return View(model);
