@@ -294,11 +294,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TMSModel.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\TMSModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TMSModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\TMSModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -321,6 +316,7 @@
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="Utils\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />

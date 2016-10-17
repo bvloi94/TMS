@@ -295,8 +295,8 @@ namespace TMS.Areas.HelpDesk.Controllers
             model.ActualStartDate = ticket.ActualStartDate?.ToString("dd/MM/yyyy") ?? "";
             model.ActualEndDate = ticket.ActualEndDate?.ToString("dd/MM/yyyy") ?? "";
             model.SolvedDate = ticket.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
-            model.CreatedTime = ticket.CreatedTime?.ToString("dd/MM/yyyy") ?? "";
-            model.ModifiedTime = ticket.ModifiedTime?.ToString("dd/MM/yyyy") ?? "";
+            model.CreatedTime = ticket.CreatedTime.ToString("dd/MM/yyyy");
+            model.ModifiedTime = ticket.ModifiedTime.ToString("dd/MM/yyyy");
             if (!string.IsNullOrEmpty(ticket.CreatedID))
             {
                 model.CreatedId = ticket.CreatedID;
@@ -691,7 +691,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
                 s.SolvedDate = item.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
                 s.Status = item.Status.HasValue ? ((TicketStatusEnum)item.Status).ToString() : "";
-                s.CreatedTime = item.CreatedTime?.ToString("dd/MM/yyyy") ?? "";
+                s.CreatedTime = item.CreatedTime.ToString("dd/MM/yyyy");
                 tickets.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
@@ -751,8 +751,8 @@ namespace TMS.Areas.HelpDesk.Controllers
             model.ActualStartDate = ticket.ActualStartDate?.ToString("dd/MM/yyyy") ?? "";
             model.ActualEndDate = ticket.ActualEndDate?.ToString("dd/MM/yyyy") ?? "";
             model.SolvedDate = ticket.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
-            model.CreatedTime = ticket.CreatedTime?.ToString("dd/MM/yyyy") ?? "";
-            model.ModifiedTime = ticket.ModifiedTime?.ToString("dd/MM/yyyy") ?? "";
+            model.CreatedTime = ticket.CreatedTime.ToString("dd/MM/yyyy");
+            model.ModifiedTime = ticket.ModifiedTime.ToString("dd/MM/yyyy");
             if (!string.IsNullOrEmpty(ticket.CreatedID))
             {
                 model.CreatedId = ticket.CreatedID;
