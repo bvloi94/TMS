@@ -12,7 +12,6 @@ namespace TMS.Areas.Admin.Controllers
 {
     public class ManageSCController : Controller
     {
-        private TMSEntities db = new TMSEntities();
         private UnitOfWork _unitOfWork;
         private ImpactService _impactService;
         private UrgencyService _urgencyService;

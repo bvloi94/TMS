@@ -22,6 +22,7 @@ namespace TMS.Models
         }
     
         public int ID { get; set; }
+        public string Code { get; set; }
         public Nullable<int> Type { get; set; }
         public int Mode { get; set; }
         public string SolveID { get; set; }
@@ -43,8 +44,8 @@ namespace TMS.Models
         public Nullable<System.DateTime> ActualStartDate { get; set; }
         public Nullable<System.DateTime> ActualEndDate { get; set; }
         public Nullable<System.DateTime> SolvedDate { get; set; }
-        public Nullable<System.DateTime> CreatedTime { get; set; }
-        public Nullable<System.DateTime> ModifiedTime { get; set; }
+        public System.DateTime CreatedTime { get; set; }
+        public System.DateTime ModifiedTime { get; set; }
         public string CreatedID { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
