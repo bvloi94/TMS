@@ -88,6 +88,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     success = false,
                     msg = "Session time out! Please login again!",
                 });
+
             }
 
             if (string.IsNullOrEmpty(model.Subject))
