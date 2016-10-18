@@ -308,11 +308,11 @@ namespace TMS.Controllers
             {
                 categoryPath = ticket.Category.Name;
                 Category parentCate = ticket.Category;
-                while(parentCate.ParentID != null)
+                while (parentCate.ParentID != null)
                 {
                     parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
                     categoryPath = parentCate.Name + " > " + categoryPath;
-                } 
+                }
             }
             return Json(new
             {
@@ -344,65 +344,74 @@ namespace TMS.Controllers
         public ActionResult Solve(int id)
         {
             Ticket ticket = _ticketService.GetTicketByID(id);
-            if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
+            AspNetRole userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+            if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
             {
-                return RedirectToAction("Index"); // Redirect to Index so the Technician cannot go to Solve view.
+                if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
+                {
+                    return RedirectToAction("Index", new { Area = "Technician" }); // Redirect to Index so the Technician cannot go to Solve view.
+                }
             }
-            else
+            else if (userRole.Id == ConstantUtil.UserRole.HelpDesk.ToString())
             {
-                // Get Ticket information
-                AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
-                AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
-                AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
-                TicketSolveViewModel model = new TicketSolveViewModel();
-
-                model.ID = ticket.ID;
-                model.Subject = ticket.Subject;
-                model.Description = ticket.Description;
-
-                switch (ticket.Mode)
+                if (ticket.Status != ConstantUtil.TicketStatus.Assigned &&
+                    ticket.Status != ConstantUtil.TicketStatus.New)
                 {
-                    case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
-                    case 2: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
-                    case 3: model.Mode = ConstantUtil.TicketModeString.Email; break;
+                    return RedirectToAction("Index", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.
                 }
-
-                switch (ticket.Type)
-                {
-                    case 1: model.Type = ConstantUtil.TicketTypeString.Request; break;
-                    case 2: model.Type = ConstantUtil.TicketTypeString.Problem; break;
-                    case 3: model.Type = ConstantUtil.TicketTypeString.Change; break;
-                }
-
-                switch (ticket.Status)
-                {
-                    case 1: model.Status = "New"; break;
-                    case 2: model.Status = "Assigned"; break;
-                    case 3: model.Status = "Solved"; break;
-                    case 4: model.Status = "Unapproved"; break;
-                    case 5: model.Status = "Cancelled"; break;
-                    case 6: model.Status = "Closed"; break;
-                }
-
-                model.Category = (ticket.Category == null) ? "None" : ticket.Category.Name;
-                model.Impact = (ticket.Impact == null) ? "None" : ticket.Impact.Name;
-                model.ImpactDetail = (ticket.ImpactDetail == null) ? "None" : ticket.ImpactDetail;
-                model.Urgency = (ticket.Urgency == null) ? "None" : ticket.Urgency.Name;
-                model.Priority = (ticket.Priority == null) ? "None" : ticket.Priority.Name;
-                model.CreateTime = ticket.CreatedTime;
-                model.ModifiedTime = ticket.ModifiedTime;
-                model.ScheduleEndTime = ticket.ScheduleEndDate;
-                model.ScheduleStartTime = ticket.ScheduleStartDate;
-                model.ActualStartTime = ticket.ActualStartDate;
-                model.ActualEndTime = ticket.ActualEndDate;
-                model.CreatedBy = (createdUser == null) ? "None" : createdUser.Fullname;
-                model.AssignedBy = (assigner == null) ? "None" : assigner.Fullname;
-                model.SolvedBy = (solvedUser == null) ? "None" : solvedUser.Fullname;
-                model.Solution = ticket.Solution;
-                model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "None" : ticket.UnapproveReason;
-
-                return View(model);
             }
+            // Get Ticket information
+            AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
+            AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
+            AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+            TicketSolveViewModel model = new TicketSolveViewModel();
+
+            model.ID = ticket.ID;
+            model.Subject = ticket.Subject;
+            model.Description = ticket.Description;
+
+            switch (ticket.Mode)
+            {
+                case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
+                case 2: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
+                case 3: model.Mode = ConstantUtil.TicketModeString.Email; break;
+            }
+
+            switch (ticket.Type)
+            {
+                case 1: model.Type = ConstantUtil.TicketTypeString.Request; break;
+                case 2: model.Type = ConstantUtil.TicketTypeString.Problem; break;
+                case 3: model.Type = ConstantUtil.TicketTypeString.Change; break;
+            }
+
+            switch (ticket.Status)
+            {
+                case 1: model.Status = "New"; break;
+                case 2: model.Status = "Assigned"; break;
+                case 3: model.Status = "Solved"; break;
+                case 4: model.Status = "Unapproved"; break;
+                case 5: model.Status = "Cancelled"; break;
+                case 6: model.Status = "Closed"; break;
+            }
+
+            model.Category = (ticket.Category == null) ? "None" : ticket.Category.Name;
+            model.Impact = (ticket.Impact == null) ? "None" : ticket.Impact.Name;
+            model.ImpactDetail = (ticket.ImpactDetail == null) ? "None" : ticket.ImpactDetail;
+            model.Urgency = (ticket.Urgency == null) ? "None" : ticket.Urgency.Name;
+            model.Priority = (ticket.Priority == null) ? "None" : ticket.Priority.Name;
+            model.CreateTime = ticket.CreatedTime;
+            model.ModifiedTime = ticket.ModifiedTime;
+            model.ScheduleEndTime = ticket.ScheduleEndDate;
+            model.ScheduleStartTime = ticket.ScheduleStartDate;
+            model.ActualStartTime = ticket.ActualStartDate;
+            model.ActualEndTime = ticket.ActualEndDate;
+            model.CreatedBy = (createdUser == null) ? "None" : createdUser.Fullname;
+            model.AssignedBy = (assigner == null) ? "None" : assigner.Fullname;
+            model.SolvedBy = (solvedUser == null) ? "None" : solvedUser.Fullname;
+            model.Solution = ticket.Solution;
+            model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "None" : ticket.UnapproveReason;
+
+            return View(model);
         }
 
         [HttpPost]
