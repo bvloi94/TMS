@@ -21,7 +21,17 @@
         padding: 0px;
         margin-bottom: 20px;
     }
-    
+
+    .header-content {
+        background-color: #c9e0fa;
+        padding: 0px 10px 0px 25px;
+        margin: 4px;
+    }
+
+    .row-content {
+        padding: 3px 0px;
+    }
+
     input {
         max-height: 400px;
     }
@@ -117,38 +127,44 @@
                                     </div>
                                     <div class="col-sm-12 row-content ">
                                         <div class="col-sm-12">
-                                            <div class="col-sm-2 labels"><b>Description: </b>
+                                            <div class="col-sm-2 labels">
+                                                <b>Description: </b>
                                             </div>
                                             <div class="col-sm-10 pre-wrap" id="ticket-description" style="padding-left: 10px"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 row-content ">
                                         <div class="col-sm-12">
-                                            <div class="col-sm-2 labels"><b>Solution: </b>
+                                            <div class="col-sm-2 labels">
+                                                <b>Solution: </b>
                                             </div>
                                             <div class="col-sm-10 pre-wrap" id="ticket-solution" style="padding-left: 10px"></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 row-content ">
                                         <div class="col-sm-6 ">
-                                            <div class="col-sm-4 labels"><b>Attachment: </b>
+                                            <div class="col-sm-4 labels">
+                                                <b>Attachment: </b>
                                             </div>
                                             <div class="col-sm-8"><span id="ticket-attachment">None</span></div>
                                         </div>
                                         <div class="col-sm-6">
-                                            <div class="col-sm-4 labels"><b>Created by: </b>
+                                            <div class="col-sm-4 labels">
+                                                <b>Created by: </b>
                                             </div>
                                             <div class="col-sm-8"><span id="ticket-created-by"></span></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 row-content ">
                                         <div class="col-sm-6 ">
-                                            <div class="col-sm-4 labels"><b>Assigned by: </b>
+                                            <div class="col-sm-4 labels">
+                                                <b>Assigned by: </b>
                                             </div>
                                             <div class="col-sm-8"><span id="ticket-assigned-by"></span></div>
                                         </div>
                                         <div class="col-sm-6">
-                                            <div class="col-sm-4 labels"><b>Solved by: </b>
+                                            <div class="col-sm-4 labels">
+                                                <b>Solved by: </b>
                                             </div>
                                             <div class="col-sm-8"><span id="ticket-solved-by"></span></div>
                                         </div>
@@ -159,46 +175,54 @@
                                     </div>
                                     <div class="col-sm-12 row-content">
                                         <div class="col-sm-4 ">
-                                            <div class="col-sm-6 labels"><b>Type: </b>
+                                            <div class="col-sm-6 labels">
+                                                <b>Type: </b>
                                             </div>
                                             <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-type"></span></div>
                                         </div>
                                         <div class="col-sm-4 ">
-                                            <div class="col-sm-6 labels"><b>Mode: </b>
+                                            <div class="col-sm-6 labels">
+                                                <b>Mode: </b>
                                             </div>
                                             <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-mode"></span></div>
                                         </div>
                                         <div class="col-sm-4 " style="padding-left: 40px">
-                                            <div class="col-sm-6 labels"><b>Status: </b>
+                                            <div class="col-sm-6 labels">
+                                                <b>Status: </b>
                                             </div>
                                             <div class="col-sm-6"><span id="ticket-status"></span></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 row-content">
                                         <div class="col-sm-4 ">
-                                            <div class="col-sm-6 labels"><b>Category: </b>
+                                            <div class="col-sm-6 labels">
+                                                <b>Category: </b>
                                             </div>
                                             <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-category"></span></div>
                                         </div>
                                         <div class="col-sm-4 ">
-                                            <div class="col-sm-6 labels"><b>Urgency: </b>
+                                            <div class="col-sm-6 labels">
+                                                <b>Urgency: </b>
                                             </div>
                                             <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-urgency"></span></div>
                                         </div>
                                         <div class="col-sm-4 " style="padding-left: 40px">
-                                            <div class="col-sm-6 labels"><b>Priority: </b>
+                                            <div class="col-sm-6 labels">
+                                                <b>Priority: </b>
                                             </div>
                                             <div class="col-sm-6"><span id="ticket-priority"></span></div>
                                         </div>
                                     </div>
                                     <div class="col-sm-12 row-content">
                                         <div class="col-sm-4 ">
-                                            <div class="col-sm-6 labels"><b>Impact: </b>
+                                            <div class="col-sm-6 labels">
+                                                <b>Impact: </b>
                                             </div>
                                             <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-impact"></span></div>
                                         </div>
                                         <div class="col-sm-8 ">
-                                            <div class="col-sm-3 labels"><b>Impact Detail: </b>
+                                            <div class="col-sm-3 labels">
+                                                <b>Impact Detail: </b>
                                             </div>
                                             <div class="col-sm-9" style="padding-left: 22px"><span id="ticket-impact-detail"></span></div>
                                         </div>
@@ -208,8 +232,8 @@
                                 </div>
                             </div>
                             @*<div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>*@
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>*@
                         </div>
 
                     </div>
@@ -355,7 +379,7 @@
                     $('#ticket-impact').text(data.impact);
                     $('#ticket-impact-detail').text(data.impactDetail);
 
-                    
+
                     if (data.status == 2) {
                         $('#ticket-status').text('Assigned');
                         if (data.solution == "None") {
@@ -386,7 +410,7 @@
                     $('#ticket-schedule-end').text(data.scheduleEnd);
                     $('#ticket-actual-start').text(data.actualStart);
                     $('#ticket-actual-end').text(data.actualEnd);
-                    
+
                     $modal.modal("show");
                 },
                 failure: function (data) {
