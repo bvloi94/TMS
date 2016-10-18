@@ -16,7 +16,7 @@ namespace TMS.ViewModels
         /// in order to prevent Cross Site Scripting 
         /// (XSS) attacks.
         /// </summary>
-        public string sEcho { get; set; }
+        public int draw { get; set; }
         /// <summary>
         /// Total records, before filtering (i.e. the 
         /// total number of records in the database)

@@ -66,10 +66,73 @@ function readURL(input) {
     }
 }
 
+function initRequesterTable(selector) {
+    return selector.dataTable({
+        processing: true,
+        serverSide: true,
+        paging: true,
+        sort: true,
+        filter: false,
+        searching: true,
+        lengthMenu: [8],
+        order: [[0, 'asc']],
+        lengthChange: false,
+        ajax: {
+            url: "/HelpDesk/ManageTicket/GetRequesterList"
+        },
+        "columnDefs": [
+            {
+                "targets": 0,
+                "render": function (data, type, row) {
+                    return '<a href="javascript:addSelectedUserToForm(\'' +
+                        row.Id + "\',\'" +
+                        row.Fullname +
+                        '\')">' +
+                        row.Fullname +
+                        '</a>';
+                }
+            },
+            {
+                "targets": 1,
+                "render": function (data, type, row) {
+                    return (!row.Email || 0 === row.Email.length) ? "-" : row.Email;
+                }
+            },
+            {
+                "targets": 2,
+                "sortable": false,
+                "render": function (data, type, row) {
+                    return (!row.DepartmentName || 0 === row.DepartmentName.length) ? "-" : row.DepartmentName;
+                }
+            },
+            {
+                "targets": 3,
+                "sortable": false,
+                "render": function (data, type, row) {
+                    return (!row.PhoneNumber || 0 === row.PhoneNumber.length) ? "-" : row.PhoneNumber;
+                }
+            },
+            {
+                "targets": 4,
+                "sortable": false,
+                "render": function (data, type, row) {
+                    return (!row.JobTitle || 0 === row.JobTitle.length) ? "-" : row.JobTitle;
+                }
+            }
+        ]
+    });
+}
+
 $(document).ready(function () {
 
     $(".datetime").datetimepicker({
         timepicker: false,
         format: 'd/m/Y'
+    });
+
+    $(".datetimep").datetimepicker({
+        timepicker: true,
+        format: "d/m/Y H:i",
+        pickMinute: true
     });
 });
