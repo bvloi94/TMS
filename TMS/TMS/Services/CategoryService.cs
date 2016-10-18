@@ -83,5 +83,32 @@ namespace TMS.Services
                 throw;
             }
         }
+
+        private IEnumerable<Category> GetChildrenCategories(int parentId)
+        {
+            return _unitOfWork.CategoryRepository.Get(m => m.ParentID == parentId);
+        }
+
+        public bool IsInUse(Category category)
+        {
+            foreach (Category childCategory in GetChildrenCategories(category.ID))
+            {
+                if (IsInUse(childCategory))
+                {
+                    return true;
+                }
+            }
+            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any();
+        }
+
+        public void DeleteCategory(Category category)
+        {
+            foreach (Category childCategory in GetChildrenCategories(category.ID))
+            {
+                _unitOfWork.CategoryRepository.Delete(childCategory);
+            }
+            _unitOfWork.CategoryRepository.Delete(category);
+            _unitOfWork.Save();
+        }
     }
 }

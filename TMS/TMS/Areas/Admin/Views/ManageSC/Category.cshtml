@@ -168,7 +168,7 @@
                 <h4 class="modal-title">Are you sure?</h4>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="yes-btn">Yes</button>
+                <button type="button" class="btn btn-primary" id="delete-btn">Yes</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
             </div>
         </div>
@@ -751,38 +751,44 @@
             }
         };
 
-        var editImpact = function (id) {
-            //jquery
-            var name = $("#name-txt").val();
+        var editItem = function (id) {
+            clearValidationError();
+            var name = $("#item-name-txt").val();
+            var sub_category = $("#item-sub-category-dropdown").val();
+            var valid = true;
             if (name.trim() === "") {
-                $("#name-validation-message").html("Name is required");
-                $("#name-validation-message").show();
-            } else if (name.trim().length < 4) {
-                $("#name-validation-message").html("Name must be longer than 4 characters! ");
-                $("#name-validation-message").show();
-            } else {
-                //ajax syntax
-                $.ajax(
-                {
-                    url: "/Admin/ManageSC/EditImpact",
+                $("#item-name-validation-message").html("Name is required!");
+                $("#item-name-validation-message").show();
+                valid = false;
+            }
+            if (sub_category === "") {
+                $("#item-sub-category-validation-message").html("Sub Category is required!");
+                $("#item-sub-category-validation-message").show();
+                valid = false;
+            }
+
+            if (valid) {
+                $.ajax({
+                    url: "/Admin/ManageSC/EditItem",
                     dataType: "json",
                     type: "POST",
                     data: {
-                        id: id,
-                        name: $("#name-txt").val(),
-                        description: $("#description-txt").val()
+                        ID: id,
+                        Name: name,
+                        Description: $("#item-description-txt").val(),
+                        ParentId: sub_category
                     },
                     success: function (data) {
                         if (data.success) {
                             $.notify(data.message, "success");
-                            $("#myModal").modal("hide");
+                            $("#item-modal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
                                 $.notify(data.message, "error");
-                            } else if (!data.error) {
-                                $("#name-validation-message").html(data.message);
-                                $("#name-validation-message").show();
+                            } else {
+                                $("#item-name-validation-message").html(data.message);
+                                $("#item-name-validation-message").show();
                             }
                         }
                     },
@@ -794,16 +800,18 @@
         };
 
         var showDeleteModal = function (id) {
-            $("#yes-btn").attr("onclick", "deleteImpact('" + id + "')");
+            $("#delete-btn").attr("onclick", "deleteCategory('" + id + "')");
             $("#delete-modal").modal("show");
         };
 
-        var deleteImpact = function (id) {
+        var deleteCategory = function (id) {
             $.ajax({
-                url: "/Admin/ManageSC/DeleteImpact",
+                url: "/Admin/ManageSC/DeleteCategory",
                 dataType: "json",
                 type: "POST",
-                data: { id: id },
+                data: {
+                    id: id
+                },
                 success: function (data) {
                     if (data.success) {
                         $.notify(data.message, "success");
@@ -816,6 +824,7 @@
                 },
                 error: function () {
                     $.notify(data.message, "error");
+                    $("#delete-modal").modal("hide");
                 }
             });
 

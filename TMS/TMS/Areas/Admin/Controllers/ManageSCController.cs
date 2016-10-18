@@ -1059,7 +1059,7 @@ namespace TMS.Areas.Admin.Controllers
                         return Json(new
                         {
                             success = true,
-                            message = "Edit category successfully!"
+                            message = "Edit sub category successfully!"
                         });
                     }
                     catch
@@ -1081,6 +1081,111 @@ namespace TMS.Areas.Admin.Controllers
                     error = false,
                     message = "Cannot get sub category detail!"
                 });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EditItem(CategoryViewModel model)
+        {
+            if (model.ID.HasValue)
+            {
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, model.ParentId);
+                if (isDuplicatedName)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = false,
+                        message = string.Format("'{0}' has already been used.", model.Name)
+                    });
+                }
+                else
+                {
+                    Category category = _categoryService.GetCategoryById(model.ID.Value);
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    category.ParentID = model.ParentId;
+                    try
+                    {
+                        _categoryService.UpdateCategory(category);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Edit item successfully!"
+                        });
+                    }
+                    catch
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = "Some errors occured. Please try again later!"
+                        });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Cannot get sub category detail!"
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteCategory(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "This category has been removed or not existed!"
+                });
+            }
+            Category category = _categoryService.GetCategoryById(id.Value);
+            if (category == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    message = "This category has been removed or not existed!"
+                });
+            }
+            else
+            {
+                if (_categoryService.IsInUse(category))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Category is being used! Can not be removed!"
+                    });
+                }
+                try
+                {
+                    _categoryService.DeleteCategory(category);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Delete category successfully!"
+                    });
+                }
+                catch (Exception)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        message = "Some error occured! Please try again later!"
+                    });
+                }
             }
         }
     }
