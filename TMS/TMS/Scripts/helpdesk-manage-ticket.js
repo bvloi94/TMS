@@ -63,8 +63,7 @@ function initTicketTable() {
             }, {
                 "targets": [5],
                 "render": function (data, type, row) {
-                    var lbl = getStatusLabel(row.Status);
-                    return lbl[0].outerHTML;
+                    return getStatusLabel(row.Status);
                 }
             },
             {
@@ -182,8 +181,10 @@ function openTicketDetailModal(ticketId) {
         success: function (data) {
             var solveUrl = '/Ticket/Solve/' + data.id;
 
-            $('#ticket-subject').text("Subject: " + data.subject);
+            $('#ticket-subject').text(data.subject);
             $('#ticket-description').text(data.description);
+            $('#ticket-department').text(data.department);
+            $('#ticket-technician').text(data.technician);
             $('#ticket-created-by').text(data.creater);
             $('#ticket-assigned-by').text(data.assigner);
             $('#ticket-solved-by').text(data.solver);
@@ -197,25 +198,25 @@ function openTicketDetailModal(ticketId) {
 
 
             if (data.status == 2) {
-                $('#ticket-status').text('Assigned');
-                if (data.solution == "-") {
+                $('#ticket-status').html(getStatusLabel('Assigned'));
+                if (!data.solution || data.solution == "-") {
                     $('#ticket-solution').empty().append("<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
                                                 + "<a class='btn-sm btn-primary' href='" + solveUrl + "'>Yes</a>"
                                                 + "<a class='btn-sm btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
                 }
                 else {
-                    $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
+                    $('#ticket-solution').empty().text(data.solution);
                 }
             }
             else {
                 if (data.status == 3) {
-                    $('#ticket-status').text('Solved');
+                    $('#ticket-status').html(getStatusLabel('Solved'));
                 } else if (data.status == 4) {
-                    $('#ticket-status').text('Unapproved');
+                    $('#ticket-status').html(getStatusLabel('Unapproved'));
                 } else if (data.status == 5) {
-                    $('#ticket-status').text('Cancelled');
+                    $('#ticket-status').html(getStatusLabel('Cancelled'));
                 } else if (data.status == 6) {
-                    $('#ticket-status').text('Closed');
+                    $('#ticket-status').html(getStatusLabel('Closed'));
                 }
                 $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
             }
@@ -318,6 +319,7 @@ $(document)
                         }
 
                     });
+
             $("[data-role='btn-confirm-merge']")
                 .on('click',
                     function () {
@@ -348,6 +350,17 @@ $(document)
                             }
                         });
                     });
+
+            $("[data-role='btn-cancel-merge']")
+                .on('click',
+                    function () {
+                        $('input[data-role="cbo-ticket"]').each(function () {
+                            $(this).prop("checked", false);
+                        });
+                        $("#modal-merge-ticket").modal("hide");
+                        $("a[data-role='btn-merge-ticket']").addClass("disabled");
+                    });
+
             $('#ticket-table tbody').on('click', 'input[data-role="cbo-ticket"]', function (e) {
                 var selectedTickets = getSelectedTickets();
                 if (selectedTickets.length < 2) {

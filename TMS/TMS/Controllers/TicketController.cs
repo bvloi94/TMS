@@ -247,6 +247,7 @@ namespace TMS.Controllers
             AspNetUser solver = _userService.GetUserById(ticket.SolveID);
             AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+            AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
             String ticketType, ticketMode;
 
             switch (ticket.Type)
@@ -273,14 +274,14 @@ namespace TMS.Controllers
                 while (parentCate.ParentID != null)
                 {
                     parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
-                    categoryPath = parentCate.Name + " > " + categoryPath;
+                    categoryPath = parentCate.Name + "  >  " + categoryPath;
                 }
             }
             return Json(new
             {
                 id = ticket.ID,
                 subject = ticket.Subject,
-                description = ticket.Description,
+                description = ticket.Description == null ? "-" : ticket.Description,
                 type = ticketType,
                 mode = ticketMode,
                 urgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name,
@@ -289,16 +290,18 @@ namespace TMS.Controllers
                 impact = ticket.Impact == null ? "-" : ticket.Impact.Name,
                 impactDetail = ticket.ImpactDetail == null ? "-" : ticket.ImpactDetail,
                 status = ticket.Status,
-                createdDate = ticket.CreatedTime.ToString(),
-                lastModified = ticket.ModifiedTime.ToString(),
-                scheduleStart = ticket.ScheduleStartDate.ToString(),
-                scheduleEnd = ticket.ScheduleEndDate.ToString(),
-                actualStart = ticket.ActualStartDate.ToString(),
-                actualEnd = ticket.ActualEndDate.ToString(),
+                createdDate = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat),
+                lastModified = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat),
+                scheduleStart = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-",
+                scheduleEnd = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-",
+                actualStart = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-",
+                actualEnd = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-",
                 solution = ticket.Solution == null ? "-" : ticket.Solution,
                 solver = solver == null ? "-" : solver.Fullname,
                 creater = creater == null ? "-" : creater.Fullname,
                 assigner = assigner == null ? "-" : assigner.Fullname,
+                technician = technician == null ? "-" : technician.Fullname,
+                department = technician.Department.Name == null ? "-" : technician.Department.Name
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -318,7 +321,7 @@ namespace TMS.Controllers
             }
             if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
             {
-                ViewBag.Role = "Technician"; 
+                ViewBag.Role = "Technician";
                 if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
                 {
                     return RedirectToAction("Index", new { Area = "Technician" }); // Redirect to Index so the Technician cannot go to Solve view.
@@ -512,7 +515,7 @@ namespace TMS.Controllers
             return Json(new
             {
                 msg = message,
-                userRole= userRole.Name
+                userRole = userRole.Name
             });
         }
 

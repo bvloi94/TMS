@@ -432,7 +432,7 @@
             $("#solutionEditor").html('@Model.Solution');
 
             $("[name='statusId']").val(@Model.StatusId);
-            $("#div-status").html(getStatusLabel('@Model.Status')[0].outerHTML);
+            $("#div-status").html(getStatusLabel('@Model.Status'));
         }
 
         $(document)

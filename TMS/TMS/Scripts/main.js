@@ -47,11 +47,11 @@ function getStatusLabel(status) {
             cssClass = "label-default";
             break;
     }
-    return lbl = $("<small/>",
+    return $("<small/>",
     {
         "class": "label " + cssClass,
         "html": status
-    });
+    })[0].outerHTML;
 }
 
 function readURL(input) {
