@@ -153,7 +153,7 @@ function initCategoryDropdown(param) {
 
         } else {
             markup = "<div class='category-dropdown'>" +
-                "<label class='category-" + repo.CategoryLevel + "'>" +
+                "<label class='category-" + repo.Level + "'>" +
                 repo.Name +
                 "</label>" +
                 "</div>";
@@ -188,7 +188,7 @@ function initCategoryDropdown(param) {
                     });
                 }
                 for (var i = 0; i < data.length; i++) {
-                    data[i].id = data[i].Id;
+                    data[i].id = data[i].ID;
                     data[i].text = data[i].Name;
                     result.results.push(data[i]);
                 }
@@ -287,7 +287,7 @@ function initTechnicianDropdown(param) {
             data: function (params) {
                 var ajaxData = {
                     query: params.term,
-                    departmentId: param.departmentId
+                    departmentId: $("[data-role='ddl-department']").val()
                 };
                 return ajaxData;
             },

@@ -26,6 +26,7 @@ namespace TMS.Controllers
         public UserService _userService { get; set; }
         public DepartmentService _departmentService { get; set; }
         public TicketAttachmentService _ticketAttachmentService { get; set; }
+        public CategoryService _categoryService { get; set; }
 
         public TicketController()
         {
@@ -33,6 +34,7 @@ namespace TMS.Controllers
             _userService = new UserService(unitOfWork);
             _departmentService = new DepartmentService(unitOfWork);
             _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
+            _categoryService = new CategoryService(unitOfWork);
         }
 
         // GET: Tickets
@@ -194,9 +196,8 @@ namespace TMS.Controllers
                     _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
                     List<TicketAttachment> listFile = unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
                     ticketFiles.Path = listFile[0].Path;
-
                 }
-                
+
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -291,7 +292,7 @@ namespace TMS.Controllers
                 case 1: ticketType = ConstantUtil.TicketTypeString.Request; break;
                 case 2: ticketType = ConstantUtil.TicketTypeString.Problem; break;
                 case 3: ticketType = ConstantUtil.TicketTypeString.Change; break;
-                default: ticketType = "None"; break;
+                default: ticketType = "-"; break;
             }
 
             switch (ticket.Mode)
@@ -299,9 +300,20 @@ namespace TMS.Controllers
                 case 1: ticketMode = ConstantUtil.TicketModeString.PhoneCall; break;
                 case 2: ticketMode = ConstantUtil.TicketModeString.WebForm; break;
                 case 3: ticketMode = ConstantUtil.TicketModeString.Email; break;
-                default: ticketMode = "None"; break;
+                default: ticketMode = "-"; break;
             }
 
+            string categoryPath = "-";
+            if (ticket.Category != null)
+            {
+                categoryPath = ticket.Category.Name;
+                Category parentCate = ticket.Category;
+                while(parentCate.ParentID != null)
+                {
+                    parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
+                    categoryPath = parentCate.Name + " > " + categoryPath;
+                } 
+            }
             return Json(new
             {
                 id = ticket.ID,
@@ -309,11 +321,11 @@ namespace TMS.Controllers
                 description = ticket.Description,
                 type = ticketType,
                 mode = ticketMode,
-                urgency = ticket.Urgency == null ? "None" : ticket.Urgency.Name,
-                priority = ticket.Priority == null ? "None" : ticket.Priority.Name,
-                category = ticket.Category == null ? "None" : ticket.Category.Name,
-                impact = ticket.Impact == null ? "None" : ticket.Impact.Name,
-                impactDetail = ticket.ImpactDetail == null ? "None" : ticket.ImpactDetail,
+                urgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name,
+                priority = ticket.Priority == null ? "-" : ticket.Priority.Name,
+                category = categoryPath,
+                impact = ticket.Impact == null ? "-" : ticket.Impact.Name,
+                impactDetail = ticket.ImpactDetail == null ? "-" : ticket.ImpactDetail,
                 status = ticket.Status,
                 createdDate = ticket.CreatedTime.ToString(),
                 lastModified = ticket.ModifiedTime.ToString(),
@@ -321,10 +333,10 @@ namespace TMS.Controllers
                 scheduleEnd = ticket.ScheduleEndDate.ToString(),
                 actualStart = ticket.ActualStartDate.ToString(),
                 actualEnd = ticket.ActualEndDate.ToString(),
-                solution = ticket.Solution == null ? "None" : ticket.Solution,
-                solver = solver == null ? "None" : solver.Fullname,
-                creater = creater == null ? "None" : creater.Fullname,
-                assigner = assigner == null ? "None" : assigner.Fullname,
+                solution = ticket.Solution == null ? "-" : ticket.Solution,
+                solver = solver == null ? "-" : solver.Fullname,
+                creater = creater == null ? "-" : creater.Fullname,
+                assigner = assigner == null ? "-" : assigner.Fullname,
             }, JsonRequestBehavior.AllowGet);
         }
 

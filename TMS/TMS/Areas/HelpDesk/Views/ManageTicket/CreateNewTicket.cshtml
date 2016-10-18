@@ -18,8 +18,21 @@
                             <input type="text" class="form-control" name="Subject" placeholder="Subject" />
                         </div>
                     </div>
+                    
                     <div class="form-group">
-                        <label class="control-label col-md-2">Type <font color="red">*</font></label>
+                        <label class="control-label col-md-2">Mode <font color="red">*</font></label>
+                        <div class="col-md-10">
+                            <select class="form-control" name="Mode">
+                                <option value="0">None</option>
+                                <option value="1">PhoneCall</option>
+                                <option value="2">WebForm</option>
+                                <option value="3">Email</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Type</label>
                         <div class="col-md-10">
                             <select class="form-control" name="Type">
                                 <option value="0">None</option>
@@ -29,6 +42,7 @@
                             </select>
                         </div>
                     </div>
+                    
                     <div class="form-group">
                         <label class="control-label col-md-2">Description</label>
                         <div class="col-md-10">
@@ -38,7 +52,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-2"></label>
                         <div class="col-md-10">
-                            <input class="form-control" type="file" name="file" multiple>
+                            <input class="form-control" type="file" name="descriptionFiles" multiple>
                             @*<div class="btn btn-default btn-file">
                                 <i class="fa fa-paperclip"></i> Attachment
                                 <input type="file" name="file" multiple>
@@ -88,7 +102,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-2">Requester</label>
+                        <label class="control-label col-md-2">Requester <font color="red">*</font></label>
                         <div class="col-md-4">
                             <input type="hidden" id="requesterId" name="RequesterId">
                             <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="" readonly>
@@ -118,7 +132,7 @@
                     <div class="form-group">
                         <label class="control-label col-md-2"></label>
                         <div class="col-md-10">
-                            <input class="form-control" type="file" name="file" multiple>
+                            <input class="form-control" type="file" name="solutionFiles" multiple>
 
                             @*<div class="btn btn-default btn-file">
                                 <i class="fa fa-paperclip"></i> Attachment
@@ -206,9 +220,10 @@
                 });
 
         $("[data-role=btn-submit-new-ticket]").on("click", function () {
-            //var formData = new FormData($("#form-new-ticket")[0]);
-            //formData.append('description', $("#descriptionEditor").val());
-            var formData = $("#form-new-ticket").serialize();
+            var formData = new FormData($('#form-new-ticket')[0]);
+            //formData.append('descriptionFiles', $('input[type="file"][name="descriptionFiles"]')[0].files[0]);
+            //formData.append('solutionFiles', $('input[type="file"][name="solutionFiles"]')[0].files[0]);
+            //var formData = $("#form-new-ticket").serialize();
             $.ajax({
                 "url": "/HelpDesk/ManageTicket/AddNewTicket",
                 "method": "POST",
@@ -219,9 +234,11 @@
                             text: "Ticket was created successfully!",
                             layout: "top",
                             type: "success",
-                            timeout: 2000
+                            timeout: 1000
                         });
-                        window.location.href = "/HelpDesk/ManageTicket";
+                        setTimeout(function () {
+                            window.location.href = "/HelpDesk/ManageTicket";
+                        }, 1000);
                     } else {
                         noty({
                             text: data.msg,
@@ -243,9 +260,9 @@
                         }
                     }
                 },
-                //contentType: false,
+                contentType: false,
                 processData: false,
-                //enctype: 'multipart/form-data',
+                enctype: 'multipart/form-data',
                 "error": function (e) {
                     noty({
                         text: "Failed! Please try again!",
@@ -363,7 +380,6 @@
 
         $(document)
             .ready(function () {
-                $(".textarea").wysihtml5();
                 setActiveTicketMenu();
                 initDropdownControl();
                 initRequesterTable();

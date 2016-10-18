@@ -17,7 +17,21 @@
     height: 5px;
     font-weight: normal;
 }
+.category-dropdown .category-3 {
+    margin-left: 45px;
+    height: 5px;
+    font-weight: normal;
+}
+.category-dropdown .category-4 {
+    margin-left: 55px;
+    height: 5px;
+    font-weight: normal;
+}
 
 .select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 22px !important;
+    line-height: 28px !important;
+}
+
+.select2-container--default .select2-selection--single {
+        height: 34px;
 }
