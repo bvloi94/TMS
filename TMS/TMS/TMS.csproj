@@ -311,7 +311,7 @@
     <Compile Include="Schedulers\JobManager.cs" />
     <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
-    <Compile Include="Uploads\FileUploader.cs" />
+    <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Utils\AuthorizeAttribute.cs" />
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
