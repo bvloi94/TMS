@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -27,11 +29,12 @@ namespace TMS.Areas.HelpDesk.Controllers
         public PriorityService _priorityService { get; set; }
         public ImpactService _impactService { get; set; }
         public CategoryService _categoryService { get; set; }
+        public TicketAttachmentService _ticketAttachmentService { get; set; }
+        private UnitOfWork unitOfWork = new UnitOfWork();
 
 
         public ManageTicketController()
         {
-            var unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(unitOfWork);
             _userService = new UserService(unitOfWork);
             _departmentService = new DepartmentService(unitOfWork);
@@ -39,6 +42,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             _priorityService = new PriorityService(unitOfWork);
             _impactService = new ImpactService(unitOfWork);
             _categoryService = new CategoryService(unitOfWork);
+            _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
         }
 
         // GET: HelpDesk/ManageTicket
@@ -69,13 +73,24 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View();
         }
 
-
-        public ActionResult AddNewTicket(TicketViewModel model)
+        [HttpPost]
+        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
 
-            if (model.Subject == null || model.Subject.ToString().Trim() == "")
+            var ticket = new Ticket();
+            if (User.Identity.GetUserId() != null) ticket.CreatedID = User.Identity.GetUserId();
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "Session time out! Please login again!",
+                });
+            }
+
+            if (string.IsNullOrEmpty(model.Subject))
             {
                 errs.Add(new ModelError
                 {
@@ -90,48 +105,43 @@ namespace TMS.Areas.HelpDesk.Controllers
                 });
             }
 
-            var ticket = new Ticket
+            if (model.Mode == 0)
             {
-                Subject = model.Subject,
-                Description = model.Description,
-                Solution = model.Solution,
-                RequesterID = model.RequesterId,
-                Type = model.Type,
-                Mode = model.Mode,
-                ScheduleStartDate = model.ScheduleStartDate != null ? DateTime.ParseExact(model.ScheduleStartDate, "dd/MM/yyyy", null) : (DateTime?)null,
-                ScheduleEndDate = model.ScheduleEndDate != null ? DateTime.ParseExact(model.ScheduleEndDate, "dd/MM/yyyy", null) : (DateTime?)null,
-                CreatedTime = DateTime.Now,
-                ModifiedTime = DateTime.Now,
-                Status = (int?)TicketStatusEnum.New
-            };
+                errs.Add(new ModelError
+                {
+                    Name = "Subject",
+                    Message = "Ticket's mode required!",
+                });
+                return Json(new
+                {
+                    success = false,
+                    data = errs,
+                    msg = "Please input mode!",
+                });
 
-            //TO-DO
-            if (User.Identity.GetUserId() != null) ticket.CreatedID = User.Identity.GetUserId();
-
-            // Attachment
-
-            if (model.UrgencyId != 0)
-            {
-                ticket.UrgencyID = model.UrgencyId;
-            }
-            if (model.PriorityId != 0)
-            {
-                ticket.PriorityID = model.PriorityId;
-            }
-            if (model.ImpactId != 0)
-            {
-                ticket.ImpactID = model.ImpactId;
-            }
-            if (model.CategoryId != 0)
-            {
-                ticket.CategoryID = model.CategoryId;
             }
 
-            if (!string.IsNullOrEmpty(model.TechnicianId))
+            if (model.RequesterId == null)
             {
-                ticket.TechnicianID = model.TechnicianId;
-                ticket.Status = (int?)TicketStatusEnum.Assigned;
+                errs.Add(new ModelError
+                {
+                    Name = "Subject",
+                    Message = "Ticket's requester required!",
+                });
+                return Json(new
+                {
+                    success = false,
+                    data = errs,
+                    msg = "Please input requester!",
+                });
             }
+
+            ticket.ScheduleStartDate = model.ScheduleStartDate != null
+                ? DateTime.ParseExact(model.ScheduleStartDate, "dd/MM/yyyy", null)
+                : (DateTime?)null;
+            ticket.ScheduleEndDate = model.ScheduleEndDate != null
+                ? DateTime.ParseExact(model.ScheduleEndDate, "dd/MM/yyyy", null)
+                : (DateTime?)null;
 
             if (ticket.ScheduleStartDate.HasValue && ticket.ScheduleEndDate.HasValue)
             {
@@ -151,17 +161,43 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
             }
 
+            ticket.CreatedTime = DateTime.Now;
+            ticket.ModifiedTime = DateTime.Now;
+            ticket.Status = (int?)TicketStatusEnum.New;
+            ticket.RequesterID = model.RequesterId;
+            ticket.Subject = model.Subject;
+            ticket.Description = model.Description;
+            ticket.Solution = model.Solution;
+            ticket.Type = model.Type;
+            ticket.Mode = model.Mode;
+            if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
+            if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
+            if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
+            if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
+
+            if (!string.IsNullOrEmpty(model.TechnicianId))
+            {
+                ticket.TechnicianID = model.TechnicianId;
+                ticket.Status = (int?)TicketStatusEnum.Assigned;
+            }
+
             try
             {
                 _ticketService.AddTicket(ticket);
+                //TicketAttachment ticketFiles = new TicketAttachment();
+                if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
+                {
+                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles);
+                    //List<TicketAttachment> listFile = unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
+                    //ticketFiles.Path = listFile[0].Path;
+                }
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 return Json(new
                 {
                     success = false,
-                    data = errs,
-                    msg = "Error occured! Please try again!"
+                    msg = ex.Message
                 });
             }
 
@@ -235,6 +271,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.CreatedId = ticket.CreatedID;
                 model.CreatedBy = _userService.GetUserById(ticket.CreatedID).Fullname;
             }
+            if (!string.IsNullOrEmpty(ticket.SolveID))
+            {
+                model.SolvedId = ticket.SolveID;
+                model.SolvedBy = _userService.GetUserById(ticket.CreatedID).Fullname;
+            }
             if (!string.IsNullOrEmpty(ticket.TechnicianID))
             {
                 AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
@@ -249,7 +290,9 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View(model);
         }
 
-        public ActionResult UpdateTicket(TicketViewModel model)
+
+        [HttpPost]
+        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -273,61 +316,44 @@ namespace TMS.Areas.HelpDesk.Controllers
                     msg = "Please enter ticket's subject!",
                 });
             }
-            else
+
+            if (model.Mode == 0)
             {
-                ticket.Subject = model.Subject;
-            }
-            ticket.Description = model.Description;
-            ticket.Solution = model.Solution;
-            if (!string.IsNullOrEmpty(model.RequesterId))
-            {
-                ticket.RequesterID = model.RequesterId;
-            }
-            if (!string.IsNullOrEmpty(model.TechnicianId))
-            {
-                if (ticket.TechnicianID != model.TechnicianId)
+                errs.Add(new ModelError
                 {
-                    ticket.TechnicianID = model.TechnicianId;
-                    ticket.Status = (int?)TicketStatusEnum.Assigned;
-                }
+                    Name = "Subject",
+                    Message = "Ticket's mode required!",
+                });
+                return Json(new
+                {
+                    success = false,
+                    data = errs,
+                    msg = "Please input mode!",
+                });
+
             }
-            ticket.Type = model.Type;
-            ticket.Mode = model.Mode;
+
+            if (model.RequesterId == null)
+            {
+                errs.Add(new ModelError
+                {
+                    Name = "Subject",
+                    Message = "Ticket's requester required!",
+                });
+                return Json(new
+                {
+                    success = false,
+                    data = errs,
+                    msg = "Please input requester!",
+                });
+            }
+
             ticket.ScheduleStartDate = model.ScheduleStartDate != null
                 ? DateTime.ParseExact(model.ScheduleStartDate, "dd/MM/yyyy", null)
                 : (DateTime?)null;
             ticket.ScheduleEndDate = model.ScheduleEndDate != null
                 ? DateTime.ParseExact(model.ScheduleEndDate, "dd/MM/yyyy", null)
                 : (DateTime?)null;
-            ticket.ActualStartDate = model.ActualStartDate != null
-                ? DateTime.ParseExact(model.ActualStartDate, "dd/MM/yyyy", null)
-                : (DateTime?)null;
-            ticket.ActualEndDate = model.ActualEndDate != null
-                ? DateTime.ParseExact(model.ActualEndDate, "dd/MM/yyyy", null)
-                : (DateTime?)null;
-            ticket.ModifiedTime = DateTime.Now;
-
-            //TO-DO
-            // ticket.CreatedID = 
-
-            // Attachment
-
-            if (model.UrgencyId != 0)
-            {
-                ticket.UrgencyID = model.UrgencyId;
-            }
-            if (model.PriorityId != 0)
-            {
-                ticket.PriorityID = model.PriorityId;
-            }
-            if (model.ImpactId != 0)
-            {
-                ticket.ImpactID = model.ImpactId;
-            }
-            if (model.CategoryId != 0)
-            {
-                ticket.CategoryID = model.CategoryId;
-            }
 
             if (ticket.ScheduleStartDate.HasValue && ticket.ScheduleEndDate.HasValue)
             {
@@ -347,6 +373,13 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
             }
 
+            ticket.ActualStartDate = model.ActualStartDate != null
+                ? DateTime.ParseExact(model.ActualStartDate, "dd/MM/yyyy", null)
+                : (DateTime?)null;
+            ticket.ActualEndDate = model.ActualEndDate != null
+                ? DateTime.ParseExact(model.ActualEndDate, "dd/MM/yyyy", null)
+                : (DateTime?)null;
+
             if (ticket.ActualStartDate.HasValue && ticket.ActualEndDate.HasValue)
             {
                 if (DateTime.Compare((DateTime)ticket.ActualStartDate, (DateTime)ticket.ActualEndDate) > 0)
@@ -365,17 +398,37 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
             }
 
+            ticket.ModifiedTime = DateTime.Now;
+            ticket.Subject = model.Subject;
+            ticket.Type = model.Type;
+            ticket.Mode = model.Mode;
+            ticket.Description = model.Description;
+            ticket.RequesterID = model.RequesterId;
+            ticket.Solution = model.Solution;
+            if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
+            if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
+            if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
+            if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
+
+            if (!string.IsNullOrEmpty(model.TechnicianId))
+            {
+                if (ticket.TechnicianID != model.TechnicianId)
+                {
+                    ticket.TechnicianID = model.TechnicianId;
+                    ticket.Status = (int?)TicketStatusEnum.Assigned;
+                }
+            }
+            
             try
             {
                 _ticketService.UpdateTicket(ticket);
             }
-            catch (Exception e)
+            catch (DbUpdateException ex)
             {
                 return Json(new
                 {
                     success = false,
-                    data = errs,
-                    msg = "Error occured! Please try again!"
+                    msg = ex.Message
                 });
             }
 

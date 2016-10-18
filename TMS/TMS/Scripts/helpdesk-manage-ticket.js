@@ -151,7 +151,7 @@ function initTicketTable() {
             "sLast": "Last page",
             "sFirst": "First",
             "sSearch": "Search:",
-            "sZeroRecords": "No compatible date",
+            "sZeroRecords": "No records",
             "sEmptyTable": "No data",
             "sInfoFiltered": " - filter from _MAX_ rows",
             "sLengthMenu": "Show _MENU_ rows",
@@ -169,8 +169,6 @@ function checkSelectedCheckbox() {
                 checked = true;
             }
         });
-
-
 }
 
 function openTicketDetailModal(ticketId) {
@@ -200,7 +198,7 @@ function openTicketDetailModal(ticketId) {
 
             if (data.status == 2) {
                 $('#ticket-status').text('Assigned');
-                if (data.solution == "None") {
+                if (data.solution == "-") {
                     $('#ticket-solution').empty().append("<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
                                                 + "<a class='btn-sm btn-primary' href='" + solveUrl + "'>Yes</a>"
                                                 + "<a class='btn-sm btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");

@@ -13,196 +13,212 @@
             <div class="box-body">
                 <form class="form-horizontal" role="form" id="form-edit-ticket" method="POST">
                     <input type="hidden" name="Id" />
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Subject <font color="red">*</font></label>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control" name="Subject" placeholder="Subject"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Type <font color="red">*</font></label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="Type">
-                                <option value="0">None</option>
-                                <option value="1">Request</option>
-                                <option value="2">Problem</option>
-                                <option value="3">Change</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Mode</label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="Mode">
-                                <option value="0">None</option>
-                                <option value="1">Email</option>
-                                <option value="2">Phone</option>
-                                <option value="3">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Status</label>
-                        <div class="col-md-10" id="div-status">
-                            <input type="hidden" name="statusId"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Description</label>
-                        <div class="col-md-10">
-                            <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" cols="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <input class="form-control" type="file" name="file" multiple>
-                            @*<div class="btn btn-default btn-file">
-                                    <i class="fa fa-paperclip"></i> Attachment
-                                    <input type="file" name="file" multiple>
-                                </div>*@
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Urgency</label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="UrgencyId" data-role="ddl-urgency"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Priority</label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="PriorityId" data-role="ddl-priority"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Impact</label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Impact Detail</label>
-                        <div class="col-md-10">
-                            <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Category</label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Department</label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="DepartmentId" data-role="ddl-department"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Technician</label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="TechnicianId" data-role="ddl-technician"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Requester</label>
-                        <div class="col-md-4">
-                            <input type="hidden" id="requesterId" name="RequesterId">
-                            <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="" readonly>
-                        </div>
+                    <div class="row">
                         <div class="col-md-6">
-                            <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico"/></a>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Subject <font color="red">*</font></label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control" name="Subject" placeholder="Subject" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Mode <font color="red">*</font></label>
+                                <div class="col-md-9">
+                                    <select class="form-control" name="Mode">
+                                        <option value="1">PhoneCall</option>
+                                        <option value="2">WebForm</option>
+                                        <option value="3">Email</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Type</label>
+                                <div class="col-md-9">
+                                    <select class="form-control" name="Type">
+                                        <option value="0">None</option>
+                                        <option value="1">Request</option>
+                                        <option value="2">Problem</option>
+                                        <option value="3">Change</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Status</label>
+                                <div class="col-md-9" id="div-status">
+                                    <input type="hidden" name="statusId" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Description</label>
+                                <div class="col-md-9">
+                                    <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" cols="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"></label>
+                                <div class="col-md-9">
+                                    <input class="form-control" type="file" name="file" multiple>
+                                    @*<div class="btn btn-default btn-file">
+                                            <i class="fa fa-paperclip"></i> Attachment
+                                            <input type="file" name="file" multiple>
+                                        </div>*@
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Unapprove Reason</label>
-                        <div class="col-md-10">
-                            <textarea class="form-control" name="UnapproveReason" placeholder="Unapprove Reason" cols="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Schedule Start Date</label>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control datetime" name="ScheduleStartDate"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Schedule End Date</label>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control datetime" name="ScheduleEndDate"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Actual Start Date</label>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control datetime" name="ActualStartDate"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Actual End Date</label>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control datetime" name="ActualEndDate"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Solved Date</label>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control datetime" name="SolvedDate" readonly/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Created Time</label>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control datetime" name="CreatedTime" readonly/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Modified Time</label>
-                        <div class="col-md-10">
-                            <input type="text" class="form-control datetime" name="ModifiedTime" readonly/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Created By</label>
-                        <div class="col-md-4">
-                            <input type="hidden" id="createdId" name="CreatedId">
-                            <input class="form-control text-box single-line" id="createdBy" name="CreatedBy" type="text" value="" readonly>
-                        </div>
-                        <div class="col-md-6">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Solution</label>
-                        <div class="col-md-10">
-                            <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" cols="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <input class="form-control" type="file" name="file" multiple>
+                        <div class="col-md-6" style="margin-left: -30px;">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Category</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Urgency</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="UrgencyId" data-role="ddl-urgency"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Priority</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="PriorityId" data-role="ddl-priority"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Impact</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Impact Detail</label>
+                                <div class="col-md-8">
+                                    <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
+                                </div>
+                            </div>
 
-                            @*<div class="btn btn-default btn-file">
-                                    <i class="fa fa-paperclip"></i> Attachment
-                                    <input type="file" name="file" multiple>
-                                </div>*@
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <div class="form-error-messages" data-role="group-form-error"></div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Requester <font color="red">*</font></label>
+                                <div class="col-md-7">
+                                    <input type="hidden" id="requesterId" name="RequesterId">
+                                    <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="" readonly>
+                                </div>
+                                <div class="col-md-2">
+                                    <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico" /></a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Department</label>
+                                <div class="col-md-9">
+                                    <select class="form-control" name="DepartmentId" data-role="ddl-department"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Technician</label>
+                                <div class="col-md-9">
+                                    <select class="form-control" name="TechnicianId" data-role="ddl-technician"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Created Time</label>
+                                <div class="col-md-9">
+                                    <input type="text" class="form-control datetime" name="CreatedTime" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Created By</label>
+                                <div class="col-md-9">
+                                    <input type="hidden" id="createdId" name="CreatedId">
+                                    <input class="form-control text-box single-line" id="createdBy" name="CreatedBy" type="text" value="" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Solved By</label>
+                                <div class="col-md-9">
+                                    <input type="hidden" id="solveId" name="solveId">
+                                    <input class="form-control text-box single-line" id="solveBy" name="SolvedBy" type="text" value="" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3">Solution</label>
+                                <div class="col-md-9">
+                                    <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" cols="3"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"></label>
+                                <div class="col-md-9">
+                                    <input class="form-control" type="file" name="file" multiple>
+                                    @*<div class="btn btn-default btn-file">
+                                            <i class="fa fa-paperclip"></i> Attachment
+                                            <input type="file" name="file" multiple>
+                                        </div>*@
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-3"></label>
+                                <div class="col-md-9">
+                                    <div class="form-error-messages" data-role="group-form-error"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" style="margin-left: -30px;">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Schedule Start Date</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control datetime" name="ScheduleStartDate" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Schedule End Date</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control datetime" name="ScheduleEndDate" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Actual Start Date</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control datetime" name="ActualStartDate" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Actual End Date</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control datetime" name="ActualEndDate" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Modified Time</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control datetime" name="ModifiedTime" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Solved Date</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control datetime" name="SolvedDate" readonly />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Unapprove Reason</label>
+                                <div class="col-md-8">
+                                    <textarea class="form-control" name="UnapproveReason" placeholder="Unapprove Reason" cols="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group " style="text-align: center;">
+                            <input type="button" value="Update" data-role="btn-update-ticket" class="btn btn-default bg-olive btn-flat" />
+                            <input type="button" value="Cancel" data-role="btn-cancel" class="btn btn-default bg-olive btn-flat" />
                         </div>
                     </div>
                 </form>
-                <div class="form-group">
-                    <label class="control-label col-md-2"></label>
-                    <div class="col-md-10 pull-left">
-                        <input type="submit" value="Update" data-role="btn-update-ticket" class="btn btn-default bg-olive btn-flat" />
-                        <input type="button" value="Cancel" data-role="btn-cancel" class="btn btn-default bg-olive btn-flat" />
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -271,9 +287,9 @@
         $("[data-role=btn-update-ticket]")
             .on("click",
                 function() {
-                    //var formData = new FormData($("#form-new-ticket")[0]);
+                    var formData = new FormData($("#form-edit-ticket")[0]);
                     //formData.append('description', $("#descriptionEditor").val());
-                    var formData = $("#form-edit-ticket").serialize();
+                    //var formData = $("#form-edit-ticket").serialize();
                     $.ajax({
                         "url": "/HelpDesk/ManageTicket/UpdateTicket",
                         "method": "POST",
@@ -284,9 +300,11 @@
                                     text: "Ticket was updated successfully!",
                                     layout: "top",
                                     type: "success",
-                                    timeout: 2000
+                                    timeout: 1000
                                 });
-                                window.location.href = "/HelpDesk/ManageTicket";
+                                setTimeout(function () {
+                                    window.location.href = "/HelpDesk/ManageTicket";
+                                }, 1000);
                             } else {
                                 noty({
                                     text: data.msg,
@@ -310,9 +328,9 @@
                                 }
                             }
                         },
-                        //contentType: false,
+                        contentType: false,
                         processData: false,
-                        //enctype: 'multipart/form-data',
+                        enctype: 'multipart/form-data',
                         "error": function(e) {
                             noty({
                                 text: "Failed! Please try again!",
@@ -359,9 +377,6 @@
                 control: $("[data-role=ddl-technician]"),
                 ignore: function() {
                     return [];
-                },
-                departmentId: function() {
-                    return $("[data-role=ddl-department]").val();
                 }
             });
         }
@@ -429,9 +444,9 @@
             $("#modal-add-requester").modal("hide");
         }
 
-        function loadInitDropdown(selector,text, value) {
-            var option = new Option(text, value, true, true);
-            $("[data-role='"+selector+"']").append(option);
+        function loadInitDropdown(selector,text,value) {
+            var opt = new Option(text, value, true, true);
+            $("[data-role='"+selector+"']").append(opt);
             $("[data-role='"+selector+"']").trigger("change");
         }
 
@@ -448,6 +463,7 @@
             loadInitDropdown('ddl-category', '@Model.Category', @Model.CategoryId);
             loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
+            //$("[data-role='ddl-urgency']").val(@Model.UrgencyId).change();
             $("#requesterId").val('@Model.RequesterId');
             $("#requesterName").val('@Model.Requester');
             $("[name='UnapproveReason']").val('@Model.UnapproveReason');
@@ -460,6 +476,8 @@
             $("[name='ModifiedTime']").val('@Model.ModifiedTime');
             $("#createdId").val('@Model.CreatedId');
             $("#createdBy").val('@Model.CreatedBy');
+            $("#solveId").val('@Model.SolvedId');
+            $("#solveBy").val('@Model.SolvedBy');
             $("#solutionEditor").html('@Model.Solution');
 
             $("[name='statusId']").val(@Model.StatusId);
@@ -468,11 +486,10 @@
 
         $(document)
             .ready(function() {
-                $(".textarea").wysihtml5();
                 setActiveTicketMenu();
-                initDropdownControl();
                 initRequesterTable();
                 loadEditData();
+                initDropdownControl();
             });
     </script>
 }
