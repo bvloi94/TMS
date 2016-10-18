@@ -4,7 +4,6 @@
 @{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
 }
-
 <style>
     .title {
         margin-top: -20px;
@@ -59,7 +58,6 @@
         border-right: 1px solid #939393;
     }
 </style>
-
 <div class="row col-md-12">
     <div class="box box-solid bg-blue title">
         <div class="box-header btitle">
@@ -141,11 +139,9 @@
                     <div class="col-sm-8">@Html.DisplayFor(model => model.Priority)</div>
                 </div>
             </div>
-
             <div class="col-sm-12 header-content">
                 <h4><i class="fa fa-clock-o"></i>  Date and time</h4>
             </div>
-
             <div class="col-sm-12 row-content">
                 <div class="col-sm-6">
                     <div class="col-sm-4 labels">
@@ -160,7 +156,6 @@
                     <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ModifiedTime)</div>
                 </div>
             </div>
-
             <div class="col-sm-12 row-content">
                 <div class="col-sm-6">
                     <div class="col-sm-4 labels">
@@ -189,11 +184,9 @@
                     <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualEndTime)</div>
                 </div>
             </div>
-
             <div class="col-sm-12 header-content">
                 <h4><i class="fa fa-file-text"></i>  Information</h4>
             </div>
-
             <div class="col-sm-12 row-content ">
                 <div class="col-sm-12">
                     <div class="col-sm-2 labels">
@@ -226,52 +219,69 @@
                     <div class="col-sm-10">@Html.DisplayFor(model => model.SolvedBy)</div>
                 </div>
             </div>
-            @using (Html.BeginForm("Solve", "Ticket", new { id = Model.ID }, FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "", enctype = "multipart/form-data" }))
-            {
-                @Html.AntiForgeryToken()
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Solution: </b>
-                        </div>
-                        <div class="col-sm-10">
-                            @Html.TextAreaFor(m => m.Solution, new { @class = "form-control", id = "new-solution", rows = "6" })
-                            @Html.ValidationMessageFor(m => m.Solution, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                </div>
 
-                <div class="col-sm-offset-3 col-sm-9">
-                    <a href="#" id="refer-solution">Refer knowledge base</a>
-                </div>
+            <input type="hidden" id="ticketId" value="@Model.ID" />
+            <div class="col-sm-12 row-content ">
                 <div class="col-sm-12">
-                    <hr />
-                </div>
-                <div class="col-sm-offset-4 col-sm-4 button">
-                    <div class="col-sm-4 border-button">
-                        <input type="submit" value="Solve" name="command" class="btn btn-primary btn-flat" />
+                    <div class="col-sm-2 labels">
+                        <b>Solution: </b>
                     </div>
-                    <div class="col-sm-7">
-                        <input type="submit" value="Save" name="command" class="btn btn-success btn-flat" />
-                        <a class="btn btn-default btn-flat" href="@Url.Action("Index")" style="margin-left: 15px">Cancel</a>
+                    <div class="col-sm-10">
+                        @Html.TextAreaFor(m => m.Solution, new { @class = "form-control", id = "new-solution", rows = "6" })
+                        @Html.ValidationMessageFor(m => m.Solution, "", new { @class = "text-danger" })
                     </div>
                 </div>
+            </div>
+            <div class="col-sm-offset-3 col-sm-9">
+                <a href="#" id="refer-solution">Refer knowledge base</a>
+            </div>
+            <div class="col-sm-12">
+                <hr />
+            </div>
+            <div class="col-sm-offset-4 col-sm-4 button">
+                <div class="col-sm-4 border-button">
+                    <input id="solveBtn" value="Solve" name="command" class="btn btn-primary btn-flat" />
+                </div>
+                <div class="col-sm-7">
+                    <input id="saveBtn" value="Save" name="command" class="btn btn-success btn-flat" />
+                    <a class="btn btn-default btn-flat" href="@Url.Action("Index")" style="margin-left: 15px">Cancel</a>
+                </div>
+            </div>
             }
         </div>
     </div>
 </div>
 @section scripts{
     <script>
-        $.ajax({
-            url: '/Ticket/SolveTicket/',
-            type: "GET",
-            dataType: "json",
-            data: {
-                id: id
-            },
-            success: function(data) {
-                
-            }
-        });
+        $("#solveBtn, #saveBtn")
+            .on("click",
+                function () {
+                    $.ajax({
+                        "url": "/Ticket/SolveTicket/",
+                        "method": "POST",
+                        "data": {
+                            id: $("#ticketId").val(),
+                            solution: $("#new-solution").val(),
+                            command: $(this)[0].id
+                        },
+                        "success": function (data) {
+                            noty({
+                                text: data.msg,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
+                            if (data.userRole == "Helpdesk") {
+                                setTimeout(function () {
+                                    window.location.href = "/HelpDesk/ManageTicket/";
+                                }, 1000);
+                            } else if (data.userRole == "Technician") {
+                                setTimeout(function () {
+                                    window.location.href = "/Technician/ManageTicket/";
+                                }, 1000);
+                            }
+                        }
+                    });
+                });
     </script>
 }
