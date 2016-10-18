@@ -13,9 +13,9 @@ namespace TMS.ViewModels
         public int No { get; set; }
         public int Id { get; set; }
         public string Subject { get; set; }
-        [AllowHtml]
+        //[AllowHtml]
         public string Description { get; set; }
-        [AllowHtml]
+        //[AllowHtml]
         public string Solution { get; set; }
         public string RequesterId { get; set; }
         public string Requester { get; set; }
@@ -46,5 +46,7 @@ namespace TMS.ViewModels
         public string ModifiedTime { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedId { get; set; }
+        public string SolvedBy { get; set; }
+        public string SolvedId { get; set; }
     }
 }

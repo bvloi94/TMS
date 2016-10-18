@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using TMS.Services;
 using TMS.DAL;
 using TMS.Models;
+using TMS.Utils;
 using TMS.ViewModels;
 
 namespace TMS.Controllers
@@ -140,33 +141,37 @@ namespace TMS.Controllers
         public ActionResult LoadCategoryDropDown()
         {
             var result = new List<CategoryViewModel>();
-            IEnumerable<Category> categories = _categoryService.GetCategories();
-            categories.OrderBy(c => c.CategoryLevel);
-
-            foreach (var cate in categories)
-            {
-                CategoryViewModel model = new CategoryViewModel();
-                model.Name = cate.Name;
-                model.Description = cate.Description;
-                model.ID = cate.ID;
-                if (cate.CategoryLevel != null) model.Level = (int)cate.CategoryLevel;
-                if (cate.ParentID != null) model.ParentId = (int)cate.ParentID;
-                result.Add(model);
-                IEnumerable<Category> subCategories = _categoryService.GetSubCategories(cate.ID);
-                subCategories.OrderBy(c => c.Name);
-                foreach (var subCate in subCategories)
-                {
-                    CategoryViewModel ca = new CategoryViewModel();
-                    ca.Name = subCate.Name;
-                    ca.Description = subCate.Description;
-                    ca.ID = subCate.ID;
-                    if (subCate.CategoryLevel != null) ca.Level = (int)subCate.CategoryLevel;
-                    if (subCate.ParentID != null) ca.ParentId = (int)subCate.ParentID;
-                    result.Add(ca);
-                }
-            }
-
+            addChildCates(ref result, 1, 0);
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        void addChildCates(ref List<CategoryViewModel> cates, int level, int parentId)
+        {
+            IEnumerable<Category> childCategories = null;
+            switch (level)
+            {
+                case 1:
+                    childCategories = _categoryService.GetCategories();
+                    break;
+                case 2:
+                    childCategories = _categoryService.GetSubCategories(parentId);
+                    break;
+                case 3:
+                    childCategories = _categoryService.GetItems(parentId);
+                    break;
+            }
+            childCategories.OrderBy(c => c.Name);
+            foreach (var child in childCategories)
+            {
+                CategoryViewModel cate = new CategoryViewModel();
+                cate.Name = child.Name;
+                cate.Description = child.Description;
+                cate.ID = child.ID;
+                if (child.CategoryLevel != null) cate.Level = (int)child.CategoryLevel;
+                if (child.ParentID != null) cate.ParentId = (int)child.ParentID;
+                cates.Add(cate);
+                if (level < ConstantUtil.CategoryLevel.Item) addChildCates(ref cates, level + 1, cate.ID);
+            }
         }
 
     }

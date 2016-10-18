@@ -26,6 +26,7 @@ namespace TMS.Controllers
         public UserService _userService { get; set; }
         public DepartmentService _departmentService { get; set; }
         public TicketAttachmentService _ticketAttachmentService { get; set; }
+        public CategoryService _categoryService { get; set; }
 
         public TicketController()
         {
@@ -33,6 +34,7 @@ namespace TMS.Controllers
             _userService = new UserService(unitOfWork);
             _departmentService = new DepartmentService(unitOfWork);
             _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
+            _categoryService = new CategoryService(unitOfWork);
         }
 
         // GET: Tickets
@@ -194,9 +196,8 @@ namespace TMS.Controllers
                     _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
                     List<TicketAttachment> listFile = unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
                     ticketFiles.Path = listFile[0].Path;
-
                 }
-                
+
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -302,6 +303,17 @@ namespace TMS.Controllers
                 default: ticketMode = "-"; break;
             }
 
+            string categoryPath = "-";
+            if (ticket.Category != null)
+            {
+                categoryPath = ticket.Category.Name;
+                Category parentCate = ticket.Category;
+                while(parentCate.ParentID != null)
+                {
+                    parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
+                    categoryPath = parentCate.Name + " > " + categoryPath;
+                } 
+            }
             return Json(new
             {
                 id = ticket.ID,
@@ -311,7 +323,7 @@ namespace TMS.Controllers
                 mode = ticketMode,
                 urgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name,
                 priority = ticket.Priority == null ? "-" : ticket.Priority.Name,
-                category = ticket.Category == null ? "-" : ticket.Category.Name,
+                category = categoryPath,
                 impact = ticket.Impact == null ? "-" : ticket.Impact.Name,
                 impactDetail = ticket.ImpactDetail == null ? "-" : ticket.ImpactDetail,
                 status = ticket.Status,
