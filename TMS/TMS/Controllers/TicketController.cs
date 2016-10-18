@@ -9,6 +9,7 @@ using System.Net;
 using System.Web;
 using System.Web.ApplicationServices;
 using System.Web.Mvc;
+using System.Web.Security;
 using TMS.DAL;
 using TMS.Enumerator;
 using TMS.Models;
@@ -317,6 +318,7 @@ namespace TMS.Controllers
             }
             if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
             {
+                ViewBag.Role = "Technician"; 
                 if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
                 {
                     return RedirectToAction("Index", new { Area = "Technician" }); // Redirect to Index so the Technician cannot go to Solve view.
@@ -324,6 +326,7 @@ namespace TMS.Controllers
             }
             else if (userRole.Id == ConstantUtil.UserRole.HelpDesk.ToString())
             {
+                ViewBag.Role = "HelpDesk";
                 if (ticket.Status != ConstantUtil.TicketStatus.Assigned &&
                     ticket.Status != ConstantUtil.TicketStatus.New)
                 {
@@ -380,7 +383,6 @@ namespace TMS.Controllers
             model.SolvedBy = (solvedUser == null) ? "None" : solvedUser.Fullname;
             model.Solution = ticket.Solution;
             model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "None" : ticket.UnapproveReason;
-
             return View(model);
         }
 

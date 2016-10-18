@@ -2,7 +2,15 @@
 @using TMS.Utils;
 @model TMS.ViewModels.TicketSolveViewModel
 @{
-    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    if (ViewBag.Role == "Technician")
+    {
+        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    }
+
 }
 <style>
     .title {
@@ -238,16 +246,19 @@
             <div class="col-sm-12">
                 <hr />
             </div>
-            <div class="col-sm-offset-4 col-sm-4 button">
-                <div class="col-sm-4 border-button">
-                    <input id="solveBtn" value="Solve" name="command" class="btn btn-primary btn-flat" />
-                </div>
-                <div class="col-sm-7">
-                    <input id="saveBtn" value="Save" name="command" class="btn btn-success btn-flat" />
-                    <a class="btn btn-default btn-flat" href="@Url.Action("Index")" style="margin-left: 15px">Cancel</a>
-                </div>
+            <div class="row" style="text-align: center;">
+                <input id="solveBtn" style="width: 80px;" value="Solve" name="command" class="btn btn-primary btn-flat" />
+                <input id="saveBtn" style="width: 80px;" value="Save" name="command" class="btn btn-success btn-flat" />
+                @if (ViewBag.Role == "Technician")
+                {
+                    @Html.Raw("<a class='btn btn-default btn-flat' href='" + Url.Action("Index", "ManageTicket", new { Area = "Technician" }) + "'>Cancel</a>")
+                }
+                else
+                {
+                    @Html.Raw("<a class='btn btn-default btn-flat' href='" + Url.Action("Index", "ManageTicket", new { Area = "HelpDesk" }) + "'>Cancel</a>")
+                }
+
             </div>
-            }
         </div>
     </div>
 </div>
