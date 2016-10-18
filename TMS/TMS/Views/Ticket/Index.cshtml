@@ -2,15 +2,6 @@
     Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
 }
 <style>
-    .title {
-        margin-top: -20px;
-        margin-bottom: 12px;
-    }
-
-    .btitle {
-        display: table;
-    }
-
     .table thead, h4 {
         color: #1074bd;
         font-weight: bold;
@@ -21,15 +12,6 @@
         font-weight: bold;
     }
 
-    .white-title {
-        text-transform: uppercase;
-        font-weight: bold;
-        display: table-cell;
-        padding: 8px;
-        vertical-align: middle;
-        color: #ffffff;
-    }
-
     .table thead, h4 {
         color: #1074bd;
     }
@@ -38,42 +20,13 @@
         text-align: right;
     }
 
-    .modal-title {
-        color: #ffffff;
-        text-align: center;
+    .ticket-contents {
+        padding: 0px;
+        margin: 0px;
     }
 
-    .modal-header {
-        background-color: #1074bd;
-    }
-
-    .modal-body {
-        background-color: #e6e6e6;
-    }
-
-    .shortInfoContainer {
-        margin: 5px auto;
-        display: flex;
-    }
-
-    .shortInfo {
-        margin: auto;
-        height: 85px;
-        text-align: center;
-        display: table;
-        background-color: #ffffff;
-    }
-
-    hr {
-        height: 10px;
-        border: 0;
-        box-shadow: 0 10px 10px -10px #8c8b8b inset;
-    }
-
-    .detail {
-        margin: 10px 20px 10px 0px;
-        padding: 8px 20px 8px 20px;
-        background-color: #ffffff;
+    .row-content {
+        padding: 7px 0px;
     }
 
     input {
@@ -95,13 +48,13 @@
                     <div class="input-group">
                         <input type="text" id="search-txt" class="form-control" placeholder="Search...">
                         <span class="input-group-btn">
-                            <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                            <button name="search" id="search-btn" class="btn btn-default btn-flat">
                                 <i class="fa fa-search"></i>
                             </button>
                         </span>
                     </div>
                     @*<label>Search:</label>
-                    <input type="text" id="search-txt" />*@
+                        <input type="text" id="search-txt" />*@
                 </div>
                 <table class="table" id="ticket-table">
                     <thead>
@@ -114,7 +67,102 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+                <!-- View ticket detail modal -->
+                <div id="detail-modal" class="modal fade" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title" id="ticket-subject"></h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="box-body ticket-contents">
+                                    <div class="col-sm-12 header-content">
+                                        <h5><i class="fa fa-file-text"></i> Information</h5>
+                                    </div>
+                                    <div class="col-sm-12 row-content ">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-2 labels">
+                                                <b>Description: </b>
+                                            </div>
+                                            <div class="col-sm-10 pre-wrap" id="ticket-description" style="padding-left: 10px"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content ">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-2 labels">
+                                                <b>Solution: </b>
+                                            </div>
+                                            <div class="col-sm-10 pre-wrap" id="ticket-solution" style="padding-left: 10px"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content ">
+                                        <div class="col-sm-12 ">
+                                            <div class="col-sm-2 labels">
+                                                <b>Attachment: </b>
+                                            </div>
+                                            <div class="col-sm-10" style="padding-left: 10px"><span id="ticket-attachment">None</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content ">
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-4 labels">
+                                                <b>Created by: </b>
+                                            </div>
+                                            <div class="col-sm-8"><span id="ticket-created-by"></span></div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-4 labels">
+                                                <b>Solved by: </b>
+                                            </div>
+                                            <div class="col-sm-8"><span id="ticket-solved-by"></span></div>
+                                        </div>
+                                    </div>
 
+                                    <div class="col-sm-12 header-content">
+                                        <h5><i class="fa fa-info-circle"></i> Detail</h5>
+                                    </div>
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-12">
+                                            <div class="col-sm-2 labels">
+                                                <b>Category: </b>
+                                            </div>
+                                            <div class="col-sm-10" style="padding-left: 10px"><span id="ticket-category"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-6 ">
+                                            <div class="col-sm-4 labels">
+                                                <b>Mode: </b>
+                                            </div>
+                                            <div class="col-sm-8"><span id="ticket-mode"></span></div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-4 labels">
+                                                <b>Status: </b>
+                                            </div>
+                                            <div class="col-sm-8"><span id="ticket-status"></span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 row-content">
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-4 labels"><b>Created date: </b></div>
+                                            <div class="col-sm-8"><span id="ticket-created-date"></span></div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="col-sm-4 labels"><b>Last modified: </b></div>
+                                            <div class="col-sm-8"><span id="ticket-modified-date"></span></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <a href="@(Url.Action("Index", "Home"))">
@@ -201,6 +249,57 @@
             reloadDataTable();
         });
 
+        $("#ticket-table").on("click", ".view-detail", function () {
+            var id = $(this).attr('data-id'),
+                $modal = $('#detail-modal');
+
+            $.ajax({
+                url: '@Url.Action("GetTicketDetail", "Ticket", new { area=""})',
+                type: "GET",
+                dataType: "json",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    $('#ticket-subject').text("Subject: " + data.subject);
+                    $('#ticket-description').text(data.description);
+                    $('#ticket-created-by').text(data.creater);
+                    $('#ticket-solved-by').text(data.solver);
+                    $('#ticket-type').text(data.type);
+                    $('#ticket-mode').text(data.mode);
+                    $('#ticket-category').text(data.category);
+
+                    if (data.solution == "-") {
+                        $('#ticket-solution').text("This ticket is not solved yet.");
+                    }
+                    else {
+                        $('#ticket-solution').text(data.solution);
+                    }
+
+                    if (data.status == 1) {
+                        $('#ticket-status').empty().append('<label class="label label-info">New</label>');
+                    } else if (data.status == 2) {
+                        $('#ticket-status').empty().append('<label class="label label-warning">Assigned</label>');
+                    } else if (data.status == 3) {
+                        $('#ticket-status').empty().append('<label class="label label-success">Solved</label>');
+                    } else if (data.status == 4) {
+                        $('#ticket-status').empty().append('<label class="label label-danger">Unapproved</label>');
+                    } else if (data.status == 5) {
+                        $('#ticket-status').empty().append('<label class="label label-default">Cancelled</label>');
+                    } else if (data.status == 6) {
+                        $('#ticket-status').empty().append('<label class="label label-default">Closed</label>');
+                    }
+
+                    $('#ticket-created-date').text(data.createdDate);
+                    $('#ticket-modified-date').text(data.lastModified);
+
+                    $modal.modal("show");
+                },
+                failure: function (data) {
+                    alert(data.d);
+                }
+            });
+        });
     </script>
 }
 

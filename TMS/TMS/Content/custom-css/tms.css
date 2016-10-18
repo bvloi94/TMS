@@ -1,4 +1,61 @@
-﻿.container-box .form-group {
+﻿
+.title {
+    margin-top: -20px;
+    margin-bottom: 12px;
+}
+
+.btitle {
+    display: table;
+}
+
+
+.white-title {
+    text-transform: uppercase;
+    font-weight: bold;
+    display: table-cell;
+    padding: 8px;
+    vertical-align: middle;
+    color: #ffffff;
+}
+
+
+.modal-title {
+    color: #ffffff;
+    text-align: center;
+}
+
+.modal-header {
+    background-color: #1074bd;
+}
+
+.modal-body {
+    background-color: #ffffff;
+}
+
+.modal-footer {
+    text-align: center;
+}
+
+.ticket-contents {
+    padding: 0px;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    background-color: #c9e0fa;
+    padding: 0px 10px 0px 25px;
+    margin: 4px;
+}
+
+.row-content {
+    padding: 3px 0px;
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
+}
+
+.container-box .form-group {
     margin-bottom: 5px;
 }
 
