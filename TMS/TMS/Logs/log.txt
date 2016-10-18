@@ -514,3 +514,8 @@ ERROR 2016-10-17 16:42:45,890 EmailUtil              ailsUsingEAGetMail - The re
 ERROR 2016-10-17 16:53:05,783 EmailUtil              ailsUsingEAGetMail - The requested name is valid, but no data of the requested type was found
 ERROR 2016-10-17 18:25:52,992 EmailUtil              ailsUsingEAGetMail - The requested name is valid, but no data of the requested type was found
 ERROR 2016-10-17 18:53:45,896 EmailUtil              ailsUsingEAGetMail - The requested name is valid, but no data of the requested type was found
+DEBUG 2016-10-18 11:17:42,121 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-18 11:17:42,332 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-18 11:17:42,360 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-18 11:17:42,361 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-18 11:17:42,363 JobManager             ExecuteAllJobs     - End Method
