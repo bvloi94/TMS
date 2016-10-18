@@ -151,7 +151,7 @@ function initTicketTable() {
             "sLast": "Last page",
             "sFirst": "First",
             "sSearch": "Search:",
-            "sZeroRecords": "No compatible date",
+            "sZeroRecords": "No records",
             "sEmptyTable": "No data",
             "sInfoFiltered": " - filter from _MAX_ rows",
             "sLengthMenu": "Show _MENU_ rows",

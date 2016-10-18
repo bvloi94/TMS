@@ -7,6 +7,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.ApplicationServices;
 using System.Web.Mvc;
 using TMS.DAL;
 using TMS.Enumerator;
@@ -193,7 +194,7 @@ namespace TMS.Controllers
                     _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
                     List<TicketAttachment> listFile = unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
                     ticketFiles.Path = listFile[0].Path;
-                    
+
                 }
                 
                 return RedirectToAction("Index");
@@ -484,11 +485,12 @@ namespace TMS.Controllers
             Ticket ticket = _ticketService.GetTicketByID(id);
 
             string createdId = "";
-            AspNetUser user;
+            AspNetUser user = null;
             if (User.Identity.GetUserId() != null)
             {
                 user = _userService.GetUserById(createdId);
                 createdId = User.Identity.GetUserId();
+                user.AspNetRoles.ToString();
             }
 
             if (ticket == null)
