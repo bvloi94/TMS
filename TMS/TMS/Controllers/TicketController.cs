@@ -156,7 +156,7 @@ namespace TMS.Controllers
                 if (uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                 {
                     _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
-                    
+
                 }
 
                 return RedirectToAction("Index");
@@ -305,7 +305,16 @@ namespace TMS.Controllers
         public ActionResult Solve(int id)
         {
             Ticket ticket = _ticketService.GetTicketByID(id);
-            AspNetRole userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Account", new { area = "" });
+
+            }
             if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
             {
                 if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
@@ -464,44 +473,45 @@ namespace TMS.Controllers
         [HttpPost]
         public ActionResult SolveTicket(int id, string solution, string command)
         {
-            Ticket ticket = _ticketService.GetTicketByID(id);
 
             string createdId = "";
-            AspNetUser user = null;
+            AspNetRole userRole = null;
             if (User.Identity.GetUserId() != null)
             {
-                user = _userService.GetUserById(createdId);
-                createdId = User.Identity.GetUserId();
-                user.AspNetRoles.ToString();
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
             }
 
+            if (userRole == null)
+            {
+                return HttpNotFound();
+            }
+
+            Ticket ticket = _ticketService.GetTicketByID(id);
             if (ticket == null)
             {
                 return HttpNotFound();
             }
 
             var message = "";
+            ticket.ModifiedTime = DateTime.Now;
+            ticket.Solution = solution;
             switch (command)
             {
-                case "Solve":
+                case "solveBtn":
                     ticket.SolveID = User.Identity.GetUserId();
                     ticket.SolvedDate = DateTime.Now;
-                    ticket.ModifiedTime = DateTime.Now;
-                    ticket.Solution = solution;
                     _ticketService.SolveTicket(ticket);
                     message = "Ticket was solved!";
                     break;
-                case "Save":
-                    ticket.ModifiedTime = DateTime.Now;
-                    ticket.Solution = solution;
+                case "saveBtn":
                     _ticketService.UpdateTicket(ticket);
                     message = "Solution saved!";
                     break;
             }
             return Json(new
             {
-                success = true,
                 msg = message,
+                userRole= userRole.Name
             });
         }
 
