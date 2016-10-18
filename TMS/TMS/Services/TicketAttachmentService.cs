@@ -27,10 +27,15 @@ namespace TMS.Services
         {
             return _unitOfWork.TicketAttachmentRepository.GetByID(id);
         }
-        
+
+        public IEnumerable<TicketAttachment> GetAttachmentByTicketID (int id)
+        {
+            return _unitOfWork.TicketAttachmentRepository.Get(m => m.TicketID == id);
+        }
+
         public void saveFile (int id, IEnumerable<HttpPostedFileBase> uploadFiles)
         {
-            string containFolder = "TicketAttachments";
+            string containFolder = "Attachments";
             TicketAttachment files = null;
             List<HttpPostedFileBase> upFiles = uploadFiles.ToList();
             FileUploader _fileUploadService = new FileUploader();

@@ -1,4 +1,46 @@
-﻿.container-box .form-group {
+﻿
+.title {
+    margin-top: -20px;
+    margin-bottom: 12px;
+}
+
+.btitle {
+    display: table;
+}
+
+
+.white-title {
+    text-transform: uppercase;
+    font-weight: bold;
+    display: table-cell;
+    padding: 8px;
+    vertical-align: middle;
+    color: #ffffff;
+}
+
+
+.modal-title {
+    color: #ffffff;
+    text-align: center;
+}
+
+.modal-header {
+    background-color: #1074bd;
+}
+
+.modal-body {
+    background-color: #ffffff;
+}
+
+.modal-footer {
+    text-align: center;
+}
+
+.pre-wrap {
+    white-space: pre-wrap;
+}
+
+.container-box .form-group {
     margin-bottom: 5px;
 }
 
