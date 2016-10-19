@@ -403,7 +403,7 @@
             $("[name='Subject']:eq(0)").val('@Model.Subject');
             $("[name='Type']").val(@Model.Type);
             $("[name='Mode']").val(@Model.Mode);
-            $("#descriptionEditor").html('@Model.Description');
+            $("#descriptionEditor").html('@Model.Description.Replace("\r\n", "\\r\\n")');
             loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
             loadInitDropdown('ddl-priority', '@Model.Priority', @Model.PriorityId);
             loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
@@ -425,7 +425,7 @@
             $("#createdBy").html('@Model.CreatedBy');
             $("#solveId").val('@Model.SolvedId');
             $("#solveBy").html('@Model.SolvedBy');
-            $("#solutionEditor").html('@Model.Solution');
+            $("#solutionEditor").html('@Model.Solution.Replace("\r\n", "\\r\\n")');
 
             $("[name='statusId']").val(@Model.StatusId);
             $("#div-status").html(getStatusLabel('@Model.Status'));

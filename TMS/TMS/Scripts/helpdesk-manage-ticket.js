@@ -196,29 +196,25 @@ function openTicketDetailModal(ticketId) {
             $('#ticket-impact').text(data.impact);
             $('#ticket-impact-detail').text(data.impactDetail);
 
-
-            if (data.status == 2) {
-                $('#ticket-status').html(getStatusLabel('Assigned'));
-                if (!data.solution || data.solution == "-") {
-                    $('#ticket-solution').empty().append("<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
-                                                + "<a class='btn-sm btn-primary' href='" + solveUrl + "'>Yes</a>"
-                                                + "<a class='btn-sm btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
-                }
-                else {
-                    $('#ticket-solution').empty().text(data.solution);
-                }
+            if (!data.solution || data.solution == "-") {
+                $('#ticket-solution').text("This ticket is not solved yet.");
             }
             else {
-                if (data.status == 3) {
-                    $('#ticket-status').html(getStatusLabel('Solved'));
-                } else if (data.status == 4) {
-                    $('#ticket-status').html(getStatusLabel('Unapproved'));
-                } else if (data.status == 5) {
-                    $('#ticket-status').html(getStatusLabel('Cancelled'));
-                } else if (data.status == 6) {
-                    $('#ticket-status').html(getStatusLabel('Closed'));
-                }
-                $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
+                $('#ticket-solution').text(data.solution);
+            }
+
+            if (data.status == 1) {
+                $('#ticket-status').html(getStatusLabel('New'));
+            } else if (data.status == 2) {
+                $('#ticket-status').html(getStatusLabel('Assigned'));
+            } else if (data.status == 3) {
+                $('#ticket-status').html(getStatusLabel('Solved'));
+            } else if (data.status == 4) {
+                $('#ticket-status').html(getStatusLabel('Unapproved'));
+            } else if (data.status == 5) {
+                $('#ticket-status').html(getStatusLabel('Cancelled'));
+            } else if (data.status == 6) {
+                $('#ticket-status').html(getStatusLabel('Closed'));
             }
 
             $('#ticket-created-date').text(data.createdDate);
