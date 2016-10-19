@@ -386,7 +386,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     errs.Add(new ModelError
                     {
                         Name = "ActualDate",
-                        Message = "actual start date must before actual end date!",
+                        Message = "Actual start date must before actual end date!",
                     });
                     return Json(new
                     {
