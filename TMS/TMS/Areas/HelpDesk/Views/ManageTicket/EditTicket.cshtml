@@ -154,7 +154,6 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3"></label>
                                 <div class="col-md-9">
-                                    <input class="form-control" type="file" name="file" multiple>
                                     @*<div class="btn btn-default btn-file">
                                             <i class="fa fa-paperclip"></i> Attachment
                                             <input type="file" name="file" multiple>
@@ -387,8 +386,6 @@
             $("#modal-add-requester").modal("show");
         }
 
-        
-
         function addSelectedUserToForm(requesterId, requesterName) {
             $("#requesterId").val(requesterId);
             $("#requesterName").val(requesterName);
@@ -414,7 +411,6 @@
             loadInitDropdown('ddl-category', '@Model.Category', @Model.CategoryId);
             loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
-            //$("[data-role='ddl-urgency']").val(@Model.UrgencyId).change();
             $("#requesterId").val('@Model.RequesterId');
             $("#requesterName").val('@Model.Requester');
             $("[name='UnapproveReason']").val('@Model.UnapproveReason');
@@ -435,12 +431,19 @@
             $("#div-status").html(getStatusLabel('@Model.Status'));
         }
 
+        $("[data-role='ddl-department']")
+            .on("change",
+                function() {
+                    $("[data-role='ddl-technician']").select2("val", "");
+                });
+
         $(document)
             .ready(function() {
                 setActiveTicketMenu();
                 requesterTable = initRequesterTable($("#requester-table"));
-                loadEditData();
                 initDropdownControl();
+                //$("[data-role='ddl-urgency']").val(@Model.UrgencyId);
+                loadEditData();
             });
     </script>
 }
