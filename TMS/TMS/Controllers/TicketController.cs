@@ -304,7 +304,7 @@ namespace TMS.Controllers
                 department = technician.Department.Name == null ? "-" : technician.Department.Name
             }, JsonRequestBehavior.AllowGet);
         }
-
+        
         [HttpGet]
         public ActionResult Solve(int id)
         {
@@ -370,22 +370,22 @@ namespace TMS.Controllers
                 case 6: model.Status = "Closed"; break;
             }
 
-            model.Category = (ticket.Category == null) ? "None" : ticket.Category.Name;
-            model.Impact = (ticket.Impact == null) ? "None" : ticket.Impact.Name;
-            model.ImpactDetail = (ticket.ImpactDetail == null) ? "None" : ticket.ImpactDetail;
-            model.Urgency = (ticket.Urgency == null) ? "None" : ticket.Urgency.Name;
-            model.Priority = (ticket.Priority == null) ? "None" : ticket.Priority.Name;
+            model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
+            model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+            model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
+            model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
+            model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
             model.CreateTime = ticket.CreatedTime;
             model.ModifiedTime = ticket.ModifiedTime;
             model.ScheduleEndTime = ticket.ScheduleEndDate;
             model.ScheduleStartTime = ticket.ScheduleStartDate;
             model.ActualStartTime = ticket.ActualStartDate;
             model.ActualEndTime = ticket.ActualEndDate;
-            model.CreatedBy = (createdUser == null) ? "None" : createdUser.Fullname;
-            model.AssignedBy = (assigner == null) ? "None" : assigner.Fullname;
-            model.SolvedBy = (solvedUser == null) ? "None" : solvedUser.Fullname;
+            model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
+            model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
+            model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
             model.Solution = ticket.Solution;
-            model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "None" : ticket.UnapproveReason;
+            model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
             return View(model);
         }
 
