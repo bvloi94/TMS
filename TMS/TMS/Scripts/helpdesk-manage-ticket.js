@@ -55,7 +55,9 @@ function initTicketTable() {
             {
                 "targets": [4],
                 "sortable": false,
-                "data": "SolvedDate"
+                "render": function (data, type, row) {
+                    return row.SolvedDate != "" ? row.Technician : "-";
+                }
             }, {
                 "targets": [5],
                 "render": function (data, type, row) {
@@ -64,7 +66,9 @@ function initTicketTable() {
             },
             {
                 "targets": [6],
-                "data": "ModifiedTime"
+                "render": function (data, type, row) {
+                    return row.ModifiedTime != "" ? row.ModifiedTime : "-";
+                }
             },
             {
                 "targets": [7],

@@ -251,6 +251,8 @@ namespace TMS.Controllers
             String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact, department = "-";
             String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate;
 
+            // _ticketAttachmentService.GetAttachmentByTicketID(id);
+
             switch (ticket.Type)
             {
                 case 1: ticketType = ConstantUtil.TicketTypeString.Request; break;

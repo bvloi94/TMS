@@ -118,7 +118,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     success = false,
                     data = errs,
-                    msg = "Please input requester!",
+                    msg = "Please select requester!",
                 });
             }
 
@@ -244,7 +244,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
             }
             if (ticket.Type != null) model.Type = (int)ticket.Type;
-            model.Mode = ticket.Mode;
             if (ticket.Status != null)
             {
                 model.StatusId = (int)ticket.Status;
@@ -277,7 +276,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
+            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.CreatedTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
             model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
 
@@ -343,7 +342,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     success = false,
                     data = errs,
-                    msg = "Please input requester!",
+                    msg = "Please select requester!",
                 });
             }
 
@@ -400,7 +399,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.ModifiedTime = DateTime.Now;
             ticket.Subject = model.Subject;
             ticket.Type = model.Type;
-            ticket.Mode = model.Mode;
             ticket.Description = model.Description;
             ticket.RequesterID = model.RequesterId;
             ticket.Solution = model.Solution;
@@ -573,7 +571,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     s.Technician = "";
                 }
-                s.SolvedDate = item.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
+                s.SolvedDate = item.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
                 s.Status = item.Status.HasValue ? ((TicketStatusEnum)item.Status).ToString() : "";
                 s.ModifiedTime = item.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
                 tickets.Add(s);
@@ -634,7 +632,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
+            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.CreatedTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
             model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
             if (!string.IsNullOrEmpty(ticket.CreatedID))

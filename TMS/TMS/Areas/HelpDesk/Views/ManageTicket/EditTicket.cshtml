@@ -22,16 +22,6 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label col-md-3">Mode <font color="red">*</font></label>
-                                <div class="col-md-9">
-                                    <select class="form-control" name="Mode" value="@Model.Mode">
-                                        <option value="1">PhoneCall</option>
-                                        <option value="2">WebForm</option>
-                                        <option value="3">Email</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label class="control-label col-md-3">Type</label>
                                 <div class="col-md-9">
                                     <select class="form-control" name="Type" value="@Model.Type">
@@ -128,14 +118,14 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Created Time</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control datetime" name="CreatedTime" value="@Model.CreatedTime" readonly />
+                                    <input type="text" class="form-control" name="CreatedTime" value="@Model.CreatedTime" readonly/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-3">Created By</label>
                                 <div class="col-md-9">
                                     <input type="hidden" id="createdId" name="CreatedId" value="@Model.CreatedId">
-                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy">@Model.CreatedBy</label>
+                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy" >@Model.CreatedBy</label>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -190,13 +180,13 @@
                             <div class="form-group">
                                 <label class="control-label col-md-4">Modified Time</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ModifiedTime" value="@Model.ModifiedTime" readonly />
+                                    <input type="text" class="form-control" name="ModifiedTime" value="@Model.ModifiedTime" readonly />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Solved Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="SolvedDate" value="@Model.SolvedDate" readonly />
+                                    <input type="text" class="form-control" name="SolvedDate" value="@Model.SolvedDate" readonly />
                                 </div>
                             </div>
                         </div>
@@ -236,28 +226,18 @@
                 <table class="table table-bordered table-striped" id="requester-table">
                     <thead>
                         <tr>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Email
-                            </th>
-                            <th>
-                                Department Name
-                            </th>
-                            <th>
-                                Phone
-                            </th>
-                            <th>
-                                Job Title
-                            </th>
+                            <th style="width: 30%;">Name</th>
+                            <th style="width: 20%;">Email</th>
+                            <th style="width: 25%;">Department</th>
+                            <th style="width: 15%;">Phone</th>
+                            <th style="width: 10%;">Job</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <div class="modal-footer" style="text-align: center;" >
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
         <!-- /.modal-content -->
