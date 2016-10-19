@@ -9,6 +9,7 @@ using System.Net;
 using System.Web;
 using System.Web.ApplicationServices;
 using System.Web.Mvc;
+using System.Web.Security;
 using TMS.DAL;
 using TMS.Enumerator;
 using TMS.Models;
@@ -246,7 +247,9 @@ namespace TMS.Controllers
             AspNetUser solver = _userService.GetUserById(ticket.SolveID);
             AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
-            String ticketType, ticketMode;
+            AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+            String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact, department = "-";
+            String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate;
 
             switch (ticket.Type)
             {
@@ -263,6 +266,25 @@ namespace TMS.Controllers
                 case 3: ticketMode = ConstantUtil.TicketModeString.Email; break;
                 default: ticketMode = "-"; break;
             }
+            
+            ticketUrgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name;
+            ticketPriority = ticket.Priority == null ? "-" : ticket.Priority.Name;
+            ticketImpact = ticket.Impact == null ? "-" : ticket.Impact.Name;
+            createdDate = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+            modifiedDate = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
+            scheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            scheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            if (technician != null)
+            {
+                department = technician.Department == null ? "-" : technician.Department.Name;
+            }
+            else
+            {
+                department = "-";
+            }
+            
 
             string categoryPath = "-";
             if (ticket.Category != null)
@@ -272,32 +294,35 @@ namespace TMS.Controllers
                 while (parentCate.ParentID != null)
                 {
                     parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
-                    categoryPath = parentCate.Name + " > " + categoryPath;
+                    categoryPath = parentCate.Name + "  >  " + categoryPath;
                 }
             }
+
             return Json(new
             {
                 id = ticket.ID,
                 subject = ticket.Subject,
-                description = ticket.Description,
+                description = ticket.Description ?? "-",
                 type = ticketType,
                 mode = ticketMode,
-                urgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name,
-                priority = ticket.Priority == null ? "-" : ticket.Priority.Name,
+                urgency = ticketUrgency,
+                priority = ticketPriority,
                 category = categoryPath,
-                impact = ticket.Impact == null ? "-" : ticket.Impact.Name,
-                impactDetail = ticket.ImpactDetail == null ? "-" : ticket.ImpactDetail,
+                impact = ticketImpact,
+                impactDetail = ticket.ImpactDetail ?? "-",
                 status = ticket.Status,
-                createdDate = ticket.CreatedTime.ToString(),
-                lastModified = ticket.ModifiedTime.ToString(),
-                scheduleStart = ticket.ScheduleStartDate.ToString(),
-                scheduleEnd = ticket.ScheduleEndDate.ToString(),
-                actualStart = ticket.ActualStartDate.ToString(),
-                actualEnd = ticket.ActualEndDate.ToString(),
-                solution = ticket.Solution == null ? "-" : ticket.Solution,
+                createdDate = createdDate,
+                lastModified = modifiedDate,
+                scheduleStart = scheduleStartDate,
+                scheduleEnd = scheduleEndDate,
+                actualStart = actualStartDate,
+                actualEnd = actualEndDate,
+                solution = ticket.Solution ?? "-",
                 solver = solver == null ? "-" : solver.Fullname,
                 creater = creater == null ? "-" : creater.Fullname,
                 assigner = assigner == null ? "-" : assigner.Fullname,
+                technician = technician == null ? "-" : technician.Fullname,
+                department = department
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -317,6 +342,7 @@ namespace TMS.Controllers
             }
             if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
             {
+                ViewBag.Role = "Technician";
                 if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
                 {
                     return RedirectToAction("Index", new { Area = "Technician" }); // Redirect to Index so the Technician cannot go to Solve view.
@@ -324,6 +350,7 @@ namespace TMS.Controllers
             }
             else if (userRole.Id == ConstantUtil.UserRole.HelpDesk.ToString())
             {
+                ViewBag.Role = "HelpDesk";
                 if (ticket.Status != ConstantUtil.TicketStatus.Assigned &&
                     ticket.Status != ConstantUtil.TicketStatus.New)
                 {
@@ -364,23 +391,22 @@ namespace TMS.Controllers
                 case 6: model.Status = "Closed"; break;
             }
 
-            model.Category = (ticket.Category == null) ? "None" : ticket.Category.Name;
-            model.Impact = (ticket.Impact == null) ? "None" : ticket.Impact.Name;
-            model.ImpactDetail = (ticket.ImpactDetail == null) ? "None" : ticket.ImpactDetail;
-            model.Urgency = (ticket.Urgency == null) ? "None" : ticket.Urgency.Name;
-            model.Priority = (ticket.Priority == null) ? "None" : ticket.Priority.Name;
+            model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
+            model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+            model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
+            model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
+            model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
             model.CreateTime = ticket.CreatedTime;
             model.ModifiedTime = ticket.ModifiedTime;
             model.ScheduleEndTime = ticket.ScheduleEndDate;
             model.ScheduleStartTime = ticket.ScheduleStartDate;
             model.ActualStartTime = ticket.ActualStartDate;
             model.ActualEndTime = ticket.ActualEndDate;
-            model.CreatedBy = (createdUser == null) ? "None" : createdUser.Fullname;
-            model.AssignedBy = (assigner == null) ? "None" : assigner.Fullname;
-            model.SolvedBy = (solvedUser == null) ? "None" : solvedUser.Fullname;
+            model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
+            model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
+            model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
             model.Solution = ticket.Solution;
-            model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "None" : ticket.UnapproveReason;
-
+            model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
             return View(model);
         }
 
@@ -474,7 +500,6 @@ namespace TMS.Controllers
         public ActionResult SolveTicket(int id, string solution, string command)
         {
 
-            string createdId = "";
             AspNetRole userRole = null;
             if (User.Identity.GetUserId() != null)
             {
@@ -511,7 +536,7 @@ namespace TMS.Controllers
             return Json(new
             {
                 msg = message,
-                userRole= userRole.Name
+                userRole = userRole.Name
             });
         }
 

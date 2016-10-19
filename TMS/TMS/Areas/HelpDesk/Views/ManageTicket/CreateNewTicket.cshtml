@@ -21,17 +21,6 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label col-md-3">Mode <font color="red">*</font></label>
-                                <div class="col-md-9">
-                                    <select class="form-control" name="Mode">
-                                        <option value="0">None</option>
-                                        <option value="1">PhoneCall</option>
-                                        <option value="2">WebForm</option>
-                                        <option value="3">Email</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label class="control-label col-md-3">Type</label>
                                 <div class="col-md-9">
                                     <select class="form-control" name="Type">
@@ -45,7 +34,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Description</label>
                                 <div class="col-md-9">
-                                    <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" cols="3"></textarea>
+                                    <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" rows="5"></textarea>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -60,6 +49,18 @@
                             </div>
                         </div>
                         <div class="col-md-6" style="margin-left: -30px;">
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Impact</label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Impact Detail</label>
+                                <div class="col-md-8">
+                                    <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
+                                </div>
+                            </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Urgency</label>
                                 <div class="col-md-8">
@@ -78,18 +79,7 @@
                                     <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Impact</label>
-                                <div class="col-md-8">
-                                    <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Impact Detail</label>
-                                <div class="col-md-8">
-                                    <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
                     <div class="row">
@@ -125,8 +115,6 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3"></label>
                                 <div class="col-md-9">
-                                    <input class="form-control" type="file" name="solutionFiles" multiple>
-
                                     @*<div class="btn btn-default btn-file">
                                             <i class="fa fa-paperclip"></i> Attachment
                                             <input type="file" name="file" multiple>
@@ -139,13 +127,25 @@
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="ScheduleStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="ScheduleEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Actual Start Date</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control datetimep" name="ActualStartDate" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Actual End Date</label>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control datetimep" name="ActualEndDate" />
                                 </div>
                             </div>
                         </div>
@@ -188,28 +188,18 @@
                 <table class="table table-bordered table-striped" id="requester-table">
                     <thead>
                         <tr>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Email
-                            </th>
-                            <th>
-                                Department Name
-                            </th>
-                            <th>
-                                Phone
-                            </th>
-                            <th>
-                                Job Title
-                            </th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department Name</th>
+                            <th>Phone</th>
+                            <th>Job Title</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+            <div class="modal-footer" >
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -243,7 +233,7 @@
                     if (data.success) {
                         noty({
                             text: "Ticket was created successfully!",
-                            layout: "top",
+                            layout: "topCenter",
                             type: "success",
                             timeout: 1000
                         });
@@ -332,57 +322,6 @@
             $("#modal-add-requester").modal("show");
         }
 
-        function initRequesterTable() {
-            requesterTable = $("#requester-table")
-                .dataTable({
-                    processing: true,
-                    serverSide: true,
-                    paging: true,
-                    sort: true,
-                    autoWidth: true,
-                    ajax: {
-                        url: "/HelpDesk/ManageTicket/GetRequesterList"
-                    },
-                    "columnDefs": [
-                        {
-                            "render": function (data, type, row) {
-                                return '<a href="javascript:addSelectedUserToForm(\'' +
-                                    row[0] + "\',\'" +
-                                    row[1] +
-                                    '\')">' +
-                                    row[1] +
-                                    '</a>';
-                            },
-                            "targets": 0
-                        },
-                        {
-                            "render": function (data, type, row) {
-                                return row[2];
-                            },
-                            "targets": 1
-                        },
-                        {
-                            "render": function (data, type, row) {
-                                return row[3];
-                            },
-                            "targets": 2
-                        },
-                        {
-                            "render": function (data, type, row) {
-                                return row[4];
-                            },
-                            "targets": 3
-                        },
-                        {
-                            "render": function (data, type, row) {
-                                return row[5];
-                            },
-                            "targets": 4
-                        }
-                    ]
-                });
-        }
-
         function addSelectedUserToForm(requesterId, requesterName) {
             $("#requesterId").val(requesterId);
             $("#requesterName").val(requesterName);
@@ -393,7 +332,7 @@
             .ready(function () {
                 setActiveTicketMenu();
                 initDropdownControl();
-                initRequesterTable();
+                requesterTable = initRequesterTable($("#requester-table"));
             });
     </script>
 }

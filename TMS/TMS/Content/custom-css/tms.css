@@ -18,14 +18,33 @@
     color: #ffffff;
 }
 
-
-.modal-title {
-    color: #ffffff;
+.modal {
     text-align: center;
 }
 
+
+@media screen and (min-width: 768px) { 
+  .modal:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.modal-title {
+    color: #ffffff;
+    /*text-align: center;*/
+}
+
 .modal-header {
-    background-color: #1074bd;
+    background-color: #3c8dbc;
 }
 
 .modal-body {
@@ -64,4 +83,8 @@
     height: 25px;
     margin-top: 5px;
     margin-left: -15px;
+}
+
+.alignCenter {
+    text-align: center;
 }

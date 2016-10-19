@@ -5,6 +5,9 @@ namespace TMS.Utils
 {
     public class ConstantUtil
     {
+        public static readonly string DateTimeFormat = "dd/MM/yyyy HH:mm";
+        public static readonly string DateFormat = "dd/MM/yyyy";
+
         public class UserRole
         {
             public static readonly int Admin = 1;

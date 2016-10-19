@@ -13,6 +13,7 @@ using TMS.DAL;
 using TMS.Enumerator;
 using TMS.Models;
 using TMS.Services;
+using TMS.Utils;
 using TMS.ViewModels;
 using ModelError = TMS.ViewModels.ModelError;
 using TMS.Utils;
@@ -75,7 +76,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
+        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -107,22 +108,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 });
             }
 
-            if (model.Mode == 0)
-            {
-                errs.Add(new ModelError
-                {
-                    Name = "Subject",
-                    Message = "Ticket's mode required!",
-                });
-                return Json(new
-                {
-                    success = false,
-                    data = errs,
-                    msg = "Please input mode!",
-                });
-
-            }
-
             if (model.RequesterId == null)
             {
                 errs.Add(new ModelError
@@ -139,10 +124,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             ticket.ScheduleStartDate = model.ScheduleStartDate != null
-                ? DateTime.ParseExact(model.ScheduleStartDate, "dd/MM/yyyy", null)
+                ? DateTime.ParseExact(model.ScheduleStartDate, ConstantUtil.DateTimeFormat, null)
                 : (DateTime?)null;
             ticket.ScheduleEndDate = model.ScheduleEndDate != null
-                ? DateTime.ParseExact(model.ScheduleEndDate, "dd/MM/yyyy", null)
+                ? DateTime.ParseExact(model.ScheduleEndDate, ConstantUtil.DateTimeFormat, null)
                 : (DateTime?)null;
 
             if (ticket.ScheduleStartDate.HasValue && ticket.ScheduleEndDate.HasValue)
@@ -163,6 +148,31 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
             }
 
+            ticket.ActualStartDate = model.ActualStartDate != null
+                ? DateTime.ParseExact(model.ActualStartDate, ConstantUtil.DateTimeFormat, null)
+                : (DateTime?)null;
+            ticket.ActualEndDate = model.ActualEndDate != null
+                ? DateTime.ParseExact(model.ActualEndDate, ConstantUtil.DateTimeFormat, null)
+                : (DateTime?)null;
+
+            if (ticket.ActualStartDate.HasValue && ticket.ActualEndDate.HasValue)
+            {
+                if (DateTime.Compare((DateTime)ticket.ActualStartDate, (DateTime)ticket.ActualEndDate) > 0)
+                {
+                    errs.Add(new ModelError
+                    {
+                        Name = "ActualDate",
+                        Message = "actual start date must before actual end date!",
+                    });
+                    return Json(new
+                    {
+                        success = false,
+                        data = errs,
+                        msg = "Please check actual date again!"
+                    });
+                }
+            }
+
             ticket.CreatedTime = DateTime.Now;
             ticket.ModifiedTime = DateTime.Now;
             ticket.Status = (int?)TicketStatusEnum.New;
@@ -171,15 +181,17 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.Description = model.Description;
             ticket.Solution = model.Solution;
             ticket.Type = model.Type;
-            ticket.Mode = model.Mode;
+            ticket.Mode = ConstantUtil.TicketMode.PhoneCall;
+            if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
+            ticket.ImpactDetail = model.ImpactDetail;
             if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
             if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
-            if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
             if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
 
             if (!string.IsNullOrEmpty(model.TechnicianId))
             {
                 ticket.TechnicianID = model.TechnicianId;
+                ticket.AssignedByID = User.Identity.GetUserId();
                 ticket.Status = (int?)TicketStatusEnum.Assigned;
             }
 
@@ -225,6 +237,8 @@ namespace TMS.Areas.HelpDesk.Controllers
             model.Subject = ticket.Subject;
             model.Description = ticket.Description;
             model.Solution = ticket.Solution;
+            //unapprove reason
+
             if (!string.IsNullOrEmpty(ticket.RequesterID))
             {
                 model.RequesterId = ticket.RequesterID;
@@ -260,14 +274,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.Impact = ticket.ImpactID == null ? "" : _impactService.GetImpactById((int)ticket.ImpactID).Name;
             }
             model.ImpactDetail = ticket.ImpactDetail;
-            model.UnapproveReason = ticket.UnapproveReason;
-            model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString("dd/MM/yyyy") ?? "";
-            model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString("dd/MM/yyyy") ?? "";
-            model.ActualStartDate = ticket.ActualStartDate?.ToString("dd/MM/yyyy") ?? "";
-            model.ActualEndDate = ticket.ActualEndDate?.ToString("dd/MM/yyyy") ?? "";
-            model.SolvedDate = ticket.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
-            model.CreatedTime = ticket.CreatedTime.ToString("dd/MM/yyyy");
-            model.ModifiedTime = ticket.ModifiedTime.ToString("dd/MM/yyyy");
+            model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+            model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+            model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+            model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
+            model.CreatedTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+            model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
+
             if (!string.IsNullOrEmpty(ticket.CreatedID))
             {
                 model.CreatedId = ticket.CreatedID;
@@ -276,7 +290,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             if (!string.IsNullOrEmpty(ticket.SolveID))
             {
                 model.SolvedId = ticket.SolveID;
-                model.SolvedBy = _userService.GetUserById(ticket.CreatedID).Fullname;
+                model.SolvedBy = _userService.GetUserById(ticket.SolveID).Fullname;
             }
             if (!string.IsNullOrEmpty(ticket.TechnicianID))
             {
@@ -294,7 +308,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
 
         [HttpPost]
-        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
+        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -319,22 +333,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 });
             }
 
-            if (model.Mode == 0)
-            {
-                errs.Add(new ModelError
-                {
-                    Name = "Subject",
-                    Message = "Ticket's mode required!",
-                });
-                return Json(new
-                {
-                    success = false,
-                    data = errs,
-                    msg = "Please input mode!",
-                });
-
-            }
-
             if (model.RequesterId == null)
             {
                 errs.Add(new ModelError
@@ -351,10 +349,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             ticket.ScheduleStartDate = model.ScheduleStartDate != null
-                ? DateTime.ParseExact(model.ScheduleStartDate, "dd/MM/yyyy", null)
+                ? DateTime.ParseExact(model.ScheduleStartDate, ConstantUtil.DateTimeFormat, null)
                 : (DateTime?)null;
             ticket.ScheduleEndDate = model.ScheduleEndDate != null
-                ? DateTime.ParseExact(model.ScheduleEndDate, "dd/MM/yyyy", null)
+                ? DateTime.ParseExact(model.ScheduleEndDate, ConstantUtil.DateTimeFormat, null)
                 : (DateTime?)null;
 
             if (ticket.ScheduleStartDate.HasValue && ticket.ScheduleEndDate.HasValue)
@@ -376,10 +374,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             ticket.ActualStartDate = model.ActualStartDate != null
-                ? DateTime.ParseExact(model.ActualStartDate, "dd/MM/yyyy", null)
+                ? DateTime.ParseExact(model.ActualStartDate, ConstantUtil.DateTimeFormat, null)
                 : (DateTime?)null;
             ticket.ActualEndDate = model.ActualEndDate != null
-                ? DateTime.ParseExact(model.ActualEndDate, "dd/MM/yyyy", null)
+                ? DateTime.ParseExact(model.ActualEndDate, ConstantUtil.DateTimeFormat, null)
                 : (DateTime?)null;
 
             if (ticket.ActualStartDate.HasValue && ticket.ActualEndDate.HasValue)
@@ -389,7 +387,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     errs.Add(new ModelError
                     {
                         Name = "ActualDate",
-                        Message = "actual start date must before actual end date!",
+                        Message = "Actual start date must before actual end date!",
                     });
                     return Json(new
                     {
@@ -407,9 +405,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.Description = model.Description;
             ticket.RequesterID = model.RequesterId;
             ticket.Solution = model.Solution;
+            if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
+            ticket.ImpactDetail = model.ImpactDetail;
             if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
             if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
-            if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
             if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
 
             if (!string.IsNullOrEmpty(model.TechnicianId))
@@ -417,6 +416,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 if (ticket.TechnicianID != model.TechnicianId)
                 {
                     ticket.TechnicianID = model.TechnicianId;
+                    ticket.AssignedByID = User.Identity.GetUserId();
                     ticket.Status = (int?)TicketStatusEnum.Assigned;
                 }
             }
@@ -547,7 +547,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
-        public ActionResult LoadAllTickets(JqueryDatatableParameterViewModel model)
+        public ActionResult LoadAllTickets(JqueryDatatableParameterViewModel param)
         {
             var default_search_key = Request["search[value]"];
             var status_filter = Request["status_filter"];
@@ -583,31 +583,31 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
-            var sortDirection = Request["order[0][dir]"];
+            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortDirection = param.order[0]["dir"];
 
             switch (sortColumnIndex)
             {
-                case 2:
+                case 1:
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Subject)
                         : filteredListItems.OrderByDescending(p => p.Subject);
                     break;
-                case 6:
+                case 5:
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Status)
                         : filteredListItems.OrderByDescending(p => p.Status);
                     break;
-                case 7:
+                case 6:
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.CreatedTime)
                         : filteredListItems.OrderByDescending(p => p.CreatedTime);
                     break;
             }
 
-            var result = filteredListItems.Skip(model.start).Take(model.length).ToList();
+            var result = filteredListItems.Skip(param.start).Take(param.length).ToList();
             var tickets = new List<TicketViewModel>();
-            int startNo = model.start;
+            int startNo = param.start;
             foreach (var item in result)
             {
                 var s = new TicketViewModel();
@@ -624,13 +624,13 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     s.Technician = "";
                 }
-                s.SolvedDate = item.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
+                s.SolvedDate = item.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
                 s.Status = item.Status.HasValue ? ((TicketStatusEnum)item.Status).ToString() : "";
-                s.CreatedTime = item.CreatedTime.ToString("dd/MM/yyyy");
+                s.ModifiedTime = item.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
                 tickets.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
-            rsModel.sEcho = model.sEcho;
+            rsModel.draw = param.draw;
             rsModel.recordsTotal = queriedResult.Count();
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = tickets;
@@ -681,13 +681,13 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             model.ImpactDetail = ticket.ImpactDetail;
             model.UnapproveReason = ticket.UnapproveReason;
-            model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString("dd/MM/yyyy") ?? "";
-            model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString("dd/MM/yyyy") ?? "";
-            model.ActualStartDate = ticket.ActualStartDate?.ToString("dd/MM/yyyy") ?? "";
-            model.ActualEndDate = ticket.ActualEndDate?.ToString("dd/MM/yyyy") ?? "";
-            model.SolvedDate = ticket.SolvedDate?.ToString("dd/MM/yyyy") ?? "";
-            model.CreatedTime = ticket.CreatedTime.ToString("dd/MM/yyyy");
-            model.ModifiedTime = ticket.ModifiedTime.ToString("dd/MM/yyyy");
+            model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+            model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+            model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+            model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
+            model.CreatedTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+            model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
             if (!string.IsNullOrEmpty(ticket.CreatedID))
             {
                 model.CreatedId = ticket.CreatedID;
@@ -712,49 +712,59 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetRequesterList(jQueryDataTableParamModel param)
+        public ActionResult GetRequesterList(JqueryDatatableParameterViewModel param)
         {
             var requesterList = _userService.GetRequesters();
 
             IEnumerable<AspNetUser> filteredListItems;
-            if (!string.IsNullOrEmpty(param.sSearch))
+            if (!string.IsNullOrEmpty(param.search["value"]))
             {
-                filteredListItems = requesterList.Where(p => p.Fullname.ToLower().Contains(param.sSearch.ToLower()));
+                filteredListItems = requesterList.Where(p => p.Fullname.ToLower().Contains(param.search["value"].ToLower()));
             }
             else
             {
                 filteredListItems = requesterList;
             }
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            var sortDirection = Request["sSortDir_0"]; // asc or desc
+            //var sortColumnIndex = Convert.ToInt32(param.order[0].column);
+            //var sortDirection = param.order[0].dir;
+            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortDirection = param.order[0]["dir"];
 
             switch (sortColumnIndex)
             {
-                case 2:
+                case 0:
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Fullname)
                         : filteredListItems.OrderByDescending(p => p.Fullname);
                     break;
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Email)
+                        : filteredListItems.OrderByDescending(p => p.Email);
+                    break;
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
-            var result = displayedList.Select(p => new IConvertible[]{
-                p.Id,
-                p.Fullname,
-                p.Email,
-                p.DepartmentName,
-                p.PhoneNumber,
-                p.JobTitle
-            }.ToArray());
-
-            return Json(new
+            var requesters = new List<RequesterViewModel>();
+            foreach (var requester in displayedList)
             {
-                param.sEcho,
-                iTotalRecords = result.Count(),
-                iTotalDisplayRecords = filteredListItems.Count(),
-                aaData = result
-            }, JsonRequestBehavior.AllowGet);
+                RequesterViewModel req = new RequesterViewModel();
+                req.Id = requester.Id;
+                req.Fullname = requester.Fullname;
+                req.Email = requester.Email;
+                req.DepartmentName = requester.DepartmentName;
+                req.PhoneNumber = requester.PhoneNumber;
+                req.JobTitle = requester.JobTitle;
+                requesters.Add(req);
+            }
+
+            JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
+            rsModel.draw = param.draw;
+            rsModel.recordsTotal = requesterList.Count();
+            rsModel.recordsFiltered = filteredListItems.Count();
+            rsModel.data = requesters;
+            return Json(rsModel, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
