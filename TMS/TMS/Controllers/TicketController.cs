@@ -248,8 +248,8 @@ namespace TMS.Controllers
             AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
             AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
-            String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact;
-            String scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate;
+            String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact, department = "-";
+            String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate;
 
             switch (ticket.Type)
             {
@@ -270,10 +270,21 @@ namespace TMS.Controllers
             ticketUrgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name;
             ticketPriority = ticket.Priority == null ? "-" : ticket.Priority.Name;
             ticketImpact = ticket.Impact == null ? "-" : ticket.Impact.Name;
+            createdDate = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+            modifiedDate = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
             scheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
             scheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
             actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
             actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            if (technician != null)
+            {
+                department = technician.Department == null ? "-" : technician.Department.Name;
+            }
+            else
+            {
+                department = "-";
+            }
+            
 
             string categoryPath = "-";
             if (ticket.Category != null)
@@ -300,8 +311,8 @@ namespace TMS.Controllers
                 impact = ticketImpact,
                 impactDetail = ticket.ImpactDetail ?? "-",
                 status = ticket.Status,
-                createdDate = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat),
-                lastModified = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat),
+                createdDate = createdDate,
+                lastModified = modifiedDate,
                 scheduleStart = scheduleStartDate,
                 scheduleEnd = scheduleEndDate,
                 actualStart = actualStartDate,
@@ -311,7 +322,7 @@ namespace TMS.Controllers
                 creater = creater == null ? "-" : creater.Fullname,
                 assigner = assigner == null ? "-" : assigner.Fullname,
                 technician = technician == null ? "-" : technician.Fullname,
-                department = technician.Department.Name == null ? "-" : technician.Department.Name
+                department = department
             }, JsonRequestBehavior.AllowGet);
         }
 
