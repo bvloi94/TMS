@@ -14,13 +14,9 @@ function initTicketTable() {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
             "type": "POST",
             "data": function (d) {
-                d.status_filter = $('#status-dropdown').val();
+                d.status_filter = $("#status-dropdown").val();
                 d.search_text = $("#search-txt").val();
             }
-            //"data": {
-            //    "status_filter": $("#status-dropdown").val(),
-            //    "search_text": $("#search-txt").val()
-            //}
         },
         columnDefs: [
         {
@@ -179,7 +175,7 @@ function openTicketDetailModal(ticketId) {
             id: ticketId
         },
         success: function (data) {
-            var solveUrl = '/Ticket/Solve/' + data.id;
+
 
             $('#ticket-subject').text(data.subject);
             $('#ticket-description').text(data.description);
@@ -203,18 +199,32 @@ function openTicketDetailModal(ticketId) {
                 $('#ticket-solution').text(data.solution);
             }
 
+            $('[data-role="modal-btn-solve"]').attr("href", "/Ticket/Solve/" + data.id);
+
             if (data.status == 1) {
                 $('#ticket-status').html(getStatusLabel('New'));
+                $('[data-role="modal-btn-solve"]').removeClass("disabled");
+                $('[data-role="modal-btn-reopen"]').addClass("disabled");
             } else if (data.status == 2) {
                 $('#ticket-status').html(getStatusLabel('Assigned'));
+                $('[data-role="modal-btn-solve"]').removeClass("disabled");
+                $('[data-role="modal-btn-reopen"]').addClass("disabled");
             } else if (data.status == 3) {
                 $('#ticket-status').html(getStatusLabel('Solved'));
+                $('[data-role="modal-btn-solve"]').addClass("disabled");
+                $('[data-role="modal-btn-reopen"]').addClass("disabled");
             } else if (data.status == 4) {
                 $('#ticket-status').html(getStatusLabel('Unapproved'));
+                $('[data-role="modal-btn-solve"]').addClass("disabled");
+                $('[data-role="modal-btn-reopen"]').removeClass("disabled");
             } else if (data.status == 5) {
                 $('#ticket-status').html(getStatusLabel('Cancelled'));
+                $('[data-role="modal-btn-solve"]').addClass("disabled");
+                $('[data-role="modal-btn-reopen"]').addClass("disabled");
             } else if (data.status == 6) {
                 $('#ticket-status').html(getStatusLabel('Closed'));
+                $('[data-role="modal-btn-solve"]').addClass("disabled");
+                $('[data-role="modal-btn-reopen"]').addClass("disabled");
             }
 
             $('#ticket-created-date').text(data.createdDate);
@@ -281,7 +291,7 @@ $(document)
                                     $("#modal-cancel-ticket").modal("hide");
                                     noty({
                                         text: "Ticket was canceled!",
-                                        layout: "top",
+                                        layout: "topCenter",
                                         type: "success",
                                         timeout: 2000
                                     });

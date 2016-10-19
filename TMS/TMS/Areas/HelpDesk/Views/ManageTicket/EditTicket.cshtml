@@ -12,19 +12,19 @@
             <!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" role="form" id="form-edit-ticket" method="POST">
-                    <input type="hidden" name="Id" />
+                    <input type="hidden" name="Id" value="@Model.Id" />
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label col-md-3">Subject <font color="red">*</font></label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control" name="Subject" placeholder="Subject" />
+                                    <input type="text" class="form-control" name="Subject" placeholder="Subject" value="@Model.Subject" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-3">Mode <font color="red">*</font></label>
                                 <div class="col-md-9">
-                                    <select class="form-control" name="Mode">
+                                    <select class="form-control" name="Mode" value="@Model.Mode">
                                         <option value="1">PhoneCall</option>
                                         <option value="2">WebForm</option>
                                         <option value="3">Email</option>
@@ -34,7 +34,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Type</label>
                                 <div class="col-md-9">
-                                    <select class="form-control" name="Type">
+                                    <select class="form-control" name="Type" value="@Model.Type">
                                         <option value="0">None</option>
                                         <option value="1">Request</option>
                                         <option value="2">Problem</option>
@@ -45,13 +45,13 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Status</label>
                                 <div class="col-md-9" id="div-status">
-                                    <input type="hidden" name="statusId" />
+                                    <input type="hidden" name="statusId" value="@Model.StatusId" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-3">Description</label>
                                 <div class="col-md-9">
-                                    <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" cols="3"></textarea>
+                                    <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" rows="3">@Model.Description</textarea>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -66,7 +66,7 @@
                             </div>
                         </div>
                         <div class="col-md-6" style="margin-left: -30px;">
-                            
+
                             <div class="form-group">
                                 <label class="control-label col-md-4">Impact</label>
                                 <div class="col-md-8">
@@ -76,7 +76,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-4">Impact Detail</label>
                                 <div class="col-md-8">
-                                    <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
+                                    <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" rows="3">@Model.ImpactDetail</textarea>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -106,8 +106,8 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Requester <font color="red">*</font></label>
                                 <div class="col-md-7">
-                                    <input type="hidden" id="requesterId" name="RequesterId">
-                                    <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="" readonly>
+                                    <input type="hidden" id="requesterId" name="RequesterId" value="@Model.RequesterId">
+                                    <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="@Model.Requester" readonly>
                                 </div>
                                 <div class="col-md-2">
                                     <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico" /></a>
@@ -128,27 +128,27 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Created Time</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control datetime" name="CreatedTime" readonly />
+                                    <input type="text" class="form-control datetime" name="CreatedTime" value="@Model.CreatedTime" readonly />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-3">Created By</label>
                                 <div class="col-md-9">
-                                    <input type="hidden" id="createdId" name="CreatedId">
-                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy" />
+                                    <input type="hidden" id="createdId" name="CreatedId" value="@Model.CreatedId">
+                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy">@Model.CreatedBy</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-3">Solved By</label>
                                 <div class="col-md-9">
-                                    <input type="hidden" id="solveId" name="solveId">
-                                    <label style="font-weight: normal" class="control-label" id="solveBy" name="SolvedBy" />
+                                    <input type="hidden" id="solveId" name="solveId" value="@Model.SolvedId">
+                                    <label style="font-weight: normal" class="control-label" id="solveBy" name="SolvedBy">@Model.SolvedBy</label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-3">Solution</label>
                                 <div class="col-md-9">
-                                    <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" cols="3"></textarea>
+                                    <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" rows="3">@Model.Solution</textarea>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -160,56 +160,50 @@
                                         </div>*@
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-3"></label>
-                                <div class="col-md-9">
-                                    <div class="form-error-messages" data-role="group-form-error"></div>
-                                </div>
-                            </div>
+
                         </div>
                         <div class="col-md-6" style="margin-left: -30px;">
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate" value="@Model.ScheduleStartDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate" value="@Model.ScheduleEndDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Actual Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ActualStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ActualStartDate" value="@Model.ActualStartDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Actual End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ActualEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ActualEndDate" value="@Model.ActualEndDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Modified Time</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ModifiedTime" readonly />
+                                    <input type="text" class="form-control datetimep" name="ModifiedTime" value="@Model.ModifiedTime" readonly />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Solved Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="SolvedDate" readonly />
+                                    <input type="text" class="form-control datetime" name="SolvedDate" value="@Model.SolvedDate" readonly />
                                 </div>
                             </div>
-                            @*<div class="form-group">
-                                <label class="control-label col-md-4">Unapprove Reason</label>
-                                <div class="col-md-8">
-                                    <textarea class="form-control" name="UnapproveReason" placeholder="Unapprove Reason" cols="3"></textarea>
-                                </div>
-                            </div>*@
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group" style="text-align: center;">
+                                <div class="form-error-messages" data-role="group-form-error"></div>
                         </div>
                     </div>
                     <div class="row">
@@ -298,7 +292,7 @@
                             if (data.success) {
                                 noty({
                                     text: "Ticket was updated successfully!",
-                                    layout: "top",
+                                    layout: "topCenter",
                                     type: "success",
                                     timeout: 1000
                                 });
@@ -313,9 +307,9 @@
                                     timeout: 2000
                                 });
                                 if (data.data != null) {
-                                    $("#form-new-ticket [data-role=group-form-error]").html("");
+                                    $("#form-edit-ticket [data-role=group-form-error]").html("");
                                     for (var i = 0; i < data.data.length; i++) {
-                                        $("#form-new-ticket [data-role=group-form-error]")
+                                        $("#form-edit-ticket [data-role=group-form-error]")
                                             .append($("<p/>",
                                             {
                                                 "html": $("<font/>",
@@ -399,21 +393,14 @@
         }
 
         function loadEditData() {
-            $("[name='Id']").val(@Model.Id);
+            @*$("[name='Id']").val(@Model.Id);
             $("[name='Subject']:eq(0)").val('@Model.Subject');
             $("[name='Type']").val(@Model.Type);
             $("[name='Mode']").val(@Model.Mode);
             $("#descriptionEditor").html('@Model.Description.Replace("\r\n", "\\r\\n")');
-            loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
-            loadInitDropdown('ddl-priority', '@Model.Priority', @Model.PriorityId);
-            loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
             $("[name='ImpactDetail']").val('@Model.ImpactDetail');
-            loadInitDropdown('ddl-category', '@Model.Category', @Model.CategoryId);
-            loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
-            loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
             $("#requesterId").val('@Model.RequesterId');
             $("#requesterName").val('@Model.Requester');
-            $("[name='UnapproveReason']").val('@Model.UnapproveReason');
             $("[name='ScheduleStartDate']").val('@Model.ScheduleStartDate');
             $("[name='ScheduleEndDate']").val('@Model.ScheduleEndDate');
             $("[name='ActualStartDate']").val('@Model.ActualStartDate');
@@ -426,9 +413,14 @@
             $("#solveId").val('@Model.SolvedId');
             $("#solveBy").html('@Model.SolvedBy');
             $("#solutionEditor").html('@Model.Solution.Replace("\r\n", "\\r\\n")');
-
-            $("[name='statusId']").val(@Model.StatusId);
+            $("[name='statusId']").val(@Model.StatusId);*@
             $("#div-status").html(getStatusLabel('@Model.Status'));
+            loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
+            loadInitDropdown('ddl-priority', '@Model.Priority', @Model.PriorityId);
+            loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
+            loadInitDropdown('ddl-category', '@Model.Category', @Model.CategoryId);
+            loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
+            loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
         }
 
         $("[data-role='ddl-department']")
