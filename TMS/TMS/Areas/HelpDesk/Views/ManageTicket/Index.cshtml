@@ -5,43 +5,6 @@
 }
 
 <style>
-    .title {
-        margin-top: -20px;
-        margin-bottom: 12px;
-    }
-
-    .btitle {
-        display: table;
-    }
-
-    .table thead, h4 {
-        color: #1074bd;
-        font-weight: bold;
-    }
-
-    h5 {
-        color: #171fb0;
-        font-weight: bold;
-    }
-
-    .white-title {
-        text-transform: uppercase;
-        font-weight: bold;
-        display: table-cell;
-        padding: 8px;
-        vertical-align: middle;
-        color: #ffffff;
-    }
-
-    .rightItems {
-        text-align: right;
-    }
-
-    .modal-title {
-        color: #ffffff;
-        text-align: center;
-    }
-
     .ticket-contents {
         padding: 0px;
     }
@@ -114,7 +77,7 @@
                     <p>Do you really want to cancel this ticket?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" data-role="btn-confirm-cancel">Confirm</button>
                 </div>
             </div>
@@ -130,13 +93,13 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title">Merge ticket</h4>
+                    <h4 class="modal-title">Merge Ticket</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Do you really want to merge these tickets?</p>
+                    <p>The oldest request will be retained as the parent request. Related asset and other information will be lost for other(child) request(s). Do you want to proceed ?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default pull-left" data-role="btn-cancel-merge">Close</button>
+                    <button type="button" class="btn btn-default" data-role="btn-cancel-merge">Close</button>
                     <button type="button" class="btn btn-primary" data-role="btn-confirm-merge">Confirm</button>
                 </div>
             </div>
