@@ -518,8 +518,20 @@ namespace TMS.Controllers
             }
 
             var message = "";
+
+            if (string.IsNullOrWhiteSpace(solution))
+            {
+                message = "Please enter solution!";
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    msg = message
+                });
+            }
             ticket.ModifiedTime = DateTime.Now;
             ticket.Solution = solution;
+            
             switch (command)
             {
                 case "solveBtn":
@@ -535,6 +547,7 @@ namespace TMS.Controllers
             }
             return Json(new
             {
+                success = true,
                 msg = message,
                 userRole = userRole.Name
             });
