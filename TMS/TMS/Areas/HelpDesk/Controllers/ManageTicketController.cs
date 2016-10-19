@@ -8,10 +8,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using log4net;
 using Microsoft.AspNet.Identity;
 using TMS.DAL;
 using TMS.Enumerator;
 using TMS.Models;
+using TMS.Schedulers;
 using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
@@ -21,6 +23,9 @@ namespace TMS.Areas.HelpDesk.Controllers
 {
     public class ManageTicketController : Controller
     {
+
+        private ILog log = LogManager.GetLogger(typeof(JobManager));
+
         private TMSEntities db = new TMSEntities();
 
         public TicketService _ticketService { get; set; }
@@ -207,10 +212,11 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             catch (DbUpdateException ex)
             {
+                log.Error("An error has occured while update ticket.", ex);
                 return Json(new
                 {
                     success = false,
-                    msg = ex.Message
+                    msg = "Some error occured. Please try again later!"
                 });
             }
 
@@ -424,10 +430,11 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             catch (DbUpdateException ex)
             {
+                log.Error("An error has occured while update ticket.", ex);
                 return Json(new
                 {
                     success = false,
-                    msg = ex.Message
+                    msg = "Some error occured. Please try again later!"
                 });
             }
 

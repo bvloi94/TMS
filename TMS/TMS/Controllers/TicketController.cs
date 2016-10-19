@@ -249,7 +249,7 @@ namespace TMS.Controllers
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
             AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
             String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact, department = "-";
-            String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate;
+            String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
 
             // _ticketAttachmentService.GetAttachmentByTicketID(id);
 
@@ -278,6 +278,8 @@ namespace TMS.Controllers
             scheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
             actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
             actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            solvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+
             if (technician != null)
             {
                 department = technician.Department == null ? "-" : technician.Department.Name;
@@ -315,6 +317,7 @@ namespace TMS.Controllers
                 status = ticket.Status,
                 createdDate = createdDate,
                 lastModified = modifiedDate,
+                solvedDate = solvedDate,
                 scheduleStart = scheduleStartDate,
                 scheduleEnd = scheduleEndDate,
                 actualStart = actualStartDate,

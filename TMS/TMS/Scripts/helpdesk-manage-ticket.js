@@ -233,6 +233,7 @@ function openTicketDetailModal(ticketId) {
 
             $('#ticket-created-date').text(data.createdDate);
             $('#ticket-modified-date').text(data.lastModified);
+            $('#ticket-solved-date').text(data.solvedDate);
             $('#ticket-schedule-start').text(data.scheduleStart);
             $('#ticket-schedule-end').text(data.scheduleEnd);
             $('#ticket-actual-start').text(data.actualStart);
