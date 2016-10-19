@@ -75,7 +75,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
+        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -307,7 +307,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
 
         [HttpPost]
-        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
+        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();

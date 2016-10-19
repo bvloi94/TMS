@@ -31,7 +31,8 @@ namespace Teek.Models
         public string UploadFile(HttpPostedFileBase file, string containingFolder)
         {
             var fileExtension = Path.GetExtension(file.FileName);
-            var fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmsstttt")}_{Guid.NewGuid().ToString()}{fileExtension}";
+            var fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmsstttt")}_"+Path.GetFileName(file.FileName);
+                //_{Guid.NewGuid().ToString()}{fileExtension}";
 
             var relativeFilePath = Path.Combine(this.RelativeRootPath, containingFolder, fileName);
             var fullFilePath = HostingEnvironment.MapPath(relativeFilePath);
