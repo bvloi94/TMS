@@ -366,12 +366,6 @@
             $("#modal-add-requester").modal("hide");
         }
 
-        function loadInitDropdown(selector,text,value) {
-            var opt = new Option(text, value, true, true);
-            $("[data-role='"+selector+"']").append(opt);
-            $("[data-role='"+selector+"']").trigger("change");
-        }
-
         function loadEditData() {
             @*$("[name='Id']").val(@Model.Id);
             $("[name='Subject']:eq(0)").val('@Model.Subject');
@@ -395,10 +389,10 @@
             $("#solutionEditor").html('@Model.Solution.Replace("\r\n", "\\r\\n")');
             $("[name='statusId']").val(@Model.StatusId);*@
             $("#div-status").html(getStatusLabel('@Model.Status'));
-            loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
-            loadInitDropdown('ddl-priority', '@Model.Priority', @Model.PriorityId);
-            loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
-            loadInitDropdown('ddl-category', '@Model.Category', @Model.CategoryId);
+            loadInitDropdown('ddl-urgency', '@(Model.UrgencyId == 0 ? "None" : Model.Urgency)', @Model.UrgencyId);
+            loadInitDropdown('ddl-priority', '@(Model.PriorityId == 0 ? "None" : Model.Priority)', @Model.PriorityId);
+            loadInitDropdown('ddl-impact', '@(Model.ImpactId == 0 ? "None" : Model.Impact)', @Model.ImpactId);
+            loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
             loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
         }
@@ -414,7 +408,6 @@
                 setActiveTicketMenu();
                 requesterTable = initRequesterTable($("#requester-table"));
                 initDropdownControl();
-                //$("[data-role='ddl-urgency']").val(@Model.UrgencyId);
                 loadEditData();
             });
     </script>

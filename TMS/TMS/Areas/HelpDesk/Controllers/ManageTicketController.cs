@@ -409,10 +409,14 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.RequesterID = model.RequesterId;
             ticket.Solution = model.Solution;
             if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
+            else ticket.ImpactID = null;
             ticket.ImpactDetail = model.ImpactDetail;
             if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
+            else ticket.UrgencyID = null;
             if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
+            else ticket.PriorityID = null;
             if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
+            else ticket.CategoryID = null;
 
             if (!string.IsNullOrEmpty(model.TechnicianId))
             {
@@ -423,7 +427,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     ticket.Status = (int?)TicketStatusEnum.Assigned;
                 }
             }
-            
+
             try
             {
                 _ticketService.UpdateTicket(ticket);

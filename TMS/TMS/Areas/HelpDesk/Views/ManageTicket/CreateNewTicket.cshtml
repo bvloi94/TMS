@@ -337,6 +337,10 @@
             .ready(function () {
                 setActiveTicketMenu();
                 initDropdownControl();
+                loadInitDropdown('ddl-urgency', 'None', 0);
+                loadInitDropdown('ddl-priority', 'None', 0);
+                loadInitDropdown('ddl-impact', 'None', 0);
+                loadInitDropdown('ddl-category', 'None', 0);
                 requesterTable = initRequesterTable($("#requester-table"));
             });
     </script>

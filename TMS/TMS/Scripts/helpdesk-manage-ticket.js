@@ -203,6 +203,13 @@ function openTicketDetailModal(ticketId) {
                 $('#ticket-solution').text(data.solution);
             }
 
+            if (!data.attachments || data.attachments == "") {
+                $('#ticket-attachment').text("-");
+            } else {
+                $('#ticket-attachment').text(data.attachments);
+            }
+
+
             $('[data-role="modal-btn-solve"]').attr("href", "/Ticket/Solve/" + data.id);
 
             if (data.status == 1) {
