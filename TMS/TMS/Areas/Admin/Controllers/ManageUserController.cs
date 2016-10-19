@@ -164,7 +164,7 @@ namespace TMS.Areas.Admin.Controllers
                 p.UserName,
                 p.Fullname,
                 p.Email,
-                (p.Birthday == null) ? "" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
+                (p.Birthday == null) ? "-" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
                 p.IsActive
             }.ToArray());
 
@@ -247,7 +247,7 @@ namespace TMS.Areas.Admin.Controllers
                 p.UserName,
                 p.Fullname,
                 p.Email,
-                (p.Birthday == null) ? "" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
+                (p.Birthday == null) ? "-" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
                 p.IsActive
             }.ToArray());
 
@@ -330,7 +330,7 @@ namespace TMS.Areas.Admin.Controllers
                 p.UserName,
                 p.Fullname,
                 p.Email,
-                (p.Birthday == null) ? "" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
+                (p.Birthday == null) ? "-" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
                 p.IsActive,
                 _departmentService.GetDepartmentById((int) p.DepartmentID).Name
             }.ToArray());
@@ -414,7 +414,7 @@ namespace TMS.Areas.Admin.Controllers
                 p.UserName,
                 p.Fullname,
                 p.Email,
-                (p.Birthday == null) ? "" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
+                (p.Birthday == null) ? "-" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
                 p.IsActive
             }.ToArray());
 
@@ -471,6 +471,7 @@ namespace TMS.Areas.Admin.Controllers
                 {
                     AspNetUser requester = _userService.GetUserById(user.Id);
                     requester.Fullname = model.Fullname;
+                    requester.PhoneNumber = model.PhoneNumber;
                     requester.Birthday = model.Birthday;
                     requester.Address = model.Address;
                     requester.Gender = model.Gender;
@@ -498,36 +499,46 @@ namespace TMS.Areas.Admin.Controllers
                             }
                         }
                     }
-                    _userService.EditUser(requester);
-
-                    ApplicationDbContext context = new ApplicationDbContext();
-
-                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-                    if (!roleManager.RoleExists("Requester"))
+                    try
                     {
-                        var role = new IdentityRole();
-                        role.Name = "Requester";
-                        roleManager.Create(role);
+                        _userService.EditUser(requester);
+
+                        ApplicationDbContext context = new ApplicationDbContext();
+
+                        var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+                        if (!roleManager.RoleExists("Requester"))
+                        {
+                            var role = new IdentityRole();
+                            role.Name = "Requester";
+                            roleManager.Create(role);
+                        }
+                        UserManager.AddToRole(user.Id, "Requester");
+                        //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+
+                        //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
+                        //if (!sendMailResult)
+                        //{
+                        //    log.Debug("Send email unsuccessfully!");
+                        //}
+                        // Send email asynchronously
+                        Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                        thread.Start();
+
+                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Requester account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                        return RedirectToAction("Requester", "ManageUser");
                     }
-                    UserManager.AddToRole(user.Id, "Requester");
-                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                    //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
-                    //if (!sendMailResult)
-                    //{
-                    //    log.Debug("Send email unsuccessfully!");
-                    //}
-                    // Send email asynchronously
-                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
-                    thread.Start();
-
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Requester account successfully!") { Path = "/" });
-                    return RedirectToAction("Requester", "ManageUser");
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Requester account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                        return RedirectToAction("Requester", "ManageUser");
+                    }
                 }
                 AddErrors(result);
             }
@@ -550,6 +561,7 @@ namespace TMS.Areas.Admin.Controllers
                 {
                     AspNetUser helpdesk = _userService.GetUserById(user.Id);
                     helpdesk.Fullname = model.Fullname;
+                    helpdesk.PhoneNumber = model.PhoneNumber;
                     helpdesk.Birthday = model.Birthday;
                     helpdesk.Address = model.Address;
                     helpdesk.Gender = model.Gender;
@@ -573,35 +585,46 @@ namespace TMS.Areas.Admin.Controllers
                             }
                         }
                     }
-                    _userService.EditUser(helpdesk);
 
-                    ApplicationDbContext context = new ApplicationDbContext();
-
-                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-                    if (!roleManager.RoleExists("Helpdesk"))
+                    try
                     {
-                        var role = new IdentityRole();
-                        role.Name = "Helpdesk";
-                        roleManager.Create(role);
-                    }
-                    UserManager.AddToRole(user.Id, "Helpdesk");
-                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
-                    //if (!sendMailResult)
-                    //{
-                    //    log.Debug("Send email unsuccessfully!");
-                    //}
-                    // Send email asynchronously
-                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
-                    thread.Start();
+                        _userService.EditUser(helpdesk);
 
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Help Desk account successfully!") { Path = "/" });
-                    return RedirectToAction("HelpDesk", "ManageUser");
+                        ApplicationDbContext context = new ApplicationDbContext();
+
+                        var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+                        if (!roleManager.RoleExists("Helpdesk"))
+                        {
+                            var role = new IdentityRole();
+                            role.Name = "Helpdesk";
+                            roleManager.Create(role);
+                        }
+                        UserManager.AddToRole(user.Id, "Helpdesk");
+                        //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
+                        //if (!sendMailResult)
+                        //{
+                        //    log.Debug("Send email unsuccessfully!");
+                        //}
+                        // Send email asynchronously
+                        Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                        thread.Start();
+
+                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Help Desk account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                        return RedirectToAction("HelpDesk", "ManageUser");
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Help Desk account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                        return RedirectToAction("HelpDesk", "ManageUser");
+                    }
                 }
                 AddErrors(result);
             }
@@ -624,6 +647,7 @@ namespace TMS.Areas.Admin.Controllers
                 {
                     AspNetUser technician = _userService.GetUserById(user.Id);
                     technician.Fullname = model.Fullname;
+                    technician.PhoneNumber = model.PhoneNumber;
                     technician.Birthday = model.Birthday;
                     technician.Address = model.Address;
                     technician.Gender = model.Gender;
@@ -648,35 +672,45 @@ namespace TMS.Areas.Admin.Controllers
                             }
                         }
                     }
-                    _userService.EditUser(technician);
-
-                    ApplicationDbContext context = new ApplicationDbContext();
-
-                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-                    if (!roleManager.RoleExists("Technician"))
+                    try
                     {
-                        var role = new IdentityRole();
-                        role.Name = "Technician";
-                        roleManager.Create(role);
-                    }
-                    UserManager.AddToRole(user.Id, "Technician");
-                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
-                    //if (!sendMailResult)
-                    //{
-                    //    log.Debug("Send email unsuccessfully!");
-                    //}
-                    // Send email asynchronously
-                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
-                    thread.Start();
+                        _userService.EditUser(technician);
 
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Technician account successfully!") { Path = "/" });
-                    return RedirectToAction("Technician", "ManageUser");
+                        ApplicationDbContext context = new ApplicationDbContext();
+
+                        var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+                        if (!roleManager.RoleExists("Technician"))
+                        {
+                            var role = new IdentityRole();
+                            role.Name = "Technician";
+                            roleManager.Create(role);
+                        }
+                        UserManager.AddToRole(user.Id, "Technician");
+                        //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
+                        //if (!sendMailResult)
+                        //{
+                        //    log.Debug("Send email unsuccessfully!");
+                        //}
+                        // Send email asynchronously
+                        Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                        thread.Start();
+
+                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Technician account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                        return RedirectToAction("Technician", "ManageUser");
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Technician account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                        return RedirectToAction("Technician", "ManageUser");
+                    }
                 }
                 AddErrors(result);
             }
@@ -700,6 +734,7 @@ namespace TMS.Areas.Admin.Controllers
                 {
                     AspNetUser admin = _userService.GetUserById(user.Id);
                     admin.Fullname = model.Fullname;
+                    admin.PhoneNumber = model.PhoneNumber;
                     admin.Birthday = model.Birthday;
                     admin.Address = model.Address;
                     admin.Gender = model.Gender;
@@ -723,35 +758,45 @@ namespace TMS.Areas.Admin.Controllers
                             }
                         }
                     }
-                    _userService.EditUser(admin);
-
-                    ApplicationDbContext context = new ApplicationDbContext();
-
-                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-                    if (!roleManager.RoleExists("Admin"))
+                    try
                     {
-                        var role = new IdentityRole();
-                        role.Name = "Admin";
-                        roleManager.Create(role);
-                    }
-                    UserManager.AddToRole(user.Id, "Admin");
-                    //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
-                    //if (!sendMailResult)
-                    //{
-                    //    log.Debug("Send email unsuccessfully!");
-                    //}
-                    // Send email asynchronously
-                    Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
-                    thread.Start();
+                        _userService.EditUser(admin);
 
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Admin account successfully!") { Path = "/" });
-                    return RedirectToAction("Admin", "ManageUser");
+                        ApplicationDbContext context = new ApplicationDbContext();
+
+                        var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+                        if (!roleManager.RoleExists("Admin"))
+                        {
+                            var role = new IdentityRole();
+                            role.Name = "Admin";
+                            roleManager.Create(role);
+                        }
+                        UserManager.AddToRole(user.Id, "Admin");
+                        //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        //bool sendMailResult = await EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email);
+                        //if (!sendMailResult)
+                        //{
+                        //    log.Debug("Send email unsuccessfully!");
+                        //}
+                        // Send email asynchronously
+                        Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                        thread.Start();
+
+                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Admin account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                        return RedirectToAction("Admin", "ManageUser");
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Admin account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                        return RedirectToAction("Admin", "ManageUser");
+                    }
                 }
                 AddErrors(result);
             }
@@ -767,6 +812,7 @@ namespace TMS.Areas.Admin.Controllers
                 AspNetUser requester = _userService.GetUserById(id);
                 RequesterRegisterViewModel model = new RequesterRegisterViewModel();
                 model.Fullname = requester.Fullname;
+                model.PhoneNumber = requester.PhoneNumber;
                 model.Email = requester.Email;
                 model.Birthday = requester.Birthday;
                 model.Address = requester.Address;
@@ -795,6 +841,7 @@ namespace TMS.Areas.Admin.Controllers
                 AspNetUser helpdesk = _userService.GetUserById(id);
                 HelpDeskRegisterViewModel model = new HelpDeskRegisterViewModel();
                 model.Fullname = helpdesk.Fullname;
+                model.PhoneNumber = helpdesk.PhoneNumber;
                 model.Email = helpdesk.Email;
                 model.Birthday = helpdesk.Birthday;
                 model.Address = helpdesk.Address;
@@ -819,6 +866,7 @@ namespace TMS.Areas.Admin.Controllers
                 AspNetUser technician = _userService.GetUserById(id);
                 TechnicianRegisterViewModel model = new TechnicianRegisterViewModel();
                 model.Fullname = technician.Fullname;
+                model.PhoneNumber = technician.PhoneNumber;
                 model.Email = technician.Email;
                 model.Birthday = technician.Birthday;
                 model.Address = technician.Address;
@@ -846,6 +894,7 @@ namespace TMS.Areas.Admin.Controllers
                 AspNetUser admin = _userService.GetUserById(id);
                 AdminRegisterViewModel model = new AdminRegisterViewModel();
                 model.Fullname = admin.Fullname;
+                model.PhoneNumber = admin.PhoneNumber;
                 model.Email = admin.Email;
                 model.Birthday = admin.Birthday;
                 model.Address = admin.Address;
@@ -880,6 +929,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 requester.Fullname = model.Fullname;
+                requester.PhoneNumber = model.PhoneNumber;
                 requester.Email = model.Email;
                 requester.Birthday = model.Birthday;
                 requester.Address = model.Address;
@@ -896,8 +946,17 @@ namespace TMS.Areas.Admin.Controllers
                     model.Avatar.SaveAs(filePath);
                     requester.AvatarURL = fileName;
                 }
-                _userService.EditUser(requester);
-                Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Requester account successfully!") { Path = "/" });
+                try
+                {
+                    _userService.EditUser(requester);
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Requester account successfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                }
+                catch
+                {
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Requester account unsuccessfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                }
                 return RedirectToAction("Requester");
             }
             ViewBag.id = id;
@@ -922,6 +981,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 helpdesk.Fullname = model.Fullname;
+                helpdesk.PhoneNumber = model.PhoneNumber;
                 helpdesk.Email = model.Email;
                 helpdesk.Birthday = model.Birthday;
                 helpdesk.Address = model.Address;
@@ -934,8 +994,17 @@ namespace TMS.Areas.Admin.Controllers
                     model.Avatar.SaveAs(filePath);
                     helpdesk.AvatarURL = fileName;
                 }
-                _userService.EditUser(helpdesk);
-                Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Help Desk account successfully!") { Path = "/" });
+                try
+                {
+                    _userService.EditUser(helpdesk);
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Help Desk account successfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                }
+                catch
+                {
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Help Desk account unsuccessfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                }
                 return RedirectToAction("HelpDesk");
             }
             ViewBag.id = id;
@@ -960,6 +1029,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 technician.Fullname = model.Fullname;
+                technician.PhoneNumber = model.PhoneNumber;
                 technician.Email = model.Email;
                 technician.Birthday = model.Birthday;
                 technician.Address = model.Address;
@@ -973,8 +1043,17 @@ namespace TMS.Areas.Admin.Controllers
                     model.Avatar.SaveAs(filePath);
                     technician.AvatarURL = fileName;
                 }
-                _userService.EditUser(technician);
-                Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Technician account successfully!") { Path = "/" });
+                try
+                {
+                    _userService.EditUser(technician);
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Technician account successfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                }
+                catch
+                {
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Technician account unsuccessfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                }
                 return RedirectToAction("Technician");
             }
             ViewBag.id = id;
@@ -1000,6 +1079,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 admin.Fullname = model.Fullname;
+                admin.PhoneNumber = model.PhoneNumber;
                 admin.Email = model.Email;
                 admin.Birthday = model.Birthday;
                 admin.Address = model.Address;
@@ -1012,8 +1092,17 @@ namespace TMS.Areas.Admin.Controllers
                     model.Avatar.SaveAs(filePath);
                     admin.AvatarURL = fileName;
                 }
-                _userService.EditUser(admin);
-                Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Admin account successfully!") { Path = "/" });
+                try
+                {
+                    _userService.EditUser(admin);
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Admin account successfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                }
+                catch
+                {
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Admin account unsuccessfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                }
                 return RedirectToAction("Admin");
             }
             ViewBag.id = id;
@@ -1023,26 +1112,37 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult ToggleStatus()
+        public ActionResult ToggleStatus(string id)
         {
-            string id = Request["id"];
             try
             {
-                bool isEnable = _userService.ToggleStatus(id);
-                var message = "";
-                if (isEnable)
+                AspNetUser user = _userService.GetUserById(id);
+                if (user != null)
                 {
-                    message = "Enable requester successfully!";
+                    bool isEnable = _userService.ToggleStatus(user);
+                    var message = "";
+                    if (isEnable)
+                    {
+                        message = "Enable user successfully!";
+                    }
+                    else
+                    {
+                        message = "Disable user successfully!";
+                    }
+                    return Json(new
+                    {
+                        success = true,
+                        message = message
+                    });
                 }
                 else
                 {
-                    message = "Disable requester successfully!";
+                    return Json(new
+                    {
+                        success = false,
+                        message = "This user is unavailable!"
+                    });
                 }
-                return Json(new
-                {
-                    success = true,
-                    message = message
-                });
             }
             catch
             {

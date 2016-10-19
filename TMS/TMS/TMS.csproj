@@ -317,6 +317,7 @@
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="Utils\ValidateDateSQLAttribute.cs" />
     <Compile Include="Utils\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />

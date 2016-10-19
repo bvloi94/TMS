@@ -236,10 +236,15 @@
             options = $.extend({}, options, { timeout: 3000 });
             if (!options.message) {
                 options.message = getFlashMessageFromCookie();
+                options.status = getFlashMessageStatusFromCookie();
                 deleteFlashMessageCookie();
             }
             if (options.message) {
-                $.notify(options.message, "success");
+                if (options.status) {
+                    $.notify(options.message, options.status);
+                } else {
+                    $.notify(options.message, "success");
+                }
             }
         };
 
@@ -247,8 +252,13 @@
             return $.cookie("FlashMessage");
         }
 
+        function getFlashMessageStatusFromCookie() {
+            return $.cookie("FlashMessageStatus");
+        }
+
         function deleteFlashMessageCookie() {
             $.removeCookie('FlashMessage', { path: '/' });
+            $.removeCookie('FlashMessageStatus', { path: '/' });
         }
         $(document).ready(function () {
             $(".datetime").datetimepicker({
