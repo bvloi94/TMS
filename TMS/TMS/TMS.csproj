@@ -213,6 +213,7 @@
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
@@ -379,6 +380,7 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
+    <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\jquery.noty.js" />
     <Content Include="Content\js\select2.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.js" />
@@ -530,6 +532,7 @@
     <Content Include="Areas\Admin\Views\ManageSC\Category.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\CreateNewTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
