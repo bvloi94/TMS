@@ -235,7 +235,7 @@
                         <b>Solution: </b>
                     </div>
                     <div class="col-sm-10">
-                        @Html.TextAreaFor(m => m.Solution, new { @class = "form-control", id = "new-solution", rows = "6" })
+                        @Html.TextAreaFor(m => m.Solution, new { @class = "form-control", id = "new-solution", rows = "8" })
                         @Html.ValidationMessageFor(m => m.Solution, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -257,11 +257,11 @@
                         <input type="button" id="saveBtn" style="width: 80px;" value="Save" name="command" class="btn btn-success btn-flat" />
                         @if (ViewBag.Role == "Technician")
                         {
-                            @Html.Raw("<a class='btn btn-default btn-flat' href='" + Url.Action("Index", "ManageTicket", new { Area = "Technician" }) + "'>Cancel</a>")
+                            @Html.Raw("<a class='btn btn-default btn-flat' style='margin-left: 11px' href='" + Url.Action("Index", "ManageTicket", new { Area = "Technician" }) + "'>Cancel</a>")
                         }
                         else
                         {
-                            @Html.Raw("<a class='btn btn-default btn-flat' href='" + Url.Action("Index", "ManageTicket", new { Area = "HelpDesk" }) + "'>Cancel</a>")
+                            @Html.Raw("<a class='btn btn-default btn-flat' style='margin-left: 11px' href='" + Url.Action("Index", "ManageTicket", new { Area = "HelpDesk" }) + "'>Cancel</a>")
                         }
                     </div>
                 </div>
