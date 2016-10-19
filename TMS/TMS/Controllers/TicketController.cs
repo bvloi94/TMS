@@ -248,7 +248,8 @@ namespace TMS.Controllers
             AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
             AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
-            String ticketType, ticketMode;
+            String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact;
+            String scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate;
 
             switch (ticket.Type)
             {
@@ -265,6 +266,14 @@ namespace TMS.Controllers
                 case 3: ticketMode = ConstantUtil.TicketModeString.Email; break;
                 default: ticketMode = "-"; break;
             }
+            
+            ticketUrgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name;
+            ticketPriority = ticket.Priority == null ? "-" : ticket.Priority.Name;
+            ticketImpact = ticket.Impact == null ? "-" : ticket.Impact.Name;
+            scheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            scheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
 
             string categoryPath = "-";
             if (ticket.Category != null)
@@ -277,26 +286,27 @@ namespace TMS.Controllers
                     categoryPath = parentCate.Name + "  >  " + categoryPath;
                 }
             }
+
             return Json(new
             {
                 id = ticket.ID,
                 subject = ticket.Subject,
-                description = ticket.Description == null ? "-" : ticket.Description,
+                description = ticket.Description ?? "-",
                 type = ticketType,
                 mode = ticketMode,
-                urgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name,
-                priority = ticket.Priority == null ? "-" : ticket.Priority.Name,
+                urgency = ticketUrgency,
+                priority = ticketPriority,
                 category = categoryPath,
-                impact = ticket.Impact == null ? "-" : ticket.Impact.Name,
-                impactDetail = ticket.ImpactDetail == null ? "-" : ticket.ImpactDetail,
+                impact = ticketImpact,
+                impactDetail = ticket.ImpactDetail ?? "-",
                 status = ticket.Status,
                 createdDate = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat),
                 lastModified = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat),
-                scheduleStart = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-",
-                scheduleEnd = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-",
-                actualStart = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-",
-                actualEnd = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-",
-                solution = ticket.Solution == null ? "-" : ticket.Solution,
+                scheduleStart = scheduleStartDate,
+                scheduleEnd = scheduleEndDate,
+                actualStart = actualStartDate,
+                actualEnd = actualEndDate,
+                solution = ticket.Solution ?? "-",
                 solver = solver == null ? "-" : solver.Fullname,
                 creater = creater == null ? "-" : creater.Fullname,
                 assigner = assigner == null ? "-" : assigner.Fullname,
@@ -304,7 +314,7 @@ namespace TMS.Controllers
                 department = technician.Department.Name == null ? "-" : technician.Department.Name
             }, JsonRequestBehavior.AllowGet);
         }
-        
+
         [HttpGet]
         public ActionResult Solve(int id)
         {
