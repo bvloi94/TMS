@@ -80,6 +80,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
         {
             ModelErrorViewModel errs = null;
@@ -312,6 +313,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
         {
             ModelErrorViewModel errs = null;

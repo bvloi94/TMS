@@ -12,13 +12,14 @@
             <!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" role="form" id="form-edit-ticket" method="POST">
-                    <input type="hidden" name="Id" value="@Model.Id" />
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="Id" value="@Model.Id"/>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label col-md-3">Subject <font color="red">*</font></label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control" name="Subject" placeholder="Subject" value="@Model.Subject" />
+                                    <input type="text" class="form-control" name="Subject" placeholder="Subject" value="@Model.Subject"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -35,7 +36,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Status</label>
                                 <div class="col-md-9" id="div-status">
-                                    <input type="hidden" name="statusId" value="@Model.StatusId" />
+                                    <input type="hidden" name="statusId" value="@Model.StatusId"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -90,7 +91,7 @@
 
                         </div>
                     </div>
-                    <br />
+                    <br/>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -100,7 +101,7 @@
                                     <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="@Model.Requester" readonly>
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico" /></a>
+                                    <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico"/></a>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -125,7 +126,7 @@
                                 <label class="control-label col-md-3">Created By</label>
                                 <div class="col-md-9">
                                     <input type="hidden" id="createdId" name="CreatedId" value="@Model.CreatedId">
-                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy" >@Model.CreatedBy</label>
+                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy">@Model.CreatedBy</label>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -156,50 +157,50 @@
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate" value="@Model.ScheduleStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate" value="@Model.ScheduleStartDate"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate" value="@Model.ScheduleEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate" value="@Model.ScheduleEndDate"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Actual Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ActualStartDate" value="@Model.ActualStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ActualStartDate" value="@Model.ActualStartDate"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Actual End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ActualEndDate" value="@Model.ActualEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ActualEndDate" value="@Model.ActualEndDate"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Modified Time</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" name="ModifiedTime" value="@Model.ModifiedTime" readonly />
+                                    <input type="text" class="form-control" name="ModifiedTime" value="@Model.ModifiedTime" readonly/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Solved Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control" name="SolvedDate" value="@Model.SolvedDate" readonly />
+                                    <input type="text" class="form-control" name="SolvedDate" value="@Model.SolvedDate" readonly/>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group" style="text-align: center;">
-                                <div class="form-error-messages" data-role="group-form-error"></div>
+                            <div class="form-error-messages" data-role="group-form-error"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group " style="text-align: center;">
-                            <input type="button" value="Update" data-role="btn-update-ticket" class="btn btn-default bg-olive btn-flat" />
-                            <input type="button" value="Cancel" data-role="btn-cancel" class="btn btn-default btn-flat" />
+                            <input type="button" value="Update" data-role="btn-update-ticket" class="btn btn-default bg-olive btn-flat"/>
+                            <input type="button" value="Cancel" data-role="btn-cancel" class="btn btn-default btn-flat"/>
                         </div>
                     </div>
                 </form>
@@ -262,7 +263,8 @@
             .on("click",
                 function() {
                     var formData = new FormData($("#form-edit-ticket")[0]);
-                    //formData.append('description', $("#descriptionEditor").val());
+                    var token = $('input[name="__RequestVerificationToken"]', $("#form-edit-ticket")).val();
+                    formData.append('__RequestVerificationToken', token);
                     //var formData = $("#form-edit-ticket").serialize();
                     $.ajax({
                         "url": "/HelpDesk/ManageTicket/UpdateTicket",
