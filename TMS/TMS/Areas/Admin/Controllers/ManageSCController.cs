@@ -12,6 +12,7 @@ namespace TMS.Areas.Admin.Controllers
 {
     public class ManageSCController : Controller
     {
+        private TMSEntities db = new TMSEntities();
         private UnitOfWork _unitOfWork;
         private ImpactService _impactService;
         private UrgencyService _urgencyService;
@@ -55,12 +56,12 @@ namespace TMS.Areas.Admin.Controllers
         public ActionResult GetImpacts(jQueryDataTableParamModel param)
         {
             var impactList = _impactService.GetAll();
-            var defaultSearchKey = Request["search[value]"];
+            var default_search_key = Request["search[value]"];
 
             IEnumerable<Impact> filteredListItems;
-            if (!string.IsNullOrEmpty(defaultSearchKey))
+            if (!string.IsNullOrEmpty(default_search_key))
             {
-                filteredListItems = impactList.Where(p => p.Name.ToLower().Contains(defaultSearchKey.ToLower()));
+                filteredListItems = impactList.Where(p => p.Name.ToLower().Contains(default_search_key.ToLower()));
             }
             else
             {
@@ -100,7 +101,7 @@ namespace TMS.Areas.Admin.Controllers
         public ActionResult GetUrgency(jQueryDataTableParamModel param)
         {
             var urgencyList = _urgencyService.GetAll();
-
+            var default_search_key = Request["search[value]"];
             //var jsonData = new
             //{
             //    data = ticketList
@@ -108,9 +109,9 @@ namespace TMS.Areas.Admin.Controllers
             //return Json(jsonData, JsonRequestBehavior.AllowGet);
 
             IEnumerable<Urgency> filteredListItems;
-            if (!string.IsNullOrEmpty(param.sSearch))
+            if (!string.IsNullOrEmpty(default_search_key))
             {
-                filteredListItems = urgencyList.Where(p => p.Name.ToLower().Contains(param.sSearch.ToLower()));
+                filteredListItems = urgencyList.Where(p => p.Name.ToLower().Contains(default_search_key.ToLower()));
             }
             else
             {
@@ -150,7 +151,7 @@ namespace TMS.Areas.Admin.Controllers
         public ActionResult GetPriority(jQueryDataTableParamModel param)
         {
             var priorityList = _priorityService.GetAll();
-
+            var default_search_key = Request["search[value]"];
             //var jsonData = new
             //{
             //    data = ticketList
@@ -158,9 +159,9 @@ namespace TMS.Areas.Admin.Controllers
             //return Json(jsonData, JsonRequestBehavior.AllowGet);
 
             IEnumerable<Priority> filteredListItems;
-            if (!string.IsNullOrEmpty(param.sSearch))
+            if (!string.IsNullOrEmpty(default_search_key))
             {
-                filteredListItems = priorityList.Where(p => p.Name.ToLower().Contains(param.sSearch.ToLower()));
+                filteredListItems = priorityList.Where(p => p.Name.ToLower().Contains(default_search_key.ToLower()));
             }
             else
             {
@@ -472,7 +473,7 @@ namespace TMS.Areas.Admin.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = "Create priority sucessfull"
+                        message = "Create priority sucessfull!"
                     });
                 }
                 catch (Exception)
@@ -649,7 +650,7 @@ namespace TMS.Areas.Admin.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = "Update urgency successfully!"
+                        message = "Update priority successfully!"
                     });
                 }
             }

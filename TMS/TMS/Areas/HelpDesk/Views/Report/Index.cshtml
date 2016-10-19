@@ -1,0 +1,253 @@
+﻿@{
+    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    //ViewBag.Title = "Ticket Management";
+}
+
+<style>
+    .graph {
+        width: 300px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-8">
+        <div class="box box-primary">
+            <div class="box-body" id="draw-graph">
+                <canvas id="pieChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-4">
+        <div class="box box-primary">
+            <div class="box-body graph">
+                <br />
+                <div class="form-horizontal">
+                    <!--Dropdown type-->
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Type:</label>
+                        <div class="col-sm-7">
+                            <select class="form-control" id="dropdownType">
+                                <option value="0">All tickets</option>
+                                <option value="1">All requests</option>
+                                <option value="2">All problems</option>
+                                <option value="3">All changes</option>
+                                <option value="4">All pending requests</option>
+                                <option value="5">All pending problems</option>
+                                <option value="6">All pending changes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!--Dropdown By-->
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">By:</label>
+                        <div class="col-sm-7">
+                            <select class="form-control" id="dropdownBy">
+                                <option value="0">--Choose one--</option>
+                                <option value="1">Category</option>
+                                <option value="2">Impact</option>
+                                <option value="3">Urgency</option>
+                                <option value="4">Priority</option>
+                                <option value="5">Group</option>
+                                <option value="6">Status</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!--Date From-->
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Date From:</label>
+                        <div class="col-sm-7">
+                            <input type="text" class="form-control datetime" placeholder="DD/MM/YYYY" id="date-from-txt">
+                        </div>
+                    </div>
+                    <!--Date to-->
+                    <div class="form-group">
+                        <label class="col-sm-5 control-label">Date To:</label>
+                        <div class="col-sm-7">
+                            <input type="datetime" class="form-control datetime" placeholder="DD/MM/YYYY" id="date-to-txt">
+                        </div>
+                    </div>
+                    <!--Button Generate Report-->
+                    <div class="form-group">
+                        <div class="col-sm-offset-4">
+                            <button id="btnGenerate">Generate Report</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-12">
+    <div class="box box-primary">
+        <!-- /.box-header -->
+        <div class="box-body">
+            <table class="table table-bordered table-hover" id="ticket-table-report">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Requester</th>
+                        <th>Technician</th>
+                        <th>Sovle Date</th>
+                        <th>Create Time</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <!-- /.box-body -->
+    </div>
+    <!-- /.box -->
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/chart")
+    <script>
+        var defaultColors = ["#FF6384", "#36A2EB", "#FFCE56", "#f0f8ff", "#a4c639", "#8db600", "#ff9966", "#007fff", "#fae7b5", "#000000",
+                              "#318ce7", "#ace5ee", "#8a2be2", "#1dacd6", "#ffc1cc", "#536872", "#006b3c"];
+        var generatereport = $("#draw-graph");
+
+        function ProcessGraph() {
+            $.ajax({
+                "url": "/HelpDesk/Report/DrawGraph",
+                "method": "POST",
+                "data": {
+                    type: $("#dropdownType").val(),
+                    by: $("#dropdownBy").val(),
+                    date_from_select : $("#date-from-txt").val(),
+                    date_to_select: $("#date-to-txt").val()
+                },
+                "success": function (data) {
+                    drawChart(data.label, data.data)
+                }
+            });
+        }
+
+        $("#dropdownType")
+            .on("change",
+                function() {
+                    ProcessGraph();
+                });
+        $("#dropdownBy").on("change", function() {
+            ProcessGraph();
+        });
+        //var chartLabels = [];
+        //var chartData = [];
+        //for (var i=0; i<5; i++) {
+        //    chartLabels[i] = ""+i;
+        //    chartData[i] = i;
+        //}
+        //drawChart(chartLabels, chartData);
+
+        function drawChart(chartLabels, chartData) {
+            var colors = [];
+            for (var i = 0; i < chartLabels.length; i++) {
+                colors[i] = defaultColors[i];
+            }
+            $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
+            var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+            var pieChart = new Chart(pieChartCanvas,
+            {
+                type: 'doughnut',
+                data: {
+                    labels: chartLabels, // labels format: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                    datasets: [
+                        {
+                            data: chartData, // data format: [12, 19, 3, 5, 2, 3]
+                            backgroundColor: colors
+                            //hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                        }
+                    ]
+                }
+            });
+        }
+
+        var
+            ticketTableReport = $("#ticket-table-report")
+            .dataTable({
+                processing: true,
+                serverSide: true,
+                paging: true,
+                sort: true,
+                ajax: {
+                    url: "/HelpDesk/Report/GetTickets",
+                    type: "POST",
+                    data: function (d) {
+                        d.date_from_select = $("#date-from-txt").val(),
+                            d.date_to_select = $("#date-to-txt").val()
+                    }
+                },
+                drawCallback: function(settings) {
+                    //var api = this.api();
+                },
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            return row[0];
+                        },
+                        "targets": 0,
+                        "type": "date"
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[1];
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[2]
+                        },
+                        "targets": 2
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[3]
+                        },
+                        "targets": 3
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[4];
+                        },
+                        "targets": 4,
+                        "type": "date"
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[5];
+                        },
+                        "targets": 5
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[6];
+                        },
+                        "targets": 6
+                    }
+                ]
+            });
+
+        var reloadDataTable = function () {
+            var oTable = $("#ticket-table-report").dataTable();
+            oTable.api().ajax.reload();
+
+        };
+
+        $("#date-from-txt")
+            .on("change",
+                function () {
+                    ticketTableReport.fnDraw();
+                });
+
+        $("#date-to-txt")
+            .on("change",
+                function () {
+                    ticketTableReport.fnDraw();
+                });
+
+    </script>
+}

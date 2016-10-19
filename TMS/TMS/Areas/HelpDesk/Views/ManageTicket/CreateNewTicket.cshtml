@@ -40,11 +40,12 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3"></label>
                                 <div class="col-md-9">
-                                    <input class="form-control" type="file" name="descriptionFiles" multiple>
+                                    <input class="form-control" type="file" id="descriptionFiles" name="descriptionFiles" multiple>
                                     @*<div class="btn btn-default btn-file">
-                                            <i class="fa fa-paperclip"></i> Attachment
-                                            <input type="file" name="file" multiple>
-                                        </div>*@
+                                        <i class="fa fa-paperclip"></i> Attachment
+                                        <input class="form-control" type="file" name="descriptionFiles" id="descriptionFiles" multiple>
+                                    </div>
+                                    <output id="list"></output>*@
                                 </div>
                             </div>
                         </div>
@@ -103,7 +104,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Technician</label>
                                 <div class="col-md-9">
-                                    <select class="form-control" name="Technician" data-role="ddl-technician"></select>
+                                    <select class="form-control" name="TechnicianId" data-role="ddl-technician"></select>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -150,15 +151,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label class="control-label col-md-2"></label>
-                            <div class="col-md-10">
-                                <div class="form-error-messages" data-role="group-form-error"></div>
-                            </div>
-                        </div>
-                    </div>
                 </form>
+                <div class="row" style="text-align: center;">
+                    <div class="form-error-messages" data-role="group-form-error"></div>
+                </div>
                 <div class="row">
                     <div class="form-group " style="text-align: center;">
                         <input type="button" value="Save" data-role="btn-submit-new-ticket" class="btn btn-default bg-olive btn-flat" />
@@ -188,17 +184,17 @@
                 <table class="table table-bordered table-striped" id="requester-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Department Name</th>
-                            <th>Phone</th>
-                            <th>Job Title</th>
+                            <th style="width: 30%;">Name</th>
+                            <th style="width: 20%;">Email</th>
+                            <th style="width: 25%;">Department</th>
+                            <th style="width: 15%;">Phone</th>
+                            <th style="width: 10%;">Job</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
-            <div class="modal-footer" >
+            <div class="modal-footer" style="text-align: center;" >
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -219,6 +215,9 @@
                 function () {
                     window.location.href = "/HelpDesk/ManageTicket";
                 });
+
+        //$('#descriptionFiles').addEventListener('change', handleFileSelect, false);
+
 
         $("[data-role=btn-submit-new-ticket]").on("click", function () {
             var formData = new FormData($('#form-new-ticket')[0]);
@@ -328,10 +327,20 @@
             $("#modal-add-requester").modal("hide");
         }
 
+        $("[data-role='ddl-department']")
+            .on("change",
+                function () {
+                    $("[data-role='ddl-technician']").select2("val", "");
+                });
+
         $(document)
             .ready(function () {
                 setActiveTicketMenu();
                 initDropdownControl();
+                loadInitDropdown('ddl-urgency', 'None', 0);
+                loadInitDropdown('ddl-priority', 'None', 0);
+                loadInitDropdown('ddl-impact', 'None', 0);
+                loadInitDropdown('ddl-category', 'None', 0);
                 requesterTable = initRequesterTable($("#requester-table"));
             });
     </script>

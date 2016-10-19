@@ -8,10 +8,12 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using log4net;
 using Microsoft.AspNet.Identity;
 using TMS.DAL;
 using TMS.Enumerator;
 using TMS.Models;
+using TMS.Schedulers;
 using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
@@ -22,6 +24,9 @@ namespace TMS.Areas.HelpDesk.Controllers
 {
     public class ManageTicketController : Controller
     {
+
+        private ILog log = LogManager.GetLogger(typeof(JobManager));
+
         private TMSEntities db = new TMSEntities();
 
         public TicketService _ticketService { get; set; }
@@ -119,7 +124,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     success = false,
                     data = errs,
-                    msg = "Please input requester!",
+                    msg = "Please select requester!",
                 });
             }
 
@@ -208,10 +213,11 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             catch (DbUpdateException ex)
             {
+                log.Error("An error has occured while update ticket.", ex);
                 return Json(new
                 {
                     success = false,
-                    msg = ex.Message
+                    msg = "Some error occured. Please try again later!"
                 });
             }
 
@@ -245,7 +251,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
             }
             if (ticket.Type != null) model.Type = (int)ticket.Type;
-            model.Mode = ticket.Mode;
             if (ticket.Status != null)
             {
                 model.StatusId = (int)ticket.Status;
@@ -278,7 +283,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
+            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.CreatedTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
             model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
 
@@ -344,7 +349,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     success = false,
                     data = errs,
-                    msg = "Please input requester!",
+                    msg = "Please select requester!",
                 });
             }
 
@@ -401,15 +406,18 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.ModifiedTime = DateTime.Now;
             ticket.Subject = model.Subject;
             ticket.Type = model.Type;
-            ticket.Mode = model.Mode;
             ticket.Description = model.Description;
             ticket.RequesterID = model.RequesterId;
             ticket.Solution = model.Solution;
             if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
+            else ticket.ImpactID = null;
             ticket.ImpactDetail = model.ImpactDetail;
             if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
+            else ticket.UrgencyID = null;
             if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
+            else ticket.PriorityID = null;
             if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
+            else ticket.CategoryID = null;
 
             if (!string.IsNullOrEmpty(model.TechnicianId))
             {
@@ -427,10 +435,11 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             catch (DbUpdateException ex)
             {
+                log.Error("An error has occured while update ticket.", ex);
                 return Json(new
                 {
                     success = false,
-                    msg = ex.Message
+                    msg = "Some error occured. Please try again later!"
                 });
             }
 
@@ -624,7 +633,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     s.Technician = "";
                 }
-                s.SolvedDate = item.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
+                s.SolvedDate = item.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
                 s.Status = item.Status.HasValue ? ((TicketStatusEnum)item.Status).ToString() : "";
                 s.ModifiedTime = item.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
                 tickets.Add(s);
@@ -685,7 +694,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateFormat) ?? "";
+            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
             model.CreatedTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
             model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
             if (!string.IsNullOrEmpty(ticket.CreatedID))

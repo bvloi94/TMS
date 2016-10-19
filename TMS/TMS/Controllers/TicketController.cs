@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -249,7 +250,17 @@ namespace TMS.Controllers
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
             AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
             String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact, department = "-";
-            String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate;
+            String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
+
+            IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id);
+            string attachmentStr = "";
+            if (ticketAttachments.Count() > 0)
+            {
+                foreach (var attachFile in ticketAttachments)
+                {
+                    attachmentStr += attachFile.Path.Split('/').Last().Substring(17) + " ";
+                }
+            }
 
             switch (ticket.Type)
             {
@@ -276,6 +287,8 @@ namespace TMS.Controllers
             scheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
             actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
             actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+            solvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+
             if (technician != null)
             {
                 department = technician.Department == null ? "-" : technician.Department.Name;
@@ -298,6 +311,8 @@ namespace TMS.Controllers
                 }
             }
 
+            
+
             return Json(new
             {
                 id = ticket.ID,
@@ -313,6 +328,7 @@ namespace TMS.Controllers
                 status = ticket.Status,
                 createdDate = createdDate,
                 lastModified = modifiedDate,
+                solvedDate = solvedDate,
                 scheduleStart = scheduleStartDate,
                 scheduleEnd = scheduleEndDate,
                 actualStart = actualStartDate,
@@ -322,7 +338,8 @@ namespace TMS.Controllers
                 creater = creater == null ? "-" : creater.Fullname,
                 assigner = assigner == null ? "-" : assigner.Fullname,
                 technician = technician == null ? "-" : technician.Fullname,
-                department = department
+                department = department,
+                attachments = attachmentStr
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -518,8 +535,20 @@ namespace TMS.Controllers
             }
 
             var message = "";
+
+            if (string.IsNullOrWhiteSpace(solution))
+            {
+                message = "Please enter solution!";
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    msg = message
+                });
+            }
             ticket.ModifiedTime = DateTime.Now;
             ticket.Solution = solution;
+            
             switch (command)
             {
                 case "solveBtn":
@@ -535,6 +564,7 @@ namespace TMS.Controllers
             }
             return Json(new
             {
+                success = true,
                 msg = message,
                 userRole = userRole.Name
             });

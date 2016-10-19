@@ -82,6 +82,7 @@ namespace TMS.Areas.Admin.Controllers
                 admin.Email = model.Email;
                 admin.Birthday = model.DayOfBirth;
                 admin.Address = model.Address;
+                admin.PhoneNumber = model.Phone;
                 admin.Gender = model.Gender;
                 // handle avatar
                 if (model.Avatar != null)
