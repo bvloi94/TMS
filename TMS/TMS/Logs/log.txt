@@ -85,3 +85,43 @@ ERROR 2016-10-19 12:15:21,976 JobManager             ExecuteAllJobs     - The Jo
 DEBUG 2016-10-19 12:15:22,075 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
 DEBUG 2016-10-19 12:15:22,075 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
 DEBUG 2016-10-19 12:15:22,077 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-19 12:25:15,653 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-19 12:25:15,889 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-19 12:25:15,923 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-19 12:25:15,924 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-19 12:25:15,926 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-19 12:34:29,149 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-19 12:34:29,367 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-19 12:34:29,414 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-19 12:34:29,414 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-19 12:34:29,418 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-19 12:36:38,873 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-19 12:36:39,088 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-19 12:36:39,136 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-19 12:36:39,137 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-19 12:36:39,140 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-19 12:38:28,142 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-19 12:38:28,411 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-19 12:38:28,446 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-19 12:38:28,447 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-19 12:38:28,450 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-19 12:39:53,975 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-19 12:39:54,210 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-19 12:39:54,260 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-19 12:39:54,261 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-19 12:39:54,265 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-19 12:44:09,678 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-19 12:44:09,879 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-19 12:44:09,913 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-19 12:44:09,914 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-19 12:44:09,918 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-19 12:47:00,802 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-19 12:47:01,019 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-19 12:47:01,060 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-19 12:47:01,061 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-19 12:47:01,066 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-10-19 13:45:03,255 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+ERROR 2016-10-19 13:45:03,481 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-10-19 13:45:03,518 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-10-19 13:45:03,518 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-10-19 13:45:03,522 JobManager             ExecuteAllJobs     - End Method
