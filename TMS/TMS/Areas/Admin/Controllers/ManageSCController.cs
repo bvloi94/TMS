@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -12,12 +13,12 @@ namespace TMS.Areas.Admin.Controllers
 {
     public class ManageSCController : Controller
     {
-        private TMSEntities db = new TMSEntities();
         private UnitOfWork _unitOfWork;
         private ImpactService _impactService;
         private UrgencyService _urgencyService;
         private PriorityService _priorityService;
         private CategoryService _categoryService;
+        private ILog log = LogManager.GetLogger(typeof(ManageSCController));
 
         public ManageSCController()
         {
@@ -777,6 +778,8 @@ namespace TMS.Areas.Admin.Controllers
             }
         }
 
+        #region category
+
         [HttpPost]
         public ActionResult CreateCategory(CategoryViewModel model)
         {
@@ -805,8 +808,9 @@ namespace TMS.Areas.Admin.Controllers
                         message = "Create new category successfully!"
                     });
                 }
-                catch
+                catch (Exception e)
                 {
+                    log.Error("Create category error.", e);
                     return Json(new
                     {
                         success = false,
@@ -846,8 +850,9 @@ namespace TMS.Areas.Admin.Controllers
                         message = "Create new sub category successfully!"
                     });
                 }
-                catch
+                catch (Exception e)
                 {
+                    log.Error("Create sub category error.", e);
                     return Json(new
                     {
                         success = false,
@@ -887,8 +892,9 @@ namespace TMS.Areas.Admin.Controllers
                         message = "Create new item successfully!"
                     });
                 }
-                catch
+                catch (Exception e)
                 {
+                    log.Error("Create item error.", e);
                     return Json(new
                     {
                         success = false,
@@ -905,22 +911,22 @@ namespace TMS.Areas.Admin.Controllers
             if (id.HasValue)
             {
                 Category category = _categoryService.GetCategoryById(id.Value);
-                return Json(new
+                if (category != null)
                 {
-                    success = true,
-                    name = category.Name,
-                    description = category.Description
-                }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Cannot get category detail!"
-                }, JsonRequestBehavior.AllowGet);
+                    return Json(new
+                    {
+                        success = true,
+                        name = category.Name,
+                        description = category.Description
+                    }, JsonRequestBehavior.AllowGet);
+                }
             }
 
+            return Json(new
+            {
+                success = false,
+                message = "Cannot get category detail!"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -929,27 +935,28 @@ namespace TMS.Areas.Admin.Controllers
             if (id.HasValue)
             {
                 Category category = _categoryService.GetCategoryById(id.Value);
-                return Json(new
+                if (category != null)
                 {
-                    success = true,
-                    name = category.Name,
-                    description = category.Description,
-                    parentId = category.ParentID,
-                    categories = _categoryService.GetCategories().Select(m => new {
-                        m.ID,
-                        m.Name
-                    }).ToArray()
-                }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Cannot get sub category detail!"
-                }, JsonRequestBehavior.AllowGet);
+                    return Json(new
+                    {
+                        success = true,
+                        name = category.Name,
+                        description = category.Description,
+                        parentId = category.ParentID,
+                        categories = _categoryService.GetCategories().Select(m => new
+                        {
+                            m.ID,
+                            m.Name
+                        }).ToArray()
+                    }, JsonRequestBehavior.AllowGet);
+                }
             }
 
+            return Json(new
+            {
+                success = false,
+                message = "Cannot get sub category detail!"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -958,28 +965,28 @@ namespace TMS.Areas.Admin.Controllers
             if (id.HasValue)
             {
                 Category category = _categoryService.GetCategoryById(id.Value);
-                return Json(new
+                if (category != null)
                 {
-                    success = true,
-                    name = category.Name,
-                    description = category.Description,
-                    parentId = category.ParentID,
-                    categories = _categoryService.GetSubCategories().OrderBy(m => m.ParentID).Select(m => new CategoryViewModel
+                    return Json(new
                     {
-                        ID = m.ID,
-                        Name = _categoryService.GetCategoryById(m.ParentID.Value).Name + " > " + m.Name
-                    }).ToArray()
-                }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Cannot get sub category detail!"
-                }, JsonRequestBehavior.AllowGet);
+                        success = true,
+                        name = category.Name,
+                        description = category.Description,
+                        parentId = category.ParentID,
+                        categories = _categoryService.GetSubCategories().OrderBy(m => m.ParentID).Select(m => new CategoryViewModel
+                        {
+                            ID = m.ID,
+                            Name = _categoryService.GetCategoryById(m.ParentID.Value).Name + " > " + m.Name
+                        }).ToArray()
+                    }, JsonRequestBehavior.AllowGet);
+                }
             }
 
+            return Json(new
+            {
+                success = false,
+                message = "Cannot get item detail!"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -1011,8 +1018,9 @@ namespace TMS.Areas.Admin.Controllers
                             message = "Edit category successfully!"
                         });
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        log.Error("Edit category error.", e);
                         return Json(new
                         {
                             success = false,
@@ -1063,8 +1071,9 @@ namespace TMS.Areas.Admin.Controllers
                             message = "Edit sub category successfully!"
                         });
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        log.Error("Edit sub category error.", e);
                         return Json(new
                         {
                             success = false,
@@ -1115,8 +1124,9 @@ namespace TMS.Areas.Admin.Controllers
                             message = "Edit item successfully!"
                         });
                     }
-                    catch
+                    catch (Exception e)
                     {
+                        log.Error("Edit item error.", e);
                         return Json(new
                         {
                             success = false,
@@ -1178,8 +1188,9 @@ namespace TMS.Areas.Admin.Controllers
                         message = "Delete category successfully!"
                     });
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    log.Error("Delete category error.", e);
                     return Json(new
                     {
                         success = false,
@@ -1189,5 +1200,7 @@ namespace TMS.Areas.Admin.Controllers
                 }
             }
         }
+
+        #region priority matrix
     }
 }

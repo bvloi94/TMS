@@ -457,7 +457,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                 case 1: //success
                     return Json(new
                     {
-                        success = true
+                        success = true,
+                        msg = "Ticket was cancelled successfully!"
                     });
                 case 2: //unavailable ticket
                     return Json(new
@@ -469,7 +470,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     return Json(new
                     {
                         success = false,
-                        msg = "This ticket cannot be cancelled"
+                        msg = "This ticket cannot be cancelled!"
                     });
                 case 4: //error
                 default:
@@ -511,7 +512,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                         return Json(new
                         {
                             success = false,
-                            msg = "There are some tickets which cannot be merged! \nNew or Assigned tickets only can be merged!"
+                            msg = "There are some tickets which cannot be merged! \nOnly New or Assigned tickets can be merged!"
                         });
                     }
                     requesterId = ticket.RequesterID;

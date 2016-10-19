@@ -294,7 +294,7 @@ $(document)
                                 if (data.success) {
                                     $("#modal-cancel-ticket").modal("hide");
                                     noty({
-                                        text: "Ticket was canceled!",
+                                        text: data.msg,
                                         layout: "topCenter",
                                         type: "success",
                                         timeout: 2000
