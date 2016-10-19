@@ -11,6 +11,8 @@ namespace TMS
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-2.2.3.min.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/chart").Include(
+                        "~/Content/js/chart.min.js"));
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 

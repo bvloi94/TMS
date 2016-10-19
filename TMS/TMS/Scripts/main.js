@@ -66,6 +66,12 @@ function readURL(input) {
     }
 }
 
+function loadInitDropdown(selector, text, value) {
+    var opt = new Option(text, value, true, true);
+    $("[data-role='" + selector + "']").append(opt);
+    $("[data-role='" + selector + "']").trigger("change");
+}
+
 function initRequesterTable(selector) {
     return selector.dataTable({
         processing: true,
@@ -122,6 +128,21 @@ function initRequesterTable(selector) {
         ]
     });
 }
+
+function handleFileSelect(evt) {
+    var files = evt.target.files;
+    var f = files[0];
+    var reader = new FileReader();
+
+    reader.onload = (function (theFile) {
+        return function (e) {
+            document.getElementById('list').innerHTML = ['<img src="', e.target.result, '" title="', theFile.name, '" width="50" />'].join('');
+        };
+    })(f);
+
+    reader.readAsDataURL(f);
+}
+
 
 $(document).ready(function () {
 

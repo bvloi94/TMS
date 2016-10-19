@@ -55,7 +55,9 @@ function initTicketTable() {
             {
                 "targets": [4],
                 "sortable": false,
-                "data": "SolvedDate"
+                "render": function (data, type, row) {
+                    return row.SolvedDate != "" ? row.Technician : "-";
+                }
             }, {
                 "targets": [5],
                 "render": function (data, type, row) {
@@ -64,7 +66,9 @@ function initTicketTable() {
             },
             {
                 "targets": [6],
-                "data": "ModifiedTime"
+                "render": function (data, type, row) {
+                    return row.ModifiedTime != "" ? row.ModifiedTime : "-";
+                }
             },
             {
                 "targets": [7],
@@ -199,6 +203,13 @@ function openTicketDetailModal(ticketId) {
                 $('#ticket-solution').text(data.solution);
             }
 
+            if (!data.attachments || data.attachments == "") {
+                $('#ticket-attachment').text("-");
+            } else {
+                $('#ticket-attachment').text(data.attachments);
+            }
+
+
             $('[data-role="modal-btn-solve"]').attr("href", "/Ticket/Solve/" + data.id);
 
             if (data.status == 1) {
@@ -229,6 +240,7 @@ function openTicketDetailModal(ticketId) {
 
             $('#ticket-created-date').text(data.createdDate);
             $('#ticket-modified-date').text(data.lastModified);
+            $('#ticket-solved-date').text(data.solvedDate);
             $('#ticket-schedule-start').text(data.scheduleStart);
             $('#ticket-schedule-end').text(data.scheduleEnd);
             $('#ticket-actual-start').text(data.actualStart);
