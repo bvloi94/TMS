@@ -476,7 +476,6 @@ namespace TMS.Controllers
         public ActionResult SolveTicket(int id, string solution, string command)
         {
 
-            string createdId = "";
             AspNetRole userRole = null;
             if (User.Identity.GetUserId() != null)
             {

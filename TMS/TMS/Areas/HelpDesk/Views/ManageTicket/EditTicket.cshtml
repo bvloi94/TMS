@@ -66,10 +66,17 @@
                             </div>
                         </div>
                         <div class="col-md-6" style="margin-left: -30px;">
+                            
                             <div class="form-group">
-                                <label class="control-label col-md-4">Category</label>
+                                <label class="control-label col-md-4">Impact</label>
                                 <div class="col-md-8">
-                                    <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
+                                    <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-4">Impact Detail</label>
+                                <div class="col-md-8">
+                                    <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -85,15 +92,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label col-md-4">Impact</label>
+                                <label class="control-label col-md-4">Category</label>
                                 <div class="col-md-8">
-                                    <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Impact Detail</label>
-                                <div class="col-md-8">
-                                    <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
+                                    <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
                                 </div>
                             </div>
 
@@ -134,14 +135,14 @@
                                 <label class="control-label col-md-3">Created By</label>
                                 <div class="col-md-9">
                                     <input type="hidden" id="createdId" name="CreatedId">
-                                    <input class="form-control text-box single-line" id="createdBy" name="CreatedBy" type="text" value="" readonly>
+                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-3">Solved By</label>
                                 <div class="col-md-9">
                                     <input type="hidden" id="solveId" name="solveId">
-                                    <input class="form-control text-box single-line" id="solveBy" name="SolvedBy" type="text" value="" readonly>
+                                    <label style="font-weight: normal" class="control-label" id="solveBy" name="SolvedBy" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -171,31 +172,31 @@
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="ScheduleStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="ScheduleEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Actual Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="ActualStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ActualStartDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Actual End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="ActualEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ActualEndDate" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Modified Time</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetime" name="ModifiedTime" readonly />
+                                    <input type="text" class="form-control datetimep" name="ModifiedTime" readonly />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -204,12 +205,12 @@
                                     <input type="text" class="form-control datetime" name="SolvedDate" readonly />
                                 </div>
                             </div>
-                            <div class="form-group">
+                            @*<div class="form-group">
                                 <label class="control-label col-md-4">Unapprove Reason</label>
                                 <div class="col-md-8">
                                     <textarea class="form-control" name="UnapproveReason" placeholder="Unapprove Reason" cols="3"></textarea>
                                 </div>
-                            </div>
+                            </div>*@
                         </div>
                     </div>
                     <div class="row">
@@ -386,57 +387,7 @@
             $("#modal-add-requester").modal("show");
         }
 
-        function initRequesterTable() {
-            requesterTable = $("#requester-table")
-                .dataTable({
-                    processing: true,
-                    serverSide: true,
-                    paging: true,
-                    sort: true,
-                    autoWidth: true,
-                    ajax: {
-                        url: "/HelpDesk/ManageTicket/GetRequesterList"
-                    },
-                    "columnDefs": [
-                        {
-                            "render": function(data, type, row) {
-                                return '<a href="javascript:addSelectedUserToForm(\'' +
-                                    row[0] +
-                                    "\',\'" +
-                                    row[1] +
-                                    '\')">' +
-                                    row[1] +
-                                    '</a>';
-                            },
-                            "targets": 0
-                        },
-                        {
-                            "render": function(data, type, row) {
-                                return row[2];
-                            },
-                            "targets": 1
-                        },
-                        {
-                            "render": function(data, type, row) {
-                                return row[3];
-                            },
-                            "targets": 2
-                        },
-                        {
-                            "render": function(data, type, row) {
-                                return row[4];
-                            },
-                            "targets": 3
-                        },
-                        {
-                            "render": function(data, type, row) {
-                                return row[5];
-                            },
-                            "targets": 4
-                        }
-                    ]
-                });
-        }
+        
 
         function addSelectedUserToForm(requesterId, requesterName) {
             $("#requesterId").val(requesterId);
@@ -475,9 +426,9 @@
             $("[name='CreatedTime']").val('@Model.CreatedTime');
             $("[name='ModifiedTime']").val('@Model.ModifiedTime');
             $("#createdId").val('@Model.CreatedId');
-            $("#createdBy").val('@Model.CreatedBy');
+            $("#createdBy").html('@Model.CreatedBy');
             $("#solveId").val('@Model.SolvedId');
-            $("#solveBy").val('@Model.SolvedBy');
+            $("#solveBy").html('@Model.SolvedBy');
             $("#solutionEditor").html('@Model.Solution');
 
             $("[name='statusId']").val(@Model.StatusId);
@@ -487,7 +438,7 @@
         $(document)
             .ready(function() {
                 setActiveTicketMenu();
-                initRequesterTable();
+                requesterTable = initRequesterTable($("#requester-table"));
                 loadEditData();
                 initDropdownControl();
             });

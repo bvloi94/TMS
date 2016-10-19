@@ -1,44 +1,42 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TMS.ViewModels
 {
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class JqueryDatatableParameterViewModel
     {
-        /// <summary>
-        /// Request sequence number sent by DataTable,
-        /// same value must be returned in response
-        /// </summary>       
-        public string sEcho { get; set; }
-
-        /// <summary>
-        /// Text used for filtering
-        /// </summary>
-        public string sSearch { get; set; }
-
-        /// <summary>
-        /// Number of records that should be shown in table
-        /// </summary>
-        public int length { get; set; }
-
-        /// <summary>
-        /// First record that should be shown(used for paging)
-        /// </summary>
+        public int draw { get; set; }
         public int start { get; set; }
+        public int length { get; set; }
+        public Dictionary<string, string> search { get; set; }
+        public List<Dictionary<string, string>> order { get; set; }
+        public List<JQDTColumn> columns { get; set; }
 
-        /// <summary>
-        /// Number of columns in table
-        /// </summary>
-        public int iColumns { get; set; }
+    }
 
-        /// <summary>
-        /// Number of columns that are used in sorting
-        /// </summary>
-        public int iSortingCols { get; set; }
+    public enum JQDTColumnOrderDirection
+    {
+        asc, desc
+    }
 
-        /// <summary>
-        /// Comma separated list of column names
-        /// </summary>
-        public string sColumns { get; set; }
+    public class JQDTColumnOrder
+    {
+        public int column { get; set; }
+        public JQDTColumnOrderDirection dir { get; set; }
+    }
+    public class JQDTColumnSearch
+    {
+        public string value { get; set; }
+        public string regex { get; set; }
+    }
+
+    public class JQDTColumn
+    {
+        public string data { get; set; }
+        public string name { get; set; }
+        public Boolean searchable { get; set; }
+        public Boolean orderable { get; set; }
+        public JQDTColumnSearch search { get; set; }
     }
 }

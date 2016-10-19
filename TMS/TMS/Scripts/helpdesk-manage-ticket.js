@@ -8,7 +8,7 @@ function initTicketTable() {
         sort: true,
         filter: false,
         lengthMenu: [8],
-        "order": [[ 2, 'asc' ]],
+        "order": [[1, 'asc']],
         lengthChange: false,
         ajax: {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
@@ -30,49 +30,49 @@ function initTicketTable() {
                 return '<input type="checkbox" data-role="cbo-ticket" data-id="' + row.Id + '" data-requester="' + row.Requester + '"/>';
             }
         },
-            {
-                "targets": [1],
-                "sortable": false,
-                "data": "No"
-            },
              {
-                 "targets": [2],
+                 "targets": [1],
                  "render": function (data, type, row) {
                      //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
                      return $("<a/>",
                      {
                          "href": "javascript:openTicketDetailModal(" + row.Id + ")",
-                         "html": row.Subject,
+                         "html": row.Subject
                      })[0].outerHTML;
                  }
              },
             {
+                "targets": [2],
+                "sortable": false,
+                "render": function (data, type, row) {
+                    return row.Requester != "" ? row.Requester : "-";
+                }
+            },
+            {
                 "targets": [3],
                 "sortable": false,
-                "data": "Requester"
+                "render": function (data, type, row) {
+                    return row.Technician != "" ? row.Technician : "-";
+                }
+
             },
             {
                 "targets": [4],
                 "sortable": false,
-                "data": "Technician"
-            },
-            {
-                "targets": [5],
-                "sortable": false,
                 "data": "SolvedDate"
             }, {
-                "targets": [6],
+                "targets": [5],
                 "render": function (data, type, row) {
                     var lbl = getStatusLabel(row.Status);
                     return lbl[0].outerHTML;
                 }
             },
             {
-                "targets": [7],
-                "data": "CreatedTime"
+                "targets": [6],
+                "data": "ModifiedTime"
             },
             {
-                "targets": [8],
+                "targets": [7],
                 "sortable": false,
                 "render": function (data, type, row) {
                     //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
