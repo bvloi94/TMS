@@ -60,8 +60,7 @@ namespace TMS.Areas.Technician.Controllers
 
             if (!string.IsNullOrEmpty(search_text))
             {
-                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(search_text.ToLower())
-                    || p.Description.ToLower().Contains(search_text.ToLower()));
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
             }
 
             if (!string.IsNullOrEmpty(select_status))
