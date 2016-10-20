@@ -449,7 +449,10 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     ticket.TechnicianID = model.TechnicianId;
                     ticket.AssignedByID = User.Identity.GetUserId();
-                    ticket.Status = (int?)TicketStatusEnum.Assigned;
+                    if (ticket.Status == (int?)TicketStatusEnum.New || ticket.Status == (int?)TicketStatusEnum.Unapproved)
+                    {
+                        ticket.Status = (int?)TicketStatusEnum.Assigned;
+                    }
                 }
             }
 

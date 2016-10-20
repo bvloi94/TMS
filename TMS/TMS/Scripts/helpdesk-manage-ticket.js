@@ -60,7 +60,7 @@ function initTicketTable() {
                 "targets": [4],
                 "sortable": false,
                 "render": function (data, type, row) {
-                    return row.SolvedDate != "" ? row.Technician : "-";
+                    return row.SolvedDate != "" ? row.SolvedDate : "-";
                 }
             }, {
                 "targets": [5],
@@ -79,17 +79,40 @@ function initTicketTable() {
                 "sortable": false,
                 "render": function (data, type, row) {
                     //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
-                    var ediBtn = $("<a/>",
-                    {
-                        "class": "btn btn-sm btn-default",
-                        "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
-                        "data-role": "btn-edit-ticket",
-                        "html": $("<i/>",
-                        {
-                            "class": "fa fa-pencil"
-                        }),
-                        "data-id": row.Id
-                    });
+                    var ediBtn;
+                    switch(row.Status) {
+                        case "Closed":
+                        case "Canceled":
+                        case "Solved":
+                            ediBtn = $("<a/>",
+                            {
+                                "class": "btn btn-sm btn-default",
+                                "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
+                                "data-role": "btn-edit-ticket",
+                                "disabled": "disabled",
+                                "html": $("<i/>",
+                                {
+                                    "class": "fa fa-pencil"
+                                }),
+                                "data-id": row.Id
+                            });
+                            break;
+                        case "New":
+                        case "Assigned":
+                        case "Unapproved":
+                            ediBtn = $("<a/>",
+                            {
+                                "class": "btn btn-sm btn-default",
+                                "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
+                                "data-role": "btn-edit-ticket",
+                                "html": $("<i/>",
+                                {
+                                    "class": "fa fa-pencil"
+                                }),
+                                "data-id": row.Id
+                            });
+                            break;
+                    }
 
                     var solveBtn;
                     switch (row.Status) {
@@ -100,8 +123,8 @@ function initTicketTable() {
                             {
                                 "class": "btn btn-sm btn-default margin-left10",
                                 //"data-role": "btn-show-solve-modal",
-                                "html": "Solve",
                                 "disabled": "disabled",
+                                "html": "Solve",
                                 "data-id": row.Id
                             });
                             break;
