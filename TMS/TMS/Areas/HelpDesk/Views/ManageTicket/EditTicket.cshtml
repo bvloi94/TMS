@@ -56,7 +56,7 @@
                                                 @Html.HiddenFor(it => Model.DescriptionAttachments[i].id)
                                                 @Html.HiddenFor(it => Model.DescriptionAttachments[i].name)
                                                 <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.DescriptionAttachments[i].id">@Model.DescriptionAttachments[i].name</label>
-                                                <span class='attachment-delete' onclick='this.parentNode.innerHTML=""; return false;'> x </span>
+                                                <span class='attachment-delete' onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'> x </span>
                                             </div>
                                         }
                                     </div>
