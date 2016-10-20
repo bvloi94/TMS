@@ -16,7 +16,8 @@ namespace TMS.Models
     {
         public int ID { get; set; }
         public string Path { get; set; }
-        public Nullable<int> SolutionID { get; set; }
+        public string Filename { get; set; }
+        public int SolutionID { get; set; }
     
         public virtual Solution Solution { get; set; }
     }

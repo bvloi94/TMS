@@ -31,10 +31,10 @@ namespace Teek.Models
         public string UploadFile(HttpPostedFileBase file, string containingFolder)
         {
             var fileExtension = Path.GetExtension(file.FileName);
-            var fileName = $"{DateTime.Now.ToString("yyyyMMddHHmmsstttt")}_"+Path.GetFileName(file.FileName);
+            var fileName = Path.GetFileName(file.FileName);
                 //_{Guid.NewGuid().ToString()}{fileExtension}";
-
-            var relativeFilePath = Path.Combine(this.RelativeRootPath, containingFolder, fileName);
+            var guidFolder = Guid.NewGuid().ToString();
+            var relativeFilePath = Path.Combine(this.RelativeRootPath, containingFolder, guidFolder, fileName);
             var fullFilePath = HostingEnvironment.MapPath(relativeFilePath);
             var fullFolderPath = Path.GetDirectoryName(fullFilePath);
 

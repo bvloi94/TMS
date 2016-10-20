@@ -25,10 +25,6 @@ namespace TMS.Models
         public string Code { get; set; }
         public Nullable<int> Type { get; set; }
         public int Mode { get; set; }
-        public string SolveID { get; set; }
-        public string TechnicianID { get; set; }
-        public string AssignedByID { get; set; }
-        public string RequesterID { get; set; }
         public Nullable<int> ImpactID { get; set; }
         public string ImpactDetail { get; set; }
         public Nullable<int> UrgencyID { get; set; }
@@ -47,6 +43,10 @@ namespace TMS.Models
         public System.DateTime CreatedTime { get; set; }
         public System.DateTime ModifiedTime { get; set; }
         public string CreatedID { get; set; }
+        public string SolveID { get; set; }
+        public string TechnicianID { get; set; }
+        public string AssignedByID { get; set; }
+        public string RequesterID { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }

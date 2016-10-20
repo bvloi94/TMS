@@ -114,9 +114,8 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(m => m.Id == id && m.IsActive == true).Count() > 0;
         }
 
-        public bool ToggleStatus(string id)
+        public bool ToggleStatus(AspNetUser user)
         {
-            AspNetUser user = _unitOfWork.AspNetUserRepository.GetByID(id);
             bool? status = user.IsActive;
             bool isEnable;
             if (status == null || status == false)
@@ -129,9 +128,9 @@ namespace TMS.Services
                 user.IsActive = false;
                 isEnable = false;
             }
-            _unitOfWork.AspNetUserRepository.Update(user);
             try
             {
+                _unitOfWork.AspNetUserRepository.Update(user);
                 _unitOfWork.Save();
             }
             catch

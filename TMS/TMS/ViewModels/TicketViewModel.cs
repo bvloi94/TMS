@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using EAGetMail;
 using TMS.Enumerator;
+using TMS.Models;
 
 namespace TMS.ViewModels
 {
@@ -48,5 +50,7 @@ namespace TMS.ViewModels
         public string CreatedId { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
+        public List<AttachmentViewModel> Attachments { get; set; }
+        public string testAppend { get; set; }
     }
 }

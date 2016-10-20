@@ -16,7 +16,9 @@ namespace TMS.Models
     {
         public int ID { get; set; }
         public string Path { get; set; }
-        public Nullable<int> TicketID { get; set; }
+        public string Filename { get; set; }
+        public bool Type { get; set; }
+        public int TicketID { get; set; }
     
         public virtual Ticket Ticket { get; set; }
     }
