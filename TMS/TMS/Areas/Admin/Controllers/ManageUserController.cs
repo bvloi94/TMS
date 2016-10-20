@@ -807,9 +807,9 @@ namespace TMS.Areas.Admin.Controllers
         // GET: Admin/ManageUser/EditRequester/{id}
         public ActionResult EditRequester(string id)
         {
-            try
+            AspNetUser requester = _userService.GetUserById(id);
+            if (requester != null)
             {
-                AspNetUser requester = _userService.GetUserById(id);
                 RequesterRegisterViewModel model = new RequesterRegisterViewModel();
                 model.Fullname = requester.Fullname;
                 model.PhoneNumber = requester.PhoneNumber;
@@ -827,18 +827,20 @@ namespace TMS.Areas.Admin.Controllers
                 ViewBag.AvatarURL = requester.AvatarURL;
                 return View(model);
             }
-            catch
+            else
             {
-                return RedirectToAction("Error500", "Error", new { area = "" });
+                Response.Cookies.Add(new HttpCookie("FlashMessage", "This requester is not available!") { Path = "/" });
+                Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                return RedirectToAction("Requester", "ManageUser");
             }
         }
 
         // GET: Admin/ManageUser/EditHelpDesk/{id}
         public ActionResult EditHelpDesk(string id)
         {
-            try
+            AspNetUser helpdesk = _userService.GetUserById(id);
+            if (helpdesk != null)
             {
-                AspNetUser helpdesk = _userService.GetUserById(id);
                 HelpDeskRegisterViewModel model = new HelpDeskRegisterViewModel();
                 model.Fullname = helpdesk.Fullname;
                 model.PhoneNumber = helpdesk.PhoneNumber;
@@ -852,18 +854,20 @@ namespace TMS.Areas.Admin.Controllers
                 ViewBag.AvatarURL = helpdesk.AvatarURL;
                 return View(model);
             }
-            catch
+            else
             {
-                return RedirectToAction("Error500", "Error", new { area = "" });
+                Response.Cookies.Add(new HttpCookie("FlashMessage", "This help desk is not available!") { Path = "/" });
+                Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                return RedirectToAction("HelpDesk", "ManageUser");
             }
         }
 
         // GET: Admin/ManageUser/EditTechnician/{id}
         public ActionResult EditTechnician(string id)
         {
-            try
-            {
                 AspNetUser technician = _userService.GetUserById(id);
+            if (technician != null)
+            {
                 TechnicianRegisterViewModel model = new TechnicianRegisterViewModel();
                 model.Fullname = technician.Fullname;
                 model.PhoneNumber = technician.PhoneNumber;
@@ -879,10 +883,11 @@ namespace TMS.Areas.Admin.Controllers
                 ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
                 return View(model);
             }
-            catch (Exception e)
+            else
             {
-                log.Debug(e);
-                return RedirectToAction("Error500", "Error", new { area = "" });
+                Response.Cookies.Add(new HttpCookie("FlashMessage", "This technician is not available!") { Path = "/" });
+                Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                return RedirectToAction("Technician", "ManageUser");
             }
         }
 
