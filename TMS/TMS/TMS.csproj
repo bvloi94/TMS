@@ -333,6 +333,7 @@
     <Compile Include="ViewModels\TicketSolveViewModel.cs" />
     <Compile Include="ViewModels\ProfileAdminViewModel.cs" />
     <Compile Include="ViewModels\SCItemViewModels.cs" />
+    <Compile Include="ViewModels\AttachmentViewModel.cs" />
     <Compile Include="ViewModels\TicketViewModel.cs" />
     <Compile Include="ViewModels\UserViewModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />

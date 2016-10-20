@@ -222,8 +222,8 @@
 
         $("[data-role=btn-submit-new-ticket]").on("click", function () {
             var formData = new FormData($('#form-new-ticket')[0]);
-            var token = $('input[name="__RequestVerificationToken"]', $("#form-new-ticket")).val();
-            formData.append('__RequestVerificationToken', token);
+            //var token = $('input[name="__RequestVerificationToken"]', $("#form-new-ticket")).val();
+            //formData.append('__RequestVerificationToken', token);
             //formData.append('descriptionFiles', $('input[type="file"][name="descriptionFiles"]')[0].files[0]);
             //var formData = $("#form-new-ticket").serialize();
             $.ajax({
