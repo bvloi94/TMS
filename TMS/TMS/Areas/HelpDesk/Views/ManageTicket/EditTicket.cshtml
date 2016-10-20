@@ -26,7 +26,7 @@
                                 <label class="control-label col-md-3">Type</label>
                                 <div class="col-md-9">
                                     <select class="form-control" name="Type" value="@Model.Type">
-                                        <option value>None</option>
+                                        <option value="0">None</option>
                                         <option value="1">Request</option>
                                         <option value="2">Problem</option>
                                         <option value="3">Change</option>
@@ -426,6 +426,7 @@
             $("#solutionEditor").html('@Model.Solution.Replace("\r\n", "\\r\\n")');
             $("[name='statusId']").val(@Model.StatusId);*@
             $("#div-status").html(getStatusLabel('@Model.Status'));
+            $("[name='Type']").val(@Model.Type);
             loadInitDropdown('ddl-urgency', '@(Model.UrgencyId == 0 ? "None" : Model.Urgency)', @Model.UrgencyId);
             loadInitDropdown('ddl-priority', '@(Model.PriorityId == 0 ? "None" : Model.Priority)', @Model.PriorityId);
             loadInitDropdown('ddl-impact', '@(Model.ImpactId == 0 ? "None" : Model.Impact)', @Model.ImpactId);

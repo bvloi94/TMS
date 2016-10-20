@@ -23,7 +23,7 @@ namespace TMS.ViewModels
         public string Requester { get; set; }
         public string TechnicianId { get; set; }
         public string Technician { get; set; }
-        public int? Type { get; set; }
+        public int Type { get; set; }
         public int Mode { get; set; }
         public int StatusId { get; set; }
         public string Status { get; set; }

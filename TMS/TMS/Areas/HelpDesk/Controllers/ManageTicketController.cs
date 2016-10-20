@@ -79,6 +79,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View();
         }
 
+        [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
@@ -185,7 +186,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.Subject = model.Subject;
             ticket.Description = model.Description;
             ticket.Solution = model.Solution;
-            ticket.Type = model.Type;
+            if (model.Type != 0) ticket.Type = model.Type;
             ticket.Mode = ConstantUtil.TicketMode.PhoneCall;
             if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
             ticket.ImpactDetail = model.ImpactDetail;
@@ -333,7 +334,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View(model);
         }
 
-
+        [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
@@ -428,7 +429,8 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             ticket.ModifiedTime = DateTime.Now;
             ticket.Subject = model.Subject;
-            ticket.Type = model.Type;
+            if (model.Type != 0) ticket.Type = model.Type;
+            else ticket.Type = null;
             ticket.Description = model.Description;
             ticket.RequesterID = model.RequesterId;
             ticket.Solution = model.Solution;
