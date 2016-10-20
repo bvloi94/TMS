@@ -117,7 +117,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 // All Request 
                 case 1:
-                    break;
                     {
                         filteredListItems = ticketList.Where(p => p.Type == TicketType.Request);
                         break;
