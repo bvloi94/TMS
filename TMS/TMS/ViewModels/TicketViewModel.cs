@@ -23,20 +23,20 @@ namespace TMS.ViewModels
         public string Requester { get; set; }
         public string TechnicianId { get; set; }
         public string Technician { get; set; }
-        public int Type { get; set; }
+        public int? Type { get; set; }
         public int Mode { get; set; }
-        public int StatusId { get; set; }
+        public int? StatusId { get; set; }
         public string Status { get; set; }
-        public int UrgencyId { get; set; }
+        public int? UrgencyId { get; set; }
         public string Urgency { get; set; }
-        public int PriorityId { get; set; }
+        public int? PriorityId { get; set; }
         public string Priority { get; set; }
-        public int ImpactId { get; set; }
+        public int? ImpactId { get; set; }
         public string Impact { get; set; }
         public string ImpactDetail { get; set; }
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
         public string Category { get; set; }
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
         public string Department { get; set; }
         public string UnapproveReason { get; set; }
         public string ScheduleStartDate { get; set; }
@@ -50,7 +50,8 @@ namespace TMS.ViewModels
         public string CreatedId { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
-        public List<AttachmentViewModel> Attachments { get; set; }
-        public string testAppend { get; set; }
+        public List<AttachmentViewModel> DescriptionAttachments { get; set; }
+        public List<AttachmentViewModel> SolutionAttachments { get; set; }
+
     }
 }

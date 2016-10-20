@@ -157,7 +157,7 @@ namespace TMS.Controllers
 
                 if (uploadFiles != null && uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
+                    _ticketAttachmentService.saveFile(ticket.ID, uploadFiles, ConstantUtil.TicketAttachmentType.Description);
                 }
 
                 return RedirectToAction("Index");
