@@ -368,8 +368,15 @@ namespace TMS.Services
 
         public void AddTicket(Ticket ticket)
         {
-            _unitOfWork.TicketRepository.Insert(ticket);
-            _unitOfWork.Save();
+            try
+            {
+                _unitOfWork.TicketRepository.Insert(ticket);
+                _unitOfWork.Save();
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public bool UpdateTicket(Ticket ticket)
