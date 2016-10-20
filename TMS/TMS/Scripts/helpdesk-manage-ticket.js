@@ -87,7 +87,6 @@ function initTicketTable() {
                             ediBtn = $("<a/>",
                             {
                                 "class": "btn btn-sm btn-default",
-                                "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
                                 "data-role": "btn-edit-ticket",
                                 "disabled": "disabled",
                                 "html": $("<i/>",
