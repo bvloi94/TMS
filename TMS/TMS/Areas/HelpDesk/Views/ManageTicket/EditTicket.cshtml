@@ -26,7 +26,7 @@
                                 <label class="control-label col-md-3">Type</label>
                                 <div class="col-md-9">
                                     <select class="form-control" name="Type" value="@Model.Type">
-                                        <option value="0">None</option>
+                                        <option value>None</option>
                                         <option value="1">Request</option>
                                         <option value="2">Problem</option>
                                         <option value="3">Change</option>
@@ -48,14 +48,16 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3"></label>
                                 <div class="col-md-9">
-                                    <input class="form-control" type="file" name="file" multiple>
+                                    <input class="form-control" type="file" name="descriptionFiles" multiple>
                                     <div style="height: 20px;">
-                                        @for (int i = 0; i < Model.Attachments.Count; i++)
+                                        @for (int i = 0; i < Model.DescriptionAttachments.Count; i++)
                                         {
-                                            @Html.HiddenFor(it => Model.Attachments[i].id)
-                                            @Html.HiddenFor(it => Model.Attachments[i].name)
-                                            <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.Attachments[i].id">@Model.Attachments[i].name</label>
-                                            <span class='attachment-delete' onclick='this.parentNode.innerHTML=""; return false;'> x </span>
+                                            <div class="attachment-div">
+                                                @Html.HiddenFor(it => Model.DescriptionAttachments[i].id)
+                                                @Html.HiddenFor(it => Model.DescriptionAttachments[i].name)
+                                                <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.DescriptionAttachments[i].id">@Model.DescriptionAttachments[i].name</label>
+                                                <span class='attachment-delete' onclick='this.parentNode.innerHTML=""; return false;'> x </span>
+                                            </div>
                                         }
                                     </div>
                                     @*<div class="btn btn-default btn-file">
@@ -154,6 +156,18 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3"></label>
                                 <div class="col-md-9">
+                                    <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
+                                    <div style="height: 20px;">
+                                        @for (int i = 0; i < Model.SolutionAttachments.Count; i++)
+                                        {
+                                            <div class="attachment-div">
+                                                @Html.HiddenFor(it => Model.SolutionAttachments[i].id)
+                                                @Html.HiddenFor(it => Model.SolutionAttachments[i].name)
+                                                <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.SolutionAttachments[i].id">@Model.SolutionAttachments[i].name</label>
+                                                <span class='attachment-delete' onclick='this.parentNode.innerHTML=""; return false;'> x </span>
+                                            </div>
+                                        }
+                                    </div>
                                     @*<div class="btn btn-default btn-file">
                                             <i class="fa fa-paperclip"></i> Attachment
                                             <input type="file" name="file" multiple>

@@ -23,7 +23,7 @@ namespace TMS.ViewModels
         public string Requester { get; set; }
         public string TechnicianId { get; set; }
         public string Technician { get; set; }
-        public int Type { get; set; }
+        public int? Type { get; set; }
         public int Mode { get; set; }
         public int StatusId { get; set; }
         public string Status { get; set; }
@@ -50,7 +50,8 @@ namespace TMS.ViewModels
         public string CreatedId { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
-        public List<AttachmentViewModel> Attachments { get; set; }
-        public string testAppend { get; set; }
+        public List<AttachmentViewModel> DescriptionAttachments { get; set; }
+        public List<AttachmentViewModel> SolutionAttachments { get; set; }
+
     }
 }
