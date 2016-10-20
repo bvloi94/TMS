@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
 }
-@{ 
+@{
     ViewBag.Title = "Ticket List";
 }
 
@@ -222,9 +222,9 @@
                                     </div>
                                 </div>
                             </div>
-                            @*<div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                </div>*@
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
                         </div>
 
                     </div>
@@ -280,7 +280,17 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[3] == null ? "None" : "<span class='pre-wrap'>" + (row[3]) + "</span>";
+                            if (row[3] != null) {
+                                if (row[3].toString().length > 85) {
+                                    return "<span>" + row[3].substring(0, 84) + "..." + "</span>";
+                                }
+                                else {
+                                    return "<span>" + (row[3]) + "</span>";
+                                }
+                            }
+                            else {
+                                return "-";
+                            }
                         },
                         "sortable": false,
                         "targets": 3
@@ -357,7 +367,7 @@
                 success: function (data) {
                     var solveUrl = '/Ticket/Solve/' + data.id;
 
-                    $('#ticket-subject').text("Subject: " + data.subject);
+                    $('#ticket-subject').text(data.subject);
                     $('#ticket-description').text(data.description);
                     $('#ticket-created-by').text(data.creater);
                     $('#ticket-assigned-by').text(data.assigner);
@@ -375,8 +385,7 @@
                         $('#ticket-status').text('Assigned');
                         if (data.solution == "None") {
                             $('#ticket-solution').empty().append("<p><i>This ticket is not solved yet. Would you like to solve it now? </i>"
-                                                        + "<a class='btn-sm btn-primary' href='" + solveUrl + "'>Yes</a>"
-                                                        + "<a class='btn-sm btn-default' data-toggle='modal' data-dismiss='modal'>No</a></p>");
+                                                        + "<a class='btn-sm btn-primary' href='" + solveUrl + "'>Solve</a></p>");
                         }
                         else {
                             $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
