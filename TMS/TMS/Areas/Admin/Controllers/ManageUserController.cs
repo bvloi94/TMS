@@ -865,7 +865,7 @@ namespace TMS.Areas.Admin.Controllers
         // GET: Admin/ManageUser/EditTechnician/{id}
         public ActionResult EditTechnician(string id)
         {
-                AspNetUser technician = _userService.GetUserById(id);
+            AspNetUser technician = _userService.GetUserById(id);
             if (technician != null)
             {
                 TechnicianRegisterViewModel model = new TechnicianRegisterViewModel();
@@ -894,9 +894,9 @@ namespace TMS.Areas.Admin.Controllers
         // GET: Admin/ManageUser/EditAdmin/{id}
         public ActionResult EditAdmin(string id)
         {
-            try
+            AspNetUser admin = _userService.GetUserById(id);
+            if (admin != null)
             {
-                AspNetUser admin = _userService.GetUserById(id);
                 AdminRegisterViewModel model = new AdminRegisterViewModel();
                 model.Fullname = admin.Fullname;
                 model.PhoneNumber = admin.PhoneNumber;
@@ -911,10 +911,11 @@ namespace TMS.Areas.Admin.Controllers
                 ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
                 return View(model);
             }
-            catch (Exception e)
+            else
             {
-                log.Debug(e);
-                return RedirectToAction("Error500", "Error", new { area = "" });
+                Response.Cookies.Add(new HttpCookie("FlashMessage", "This technician is not available!") { Path = "/" });
+                Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                return RedirectToAction("Admin", "ManageUser");
             }
         }
 
