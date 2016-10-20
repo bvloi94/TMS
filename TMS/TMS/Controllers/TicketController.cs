@@ -127,6 +127,7 @@ namespace TMS.Controllers
         }
 
         // GET: Tickets/Create
+        [Utils.Authorize(Roles = "Requester")]
         public ActionResult Create()
         {
             return View();

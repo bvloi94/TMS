@@ -359,6 +359,7 @@ $(document)
                                     ticketTable.draw();
                                     $("#modal-merge-ticket").modal("hide");
                                     selectedTickets = [];
+                                    $("a[data-role='btn-merge-ticket']").addClass("disabled");
                                 } else {
                                     $("#modal-merge-ticket").modal("hide");
                                     noty({
@@ -384,11 +385,7 @@ $(document)
             $("[data-role='btn-cancel-merge']")
                 .on('click',
                     function () {
-                        $('input[data-role="cbo-ticket"]').each(function () {
-                            $(this).prop("checked", false);
-                        });
                         $("#modal-merge-ticket").modal("hide");
-                        $("a[data-role='btn-merge-ticket']").addClass("disabled");
                     });
 
             $('#ticket-table tbody').on('click', 'input[data-role="cbo-ticket"]', function (e) {
