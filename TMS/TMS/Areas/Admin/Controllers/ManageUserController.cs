@@ -486,16 +486,16 @@ namespace TMS.Areas.Admin.Controllers
                         string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), user.Id);
                         string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                         model.Avatar.SaveAs(filePath);
-                        requester.AvatarURL = "/Upload/Avatar/" + fileName;
+                        requester.AvatarURL = "/Uploads/Avatar/" + fileName;
                     }
                     else
                     {
-                        requester.AvatarURL = "/Upload/Avatar/avatar_male.png";
+                        requester.AvatarURL = "/Uploads/Avatar/avatar_male.png";
                         if (requester.Gender != null)
                         {
                             if (requester.Gender == false)
                             {
-                                requester.AvatarURL = "/Upload/Avatar/avatar_female.png";
+                                requester.AvatarURL = "/Uploads/Avatar/avatar_female.png";
                             }
                         }
                     }
@@ -572,16 +572,16 @@ namespace TMS.Areas.Admin.Controllers
                         string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), user.Id);
                         string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                         model.Avatar.SaveAs(filePath);
-                        helpdesk.AvatarURL = "/Upload/Avatar/" + fileName;
+                        helpdesk.AvatarURL = "/Uploads/Avatar/" + fileName;
                     }
                     else
                     {
-                        helpdesk.AvatarURL = "/Upload/Avatar/avatar_male.png";
+                        helpdesk.AvatarURL = "/Uploads/Avatar/avatar_male.png";
                         if (helpdesk.Gender != null)
                         {
                             if (helpdesk.Gender == false)
                             {
-                                helpdesk.AvatarURL = "/Upload/Avatar/avatar_female.png";
+                                helpdesk.AvatarURL = "/Uploads/Avatar/avatar_female.png";
                             }
                         }
                     }
@@ -659,16 +659,16 @@ namespace TMS.Areas.Admin.Controllers
                         string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), user.Id);
                         string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                         model.Avatar.SaveAs(filePath);
-                        technician.AvatarURL = "/Upload/Avatar/" + fileName;
+                        technician.AvatarURL = "/Uploads/Avatar/" + fileName;
                     }
                     else
                     {
-                        technician.AvatarURL = "/Upload/Avatar/avatar_male.png";
+                        technician.AvatarURL = "/Uploads/Avatar/avatar_male.png";
                         if (technician.Gender != null)
                         {
                             if (technician.Gender == false)
                             {
-                                technician.AvatarURL = "/Upload/Avatar/avatar_female.png";
+                                technician.AvatarURL = "/Uploads/Avatar/avatar_female.png";
                             }
                         }
                     }
@@ -745,16 +745,16 @@ namespace TMS.Areas.Admin.Controllers
                         string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), user.Id);
                         string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                         model.Avatar.SaveAs(filePath);
-                        admin.AvatarURL = "/Upload/Avatar/" + fileName;
+                        admin.AvatarURL = "/Uploads/Avatar/" + fileName;
                     }
                     else
                     {
-                        admin.AvatarURL = "/Upload/Avatar/avatar_male.png";
+                        admin.AvatarURL = "/Uploads/Avatar/avatar_male.png";
                         if (admin.Gender != null)
                         {
                             if (admin.Gender == false)
                             {
-                                admin.AvatarURL = "/Upload/Avatar/avatar_female.png";
+                                admin.AvatarURL = "/Uploads/Avatar/avatar_female.png";
                             }
                         }
                     }
@@ -944,7 +944,7 @@ namespace TMS.Areas.Admin.Controllers
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), requester.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    requester.AvatarURL = "/Upload/Avatar/" + fileName;
+                    requester.AvatarURL = "/Uploads/Avatar/" + fileName;
                 }
                 try
                 {
@@ -992,7 +992,7 @@ namespace TMS.Areas.Admin.Controllers
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), helpdesk.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    helpdesk.AvatarURL = "/Upload/Avatar/" + fileName;
+                    helpdesk.AvatarURL = "/Uploads/Avatar/" + fileName;
                 }
                 try
                 {
@@ -1041,7 +1041,7 @@ namespace TMS.Areas.Admin.Controllers
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), technician.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    technician.AvatarURL = "/Upload/Avatar/" + fileName;
+                    technician.AvatarURL = "/Uploads/Avatar/" + fileName;
                 }
                 try
                 {
@@ -1090,7 +1090,7 @@ namespace TMS.Areas.Admin.Controllers
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), admin.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    admin.AvatarURL = "/Upload/Avatar/" + fileName;
+                    admin.AvatarURL = "/Uploads/Avatar/" + fileName;
                 }
                 try
                 {

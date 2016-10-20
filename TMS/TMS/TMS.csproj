@@ -295,11 +295,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TMSModel.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\TMSModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TMSModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\TMSModel.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -540,7 +535,6 @@
     <Content Include="Areas\HelpDesk\Views\ManageTicket\CreateNewTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\PriorityMatrix.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
