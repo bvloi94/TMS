@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -12,12 +13,13 @@ namespace TMS.Areas.Admin.Controllers
 {
     public class ManageSCController : Controller
     {
-        private TMSEntities db = new TMSEntities();
         private UnitOfWork _unitOfWork;
         private ImpactService _impactService;
         private UrgencyService _urgencyService;
         private PriorityService _priorityService;
         private CategoryService _categoryService;
+        private PriorityMatrixService _priorityMatrixService;
+        private ILog log = LogManager.GetLogger(typeof(ManageSCController));
 
         public ManageSCController()
         {
@@ -26,6 +28,7 @@ namespace TMS.Areas.Admin.Controllers
             _urgencyService = new UrgencyService(_unitOfWork);
             _priorityService = new PriorityService(_unitOfWork);
             _categoryService = new CategoryService(_unitOfWork);
+            _priorityMatrixService = new PriorityMatrixService(_unitOfWork);
         }
 
         // GET: Admin/ManageSC/Priority
@@ -48,6 +51,12 @@ namespace TMS.Areas.Admin.Controllers
         // GET: Admin/ManageSC/Category
         [HttpGet]
         public ActionResult Category()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult PriorityMatrix()
         {
             return View();
         }
@@ -283,6 +292,13 @@ namespace TMS.Areas.Admin.Controllers
             {
                 data = categoryList
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetPriorityMatrixItems()
+        {
+            ViewBag.priorityList = _priorityService.GetAll();
+            return PartialView("_PriorityMatrixTable");
         }
 
         [HttpPost]
@@ -805,8 +821,9 @@ namespace TMS.Areas.Admin.Controllers
                         message = "Create new category successfully!"
                     });
                 }
-                catch
+                catch (Exception e)
                 {
+                    log.Error("Create category error.", e);
                     return Json(new
                     {
                         success = false,
@@ -846,13 +863,352 @@ namespace TMS.Areas.Admin.Controllers
                         message = "Create new sub category successfully!"
                     });
                 }
-                catch
+                catch (Exception e)
                 {
+                    log.Error("Create sub category error.", e);
                     return Json(new
                     {
                         success = false,
                         error = true,
                         message = "Some errors occured. Please try again later!"
+                    });
+                }
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CreateItem(CategoryViewModel model)
+        {
+            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name, model.ParentId);
+            if (isDuplicatedName)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = string.Format("'{0}' has already been used.", model.Name)
+                });
+            }
+            else
+            {
+                Category category = new Category();
+                category.Name = model.Name;
+                category.Description = model.Description;
+                category.CategoryLevel = ConstantUtil.CategoryLevel.Item;
+                category.ParentID = model.ParentId;
+                try
+                {
+                    _categoryService.AddCategory(category);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create new item successfully!"
+                    });
+                }
+                catch (Exception e)
+                {
+                    log.Error("Create item error.", e);
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        message = "Some errors occured. Please try again later!"
+                    });
+                }
+            }
+        }
+
+        [HttpGet]
+        public ActionResult GetCategoryDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Category category = _categoryService.GetCategoryById(id.Value);
+                if (category != null)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        name = category.Name,
+                        description = category.Description
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new
+            {
+                success = false,
+                message = "Cannot get category detail!"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetSubCategoryDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Category category = _categoryService.GetCategoryById(id.Value);
+                if (category != null)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        name = category.Name,
+                        description = category.Description,
+                        parentId = category.ParentID,
+                        categories = _categoryService.GetCategories().Select(m => new
+                        {
+                            m.ID,
+                            m.Name
+                        }).ToArray()
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new
+            {
+                success = false,
+                message = "Cannot get sub category detail!"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetItemDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Category category = _categoryService.GetCategoryById(id.Value);
+                if (category != null)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        name = category.Name,
+                        description = category.Description,
+                        parentId = category.ParentID,
+                        categories = _categoryService.GetSubCategories().OrderBy(m => m.ParentID).Select(m => new CategoryViewModel
+                        {
+                            ID = m.ID,
+                            Name = _categoryService.GetCategoryById(m.ParentID.Value).Name + " > " + m.Name
+                        }).ToArray()
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new
+            {
+                success = false,
+                message = "Cannot get item detail!"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult EditCategory(CategoryViewModel model)
+        {
+            if (model.ID.HasValue)
+            {
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, null);
+                if (isDuplicatedName)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = false,
+                        message = string.Format("'{0}' has already been used.", model.Name)
+                    });
+                }
+                else
+                {
+                    Category category = _categoryService.GetCategoryById(model.ID.Value);
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    try
+                    {
+                        _categoryService.UpdateCategory(category);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Edit category successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Edit category error.", e);
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = "Some errors occured. Please try again later!"
+                        });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Cannot get category detail!"
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EditSubCategory(CategoryViewModel model)
+        {
+            if (model.ID.HasValue)
+            {
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, model.ParentId);
+                if (isDuplicatedName)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = false,
+                        message = string.Format("'{0}' has already been used.", model.Name)
+                    });
+                }
+                else
+                {
+                    Category category = _categoryService.GetCategoryById(model.ID.Value);
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    category.ParentID = model.ParentId;
+                    try
+                    {
+                        _categoryService.UpdateCategory(category);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Edit sub category successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Edit sub category error.", e);
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = "Some errors occured. Please try again later!"
+                        });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Cannot get sub category detail!"
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EditItem(CategoryViewModel model)
+        {
+            if (model.ID.HasValue)
+            {
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, model.ParentId);
+                if (isDuplicatedName)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = false,
+                        message = string.Format("'{0}' has already been used.", model.Name)
+                    });
+                }
+                else
+                {
+                    Category category = _categoryService.GetCategoryById(model.ID.Value);
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    category.ParentID = model.ParentId;
+                    try
+                    {
+                        _categoryService.UpdateCategory(category);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Edit item successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Edit item error.", e);
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = "Some errors occured. Please try again later!"
+                        });
+                    }
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "Cannot get sub category detail!"
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteCategory(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = false,
+                    message = "This category has been removed or not existed!"
+                });
+            }
+            Category category = _categoryService.GetCategoryById(id.Value);
+            if (category == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    message = "This category has been removed or not existed!"
+                });
+            }
+            else
+            {
+                if (_categoryService.IsInUse(category))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Category is being used! Can not be removed!"
+                    });
+                }
+                try
+                {
+                    _categoryService.DeleteCategory(category);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Delete category successfully!"
+                    });
+                }
+                catch (Exception e)
+                {
+                    log.Error("Delete category error.", e);
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        message = "Some error occured! Please try again later!"
                     });
                 }
             }

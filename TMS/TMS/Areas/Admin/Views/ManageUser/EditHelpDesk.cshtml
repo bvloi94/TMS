@@ -17,17 +17,24 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Email</label>
+                        <label class="col-sm-3 control-label">Email&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-9">
                             @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
                             @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Fullname</label>
+                        <label class="col-sm-3 control-label">Fullname&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-9">
                             @Html.TextBoxFor(m => m.Fullname, new { @class = "form-control" })
                             @Html.ValidationMessageFor(m => m.Fullname, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Phone Number</label>
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="form-group">
@@ -68,7 +75,7 @@
                 <div class="box-body" style="text-align: center">
                     <span class="lead"><strong>Avatar</strong></span>
                     <br />
-                    <img src="~/Uploads/Avatar/@ViewBag.AvatarURL" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
+                    <img src="@ViewBag.AvatarURL" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
                     <input type="file" id="Avatar" name="Avatar" accept="image/gif, image/jpeg, image/png" onchange="readURL(this);" />
                     @Html.ValidationMessageFor(m => m.Avatar, "", new { @class = "text-danger" })
                 </div>

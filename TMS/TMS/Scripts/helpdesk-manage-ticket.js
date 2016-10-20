@@ -1,5 +1,6 @@
 ﻿var ticketTable = null;
 var cancelTicketId = null;
+var selectedTickets = [];
 
 function initTicketTable() {
     ticketTable = $("#ticket-table").DataTable({
@@ -10,6 +11,9 @@ function initTicketTable() {
         lengthMenu: [8],
         "order": [[1, 'asc']],
         lengthChange: false,
+        fnDrawCallback: function () {
+            checkSelectedCheckbox();
+        },
         ajax: {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
             "type": "POST",
@@ -119,6 +123,7 @@ function initTicketTable() {
                         case "Solved":
                         case "Closed":
                         case "Canceled":
+                        case "Unapproved":
                             cancelBtn = $("<a/>",
                             {
                                 "class": "btn btn-sm btn-default margin-left10",
@@ -130,7 +135,6 @@ function initTicketTable() {
                             break;
                         case "New":
                         case "Assigned":
-                        case "Unapproved":
                             cancelBtn = $("<a/>",
                             {
                                 "class": "btn btn-sm btn-default margin-left10",
@@ -161,13 +165,12 @@ function initTicketTable() {
 }
 
 function checkSelectedCheckbox() {
-    var checked = false;
-    $('input[data-role="cbo-ticket"]')
-        .each(function (index) {
-            if (this.checked) {
-                checked = true;
-            }
-        });
+    $('input[data-role="cbo-ticket"]').each(function (index, element) {
+        var id = $(element).attr("data-id");
+        if (selectedTickets.indexOf(id) != -1) {
+            $(element).prop("checked", true);
+        }
+    });
 }
 
 function openTicketDetailModal(ticketId) {
@@ -202,6 +205,13 @@ function openTicketDetailModal(ticketId) {
             else {
                 $('#ticket-solution').text(data.solution);
             }
+
+            if (!data.attachments || data.attachments == "") {
+                $('#ticket-attachment').text("-");
+            } else {
+                $('#ticket-attachment').text(data.attachments);
+            }
+
 
             $('[data-role="modal-btn-solve"]').attr("href", "/Ticket/Solve/" + data.id);
 
@@ -249,22 +259,11 @@ function openTicketDetailModal(ticketId) {
     });
 }
 
-function getSelectedTickets() {
-    var selected = [];
-    $('input[data-role="cbo-ticket"]').each(function () {
-        if ($(this).is(":checked")) {
-            selected.push($(this).data("id"));
-        }
-    });
-    return selected;
-}
-
 $(document)
         .ready(function () {
 
             setActiveTicketMenu();
             initTicketTable();
-            $("a[data-role='btn-merge-ticket']").addClass("disabled");
 
             $("#search-txt").keyup(function () {
                 ticketTable.draw();
@@ -276,7 +275,7 @@ $(document)
 
             $('#ticket-table tbody')
                 .on('click',
-                    'a[data-role="btn-show-cancel-modal"]',
+                    'a[data-role="btn-show-cancel-modal"]:not([disabled])',
                     function () {
                         cancelTicketId = this.getAttribute("data-tickeId");
                         $("#modal-cancel-ticket").modal("show");
@@ -295,7 +294,7 @@ $(document)
                                 if (data.success) {
                                     $("#modal-cancel-ticket").modal("hide");
                                     noty({
-                                        text: "Ticket was canceled!",
+                                        text: data.msg,
                                         layout: "topCenter",
                                         type: "success",
                                         timeout: 2000
@@ -309,7 +308,17 @@ $(document)
                                         layout: "topRight",
                                         timeout: 2000
                                     });
+                                    ticketTable.draw();
                                 }
+                            },
+                            "error": function () {
+                                $("#modal-cancel-ticket").modal("hide");
+                                noty({
+                                    text: "Cannot connect to server!",
+                                    type: "error",
+                                    layout: "topCenter",
+                                    timeout: 2000
+                                });
                             }
                         });
                     });
@@ -317,7 +326,6 @@ $(document)
             $("a[data-role='btn-merge-ticket'")
                 .on("click",
                     function () {
-                        var selectedTickets = getSelectedTickets();
                         if (selectedTickets.length < 2) {
                             noty({
                                 text: "Less than 2 tickets, can not merge!",
@@ -338,7 +346,7 @@ $(document)
                             "url": "/HelpDesk/ManageTicket/MergeTicket",
                             "method": "POST",
                             "data": {
-                                selectedTickets: getSelectedTickets()
+                                selectedTickets: selectedTickets
                             },
                             "success": function (data) {
                                 if (data.success) {
@@ -350,7 +358,9 @@ $(document)
                                     });
                                     ticketTable.draw();
                                     $("#modal-merge-ticket").modal("hide");
+                                    selectedTickets = [];
                                 } else {
+                                    $("#modal-merge-ticket").modal("hide");
                                     noty({
                                         text: data.msg,
                                         type: "error",
@@ -358,6 +368,15 @@ $(document)
                                         timeout: 2000
                                     });
                                 }
+                            },
+                            "error": function () {
+                                $("#modal-merge-ticket").modal("hide");
+                                noty({
+                                    text: "Cannot connect to server!",
+                                    type: "error",
+                                    layout: "topCenter",
+                                    timeout: 2000
+                                });
                             }
                         });
                     });
@@ -373,7 +392,12 @@ $(document)
                     });
 
             $('#ticket-table tbody').on('click', 'input[data-role="cbo-ticket"]', function (e) {
-                var selectedTickets = getSelectedTickets();
+                var id = $(this).attr("data-id");
+                if (selectedTickets.indexOf(id) == -1) {
+                    selectedTickets.push(id);
+                } else {
+                    selectedTickets.splice(selectedTickets.indexOf(id), 1);
+                }
                 if (selectedTickets.length < 2) {
                     $("a[data-role='btn-merge-ticket']").addClass("disabled");
                 } else {

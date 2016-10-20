@@ -18,6 +18,7 @@ using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
 using ModelError = TMS.ViewModels.ModelError;
+using TMS.Utils;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -80,6 +81,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
         {
             ModelErrorViewModel errs = null;
@@ -307,11 +309,25 @@ namespace TMS.Areas.HelpDesk.Controllers
                     model.Department = _departmentService.GetDepartmentById((int)technician.DepartmentID).Name;
                 }
             }
+
+            IEnumerable<TicketAttachment> attachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
+            if (attachments != null)
+            {
+                model.Attachments = new List<AttachmentViewModel>();
+                foreach (var attachment in attachments)
+                {
+                    var att = new AttachmentViewModel();
+                    att.id = attachment.ID.ToString();
+                    att.name = attachment.Path.Split('/').Last().Substring(17);
+                    model.Attachments.Add(att);
+                }
+            }
             return View(model);
         }
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
         {
             ModelErrorViewModel errs = null;
@@ -409,10 +425,14 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.RequesterID = model.RequesterId;
             ticket.Solution = model.Solution;
             if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
+            else ticket.ImpactID = null;
             ticket.ImpactDetail = model.ImpactDetail;
             if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
+            else ticket.UrgencyID = null;
             if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
+            else ticket.PriorityID = null;
             if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
+            else ticket.CategoryID = null;
 
             if (!string.IsNullOrEmpty(model.TechnicianId))
             {
@@ -423,10 +443,24 @@ namespace TMS.Areas.HelpDesk.Controllers
                     ticket.Status = (int?)TicketStatusEnum.Assigned;
                 }
             }
-            
+
+            IEnumerable<TicketAttachment> oldAttachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
+            //for (int i = 0; i < oldAttachments.Count(); i++)
+            //{
+            //    bool has = false;
+            //    for (int j = 0; j < model.Attachments.Count; j++) { 
+            //        if 
+            //    }
+            //    if (model.Attachments
+            //}
+
             try
             {
                 _ticketService.UpdateTicket(ticket);
+                if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
+                {
+                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles);
+                }
             }
             catch (DbUpdateException ex)
             {
@@ -446,22 +480,47 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         public ActionResult CancelTicket(int? ticketId)
         {
-
-            bool result = _ticketService.CancelTicket(ticketId);
-            if (!result) return Json(new
+            int result = _ticketService.CancelTicket(ticketId);
+            switch (result)
             {
-                success = false,
-                msg = "Error occured! Please try again!"
-            });
-
-            return Json(new
-            {
-                success = true
-            });
+                case 1: //success
+                    return Json(new
+                    {
+                        success = true,
+                        msg = "Ticket was cancelled successfully!"
+                    });
+                case 2: //unavailable ticket
+                    return Json(new
+                    {
+                        success = false,
+                        msg = "This ticket is unvailable"
+                    });
+                case 3: //wrong ticket status
+                    return Json(new
+                    {
+                        success = false,
+                        msg = "This ticket cannot be cancelled!"
+                    });
+                case 4: //error
+                default:
+                    return Json(new
+                    {
+                        success = false,
+                        msg = "Some error occured! Please try again later!"
+                    });
+            }
         }
 
         public ActionResult MergeTicket(int[] selectedTickets)
         {
+            if (selectedTickets.Length < 2)
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "Less than 2 tickets, can not merge!"
+                });
+            }
             List<Ticket> tickets = new List<Ticket>();
             string requesterId = "";
             for (int i = 0; i < selectedTickets.Length; i++)
@@ -469,7 +528,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Ticket ticket = _ticketService.GetTicketByID(selectedTickets[i]);
                 if (ticket != null)
                 {
-                    if (i > 0 && requesterId != ticket.RequesterID)
+                    if (i > 0 && !requesterId.Equals(ticket.RequesterID))
                     {
                         return Json(new
                         {
@@ -477,27 +536,53 @@ namespace TMS.Areas.HelpDesk.Controllers
                             msg = "Merging tickets must have the same requester!"
                         });
                     }
+                    if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "There are some tickets which cannot be merged! \nOnly New or Assigned tickets can be merged!"
+                        });
+                    }
                     requesterId = ticket.RequesterID;
                     tickets.Add(ticket);
                 }
             }
-            tickets.Sort((x, y) => DateTime.Compare((DateTime)x.CreatedTime, (DateTime)y.CreatedTime));
-            Ticket newTicket = tickets[0];
-            for (int i = 1; i < tickets.Count; i++)
+            try
             {
-                Ticket oldTicket = tickets[i];
-                newTicket.Description += "<br/>" + oldTicket.Description;
-                oldTicket.ModifiedTime = DateTime.Now;
-                oldTicket.Status = (int?)TicketStatusEnum.Canceled;
-                _ticketService.UpdateTicket(oldTicket);
-            }
-            newTicket.ModifiedTime = DateTime.Now;
-            _ticketService.UpdateTicket(newTicket);
+                tickets.Sort((x, y) => DateTime.Compare((DateTime)x.CreatedTime, (DateTime)y.CreatedTime));
+                Ticket newTicket = tickets[0];
+                for (int i = 1; i < tickets.Count; i++)
+                {
+                    Ticket oldTicket = tickets[i];
+                    if (!string.IsNullOrWhiteSpace(newTicket.Description))
+                    {
+                        newTicket.Description += "\n" + oldTicket.Description;
+                    }
+                    else
+                    {
+                        newTicket.Description = oldTicket.Description;
+                    }
+                    oldTicket.ModifiedTime = DateTime.Now;
+                    oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
+                    _ticketService.UpdateTicket(oldTicket);
+                }
+                newTicket.ModifiedTime = DateTime.Now;
+                _ticketService.UpdateTicket(newTicket);
 
-            return Json(new
+                return Json(new
+                {
+                    success = true
+                });
+            }
+            catch
             {
-                success = true
-            });
+                return Json(new
+                {
+                    success = false,
+                    msg = "Some error occured! Please try again later!"
+                });
+            }
         }
 
         [HttpPost]

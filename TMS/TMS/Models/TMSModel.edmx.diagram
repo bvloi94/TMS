@@ -5,25 +5,25 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="61279c5f90dc4863a6c5e4538faaff9d" Name="Diagram1">
-        <EntityTypeShape EntityType="TMSModel.AspNetRole" Width="1.5" PointX="0.75" PointY="5.75" />
+        <EntityTypeShape EntityType="TMSModel.AspNetRole" Width="1.5" PointX="0.75" PointY="8.75" />
         <EntityTypeShape EntityType="TMSModel.AspNetUserClaim" Width="1.5" PointX="5.25" PointY="21.25" />
         <EntityTypeShape EntityType="TMSModel.AspNetUserLogin" Width="1.5" PointX="5.25" PointY="18.75" />
         <EntityTypeShape EntityType="TMSModel.AspNetUser" Width="1.5" PointX="3" PointY="5.75" />
         <EntityTypeShape EntityType="TMSModel.BusinessRule" Width="1.5" PointX="6" PointY="2.375" />
-        <EntityTypeShape EntityType="TMSModel.BusinessRuleCondition" Width="1.5" PointX="8.25" PointY="4.5" />
+        <EntityTypeShape EntityType="TMSModel.BusinessRuleCondition" Width="1.5" PointX="8.25" PointY="15" />
         <EntityTypeShape EntityType="TMSModel.BusinessRuleNotification" Width="1.5" PointX="8.25" PointY="8.625" />
-        <EntityTypeShape EntityType="TMSModel.BusinessRuleTrigger" Width="1.5" PointX="8.25" PointY="15.375" />
-        <EntityTypeShape EntityType="TMSModel.Category" Width="1.5" PointX="3" PointY="14.875" />
-        <EntityTypeShape EntityType="TMSModel.Department" Width="1.5" PointX="0.75" PointY="8.625" />
-        <EntityTypeShape EntityType="TMSModel.Impact" Width="1.5" PointX="3" PointY="21.125" />
-        <EntityTypeShape EntityType="TMSModel.Priority" Width="1.5" PointX="3" PointY="2.125" />
-        <EntityTypeShape EntityType="TMSModel.PriorityMatrixItem" Width="1.5" PointX="5.25" PointY="14.375" />
-        <EntityTypeShape EntityType="TMSModel.Solution" Width="1.5" PointX="5.25" PointY="24.875" />
-        <EntityTypeShape EntityType="TMSModel.SolutionAttachment" Width="1.5" PointX="7.5" PointY="25.375" />
+        <EntityTypeShape EntityType="TMSModel.BusinessRuleTrigger" Width="1.5" PointX="8.25" PointY="5.375" />
+        <EntityTypeShape EntityType="TMSModel.Category" Width="1.5" PointX="3" PointY="2" />
+        <EntityTypeShape EntityType="TMSModel.Department" Width="1.5" PointX="0.75" PointY="5.625" />
+        <EntityTypeShape EntityType="TMSModel.Impact" Width="1.5" PointX="3" PointY="17.25" />
+        <EntityTypeShape EntityType="TMSModel.Priority" Width="1.5" PointX="3" PointY="20" />
+        <EntityTypeShape EntityType="TMSModel.PriorityMatrixItem" Width="1.5" PointX="5.25" PointY="15.125" />
+        <EntityTypeShape EntityType="TMSModel.Solution" Width="1.5" PointX="5.25" PointY="24" />
+        <EntityTypeShape EntityType="TMSModel.SolutionAttachment" Width="1.5" PointX="7.5" PointY="24.375" />
         <EntityTypeShape EntityType="TMSModel.Ticket" Width="1.5" PointX="5.25" PointY="5.625" />
-        <EntityTypeShape EntityType="TMSModel.TicketAttachment" Width="1.5" PointX="7.5" PointY="12.25" />
+        <EntityTypeShape EntityType="TMSModel.TicketAttachment" Width="1.5" PointX="7.5" PointY="12" />
         <EntityTypeShape EntityType="TMSModel.TicketHistory" Width="1.5" PointX="10.5" PointY="8.25" />
-        <EntityTypeShape EntityType="TMSModel.Urgency" Width="1.5" PointX="3" PointY="18.375" />
+        <EntityTypeShape EntityType="TMSModel.Urgency" Width="1.5" PointX="3" PointY="14.5" />
         <AssociationConnector Association="TMSModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
         <AssociationConnector Association="TMSModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
         <AssociationConnector Association="TMSModel.FK_AspNetUsers_Department" />

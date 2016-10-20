@@ -12,12 +12,13 @@
             <!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" role="form" id="form-new-ticket" method="POST">
+                    @Html.AntiForgeryToken()
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="control-label col-md-3">Subject <font color="red">*</font></label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control" name="Subject" placeholder="Subject" />
+                                    <input type="text" class="form-control" name="Subject" placeholder="Subject"/>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -92,7 +93,7 @@
                                     <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="" readonly>
                                 </div>
                                 <div class="col-md-2">
-                                    <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico" /></a>
+                                    <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico"/></a>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -128,25 +129,25 @@
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Schedule End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Actual Start Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ActualStartDate" />
+                                    <input type="text" class="form-control datetimep" name="ActualStartDate"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-4">Actual End Date</label>
                                 <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ActualEndDate" />
+                                    <input type="text" class="form-control datetimep" name="ActualEndDate"/>
                                 </div>
                             </div>
                         </div>
@@ -221,8 +222,9 @@
 
         $("[data-role=btn-submit-new-ticket]").on("click", function () {
             var formData = new FormData($('#form-new-ticket')[0]);
+            //var token = $('input[name="__RequestVerificationToken"]', $("#form-new-ticket")).val();
+            //formData.append('__RequestVerificationToken', token);
             //formData.append('descriptionFiles', $('input[type="file"][name="descriptionFiles"]')[0].files[0]);
-            //formData.append('solutionFiles', $('input[type="file"][name="solutionFiles"]')[0].files[0]);
             //var formData = $("#form-new-ticket").serialize();
             $.ajax({
                 "url": "/HelpDesk/ManageTicket/AddNewTicket",
@@ -337,6 +339,10 @@
             .ready(function () {
                 setActiveTicketMenu();
                 initDropdownControl();
+                loadInitDropdown('ddl-urgency', 'None', 0);
+                loadInitDropdown('ddl-priority', 'None', 0);
+                loadInitDropdown('ddl-impact', 'None', 0);
+                loadInitDropdown('ddl-category', 'None', 0);
                 requesterTable = initRequesterTable($("#requester-table"));
             });
     </script>

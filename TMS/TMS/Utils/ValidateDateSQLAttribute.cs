@@ -1,17 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
 
 namespace TMS.Utils
 {
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class ValidateDateAttribute : ValidationAttribute
+    public class ValidateDateSQLAttribute : ValidationAttribute
     {
-        private int IntervalYear { get; set; }
-
-        public ValidateDateAttribute(int intervalYear)
-        {
-            IntervalYear = intervalYear;
-        }
 
         public override bool IsValid(object value)
         {
@@ -19,7 +14,7 @@ namespace TMS.Utils
 
             if (date.HasValue)
             {
-                if (date > DateTime.Now.AddYears(IntervalYear))
+                if (date <= (DateTime) SqlDateTime.MinValue || date >= (DateTime) SqlDateTime.MaxValue)
                 {
                     return false;
                 }

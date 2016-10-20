@@ -12,6 +12,7 @@
             <!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" role="form" id="form-edit-ticket" method="POST">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="Id" value="@Model.Id" />
                     <div class="row">
                         <div class="col-md-6">
@@ -48,6 +49,15 @@
                                 <label class="control-label col-md-3"></label>
                                 <div class="col-md-9">
                                     <input class="form-control" type="file" name="file" multiple>
+                                    <div style="height: 20px;">
+                                        @for (int i = 0; i < Model.Attachments.Count; i++)
+                                        {
+                                            @Html.HiddenFor(it => Model.Attachments[i].id)
+                                            @Html.HiddenFor(it => Model.Attachments[i].name)
+                                            <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.Attachments[i].id">@Model.Attachments[i].name</label>
+                                            <span class='attachment-delete' onclick='this.parentNode.innerHTML=""; return false;'> x </span>
+                                        }
+                                    </div>
                                     @*<div class="btn btn-default btn-file">
                                             <i class="fa fa-paperclip"></i> Attachment
                                             <input type="file" name="file" multiple>
@@ -118,14 +128,14 @@
                             <div class="form-group">
                                 <label class="control-label col-md-3">Created Time</label>
                                 <div class="col-md-9">
-                                    <input type="text" class="form-control" name="CreatedTime" value="@Model.CreatedTime" readonly/>
+                                    <input type="text" class="form-control" name="CreatedTime" value="@Model.CreatedTime" readonly />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label class="control-label col-md-3">Created By</label>
                                 <div class="col-md-9">
                                     <input type="hidden" id="createdId" name="CreatedId" value="@Model.CreatedId">
-                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy" >@Model.CreatedBy</label>
+                                    <label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy">@Model.CreatedBy</label>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -193,7 +203,7 @@
                     </div>
                     <div class="row">
                         <div class="form-group" style="text-align: center;">
-                                <div class="form-error-messages" data-role="group-form-error"></div>
+                            <div class="form-error-messages" data-role="group-form-error"></div>
                         </div>
                     </div>
                     <div class="row">
@@ -236,7 +246,7 @@
                     <tbody></tbody>
                 </table>
             </div>
-            <div class="modal-footer" style="text-align: center;" >
+            <div class="modal-footer" style="text-align: center;">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -262,7 +272,19 @@
             .on("click",
                 function() {
                     var formData = new FormData($("#form-edit-ticket")[0]);
-                    //formData.append('description', $("#descriptionEditor").val());
+                    var dict = new Array();
+                    $(".attachments")
+                        .each(function(index) {
+                            dict.push({
+                                "id":   $(".attachments")[index].getAttribute("data-id"),
+                                "name": $(".attachments")[index].textContent
+                            });
+                        });
+                    //formData.append('Attachments', dict);
+                    //formData.append('testAppend', "0000");
+
+                    //var token = $('input[name="__RequestVerificationToken"]', $("#form-edit-ticket")).val();
+                    //formData.append('__RequestVerificationToken', token);
                     //var formData = $("#form-edit-ticket").serialize();
                     $.ajax({
                         "url": "/HelpDesk/ManageTicket/UpdateTicket",
@@ -276,9 +298,10 @@
                                     type: "success",
                                     timeout: 1000
                                 });
-                                setTimeout(function () {
+                                setTimeout(function() {
                                     window.location.href = "/HelpDesk/ManageTicket";
-                                }, 1000);
+                                },
+                                    1000);
                             } else {
                                 noty({
                                     text: data.msg,
@@ -343,7 +366,7 @@
             });
             initCategoryDropdown({
                 control: $("[data-role=ddl-category]"),
-                ignore: function () {
+                ignore: function() {
                     return [];
                 }
             });
@@ -364,12 +387,6 @@
             $("#requesterId").val(requesterId);
             $("#requesterName").val(requesterName);
             $("#modal-add-requester").modal("hide");
-        }
-
-        function loadInitDropdown(selector,text,value) {
-            var opt = new Option(text, value, true, true);
-            $("[data-role='"+selector+"']").append(opt);
-            $("[data-role='"+selector+"']").trigger("change");
         }
 
         function loadEditData() {
@@ -395,10 +412,10 @@
             $("#solutionEditor").html('@Model.Solution.Replace("\r\n", "\\r\\n")');
             $("[name='statusId']").val(@Model.StatusId);*@
             $("#div-status").html(getStatusLabel('@Model.Status'));
-            loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
-            loadInitDropdown('ddl-priority', '@Model.Priority', @Model.PriorityId);
-            loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
-            loadInitDropdown('ddl-category', '@Model.Category', @Model.CategoryId);
+            loadInitDropdown('ddl-urgency', '@(Model.UrgencyId == 0 ? "None" : Model.Urgency)', @Model.UrgencyId);
+            loadInitDropdown('ddl-priority', '@(Model.PriorityId == 0 ? "None" : Model.Priority)', @Model.PriorityId);
+            loadInitDropdown('ddl-impact', '@(Model.ImpactId == 0 ? "None" : Model.Impact)', @Model.ImpactId);
+            loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
             loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
         }
@@ -414,7 +431,6 @@
                 setActiveTicketMenu();
                 requesterTable = initRequesterTable($("#requester-table"));
                 initDropdownControl();
-                //$("[data-role='ddl-urgency']").val(@Model.UrgencyId);
                 loadEditData();
             });
     </script>

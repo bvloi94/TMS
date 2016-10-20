@@ -48,7 +48,7 @@ namespace TMS.Services
         {
             if (id.HasValue)
             {
-                return _unitOfWork.CategoryRepository.Get(m => m.ID.Equals(id.Value) && m.Name.ToLower().Equals(name.ToLower())
+                return _unitOfWork.CategoryRepository.Get(m => !m.ID.Equals(id.Value) && m.Name.ToLower().Equals(name.ToLower())
                     && m.ParentID == parentId).Any();
             }
             else
@@ -69,6 +69,46 @@ namespace TMS.Services
             {
                 throw;
             }
+        }
+
+        public void UpdateCategory(Category category)
+        {
+            try
+            {
+                _unitOfWork.CategoryRepository.Update(category);
+                _unitOfWork.Save();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        private IEnumerable<Category> GetChildrenCategories(int parentId)
+        {
+            return _unitOfWork.CategoryRepository.Get(m => m.ParentID == parentId);
+        }
+
+        public bool IsInUse(Category category)
+        {
+            foreach (Category childCategory in GetChildrenCategories(category.ID))
+            {
+                if (IsInUse(childCategory))
+                {
+                    return true;
+                }
+            }
+            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any();
+        }
+
+        public void DeleteCategory(Category category)
+        {
+            foreach (Category childCategory in GetChildrenCategories(category.ID))
+            {
+                _unitOfWork.CategoryRepository.Delete(childCategory);
+            }
+            _unitOfWork.CategoryRepository.Delete(category);
+            _unitOfWork.Save();
         }
     }
 }

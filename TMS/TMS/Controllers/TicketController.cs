@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -251,7 +252,15 @@ namespace TMS.Controllers
             String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact, department = "-";
             String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
 
-            // _ticketAttachmentService.GetAttachmentByTicketID(id);
+            IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id);
+            string attachmentStr = "";
+            if (ticketAttachments.Count() > 0)
+            {
+                foreach (var attachFile in ticketAttachments)
+                {
+                    attachmentStr += attachFile.Path.Split('/').Last().Substring(17) + " ";
+                }
+            }
 
             switch (ticket.Type)
             {
@@ -302,6 +311,8 @@ namespace TMS.Controllers
                 }
             }
 
+            
+
             return Json(new
             {
                 id = ticket.ID,
@@ -327,7 +338,8 @@ namespace TMS.Controllers
                 creater = creater == null ? "-" : creater.Fullname,
                 assigner = assigner == null ? "-" : assigner.Fullname,
                 technician = technician == null ? "-" : technician.Fullname,
-                department = department
+                department = department,
+                attachments = attachmentStr
             }, JsonRequestBehavior.AllowGet);
         }
 
