@@ -18,6 +18,7 @@ namespace TMS.Areas.Admin.Controllers
         private UrgencyService _urgencyService;
         private PriorityService _priorityService;
         private CategoryService _categoryService;
+        private PriorityMatrixService _priorityMatrixService;
         private ILog log = LogManager.GetLogger(typeof(ManageSCController));
 
         public ManageSCController()
@@ -27,6 +28,7 @@ namespace TMS.Areas.Admin.Controllers
             _urgencyService = new UrgencyService(_unitOfWork);
             _priorityService = new PriorityService(_unitOfWork);
             _categoryService = new CategoryService(_unitOfWork);
+            _priorityMatrixService = new PriorityMatrixService(_unitOfWork);
         }
 
         // GET: Admin/ManageSC/Priority
@@ -49,6 +51,12 @@ namespace TMS.Areas.Admin.Controllers
         // GET: Admin/ManageSC/Category
         [HttpGet]
         public ActionResult Category()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult PriorityMatrix()
         {
             return View();
         }
@@ -284,6 +292,13 @@ namespace TMS.Areas.Admin.Controllers
             {
                 data = categoryList
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetPriorityMatrixItems()
+        {
+            ViewBag.priorityList = _priorityService.GetAll();
+            return PartialView("_PriorityMatrixTable");
         }
 
         [HttpPost]
@@ -778,8 +793,6 @@ namespace TMS.Areas.Admin.Controllers
             }
         }
 
-        #region category
-
         [HttpPost]
         public ActionResult CreateCategory(CategoryViewModel model)
         {
@@ -1200,7 +1213,5 @@ namespace TMS.Areas.Admin.Controllers
                 }
             }
         }
-
-        #region priority matrix
     }
 }
