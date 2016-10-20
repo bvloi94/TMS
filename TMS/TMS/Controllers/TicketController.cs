@@ -154,14 +154,24 @@ namespace TMS.Controllers
                 ticket.Mode = ConstantUtil.TicketMode.WebForm;
                 ticket.CreatedTime = DateTime.Now;
                 ticket.ModifiedTime = DateTime.Now;
-                _ticketService.AddTicket(ticket);
-
-                if (uploadFiles != null && uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
+                try
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, uploadFiles, ConstantUtil.TicketAttachmentType.Description);
+                    _ticketService.AddTicket(ticket);
+                    if (uploadFiles != null && uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
+                    {
+                        _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
+                    }
+                    return RedirectToAction("Index");
                 }
-
-                return RedirectToAction("Index");
+                catch
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        msg = "Some error occur! Please try again later",
+                    });
+                }
             }
             return View(model);
         }

@@ -254,16 +254,21 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            if (row[3] != null) {
-                                if (row[3].toString().length > 135) {
-                                    return "<span>" + row[3].substring(0, 134) + "..." + "</span>";
-                                }
-                                else {
-                                    return "<span>" + (row[3]) + "</span>";
-                                }
+                            if (row[2] <= 2) {
+                                return "-";
                             }
                             else {
-                                return "-"; 
+                                if (row[3] != null) {
+                                    if (row[3].toString().length > 135) {
+                                        return "<span>" + row[3].substring(0, 134) + "..." + "</span>";
+                                    }
+                                    else {
+                                        return "<span>" + (row[3]) + "</span>";
+                                    }
+                                }
+                                else {
+                                    return "-";
+                                }
                             }
                         },
                         "sortable": false,
