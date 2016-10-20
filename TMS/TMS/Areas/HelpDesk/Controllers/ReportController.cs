@@ -5,10 +5,13 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using LumiSoft.Net.IMAP.Client;
+using Microsoft.Ajax.Utilities;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
+using TMS.Utils;
 using static TMS.Utils.ConstantUtil;
+using Switch = System.Diagnostics.Switch;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -20,6 +23,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         public CategoryService _categoryService { get; set; }
         public UrgencyService _urgencyService { get; set; }
         public PriorityService _priorityService { get; set; }
+        public DepartmentService _departmentService { get; set; }
 
         public ReportController()
         {
@@ -30,6 +34,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             _categoryService = new CategoryService(_UnitofWork);
             _urgencyService = new UrgencyService(_UnitofWork);
             _priorityService = new PriorityService(_UnitofWork);
+            _departmentService = new DepartmentService(_UnitofWork);
         }
         // GET: HelpDesk/Report
         public ActionResult Index()
@@ -108,8 +113,6 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpPost] //int type, int by, 
         public ActionResult DrawGraph(int type, int by, string date_from_select, string date_to_select)
         {
-
-
             var ticketList = _ticketService.GetAll();
             IEnumerable<Ticket> filteredListItems;
             filteredListItems = ticketList;
@@ -222,27 +225,103 @@ namespace TMS.Areas.HelpDesk.Controllers
 
                 // Priority
                 case 4:
-                {
-                    IEnumerable<Priority> priorityList = _priorityService.GetAll();
-                    IEnumerable<Ticket> priorityInTickets = new List<Ticket>();
-                    foreach (var priority in priorityList)
                     {
+                        IEnumerable<Priority> priorityList = _priorityService.GetAll();
+                        IEnumerable<Ticket> priorityInTickets = new List<Ticket>();
+                        foreach (var priority in priorityList)
+                        {
                             labels.Add(priority.Name);
                             priorityInTickets = filteredListItems.Where(p => p.PriorityID == priority.ID);
                             data.Add(priorityInTickets.Count());
+                        }
+                        return Json(new
+                        {
+                            label = labels,
+                            data = data
+
+                        });
+
                     }
-                    return Json(new
-                    {
-                        label= labels,
-                        data = data
-
-                    });
-
-                }
                 // Group
-                case 5: break;
+                case 5:
+                    {
+                        IEnumerable<AspNetUser> listTechinicians = _userService.GetTechnicians();
+
+                        IEnumerable<Ticket> techinicianInteTickets = new List<Ticket>();
+                        foreach (var techinician in listTechinicians)
+                        {
+                            techinicianInteTickets = filteredListItems.Where(p => p.TechnicianID == techinician.Id);
+                            IEnumerable<Department> departments = _departmentService.GetAll();
+                            foreach (var department in departments)
+                            {
+                                labels.Add(department.Name);
+                                listTechinicians = listTechinicians.Where(p => p.DepartmentID == department.ID);
+                                data.Add(listTechinicians.Count());
+                            }
+                        }
+                        return Json(new
+                        {
+                            label = labels,
+                            data = data
+                        }, JsonRequestBehavior.AllowGet);
+
+                    }
                 // Status
-                case 6: break;
+                case 6:
+                    {
+                        IEnumerable<Ticket> statusInTickets = _ticketService.GetAll();
+                        //labels.Add("New");
+                        //labels.Add("Assigned");
+                        //labels.Add("Solved");
+                        //labels.Add("Unapproved");
+                        //labels.Add("Cancelled");
+                        //labels.Add("Closed");
+
+                        foreach (var statusInTicket in statusInTickets)
+                        {
+                            if (statusInTicket.Status == 1)
+                            {
+                                labels.Add("New");
+                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.New);
+                                data.Add(statusInTickets.Count());
+                            }
+                            else if (statusInTicket.Status == 2)
+                            {
+                                labels.Add("Assigned");
+                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Assigned);
+                                data.Add(statusInTickets.Count());
+                            }
+                            else if (statusInTicket.Status == 3)
+                            {
+                                labels.Add("Solved");
+                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Solved);
+                                data.Add(statusInTickets.Count());
+                            }
+                            else if (statusInTicket.Status == 4)
+                            {
+                                labels.Add("Unapproved");
+                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Unapproved);
+                                data.Add(statusInTickets.Count());
+                            }
+                            else if (statusInTicket.Status == 5)
+                            {
+                                labels.Add("Cancelled");
+                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Cancelled);
+                                data.Add(statusInTickets.Count());
+                            }
+                            else if (statusInTicket.Status == 6)
+                            {
+                                labels.Add("Closed");
+                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Closed);
+                                data.Add(statusInTickets.Count());
+                            }
+                        }
+                        return Json(new
+                        {
+                            label = labels,
+                            data = data
+                        }, JsonRequestBehavior.AllowGet);
+                    }
                 // Choose one
                 default: break;
 
@@ -262,27 +341,9 @@ namespace TMS.Areas.HelpDesk.Controllers
                 : (DateTime?)null);
                 filteredListItems = filteredListItems.Where(p => DateTime.Compare(p.CreatedTime.Date, toDate.Date) <= 0);
             }
-
-            //if (type == 1)
-
-            //List<string> labels = new List<string>();
-            //List<int> data = new List<int>();
-            ////_impacServie.
-            //IEnumerable<Impact> impacts = _impactService.GetAll();
-            ////duyet list 
-            //IEnumerable<Ticket> impactInTicketList = null;
-            //foreach (var impact in impacts)
-            //{
-            //    labels.Add(impact.Name);
-            //    impactInTicketList = filteredListItems.Where(p => p.ImpactID == impact.ID);
-            //    data.Add(impactInTicketList.Count());
-            //}
-            //return Json(new
-            //{
-            //    label = labels,
-            //    data = data,
-            //}, JsonRequestBehavior.AllowGet);
             return null;
         }
+
     }
+
 }

@@ -117,7 +117,7 @@
                 "data": {
                     type: $("#dropdownType").val(),
                     by: $("#dropdownBy").val(),
-                    date_from_select : $("#date-from-txt").val(),
+                    date_from_select: $("#date-from-txt").val(),
                     date_to_select: $("#date-to-txt").val()
                 },
                 "success": function (data) {
@@ -126,14 +126,13 @@
             });
         }
 
-        $("#dropdownType")
-            .on("change",
-                function() {
-                    ProcessGraph();
-                });
-        $("#dropdownBy").on("change", function() {
+        $("#dropdownType").on("change", function () {
             ProcessGraph();
         });
+        $("#dropdownBy").on("change", function () {
+            ProcessGraph();
+        });
+
         //var chartLabels = [];
         //var chartData = [];
         //for (var i=0; i<5; i++) {
@@ -143,6 +142,13 @@
         //drawChart(chartLabels, chartData);
 
         function drawChart(chartLabels, chartData) {
+            if (chartLabels == null) {
+                $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
+                $.notify("No lables to draw chart", "success");
+            } else if (chartData == null) {
+                $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
+                $.notify("No data to draw chart", "success");
+            }
             var colors = [];
             for (var i = 0; i < chartLabels.length; i++) {
                 colors[i] = defaultColors[i];
@@ -180,7 +186,7 @@
                             d.date_to_select = $("#date-to-txt").val()
                     }
                 },
-                drawCallback: function(settings) {
+                drawCallback: function (settings) {
                     //var api = this.api();
                 },
                 "columnDefs": [
