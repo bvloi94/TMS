@@ -127,6 +127,7 @@ namespace TMS.Controllers
         }
 
         // GET: Tickets/Create
+        [Utils.Authorize(Roles = "Requester")]
         public ActionResult Create()
         {
             return View();
@@ -135,9 +136,9 @@ namespace TMS.Controllers
         // POST: Tickets/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Utils.Authorize(Roles = "Requester")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [ValidateInput(false)]
         public ActionResult Create(RequesterTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
         {
             if (ModelState.IsValid)
@@ -147,30 +148,24 @@ namespace TMS.Controllers
 
                 ticket.Subject = model.Subject;
                 ticket.Description = model.Description;
-                ticket.Status = (int?)TicketStatusEnum.New;
+                ticket.Status = ConstantUtil.TicketStatus.New;
                 ticket.CreatedID = User.Identity.GetUserId();
                 ticket.RequesterID = User.Identity.GetUserId();
-                ticket.Mode = (int)TicketModeEnum.WebForm;
+                ticket.Mode = ConstantUtil.TicketMode.WebForm;
                 ticket.CreatedTime = DateTime.Now;
                 ticket.ModifiedTime = DateTime.Now;
                 try
                 {
                     _ticketService.AddTicket(ticket);
-
-                    if (uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
+                    if (uploadFiles != null && uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                     {
-                        _ticketAttachmentService.saveFile(ticket.ID, uploadFiles);
+                        _ticketAttachmentService.saveFile(ticket.ID, uploadFiles, ConstantUtil.TicketAttachmentType.Description);
                     }
                     return RedirectToAction("Index");
                 }
                 catch
                 {
-                    return Json(new
-                    {
-                        success = false,
-                        error = true,
-                        msg = "Some error occur! Please try again later",
-                    });
+                    return RedirectToAction("Index");
                 }
             }
             return View(model);

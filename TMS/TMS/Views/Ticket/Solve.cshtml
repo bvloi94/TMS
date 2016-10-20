@@ -1,6 +1,9 @@
 ﻿@using TMS.Models;
 @using TMS.Utils;
 @model TMS.ViewModels.TicketSolveViewModel
+@{ 
+    ViewBag.Title = "Solve Ticket";
+}
 @{
     if (ViewBag.Role == "Technician")
     {
@@ -49,11 +52,6 @@
     }
 </style>
 <div class="row col-md-12">
-    <div class="box box-solid bg-blue big-title">
-        <div class="box-header">
-            <h3>Solve ticket</h3>
-        </div>
-    </div>
     <div class="box box-solid">
         <div class="box-body ticket-contents">
             <div class="col-sm-12 header-content">

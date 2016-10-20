@@ -68,7 +68,8 @@ namespace TMS.Schedulers
                             string attName = String.Format("{0}\\{1}", attachmentDirectory, fileName);
                             att.SaveAs(attName, true);
                             TicketAttachment ticketAttachment = new TicketAttachment();
-                            ticketAttachment.Path = fileName;
+                            ticketAttachment.Path = "/Uploads/Attachments/" + fileName;
+                            ticketAttachment.Filename = att.Name;
                             handledTicket.TicketAttachments.Add(ticketAttachment);
                         }
                     }
