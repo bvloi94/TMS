@@ -443,6 +443,16 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
             }
 
+            IEnumerable<TicketAttachment> oldAttachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
+            //for (int i = 0; i < oldAttachments.Count(); i++)
+            //{
+            //    bool has = false;
+            //    for (int j = 0; j < model.Attachments.Count; j++) { 
+            //        if 
+            //    }
+            //    if (model.Attachments
+            //}
+
             try
             {
                 _ticketService.UpdateTicket(ticket);
