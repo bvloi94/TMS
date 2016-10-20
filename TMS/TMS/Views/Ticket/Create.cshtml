@@ -2,6 +2,9 @@
     Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
 }
 @model TMS.ViewModels.RequesterTicketViewModel
+@{ 
+    ViewBag.Title = "Create ticket";
+}
 
 <style>
     h4, h5 {
@@ -24,11 +27,6 @@
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="box box-solid bg-blue big-title">
-            <div class="box-header">
-                <h3>Create ticket</h3>
-            </div>
-        </div>
         <div class="box box-solid">
             @using (Html.BeginForm("Create", "Ticket", FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
             {
