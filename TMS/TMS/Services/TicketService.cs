@@ -378,18 +378,41 @@ namespace TMS.Services
             return _unitOfWork.Save() > 0;
         }
 
-        public bool CancelTicket(int? ticketId)
+        /// <summary>
+        /// cancel ticket which return int value
+        /// 1: success, 2: unavailable ticket, 3: wrong ticket status, 4: error
+        /// </summary>
+        /// <param name="ticketId"></param>
+        /// <returns>int</returns>
+        public int CancelTicket(int? ticketId)
         {
             if (ticketId.HasValue)
             {
-                Ticket ticket = GetTicketByID((int)ticketId);
-                ticket.Status = ConstantUtil.TicketStatus.Cancelled; //Solved
+                Ticket ticket = GetTicketByID(ticketId.Value);
+                //if invalid ticket
+                if (ticket == null)
+                {
+                    return 2;
+                }
+                //if status is not new or assigned
+                if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
+                {
+                    return 3;
+                }
+                ticket.Status = ConstantUtil.TicketStatus.Cancelled;
                 ticket.ModifiedTime = DateTime.Now;
-                _unitOfWork.TicketRepository.Update(ticket);
-                _unitOfWork.Save();
-                return true;
+                try
+                {
+                    _unitOfWork.TicketRepository.Update(ticket);
+                    _unitOfWork.Save();
+                    return 1;
+                }
+                catch
+                {
+                    return 4;
+                }
             }
-            return false;
+            return 2;
         }
 
         public void SolveTicket(Ticket ticket)

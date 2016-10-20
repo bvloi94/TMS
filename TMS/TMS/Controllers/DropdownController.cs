@@ -170,7 +170,7 @@ namespace TMS.Controllers
                 if (child.CategoryLevel != null) cate.Level = (int)child.CategoryLevel;
                 if (child.ParentID != null) cate.ParentId = (int)child.ParentID;
                 cates.Add(cate);
-                if (level < ConstantUtil.CategoryLevel.Item) addChildCates(ref cates, level + 1, cate.ID);
+                if (level < ConstantUtil.CategoryLevel.Item) addChildCates(ref cates, level + 1, cate.ID.Value);
             }
         }
 

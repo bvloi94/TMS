@@ -1,0 +1,28 @@
+﻿@{
+    ViewBag.Title = "Priority Matrix";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Priority Matrix</h2>
+<div id="priority-matrix-div">
+    @*priority matrix table*@
+</div>
+
+
+@section scripts{
+    <script>
+        var initPriorityMatrixTable = function () {
+            $.ajax({
+                url: "/Admin/ManageSC/GetPriorityMatrixItems",
+                type: "GET",
+                dataType: "html",
+                success: function (data) {
+                    $("#priority-matrix-div").html(data);
+                }
+            });
+        }
+        $(document).ready(function () {
+            initPriorityMatrixTable();
+        });
+    </script>
+}

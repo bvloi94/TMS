@@ -303,6 +303,7 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\PriorityMatrixService.cs" />
     <Compile Include="Services\TicketAttachmentService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ImpactService.cs" />
@@ -318,6 +319,7 @@
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="Utils\ValidateDateSQLAttribute.cs" />
     <Compile Include="Utils\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
@@ -534,6 +536,7 @@
     <Content Include="Areas\HelpDesk\Views\ManageTicket\CreateNewTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageSC\PriorityMatrix.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
