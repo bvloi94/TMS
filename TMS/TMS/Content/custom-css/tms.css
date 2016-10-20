@@ -23,19 +23,19 @@
 }
 
 
-@media screen and (min-width: 768px) { 
-  .modal:before {
-    display: inline-block;
-    vertical-align: middle;
-    content: " ";
-    height: 100%;
-  }
+@media screen and (min-width: 768px) {
+    .modal:before {
+        display: inline-block;
+        vertical-align: middle;
+        content: " ";
+        height: 100%;
+    }
 }
 
 .modal-dialog {
-  display: inline-block;
-  text-align: left;
-  vertical-align: middle;
+    display: inline-block;
+    text-align: left;
+    vertical-align: middle;
 }
 
 .modal-title {
@@ -89,8 +89,12 @@
     text-align: center;
 }
 
+.attachment-div {
+    margin-right: 15px;
+}
+
 .attachments {
-    padding-right: 20px;
+    padding-right: 15px;
 }
 
 .attachment-delete {

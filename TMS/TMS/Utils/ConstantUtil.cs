@@ -103,5 +103,12 @@ namespace TMS.Utils
             public const int SubCategory = 2;
             public const int Item = 3;
         }
+
+        public class TicketAttachmentType
+        {
+            public const bool Description = true;
+            public const bool Solution = false;
+        }
+
     }
 }
