@@ -2,29 +2,14 @@
     Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
 }
 @model TMS.ViewModels.RequesterTicketViewModel
+@{ 
+    ViewBag.Title = "Create ticket";
+}
 
 <style>
-    .title {
-        margin-top: -20px;
-        margin-bottom: 12px;
-    }
-
-    .btitle {
-        display: table;
-    }
-
     h4, h5 {
         color: #345aaa;
         font-weight: bold;
-    }
-
-    .white-title {
-        text-transform: uppercase;
-        font-weight: bold;
-        display: table-cell;
-        padding: 8px;
-        vertical-align: middle;
-        color: #ffffff;
     }
 
     .inputform {
@@ -42,11 +27,6 @@
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="box box-solid bg-blue title">
-            <div class="box-header btitle">
-                <h3 class="white-title">Create ticket</h3>
-            </div>
-        </div>
         <div class="box box-solid">
             @using (Html.BeginForm("Create", "Ticket", FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
             {

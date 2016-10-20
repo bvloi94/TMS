@@ -4,31 +4,16 @@
 @{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
 }
+@{ 
+    ViewBag.Title = "Solve ticket";
+}
 
 <style>
-    .title {
-        margin-top: -20px;
-        margin-bottom: 12px;
-    }
-
-    .btitle {
-        display: table;
-    }
-
     h4, h5 {
         color: #345aaa;
         font-weight: bold;
     }
-
-    .white-title {
-        text-transform: uppercase;
-        font-weight: bold;
-        display: table-cell;
-        padding: 8px;
-        vertical-align: middle;
-        color: #ffffff;
-    }
-
+    
     .header-content {
         border-bottom: 1px solid #a6c6e9;
         padding: 20px 0px 0px 30px;
@@ -61,11 +46,6 @@
 </style>
 
 <div class="row col-md-12">
-    <div class="box box-solid bg-blue title">
-        <div class="box-header btitle">
-            <h3 class="white-title">Solve ticket</h3>
-        </div>
-    </div>
     <div class="box box-solid">
         <div class="box-body ticket-contents">
             <div class="col-sm-12 header-content">

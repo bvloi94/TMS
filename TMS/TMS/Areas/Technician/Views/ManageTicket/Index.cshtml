@@ -1,6 +1,9 @@
 ﻿@{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
 }
+@{ 
+    ViewBag.Title = "Ticket List";
+}
 
 <style>
     .table thead, h4 {
@@ -11,10 +14,6 @@
     h5 {
         color: #171fb0;
         font-weight: bold;
-    }
-
-    .rightItems {
-        text-align: right;
     }
 
     .ticket-contents {
@@ -43,11 +42,6 @@
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="box box-solid bg-blue title">
-            <div class="box-header btitle">
-                <h3 class="white-title">TICKET LIST</h3>
-            </div>
-        </div>
         <div class="box box-solid">
             <div class="box-header"></div>
             <div class="box-body">
