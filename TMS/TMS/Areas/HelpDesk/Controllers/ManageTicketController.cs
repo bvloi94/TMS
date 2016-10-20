@@ -308,6 +308,19 @@ namespace TMS.Areas.HelpDesk.Controllers
                     model.Department = _departmentService.GetDepartmentById((int)technician.DepartmentID).Name;
                 }
             }
+
+            IEnumerable<TicketAttachment> attachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
+            if (attachments != null)
+            {
+                model.Attachments = new List<AttachmentViewModel>();
+                foreach (var attachment in attachments)
+                {
+                    var att = new AttachmentViewModel();
+                    att.id = attachment.ID.ToString();
+                    att.name = attachment.Path.Split('/').Last().Substring(17);
+                    model.Attachments.Add(att);
+                }
+            }
             return View(model);
         }
 
@@ -433,6 +446,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             try
             {
                 _ticketService.UpdateTicket(ticket);
+                if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
+                {
+                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles);
+                }
             }
             catch (DbUpdateException ex)
             {

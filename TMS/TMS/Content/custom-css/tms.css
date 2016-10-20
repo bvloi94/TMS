@@ -88,3 +88,14 @@
 .alignCenter {
     text-align: center;
 }
+
+.attachments {
+    padding-right: 20px;
+}
+
+.attachment-delete {
+    cursor: pointer;
+    margin-left: -15px;
+    font-weight: bold;
+    color: #fff;
+}
