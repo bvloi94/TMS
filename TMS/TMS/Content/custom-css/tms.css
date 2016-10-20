@@ -1,15 +1,14 @@
 ﻿
 .big-title {
-    margin-top: -20px;
-    margin-bottom: 12px;
+    margin-bottom: 0px;
     display: table;
 }
 
-    .big-title h3 {
+    .big-title h1, h2, h3, h4, h5, h6 {
         text-transform: uppercase;
         font-weight: bold;
         display: table-cell;
-        padding: 8px;
+        padding: 5px;
         vertical-align: middle;
         color: #ffffff;
     }
@@ -85,8 +84,12 @@
     text-align: center;
 }
 
+.attachment-div {
+    margin-right: 15px;
+}
+
 .attachments {
-    padding-right: 20px;
+    padding-right: 15px;
 }
 
 .attachment-delete {

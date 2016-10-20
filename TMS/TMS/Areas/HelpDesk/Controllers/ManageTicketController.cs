@@ -82,7 +82,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
+        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -204,12 +204,13 @@ namespace TMS.Areas.HelpDesk.Controllers
             try
             {
                 _ticketService.AddTicket(ticket);
-                //TicketAttachment ticketFiles = new TicketAttachment();
                 if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles);
-                    //List<TicketAttachment> listFile = unitOfWork.TicketAttachmentRepository.Get(i => i.TicketID == ticket.ID).ToList();
-                    //ticketFiles.Path = listFile[0].Path;
+                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                }
+                if (solutionFiles.ToList()[0] != null && solutionFiles.ToList().Count > 0)
+                {
+                    _ticketAttachmentService.saveFile(ticket.ID, solutionFiles, ConstantUtil.TicketAttachmentType.Solution);
                 }
             }
             catch (DbUpdateException ex)
@@ -313,13 +314,21 @@ namespace TMS.Areas.HelpDesk.Controllers
             IEnumerable<TicketAttachment> attachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
             if (attachments != null)
             {
-                model.Attachments = new List<AttachmentViewModel>();
+                model.DescriptionAttachments = new List<AttachmentViewModel>();
+                model.SolutionAttachments = new List<AttachmentViewModel>();
                 foreach (var attachment in attachments)
                 {
                     var att = new AttachmentViewModel();
-                    att.id = attachment.ID.ToString();
-                    att.name = attachment.Path.Split('/').Last().Substring(17);
-                    model.Attachments.Add(att);
+                    att.id = attachment.ID;
+                    att.name = attachment.Filename;
+                    if (attachment.Type == ConstantUtil.TicketAttachmentType.Description)
+                    {
+                        model.DescriptionAttachments.Add(att);
+                    }
+                    else
+                    {
+                        model.SolutionAttachments.Add(att);
+                    }
                 }
             }
             return View(model);
@@ -328,7 +337,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles)
+        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -444,22 +453,50 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
             }
 
-            IEnumerable<TicketAttachment> oldAttachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
-            //for (int i = 0; i < oldAttachments.Count(); i++)
-            //{
-            //    bool has = false;
-            //    for (int j = 0; j < model.Attachments.Count; j++) { 
-            //        if 
-            //    }
-            //    if (model.Attachments
-            //}
+            List<TicketAttachment> allTicketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID).ToList();
+            bool isDelete;
+            for (int i = 0; i < allTicketAttachments.Count(); i++)
+            {
+                isDelete = true;
+                if (allTicketAttachments[i].Type == ConstantUtil.TicketAttachmentType.Description)
+                {
+                    if (model.DescriptionAttachments != null && model.DescriptionAttachments.Count > 0)
+                    {
+                        for (int j = 0; j < model.DescriptionAttachments.Count; j++)
+                        {
+                            if (allTicketAttachments[i].ID == model.DescriptionAttachments[j].id)
+                            {
+                                isDelete = false;
+                            }
+                        }
+                    }
+                }
+                else if (allTicketAttachments[i].Type == ConstantUtil.TicketAttachmentType.Solution)
+                {
+                    if (model.SolutionAttachments != null && model.SolutionAttachments.Count > 0)
+                    {
+                        for (int j = 0; j < model.SolutionAttachments.Count; j++)
+                        {
+                            if (allTicketAttachments[i].ID == model.SolutionAttachments[j].id)
+                            {
+                                isDelete = false;
+                            }
+                        }
+                    }
+                }
+                if (isDelete) _ticketAttachmentService.DeleteAttachment(allTicketAttachments[i]);
+            }
 
             try
             {
                 _ticketService.UpdateTicket(ticket);
                 if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles);
+                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                }
+                if (solutionFiles.ToList()[0] != null && solutionFiles.ToList().Count > 0)
+                {
+                    _ticketAttachmentService.saveFile(ticket.ID, solutionFiles, ConstantUtil.TicketAttachmentType.Solution);
                 }
             }
             catch (DbUpdateException ex)

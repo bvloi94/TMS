@@ -5,6 +5,7 @@ using System.Web;
 using Teek.Models;
 using TMS.DAL;
 using TMS.Models;
+using TMS.Utils;
 
 
 namespace TMS.Services
@@ -28,12 +29,25 @@ namespace TMS.Services
             return _unitOfWork.TicketAttachmentRepository.GetByID(id);
         }
 
+        public void DeleteAttachment(TicketAttachment attachment)
+        {
+            try
+            {
+                _unitOfWork.TicketAttachmentRepository.Delete(attachment);
+                _unitOfWork.Save();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public IEnumerable<TicketAttachment> GetAttachmentByTicketID (int id)
         {
             return _unitOfWork.TicketAttachmentRepository.Get(m => m.TicketID == id);
         }
 
-        public void saveFile (int id, IEnumerable<HttpPostedFileBase> uploadFiles)
+        public void saveFile(int id, IEnumerable<HttpPostedFileBase> uploadFiles, bool type)
         {
             string containFolder = "Attachments";
             TicketAttachment files = null;
@@ -45,6 +59,8 @@ namespace TMS.Services
                 files = new TicketAttachment();
                 files.TicketID = id;
                 files.Path = filePath;
+                files.Filename = upFiles[i].FileName;
+                files.Type = type;
                 _unitOfWork.TicketAttachmentRepository.Insert(files);
                 _unitOfWork.Save();
             }
