@@ -2,7 +2,7 @@
     Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
 }
 @model TMS.ViewModels.RequesterTicketViewModel
-@{ 
+@{
     ViewBag.Title = "Create ticket";
 }
 
@@ -52,7 +52,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Save" class="btn btn-primary btn-flat" />
+                        <input type="submit" id="saveBtn" value="Save" class="btn btn-primary btn-flat" />
                         <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
                     </div>
                 </div>
@@ -61,6 +61,9 @@
     </div>
 </div>
 @section scripts{
+    <script>
+
+    </script>
 }
 
 

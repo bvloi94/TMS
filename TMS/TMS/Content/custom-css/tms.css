@@ -4,7 +4,7 @@
     display: table;
 }
 
-    .big-title h1, h2, h3, h4, h5, h6 {
+    .big-title > .box-header > *{
         text-transform: uppercase;
         font-weight: bold;
         display: table-cell;
