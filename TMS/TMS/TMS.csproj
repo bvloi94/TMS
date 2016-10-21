@@ -386,6 +386,7 @@
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\jquery.noty.js" />
     <Content Include="Content\js\select2.min.js" />
+    <Content Include="Content\js\trunk8.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.css" />

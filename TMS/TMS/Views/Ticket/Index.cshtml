@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
 }
-@{ 
+@{
     ViewBag.Title = "Ticket List";
 }
 <style>
@@ -60,8 +60,8 @@
             <div class="box-body">
                 <a class="btn btn-primary btn-flat" href="@(Url.Action("Create", "Ticket"))">Create new ticket</a>
                 <div class="pull-right">
-                    <div class="input-group">
-                        <input type="text" id="search-txt" class="form-control" placeholder="Search...">
+                    <div class="input-group" style="width: 300px">
+                        <input type="text" id="search-txt" class="form-control" placeholder="Search by subject...">
                         <span class="input-group-btn">
                             <button name="search" id="search-btn" class="btn btn-default btn-flat">
                                 <i class="fa fa-search"></i>
@@ -203,6 +203,12 @@
     @Scripts.Render("~/bundles/datatables")
     <script>
         setActiveTicketMenu();
+        $(window).on('resize', function () {
+            $('#ticket-table .long-table-column').trunk8({
+                lines: 2,
+                tooltip: false
+            });
+        });
         var initDataTable = function () {
             $("#ticket-table").DataTable({
                 processing: true,
@@ -210,8 +216,15 @@
                 paging: true,
                 sort: true,
                 "order": [[0, 'dsc']],
+                lengthMenu: [10],
                 lengthChange: false,
                 filter: false,
+                drawCallback: function () {
+                    $('#ticket-table .long-table-column').trunk8({
+                        lines: 2,
+                        tooltip: false
+                    });
+                },
                 ajax: {
                     url: "/Ticket/GetRequesterTickets",
                     data: function (d) {
@@ -249,27 +262,11 @@
                                 return "<label class='label label-default'>Closed</label>";
                             }
                         },
-                        "sortable": false,
                         "targets": 2
                     },
                     {
                         "render": function (data, type, row) {
-                            if (row[2] <= 2) {
-                                return "-";
-                            }
-                            else {
-                                if (row[3] != null) {
-                                    if (row[3].toString().length > 135) {
-                                        return "<span>" + row[3].substring(0, 134) + "..." + "</span>";
-                                    }
-                                    else {
-                                        return "<span>" + (row[3]) + "</span>";
-                                    }
-                                }
-                                else {
-                                    return "-";
-                                }
-                            }
+                            return "<span class='long-table-column'>" + row[3] + "</span>";
                         },
                         "sortable": false,
                         "targets": 3
@@ -311,7 +308,7 @@
                     $('#ticket-category').text(data.category);
 
                     if (data.solution == "-") {
-                        $('#ticket-solution').text("This ticket is not solved yet.");
+                        $('#ticket-solution').empty().append('<i>This ticket is not solved yet.</i>');
                     }
                     else {
                         $('#ticket-solution').text(data.solution);

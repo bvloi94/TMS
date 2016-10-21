@@ -89,6 +89,14 @@ namespace TMS.Controllers
                 filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
             }
 
+            foreach (Ticket ticket in filteredListItems)
+            {
+                if (ticket.Status <= 2 || string.IsNullOrEmpty(ticket.Solution))
+                {
+                    ticket.Solution = "-";
+                }
+            }
+
             // Sort.
             var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
             var sortDirection = Request["order[0][dir]"];
@@ -104,6 +112,11 @@ namespace TMS.Controllers
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Subject)
                         : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Status)
+                        : filteredListItems.OrderByDescending(p => p.Status);
                     break;
                 default: break;
             }
@@ -143,32 +156,47 @@ namespace TMS.Controllers
         {
             if (ModelState.IsValid)
             {
-                Ticket ticket = new Ticket();
-                TicketAttachment ticketFiles = new TicketAttachment();
-
-                ticket.Subject = model.Subject;
-                ticket.Description = model.Description;
-                ticket.Status = ConstantUtil.TicketStatus.New;
-                ticket.CreatedID = User.Identity.GetUserId();
-                ticket.RequesterID = User.Identity.GetUserId();
-                ticket.Mode = ConstantUtil.TicketMode.WebForm;
-                ticket.CreatedTime = DateTime.Now;
-                ticket.ModifiedTime = DateTime.Now;
                 try
                 {
+                    Ticket ticket = new Ticket();
+                    TicketAttachment ticketFiles = new TicketAttachment();
+
+                    ticket.Subject = model.Subject;
+                    ticket.Description = model.Description;
+                    ticket.Status = ConstantUtil.TicketStatus.New;
+                    ticket.CreatedID = User.Identity.GetUserId();
+                    ticket.RequesterID = User.Identity.GetUserId();
+                    ticket.Mode = ConstantUtil.TicketMode.WebForm;
+                    ticket.CreatedTime = DateTime.Now;
+                    ticket.ModifiedTime = DateTime.Now;
                     _ticketService.AddTicket(ticket);
                     if (uploadFiles != null && uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                     {
                         _ticketAttachmentService.saveFile(ticket.ID, uploadFiles, ConstantUtil.TicketAttachmentType.Description);
                     }
-                    return RedirectToAction("Index");
+                    return Json(new
+                    {
+                        success = true,
+                        msg = "Create ticket successfully!"
+                    });
                 }
                 catch
                 {
-                    return RedirectToAction("Index");
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        msg = "Cannot create ticket. Please try again!"
+                    });
                 }
             }
-            return View(model);
+
+            return Json(new
+            {
+                success = false,
+                error = true,
+                msg = "Cannot create ticket. Please try again!"
+            });
         }
 
         // GET: Tickets/Edit/5

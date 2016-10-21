@@ -11,6 +11,7 @@ namespace TMS.ViewModels
         public int? ID { get; set; }
         public string Status { get; set; }
         [Required(ErrorMessage = "Subject cannot be empty!")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Subject length is between 8 and 100 characters")]
         public string Subject { get; set; }
         public string Description { get; set; }
         public string AttachmentURL { get; set; }
