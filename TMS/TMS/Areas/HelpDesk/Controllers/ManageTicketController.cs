@@ -21,6 +21,7 @@ using ModelError = TMS.ViewModels.ModelError;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
+    [Utils.Authorize(Roles = "Helpdesk")]
     public class ManageTicketController : Controller
     {
 
@@ -51,7 +52,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
         }
 
-        // GET: HelpDesk/ManageTicket
         public ActionResult Index()
         {
             //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
@@ -79,7 +79,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View();
         }
 
-        [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
@@ -236,7 +235,9 @@ namespace TMS.Areas.HelpDesk.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Ticket ticket = _ticketService.GetTicketByID((int)id);
-            if (ticket == null)
+            if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled 
+                || ticket.Status == ConstantUtil.TicketStatus.Closed 
+                || ticket.Status == ConstantUtil.TicketStatus.Unapproved)
             {
                 return HttpNotFound();
             }
@@ -252,6 +253,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.RequesterId = ticket.RequesterID;
                 model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
             }
+            model.Mode = ticket.Mode;
             if (ticket.Type != null) model.Type = (int)ticket.Type;
             if (ticket.Status != null)
             {
@@ -334,7 +336,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View(model);
         }
 
-        [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
@@ -652,10 +653,13 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     filteredListItems = filteredListItems.Where(p => p.Status == statusNo);
                 }
+                else
+                {
+                    //Hide Canceled and Closed Tickets
+                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Canceled);
+                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Closed);
+                }
             }
-
-            //Hide Canceled Tickets
-            filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Canceled);
 
             if (!string.IsNullOrEmpty(search_text))
             {
@@ -672,6 +676,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Subject)
                         : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => _userService.GetUserById(p.RequesterID).Fullname)
+                        : filteredListItems.OrderByDescending(p => _userService.GetUserById(p.RequesterID).Fullname);
                     break;
                 case 5:
                     filteredListItems = sortDirection == "asc"
