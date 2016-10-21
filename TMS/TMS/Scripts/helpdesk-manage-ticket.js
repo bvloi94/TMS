@@ -8,8 +8,8 @@ function initTicketTable() {
         processing: true,
         sort: true,
         filter: false,
-        lengthMenu: [8],
-        "order": [[1, 'asc']],
+        lengthMenu: [7],
+        order: [[6, 'des']],
         lengthChange: false,
         fnDrawCallback: function () {
             checkSelectedCheckbox();
@@ -43,7 +43,6 @@ function initTicketTable() {
              },
             {
                 "targets": [2],
-                "sortable": false,
                 "render": function (data, type, row) {
                     return row.Requester != "" ? row.Requester : "-";
                 }
@@ -87,7 +86,6 @@ function initTicketTable() {
                             ediBtn = $("<a/>",
                             {
                                 "class": "btn btn-sm btn-default",
-                                "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
                                 "data-role": "btn-edit-ticket",
                                 "disabled": "disabled",
                                 "html": $("<i/>",
@@ -205,8 +203,6 @@ function openTicketDetailModal(ticketId) {
             id: ticketId
         },
         success: function (data) {
-
-
             $('#ticket-subject').text(data.subject);
             $('#ticket-description').text(data.description);
             $('#ticket-department').text(data.department);
@@ -252,7 +248,7 @@ function openTicketDetailModal(ticketId) {
                 $('[data-role="modal-btn-reopen"]').addClass("disabled");
             } else if (data.status == 4) {
                 $('#ticket-status').html(getStatusLabel('Unapproved'));
-                $('[data-role="modal-btn-solve"]').addClass("disabled");
+                $('[data-role="modal-btn-solve"]').addClass("invisible");
                 $('[data-role="modal-btn-reopen"]').removeClass("disabled");
             } else if (data.status == 5) {
                 $('#ticket-status').html(getStatusLabel('Cancelled'));
@@ -307,6 +303,7 @@ $(document)
             $("[data-role='btn-confirm-cancel']")
                 .on('click',
                     function () {
+                        $("[data-role='btn-confirm-cancel']").prop("disabled", true);
                         $.ajax({
                             "url": "/HelpDesk/ManageTicket/CancelTicket",
                             "method": "POST",
@@ -333,6 +330,7 @@ $(document)
                                     });
                                     ticketTable.draw();
                                 }
+                                $("[data-role='btn-confirm-cancel']").prop("disabled", false);
                             },
                             "error": function () {
                                 $("#modal-cancel-ticket").modal("hide");
@@ -365,6 +363,7 @@ $(document)
             $("[data-role='btn-confirm-merge']")
                 .on('click',
                     function () {
+                        $("[data-role='btn-confirm-merge']").prop("disabled", true);
                         $.ajax({
                             "url": "/HelpDesk/ManageTicket/MergeTicket",
                             "method": "POST",
@@ -392,6 +391,7 @@ $(document)
                                         timeout: 2000
                                     });
                                 }
+                                $("[data-role='btn-confirm-merge']").prop("disabled", false);
                             },
                             "error": function () {
                                 $("#modal-merge-ticket").modal("hide");

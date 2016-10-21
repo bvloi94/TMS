@@ -14,16 +14,17 @@ namespace TMS.ViewModels
     {
         public int No { get; set; }
         public int Id { get; set; }
+        [AllowHtml]
         public string Subject { get; set; }
-        //[AllowHtml]
+        [AllowHtml]
         public string Description { get; set; }
-        //[AllowHtml]
+        [AllowHtml]
         public string Solution { get; set; }
         public string RequesterId { get; set; }
         public string Requester { get; set; }
         public string TechnicianId { get; set; }
         public string Technician { get; set; }
-        public int? Type { get; set; }
+        public int Type { get; set; }
         public int Mode { get; set; }
         public int StatusId { get; set; }
         public string Status { get; set; }
@@ -33,6 +34,7 @@ namespace TMS.ViewModels
         public string Priority { get; set; }
         public int ImpactId { get; set; }
         public string Impact { get; set; }
+        [AllowHtml]
         public string ImpactDetail { get; set; }
         public int CategoryId { get; set; }
         public string Category { get; set; }

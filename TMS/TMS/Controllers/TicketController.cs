@@ -291,7 +291,7 @@ namespace TMS.Controllers
             {
                 foreach (var attachFile in ticketAttachments)
                 {
-                    attachmentStr += attachFile.Path.Split('/').Last().Substring(17) + " ";
+                    attachmentStr += attachFile.Filename+ " ";
                 }
             }
 
