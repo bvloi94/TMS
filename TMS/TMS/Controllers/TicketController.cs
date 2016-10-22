@@ -89,9 +89,16 @@ namespace TMS.Controllers
                 filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
             }
 
+            string userRole = null;
+
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
+            }
+
             foreach (Ticket ticket in filteredListItems)
             {
-                if (ticket.Status <= 2 || string.IsNullOrEmpty(ticket.Solution))
+                if (userRole == ConstantUtil.UserRoleString.Requester && (ticket.Status <= 2 || string.IsNullOrEmpty(ticket.Solution)))
                 {
                     ticket.Solution = "-";
                 }
@@ -199,6 +206,24 @@ namespace TMS.Controllers
             });
         }
 
+        public ActionResult ApproveTicket(int id, int approved, string reason)
+        {
+            Ticket ticket = _ticketService.GetTicketByID(id);
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
+
+
+
+            return Json(new
+            {
+                success = false,
+                error = true,
+                msg = "Some error occured! Please try again!"
+            });
+        }
+
         // GET: Tickets/Edit/5
         public ActionResult Edit(int? id)
         {
@@ -282,8 +307,30 @@ namespace TMS.Controllers
             AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
             AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
-            String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact, department = "-";
+            String ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department = "-";
             String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
+
+            string userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
+            }
+
+            if (userRole == ConstantUtil.UserRoleString.Requester)
+            {
+                if (ticket.Status <= 2)
+                {
+                    solution = "-";
+                }
+                else
+                {
+                    solution = ticket.Solution == null ? "-" : ticket.Solution;
+                }
+            }
+            else
+            {
+                solution = ticket.Solution == null ? "-" : ticket.Solution;
+            }
 
             IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id);
             string attachmentStr = "";
@@ -291,7 +338,7 @@ namespace TMS.Controllers
             {
                 foreach (var attachFile in ticketAttachments)
                 {
-                    attachmentStr += attachFile.Filename+ " ";
+                    attachmentStr += attachFile.Filename + " ";
                 }
             }
 
@@ -344,8 +391,6 @@ namespace TMS.Controllers
                 }
             }
 
-
-
             return Json(new
             {
                 id = ticket.ID,
@@ -366,7 +411,7 @@ namespace TMS.Controllers
                 scheduleEnd = scheduleEndDate,
                 actualStart = actualStartDate,
                 actualEnd = actualEndDate,
-                solution = ticket.Solution ?? "-",
+                solution = solution,
                 solver = solver == null ? "-" : solver.Fullname,
                 creater = creater == null ? "-" : creater.Fullname,
                 assigner = assigner == null ? "-" : assigner.Fullname,
