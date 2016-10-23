@@ -412,24 +412,22 @@
                 <h4 class="box-title">Ticket Management</h4>
             </div>
             <!-- /.box-header -->
-            <div class="box-body">
-                <a class="btn bg-olive btn-flat" style="width: 135px;" href='@Url.Action("CreateNewTicket", "ManageTicket")'>
-                    Create New Ticket
+            <div class="box-body" style="display: block;" >
+                <a class="btn bg-olive btn-flat" style="display: inline-block;" href='@Url.Action("CreateNewTicket", "ManageTicket")'>
+                    + Create New
                 </a>
-                <a class="btn bg-olive btn-flat margin-left10 disabled" style="width: 100px;" data-role="btn-merge-ticket">
+                <a class="btn bg-olive btn-flat margin-left10 disabled" style="display: inline-block;" data-role="btn-merge-ticket">
                     Merge
                 </a>
-                <br />
-                <br />
                 <div class="pull-right" style="margin-right: 20px">
                     <label>Status: </label>
                     <select id="status-dropdown">
-                        <option value="0">All</option>
+                        <option value="0">Pending</option>
                         <option value="1">New</option>
                         <option value="2">Assigned</option>
                         <option value="3">Solved</option>
                         <option value="4">Unapproved</option>
-                        @*<option value="5">Canceled</option>*@
+                        <option value="5">Canceled</option>
                         <option value="6">Closed</option>
                     </select>&nbsp;&nbsp;
                     <label>Search:</label>

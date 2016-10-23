@@ -210,6 +210,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\DepartmentController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
@@ -388,6 +389,7 @@
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\jquery.noty.js" />
     <Content Include="Content\js\select2.min.js" />
+    <Content Include="Content\js\trunk8.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.css" />
@@ -623,11 +625,13 @@
     <Content Include="Views\Error\Error500.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
     <Content Include="Views\Ticket\Solve.cshtml" />
+    <Content Include="Views\Ticket\Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\Admin\Views\Default\" />
+    <Folder Include="Areas\Admin\Views\Department\" />
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
   </ItemGroup>

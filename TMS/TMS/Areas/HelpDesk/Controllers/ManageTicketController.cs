@@ -23,6 +23,7 @@ using System.Threading;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
+    [Utils.Authorize(Roles = "Helpdesk")]
     public class ManageTicketController : Controller
     {
 
@@ -53,7 +54,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
         }
 
-        // GET: HelpDesk/ManageTicket
         public ActionResult Index()
         {
             //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
@@ -187,7 +187,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.Subject = model.Subject;
             ticket.Description = model.Description;
             ticket.Solution = model.Solution;
-            ticket.Type = model.Type;
+            if (model.Type != 0) ticket.Type = model.Type;
             ticket.Mode = ConstantUtil.TicketMode.PhoneCall;
             if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
             ticket.ImpactDetail = model.ImpactDetail;
@@ -237,7 +237,9 @@ namespace TMS.Areas.HelpDesk.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Ticket ticket = _ticketService.GetTicketByID((int)id);
-            if (ticket == null)
+            if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled 
+                || ticket.Status == ConstantUtil.TicketStatus.Closed 
+                || ticket.Status == ConstantUtil.TicketStatus.Unapproved)
             {
                 return HttpNotFound();
             }
@@ -253,6 +255,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.RequesterId = ticket.RequesterID;
                 model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
             }
+            model.Mode = ticket.Mode;
             if (ticket.Type != null) model.Type = (int)ticket.Type;
             if (ticket.Status != null)
             {
@@ -334,7 +337,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             return View(model);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -430,7 +432,8 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             ticket.ModifiedTime = DateTime.Now;
             ticket.Subject = model.Subject;
-            ticket.Type = model.Type;
+            if (model.Type != 0) ticket.Type = model.Type;
+            else ticket.Type = null;
             ticket.Description = model.Description;
             ticket.RequesterID = model.RequesterId;
             ticket.Solution = model.Solution;
@@ -734,10 +737,13 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     filteredListItems = filteredListItems.Where(p => p.Status == statusNo);
                 }
+                else
+                {
+                    //Hide Canceled and Closed Tickets
+                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Canceled);
+                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Closed);
+                }
             }
-
-            //Hide Canceled Tickets
-            filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Canceled);
 
             if (!string.IsNullOrEmpty(search_text))
             {
@@ -754,6 +760,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Subject)
                         : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => _userService.GetUserById(p.RequesterID).Fullname)
+                        : filteredListItems.OrderByDescending(p => _userService.GetUserById(p.RequesterID).Fullname);
                     break;
                 case 5:
                     filteredListItems = sortDirection == "asc"
