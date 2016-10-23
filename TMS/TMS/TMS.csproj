@@ -620,6 +620,7 @@
     <Content Include="Views\Error\Error500.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
     <Content Include="Views\Ticket\Solve.cshtml" />
+    <Content Include="Views\Ticket\Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

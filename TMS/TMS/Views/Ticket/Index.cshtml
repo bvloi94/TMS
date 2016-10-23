@@ -105,7 +105,7 @@
                                                         <b>Description: </b>
                                                     </div>
                                                     <div class="col-sm-10" style="padding-left: 10px">
-                                                        <span class="pre-wrap" id="ticket-description"></span>
+                                                        <span id="ticket-description"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -115,7 +115,7 @@
                                                         <b>Solution: </b>
                                                     </div>
                                                     <div class="col-sm-10" style="padding-left: 10px">
-                                                        <span class="pre-wrap" id="ticket-solution"></span>
+                                                        <span id="ticket-solution"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -211,6 +211,7 @@
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
+        var tempDescription, tempSolution, fullDescription, fullSolution;
         setActiveTicketMenu();
         $(window).on('resize', function () {
             $('#ticket-table .long-table-column').trunk8({
@@ -250,7 +251,8 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="#" class="view-detail" data-id=' + row[4] + '>' + row[1] + '</a>';
+                            //return '<a href="#" class="view-detail" data-id=' + row[4] + '>' + row[1] + '</a>';
+                            return '<a href="/Ticket/Detail/' + row[4] + '" class="view-detail">' + row[1] + '</a>';
                         },
                         "targets": 1
                     },
@@ -289,26 +291,24 @@
         };
 
         $(document).ready(function () {
-            initDataTable();
+            initDataTable();    
         });
 
-        $(document).on('click', '#read-more', function (event) {
-            $(this).parent().trunk8('revert').append(' <a id="read-less" href="#">See Less</a>');
+        //$(document).on('click', '#see-more-desc', function () {
+        //    $('#ticket-description').addClass('pre-wrap');
+        //    $('#ticket-description').text(fullDescription);
+        //});
 
-            return false;
-        });
-
-        $(document).on('click', '#read-less', function (event) {
-            $(this).parent().trunk8();
-
-            return false;
-        });
-
+        //$(document).on('click', '#see-more-solution', function () {
+        //    $('#ticket-solution').addClass('pre-wrap');
+        //    $('#ticket-solution').text(fullSolution);
+        //});
+        
         $("#search-txt").keyup(function () {
             reloadDataTable();
         });
 
-        $("#ticket-table").on("click", ".view-detail", function () {
+        @*$("#ticket-table").on("click", ".view-detail", function () {
             var id = $(this).attr('data-id'),
                 $modal = $('#detail-modal');
             $.ajax({
@@ -319,8 +319,21 @@
                     id: id
                 },
                 success: function (data) {
+                    fullDescription = data.description;
+                    fullSolution = data.solution;
+                    
+                    
+                    if (fullDescription.length > 300) {
+                        tempDescription = fullDescription.substring(0, 299) + "...";
+                        $('#ticket-description').removeClass('pre-wrap');
+                        $('#ticket-description').empty().append(tempDescription + "<a id='see-more-desc' href='#'>See More</a>");
+                    }
+                    else {
+                        tempDescription = fullDescription;
+                        $('#ticket-description').addClass('pre-wrap');
+                        $('#ticket-description').text(fullDescription);
+                    }
                     $('#ticket-subject').text(data.subject);
-                    $('#ticket-description').text(data.description);
                     $('#ticket-created-by').text(data.creater);
                     $('#ticket-solved-by').text(data.solver);
                     $('#ticket-type').text(data.type);
@@ -328,11 +341,20 @@
                     $('#ticket-category').text(data.category);
                     
                     if (data.solution == "-") {
-                        $('#ticket-solution').append('<i>This ticket is not solved yet.</i>');
+                        $('#ticket-solution').empty().append('<i>This ticket is not solved yet.</i>');
                         $('#approve-ticket').addClass('hidden');
                     }
                     else {
-                        $('#ticket-solution').empty().text(data.solution);
+                        if (fullSolution.length > 300) {
+                            tempSolution = fullSolution.substring(0, 299) + "...";
+                            $('#ticket-solution').removeClass('pre-wrap');
+                            $('#ticket-solution').empty().append(tempSolution + "<a id='see-more-solution' href='#'>See More</a>");
+                        }
+                        else {
+                            tempSolution = fullSolution;
+                            $('#ticket-solution').addClass('pre-wrap');
+                            $('#ticket-solution').text(fullSolution);
+                        }
                     }
 
 
@@ -355,20 +377,14 @@
                     $('#ticket-modified-date').text(data.lastModified);
 
                     $modal.modal("show");
-
-                    $('#detail-modal').show(function () {
-                        $('#ticket-solution, #ticket-description').trunk8({
-                            tooltip: false,
-                            lines: 3,
-                            fill: '&hellip; <a id="read-more" href="#">See More</a>'
-                        });
-                    });
                 },
                 failure: function (data) {
                     alert(data.d);
                 }
             });
-        });
+        });*@
+
+
     </script>
 }
 

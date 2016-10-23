@@ -206,24 +206,6 @@ namespace TMS.Controllers
             });
         }
 
-        public ActionResult ApproveTicket(int id, int approved, string reason)
-        {
-            Ticket ticket = _ticketService.GetTicketByID(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-
-
-
-            return Json(new
-            {
-                success = false,
-                error = true,
-                msg = "Some error occured! Please try again!"
-            });
-        }
-
         // GET: Tickets/Edit/5
         public ActionResult Edit(int? id)
         {
@@ -299,6 +281,79 @@ namespace TMS.Controllers
             return RedirectToAction("Index");
         }
 
+        // Requester View Ticket
+        [Utils.Authorize(Roles = "Requester")]
+        [HttpGet]
+        public ActionResult Detail(int id)
+        {
+            RequesterTicketViewModel model = new RequesterTicketViewModel();
+            Ticket ticket = _ticketService.GetTicketByID(id);
+            AspNetUser solver = _userService.GetUserById(ticket.SolveID);
+            AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
+
+            string userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
+            }
+
+            model.ID = ticket.ID;
+            model.Subject = ticket.Subject;
+            model.Description = ticket.Description == null ? "-" : ticket.Description;
+            model.CreatedBy = creater.Fullname;
+            model.SolvedBy = solver == null ? "-" : solver.Fullname;
+            model.Status = ticket.Status;
+            model.Code = ticket.Code;
+            model.UnapproveReason = ticket.UnapproveReason == null ? "" : ticket.UnapproveReason;
+
+            if (userRole == ConstantUtil.UserRoleString.Requester)
+            {
+                if (ticket.Status <= 2)
+                {
+                    model.Solution = "-";
+                }
+                else
+                {
+                    model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
+                }
+            }
+            else
+            {
+                model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
+            }
+            
+            switch (ticket.Mode)
+            {
+                case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
+                case 2: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
+                case 3: model.Mode = ConstantUtil.TicketModeString.Email; break;
+                default: model.Mode = "-"; break;
+            }
+
+            model.CreateTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+            model.SolvedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+
+
+            string categoryPath = "-";
+            if (ticket.Category != null)
+            {
+                categoryPath = ticket.Category.Name;
+                Category parentCate = ticket.Category;
+                while (parentCate.ParentID != null)
+                {
+                    parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
+                    categoryPath = parentCate.Name + "  >  " + categoryPath;
+                }
+                model.Category = categoryPath;
+            }
+            else
+            {
+                model.Category = "-";
+            }
+
+            return View(model);
+        }
+        
         [HttpGet]
         public ActionResult GetTicketDetail(int id)
         {
@@ -591,6 +646,7 @@ namespace TMS.Controllers
             return View(model);
         }
 
+        [Utils.Authorize(Roles = "Technician, Helpdesk")]
         [HttpPost]
         public ActionResult SolveTicket(int id, string solution, string command)
         {
@@ -646,6 +702,42 @@ namespace TMS.Controllers
                 msg = message,
                 userRole = userRole.Name
             });
+        }
+
+        
+        [HttpPost]
+        public ActionResult ApproveTicket(int id, string feedback, string command)
+        {
+            Ticket ticket = _ticketService.GetTicketByID(id);
+            if (ticket == null)
+            {
+                //return HttpNotFound();
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    msg = "Cannot find ticket!"
+                });
+            }
+
+            switch (command)
+            {
+                case "Yes":
+                    ticket.Status = ConstantUtil.TicketStatus.Closed;
+                    _ticketService.UpdateTicket(ticket);
+                    break;
+                case "No":
+                    ticket.Status = ConstantUtil.TicketStatus.Unapproved;
+                    ticket.UnapproveReason = feedback;
+                    _ticketService.UpdateTicket(ticket);
+                    break;
+            }
+
+            return Json(new
+            {
+                success = true,
+                msg = "Thank you for your feedback!"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
