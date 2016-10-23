@@ -1,0 +1,8 @@
+﻿<div>
+<p>Hello $fullname,</p>
+<br />
+<p>Ticket $code information:</p>
+<p><strong>Subject</strong>: "$subject"</p>
+<p><strong>Description</strong>: "$description"</p>
+<p>has been cancelled</p>
+</div>

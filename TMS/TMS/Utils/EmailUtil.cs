@@ -7,12 +7,14 @@ using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
+using TMS.Models;
 
 namespace TMS.Utils
 {
     public class EmailUtil
     {
-        public static async void SendToUserWhenCreate(string username, string password, string fullname, string email)
+        static ILog log = LogManager.GetLogger(typeof(EmailUtil));
+        public static void SendToUserWhenCreate(string username, string password, string fullname, string email)
         {
             ILog log = LogManager.GetLogger(typeof(EmailUtil));
             string emailSubject = "[TMS] Account Info";
@@ -20,22 +22,55 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$fullname", fullname);
             emailMessage = emailMessage.Replace("$username", username);
             emailMessage = emailMessage.Replace("$password", password);
-            await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            try
+            {
+                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send user account email to {0} unsuccessfully!", username));
+            }
         }
 
-        public static async Task<bool> ResendToUserWhenCreate(string username, string password, string fullname, string email)
+        public static bool ResendToUserWhenCreate(string username, string password, string fullname, string email)
         {
             string emailSubject = "[TMS] Account Info";
             string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CreateRequesterEmailTemplate.txt"));
             emailMessage = emailMessage.Replace("$fullname", fullname);
             emailMessage = emailMessage.Replace("$username", username);
             emailMessage = emailMessage.Replace("$password", password);
-            return await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            try
+            {
+                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                return true;
+            }
+            catch
+            {
+                log.Warn(string.Format("Resend email to {0} unsuccessfully!", username));
+                return false;
+            }
         }
 
-        private static async Task<bool> SendEmail(string toEmailAddress, string emailSubject, string emailMessage)
+        public static void SendToTechnicianWhenCancelTicket(Ticket ticket, AspNetUser technician)
         {
-            ILog log = LogManager.GetLogger(typeof(EmailUtil));
+            string emailSubject = "[TMS] Cancel Ticket Notification";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CancelTicketTechnicianTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", technician.Fullname);
+            emailMessage = emailMessage.Replace("$code", ticket.Code);
+            emailMessage = emailMessage.Replace("$subject", ticket.Subject);
+            emailMessage = emailMessage.Replace("$description", ticket.Description.Replace(Environment.NewLine, "<br />"));
+            try
+            {
+                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send cancel ticket notification email to {0} unsuccessfully!", technician.Fullname));
+            }
+        }
+
+        private static async void SendEmail(string toEmailAddress, string emailSubject, string emailMessage)
+        {
             try
             {
                 var message = new MailMessage();
@@ -57,12 +92,11 @@ namespace TMS.Utils
                     smtpClient.EnableSsl = true;
                     await smtpClient.SendMailAsync(message);
                 }
-                return true;
             }
             catch (Exception e)
             {
                 log.Debug(e);
-                return false;
+                throw;
             }
         }
 

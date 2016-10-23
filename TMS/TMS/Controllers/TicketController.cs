@@ -23,7 +23,6 @@ namespace TMS.Controllers
     public class TicketController : Controller
     {
         UnitOfWork unitOfWork = new UnitOfWork();
-        private TMSEntities db = new TMSEntities();
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
         public DepartmentService _departmentService { get; set; }
@@ -45,20 +44,20 @@ namespace TMS.Controllers
             return View();
         }
 
-        // GET: Tickets/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            return View(ticket);
-        }
+        //// GET: Tickets/Details/5
+        //public ActionResult Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Ticket ticket = db.Tickets.Find(id);
+        //    if (ticket == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(ticket);
+        //}
 
         [HttpGet]
         public ActionResult GetRequesterTickets(jQueryDataTableParamModel param)
@@ -127,7 +126,7 @@ namespace TMS.Controllers
         }
 
         // GET: Tickets/Create
-        [Utils.Authorize(Roles = "Requester")]
+        [CustomAuthorize(Roles = "Requester")]
         public ActionResult Create()
         {
             return View();
@@ -136,7 +135,7 @@ namespace TMS.Controllers
         // POST: Tickets/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Utils.Authorize(Roles = "Requester")]
+        [CustomAuthorize(Roles = "Requester")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(RequesterTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
@@ -171,80 +170,54 @@ namespace TMS.Controllers
             return View(model);
         }
 
-        // GET: Tickets/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
-            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
-            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
-            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
-            return View(ticket);
-        }
+        //// GET: Tickets/Edit/5
+        //public ActionResult Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Ticket ticket = db.Tickets.Find(id);
+        //    if (ticket == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
+        //    ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
+        //    ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
+        //    ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
+        //    ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
+        //    //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
+        //    ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
+        //    ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
+        //    ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
+        //    return View(ticket);
+        //}
 
         // POST: Tickets/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(ticket).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
-            ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-            ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
-            ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
-            ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-            //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
-            ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
-            ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
-            ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
-            return View(ticket);
-        }
-
-        // GET: Tickets/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            return View(ticket);
-        }
-
-        // POST: Tickets/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Ticket ticket = db.Tickets.Find(id);
-            db.Tickets.Remove(ticket);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        db.Entry(ticket).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        return RedirectToAction("Index");
+        //    }
+        //    ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
+        //    ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
+        //    ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
+        //    ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
+        //    ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
+        //    //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
+        //    ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
+        //    ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
+        //    ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
+        //    return View(ticket);
+        //}
 
         [HttpGet]
         public ActionResult GetTicketDetail(int id)
@@ -348,20 +321,13 @@ namespace TMS.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Helpdesk,Technician")]
         [HttpGet]
         public ActionResult Solve(int id)
         {
             Ticket ticket = _ticketService.GetTicketByID(id);
-            AspNetRole userRole = null;
-            if (User.Identity.GetUserId() != null)
-            {
-                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
-            }
-            else
-            {
-                return RedirectToAction("Login", "Account", new { area = "" });
+            AspNetRole userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
 
-            }
             if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
             {
                 ViewBag.Role = "Technician";
@@ -374,7 +340,8 @@ namespace TMS.Controllers
             {
                 ViewBag.Role = "HelpDesk";
                 if (ticket.Status != ConstantUtil.TicketStatus.Assigned &&
-                    ticket.Status != ConstantUtil.TicketStatus.New)
+                    ticket.Status != ConstantUtil.TicketStatus.New &&
+                    ticket.Status != ConstantUtil.TicketStatus.Unapproved)
                 {
                     return RedirectToAction("Index", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.
                 }
@@ -391,16 +358,16 @@ namespace TMS.Controllers
 
             switch (ticket.Mode)
             {
-                case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
-                case 2: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
-                case 3: model.Mode = ConstantUtil.TicketModeString.Email; break;
+                case ConstantUtil.TicketMode.PhoneCall: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
+                case ConstantUtil.TicketMode.WebForm: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
+                case ConstantUtil.TicketMode.Email: model.Mode = ConstantUtil.TicketModeString.Email; break;
             }
 
             switch (ticket.Type)
             {
-                case 1: model.Type = ConstantUtil.TicketTypeString.Request; break;
-                case 2: model.Type = ConstantUtil.TicketTypeString.Problem; break;
-                case 3: model.Type = ConstantUtil.TicketTypeString.Change; break;
+                case ConstantUtil.TicketType.Request: model.Type = ConstantUtil.TicketTypeString.Request; break;
+                case ConstantUtil.TicketType.Problem: model.Type = ConstantUtil.TicketTypeString.Problem; break;
+                case ConstantUtil.TicketType.Change: model.Type = ConstantUtil.TicketTypeString.Change; break;
             }
 
             switch (ticket.Status)
@@ -432,6 +399,7 @@ namespace TMS.Controllers
             return View(model);
         }
 
+        [CustomAuthorize(Roles = "Helpdesk,Technician")]
         [HttpPost]
         public ActionResult Solve(int id, TicketSolveViewModel model, string command)
         {
@@ -573,15 +541,6 @@ namespace TMS.Controllers
                 msg = message,
                 userRole = userRole.Name
             });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
 
         [HttpGet]

@@ -4,20 +4,10 @@
     ViewBag.Title = "Manage Technicians";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
-<style>
-    #technician-table th {
-        font-size: 18px;
-    }
-
-    #technician-table td {
-        font-size: 16px;
-        vertical-align: middle;
-    }
-</style>
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
-            <div class="box-body large-text-container">
+            <div class="box-body">
                 <a href="/Admin/ManageUser/CreateTechnician" class="btn btn-flat btn-primary"><i class="fa fa-plus"></i> New Technician</a>
                 <div class="pull-right" style="margin-right: 20px">
                     <label>Availability:</label>
@@ -29,7 +19,7 @@
                     <label>Search:</label>
                     <input type="text" id="search-txt" />
                 </div>
-                <table class="table table-bordered table-striped dataTable" id="technician-table">
+                <table class="table dataTable" id="technician-table">
                     <thead>
                         <tr>
                             <th>Username</th>

@@ -315,7 +315,7 @@
     <Compile Include="Services\DepartmentService.cs" />
     <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Services\UserRoleService.cs" />
-    <Compile Include="Utils\AuthorizeAttribute.cs" />
+    <Compile Include="Utils\CustomAuthorizeAttribute.cs" />
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
@@ -328,6 +328,7 @@
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
+    <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
     <Compile Include="ViewModels\TicketSolveViewModel.cs" />
@@ -369,6 +370,7 @@
     <Content Include="Content\img\details_close.png" />
     <Content Include="Content\img\details_open.png" />
     <Content Include="Content\img\icons.png" />
+    <Content Include="Content\img\loading.gif" />
     <Content Include="Content\img\page403.png" />
     <Content Include="Content\img\photo1.png" />
     <Content Include="Content\img\photo2.png" />
@@ -466,6 +468,7 @@
     <Content Include="Content\skins\_all-skins.css" />
     <Content Include="Content\skins\_all-skins.min.css" />
     <Content Include="Content\login.css" />
+    <Content Include="EmailTemplates\CancelTicketTechnicianTemplate.txt" />
     <Content Include="EmailTemplates\CreateRequesterEmailTemplate.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -537,6 +540,8 @@
     <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\PriorityMatrix.cshtml" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

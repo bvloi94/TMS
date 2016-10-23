@@ -18,6 +18,8 @@ using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
 using ModelError = TMS.ViewModels.ModelError;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -517,36 +519,118 @@ namespace TMS.Areas.HelpDesk.Controllers
             });
         }
 
+        [HttpPost]
         public ActionResult CancelTicket(int? ticketId)
         {
-            int result = _ticketService.CancelTicket(ticketId);
-            switch (result)
+            if (ticketId.HasValue)
             {
-                case 1: //success
-                    return Json(new
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
                     {
-                        success = true,
-                        msg = "Ticket was cancelled successfully!"
-                    });
-                case 2: //unavailable ticket
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Ticket cannot be cancelled!"
+                        });
+                    }
+                    try
+                    {
+                        int? status = ticket.Status;
+                        _ticketService.CancelTicket(ticket);
+                        if (status == ConstantUtil.TicketStatus.Assigned)
+                        {
+                            AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                            Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(ticket, technician));
+                            thread.Start();
+                        }
+                        return Json(new
+                        {
+                            success = true,
+                            msg = "Ticket was cancelled successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Cancel ticket error", e);
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Some error occured! Please try again later!"
+                        });
+                    }
+                }
+                else
+                {
                     return Json(new
                     {
                         success = false,
-                        msg = "This ticket is unvailable"
+                        msg = "This ticket is unavailable"
                     });
-                case 3: //wrong ticket status
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "This ticket is unavailable"
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult CloseTicket(int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    if (ticket.Status != ConstantUtil.TicketStatus.Unapproved)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Ticket cannot be closed!"
+                        });
+                    }
+                    try
+                    {
+                        _ticketService.CloseTicket(ticket);
+                        return Json(new
+                        {
+                            success = true,
+                            msg = "Ticket was closed successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Close ticket error", e);
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Some error occured! Please try again later!"
+                        });
+                    }
+                }
+                else
+                {
                     return Json(new
                     {
                         success = false,
-                        msg = "This ticket cannot be cancelled!"
+                        msg = "This ticket is unavailable"
                     });
-                case 4: //error
-                default:
-                    return Json(new
-                    {
-                        success = false,
-                        msg = "Some error occured! Please try again later!"
-                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "This ticket is unavailable"
+                });
             }
         }
 
@@ -843,6 +927,43 @@ namespace TMS.Areas.HelpDesk.Controllers
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = requesters;
             return Json(rsModel, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetTicketDetailForReassign(int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                    if (technician != null)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            technicianId = ticket.TechnicianID,
+                            technician = technician.Fullname,
+                            departmentId = technician.DepartmentID,
+                            department = technician.Department.Name
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "This ticket is invalid"
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = "This ticket is unavailable"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

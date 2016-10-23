@@ -26,9 +26,9 @@ namespace TMS.Utils
 
         public class TicketType
         {
-            public static readonly int Request = 1;
-            public static readonly int Problem = 2;
-            public static readonly int Change = 3;
+            public const int Request = 1;
+            public const int Problem = 2;
+            public const int Change = 3;
         }
 
         public class TicketTypeString
@@ -40,9 +40,9 @@ namespace TMS.Utils
 
         public class TicketMode
         {
-            public static readonly int PhoneCall = 1;
-            public static readonly int WebForm = 2;
-            public static readonly int Email = 3;
+            public const int PhoneCall = 1;
+            public const int WebForm = 2;
+            public const int Email = 3;
         }
 
         public class TicketModeString
