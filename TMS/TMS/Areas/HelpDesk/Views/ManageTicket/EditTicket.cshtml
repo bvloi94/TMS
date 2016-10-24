@@ -283,15 +283,6 @@
                     window.location.href = "/HelpDesk/ManageTicket";
                 });
 
-        $(".attachment-delete")
-            .on("click",
-                function() {
-                    var inputs = $(this).parent().find(':input');
-                    inputs.each(function(index, element) {
-                        element.value = "";
-                    });
-                    $(this).parent().addClass("hidden");
-                });
 
         $("[data-role=btn-update-ticket]")
             .on("click",
@@ -353,6 +344,8 @@
                         processData: false,
                         enctype: 'multipart/form-data',
                         "error": function(e) {
+                            $("[data-role=btn-update-ticket]").prop('disabled', false);
+                            $("[data-role=btn-cancel]").prop("disabled", false);
                             noty({
                                 text: "Some error occured. Please try again later!",
                                 type: "error",
@@ -427,7 +420,7 @@
             loadInitDropdown('ddl-priority', '@(Model.PriorityId == 0 ? "None" : Model.Priority)', @Model.PriorityId);
             loadInitDropdown('ddl-impact', '@(Model.ImpactId == 0 ? "None" : Model.Impact)', @Model.ImpactId);
             loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
-            loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
+            loadInitDropdown('ddl-department', '@(Model.DepartmentId == 0 ? "Chooose Department" :@Model.Department)', @Model.DepartmentId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
         }
 

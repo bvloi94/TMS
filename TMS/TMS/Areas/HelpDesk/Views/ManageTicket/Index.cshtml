@@ -20,6 +20,8 @@
     .detail-modal-body {
         background-color: #f6f6f6 !important;
         padding: 15px 15px 1px 15px;
+        height: 420px;
+        overflow-y: auto;
     }
 
     .ticket-contents .box {
@@ -29,6 +31,22 @@
         .ticket-contents .box .box-header {
             padding: 5px 10px 5px 10px !important;
         }
+
+            .ticket-contents .box .box-header:hover {
+                background: #87cefa;
+                color: #fff;
+                cursor: pointer;
+            }
+
+            .ticket-contents .box .box-header:after {
+                font-family: "Glyphicons Halflings";
+                float: right;
+                content: "\e114";
+            }
+
+            .ticket-contents .box .box-header.collapsed:after {
+                content: "\e080";
+            }
 
         .ticket-contents .box .box-title {
             font-weight: bold;
@@ -97,7 +115,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-role="btn-confirm-merge">Yes</button>
-					<button type="button" class="btn btn-default" data-role="btn-cancel-merge">No</button>                </div>
+                    <button type="button" class="btn btn-default" data-role="btn-cancel-merge">No</button>
+                </div>
             </div>
             <!-- /.modal-content -->
         </div>
@@ -112,15 +131,15 @@
                     <h4 class="modal-title" id="ticket-subject"></h4>
                 </div>
                 <div class="modal-body detail-modal-body">
-                    <div class="ticket-contents">
+                    <div class="ticket-contents" id="collapse-parent">
                         <div class="box box-solid">
-                            <div class="box-header with-border">
+                            <div class="box-header with-border collapsed" data-toggle="collapse" data-target="#detail-box" data-parent="#collapse-parent">
                                 <h2 class="box-title">
                                     <i class="fa fa-info-circle header-content"></i>DETAIL
                                 </h2>
                             </div>
                             <!-- /.box-header -->
-                            <div class="box-body">
+                            <div class="box-body collapse" id="detail-box">
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-4 ">
                                         <div class="col-sm-6 labels">
@@ -180,74 +199,74 @@
                             </div>
                         </div>
                         <div class="box box-solid">
-                            <div class="box-header with-border">
+                            <div class="box-header with-border collapsed" data-toggle="collapse" data-target="#date-time-box" data-parent="#collapse-parent">
                                 <h2 class="box-title">
                                     <i class="fa fa-clock-o header-content"></i>DATE AND TIME
                                 </h2>
                             </div>
                             <!-- /.box-header -->
-                            <div class="box-body">
+                            <div class="box-body collapse" id="date-time-box">
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-6">
-                                        <div class="col-sm-5 labels">
+                                        <div class="col-sm-6 labels">
                                             <b>Created date: </b>
                                         </div>
-                                        <div class="col-sm-7"><span id="ticket-created-date"></span></div>
+                                        <div class="col-sm-6"><span id="ticket-created-date"></span></div>
                                     </div>
                                     <div class="col-sm-6">
-                                        <div class="col-sm-5 labels">
+                                        <div class="col-sm-6 labels">
                                             <b>Last modified date: </b>
                                         </div>
-                                        <div class="col-sm-7"><span id="ticket-modified-date"></span></div>
+                                        <div class="col-sm-6"><span id="ticket-modified-date"></span></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-6">
-                                        <div class="col-sm-5 labels">
+                                        <div class="col-sm-6 labels">
                                             <b>Scheduled start time: </b>
                                         </div>
-                                        <div class="col-sm-7"><span id="ticket-schedule-start"></span></div>
+                                        <div class="col-sm-6"><span id="ticket-schedule-start"></span></div>
                                     </div>
                                     <div class="col-sm-6 ">
-                                        <div class="col-sm-5 labels">
+                                        <div class="col-sm-6 labels">
                                             <b>Schedule end time: </b>
                                         </div>
-                                        <div class="col-sm-7"><span id="ticket-schedule-end"></span></div>
+                                        <div class="col-sm-6"><span id="ticket-schedule-end"></span></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-6 ">
-                                        <div class="col-sm-5 labels">
+                                        <div class="col-sm-6 labels">
                                             <b>Actual start time: </b>
                                         </div>
-                                        <div class="col-sm-7"><span id="ticket-actual-start"></span></div>
+                                        <div class="col-sm-6"><span id="ticket-actual-start"></span></div>
                                     </div>
                                     <div class="col-sm-6 ">
-                                        <div class="col-sm-5 labels">
+                                        <div class="col-sm-6 labels">
                                             <b>Actual end time: </b>
                                         </div>
-                                        <div class="col-sm-7"><span id="ticket-actual-end"></span></div>
+                                        <div class="col-sm-6"><span id="ticket-actual-end"></span></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-6">
-                                        <div class="col-sm-5 labels">
+                                        <div class="col-sm-6 labels">
                                             <b>Solved date: </b>
                                         </div>
-                                        <div class="col-sm-7"><span id="ticket-solved-date"></span></div>
+                                        <div class="col-sm-6"><span id="ticket-solved-date"></span></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="box box-solid">
-                            <div class="box-header with-border">
+                            <div class="box-header with-border" data-toggle="collapse" data-target="#information-box" data-parent="#collapse-parent">
                                 <h2 class="box-title">
                                     <i class="fa fa-file-text header-content"></i>INFORMATION
                                 </h2>
                             </div>
                             <!-- /.box-header -->
-                            <div class="box-body">
+                            <div class="box-body collapse in" id="information-box">
                                 <div class="col-sm-12 row-content ">
                                     <div class="col-sm-12">
                                         <div class="col-sm-2 labels">
@@ -333,7 +352,7 @@
 
             </div>
             <!-- /.box-header -->
-            <div class="box-body" style="display: block;" >
+            <div class="box-body" style="display: block;">
                 <a class="btn bg-olive btn-flat" style="display: inline-block;" href='@Url.Action("CreateNewTicket", "ManageTicket")'>
                     + Create New
                 </a>
