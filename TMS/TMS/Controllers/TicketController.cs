@@ -89,6 +89,21 @@ namespace TMS.Controllers
                 filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
             }
 
+            string userRole = null;
+
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
+            }
+
+            foreach (Ticket ticket in filteredListItems)
+            {
+                if (userRole == ConstantUtil.UserRoleString.Requester && (ticket.Status <= 2 || string.IsNullOrEmpty(ticket.Solution)))
+                {
+                    ticket.Solution = "-";
+                }
+            }
+
             // Sort.
             var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
             var sortDirection = Request["order[0][dir]"];
@@ -104,6 +119,11 @@ namespace TMS.Controllers
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Subject)
                         : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Status)
+                        : filteredListItems.OrderByDescending(p => p.Status);
                     break;
                 default: break;
             }
@@ -143,32 +163,47 @@ namespace TMS.Controllers
         {
             if (ModelState.IsValid)
             {
-                Ticket ticket = new Ticket();
-                TicketAttachment ticketFiles = new TicketAttachment();
-
-                ticket.Subject = model.Subject;
-                ticket.Description = model.Description;
-                ticket.Status = ConstantUtil.TicketStatus.New;
-                ticket.CreatedID = User.Identity.GetUserId();
-                ticket.RequesterID = User.Identity.GetUserId();
-                ticket.Mode = ConstantUtil.TicketMode.WebForm;
-                ticket.CreatedTime = DateTime.Now;
-                ticket.ModifiedTime = DateTime.Now;
                 try
                 {
+                    Ticket ticket = new Ticket();
+                    TicketAttachment ticketFiles = new TicketAttachment();
+
+                    ticket.Subject = model.Subject;
+                    ticket.Description = model.Description;
+                    ticket.Status = ConstantUtil.TicketStatus.New;
+                    ticket.CreatedID = User.Identity.GetUserId();
+                    ticket.RequesterID = User.Identity.GetUserId();
+                    ticket.Mode = ConstantUtil.TicketMode.WebForm;
+                    ticket.CreatedTime = DateTime.Now;
+                    ticket.ModifiedTime = DateTime.Now;
                     _ticketService.AddTicket(ticket);
                     if (uploadFiles != null && uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                     {
                         _ticketAttachmentService.saveFile(ticket.ID, uploadFiles, ConstantUtil.TicketAttachmentType.Description);
                     }
-                    return RedirectToAction("Index");
+                    return Json(new
+                    {
+                        success = true,
+                        msg = "Create ticket successfully!"
+                    });
                 }
                 catch
                 {
-                    return RedirectToAction("Index");
+                    return Json(new
+                    {
+                        success = false,
+                        error = true,
+                        msg = "Cannot create ticket. Please try again!"
+                    });
                 }
             }
-            return View(model);
+
+            return Json(new
+            {
+                success = false,
+                error = true,
+                msg = "Cannot create ticket. Please try again!"
+            });
         }
 
         // GET: Tickets/Edit/5
@@ -246,6 +281,79 @@ namespace TMS.Controllers
             return RedirectToAction("Index");
         }
 
+        // Requester View Ticket
+        [Utils.Authorize(Roles = "Requester")]
+        [HttpGet]
+        public ActionResult Detail(int id)
+        {
+            RequesterTicketViewModel model = new RequesterTicketViewModel();
+            Ticket ticket = _ticketService.GetTicketByID(id);
+            AspNetUser solver = _userService.GetUserById(ticket.SolveID);
+            AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
+
+            string userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
+            }
+
+            model.ID = ticket.ID;
+            model.Subject = ticket.Subject;
+            model.Description = ticket.Description == null ? "-" : ticket.Description;
+            model.CreatedBy = creater.Fullname;
+            model.SolvedBy = solver == null ? "-" : solver.Fullname;
+            model.Status = ticket.Status;
+            model.Code = ticket.Code;
+            model.UnapproveReason = ticket.UnapproveReason == null ? "" : ticket.UnapproveReason;
+
+            if (userRole == ConstantUtil.UserRoleString.Requester)
+            {
+                if (ticket.Status <= 2)
+                {
+                    model.Solution = "-";
+                }
+                else
+                {
+                    model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
+                }
+            }
+            else
+            {
+                model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
+            }
+            
+            switch (ticket.Mode)
+            {
+                case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
+                case 2: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
+                case 3: model.Mode = ConstantUtil.TicketModeString.Email; break;
+                default: model.Mode = "-"; break;
+            }
+
+            model.CreateTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+            model.SolvedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+
+
+            string categoryPath = "-";
+            if (ticket.Category != null)
+            {
+                categoryPath = ticket.Category.Name;
+                Category parentCate = ticket.Category;
+                while (parentCate.ParentID != null)
+                {
+                    parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
+                    categoryPath = parentCate.Name + "  >  " + categoryPath;
+                }
+                model.Category = categoryPath;
+            }
+            else
+            {
+                model.Category = "-";
+            }
+
+            return View(model);
+        }
+        
         [HttpGet]
         public ActionResult GetTicketDetail(int id)
         {
@@ -254,8 +362,30 @@ namespace TMS.Controllers
             AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
             AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
-            String ticketType, ticketMode, ticketUrgency, ticketPriority, ticketImpact, department = "-";
+            String ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department = "-";
             String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
+
+            string userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
+            }
+
+            if (userRole == ConstantUtil.UserRoleString.Requester)
+            {
+                if (ticket.Status <= 2)
+                {
+                    solution = "-";
+                }
+                else
+                {
+                    solution = ticket.Solution == null ? "-" : ticket.Solution;
+                }
+            }
+            else
+            {
+                solution = ticket.Solution == null ? "-" : ticket.Solution;
+            }
 
             IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id);
             string attachmentStr = "";
@@ -263,7 +393,7 @@ namespace TMS.Controllers
             {
                 foreach (var attachFile in ticketAttachments)
                 {
-                    attachmentStr += attachFile.Filename+ " ";
+                    attachmentStr += attachFile.Filename + " ";
                 }
             }
 
@@ -316,8 +446,6 @@ namespace TMS.Controllers
                 }
             }
 
-
-
             return Json(new
             {
                 id = ticket.ID,
@@ -338,7 +466,7 @@ namespace TMS.Controllers
                 scheduleEnd = scheduleEndDate,
                 actualStart = actualStartDate,
                 actualEnd = actualEndDate,
-                solution = ticket.Solution ?? "-",
+                solution = solution,
                 solver = solver == null ? "-" : solver.Fullname,
                 creater = creater == null ? "-" : creater.Fullname,
                 assigner = assigner == null ? "-" : assigner.Fullname,
@@ -518,6 +646,7 @@ namespace TMS.Controllers
             return View(model);
         }
 
+        [Utils.Authorize(Roles = "Technician, Helpdesk")]
         [HttpPost]
         public ActionResult SolveTicket(int id, string solution, string command)
         {
@@ -573,6 +702,42 @@ namespace TMS.Controllers
                 msg = message,
                 userRole = userRole.Name
             });
+        }
+
+        
+        [HttpPost]
+        public ActionResult ApproveTicket(int id, string feedback, string command)
+        {
+            Ticket ticket = _ticketService.GetTicketByID(id);
+            if (ticket == null)
+            {
+                //return HttpNotFound();
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    msg = "Cannot find ticket!"
+                });
+            }
+
+            switch (command)
+            {
+                case "Yes":
+                    ticket.Status = ConstantUtil.TicketStatus.Closed;
+                    _ticketService.UpdateTicket(ticket);
+                    break;
+                case "No":
+                    ticket.Status = ConstantUtil.TicketStatus.Unapproved;
+                    ticket.UnapproveReason = feedback;
+                    _ticketService.UpdateTicket(ticket);
+                    break;
+            }
+
+            return Json(new
+            {
+                success = true,
+                msg = "Thank you for your feedback!"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

@@ -1,0 +1,252 @@
+﻿@model TMS.ViewModels.RequesterTicketViewModel
+@{
+    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
+    ViewBag.Title = "Ticket #" + Model.Code;
+}
+<style>
+    .labels {
+        font-weight: bold;
+    }
+
+    .ticket-contents .box {
+        margin-bottom: 15px;
+    }
+
+        .ticket-contents .box .box-header {
+            padding: 5px 10px 5px 10px !important;
+        }
+
+        .ticket-contents .box .box-title {
+            font-weight: bold;
+        }
+
+        .ticket-contents .box .box-body {
+            padding: 5px 10px 5px 10px !important;
+        }
+
+    .ticket-contents {
+        padding: 0px;
+        margin: 0px;
+    }
+
+    .header-content {
+        margin-right: 10px;
+    }
+
+    .row-content {
+        padding: 8px 0px;
+    }
+
+    input, textarea {
+        max-width: 700px;
+    }
+
+    .radio-button input[value="Yes"]:checked + a {
+        z-index: 2;
+        color: #fff;
+        background-color: #42ca5e;
+        border-color: #42ca5e;
+        cursor: default;
+    }
+
+    .radio-button input[value="No"]:checked + a {
+        z-index: 2;
+        color: #fff;
+        background-color: #dc3838;
+        border-color: #dc3838;
+        cursor: default;
+    }
+
+    .radio-button label {
+        padding: 6px 12px;
+        margin-bottom: 0px;
+        cursor: pointer;
+    }
+
+    .radio-button .pagination > li > a {
+        padding: 0px;
+    }
+
+    .radio-button input[type="radio"] {
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        color: transparent;
+        visibility: hidden;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="ticket-contents">
+            <div class="box box-solid">
+                <div class="box-header with-border" style="margin-left: 15px">
+                    <h4>@Html.DisplayFor(model => model.Subject)</h4>
+                    <span class="labels text-muted">Created by:  </span>
+                    <span class="text-light-blue">@Html.DisplayFor(model => model.CreatedBy) </span>
+                    <span class="labels text-muted"> on  </span>
+                    <span class="text-light-blue">@Html.DisplayFor(model => model.CreateTime) </span>
+                </div>
+                <div class="box-body">
+                    <div class="col-sm-6 row-content">
+                        <div class="col-sm-4 labels text-muted">Mode: </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.Mode)</div>
+                    </div>
+                    <div class="col-sm-6 row-content">
+                        <div class="col-sm-4 labels text-muted">Status: </div>
+                        <div class="col-sm-8">
+                            @switch (Model.Status)
+                            {
+                                case 1: <label class="label label-info">New</label> break;
+                                case 2: <label class="label label-warning">Assigned</label> break;
+                                case 3: <label class="label label-success">Solved</label> break;
+                                case 4: <label class="label label-danger">Unapproved</label> break;
+                                case 5: <label class="label label-default">Cancelled</label> break;
+                                case 6: <label class="label label-default">Closed</label> break;
+                            }
+                        </div>
+                    </div>
+                    <div class="col-sm-12 row-content">
+                        <div class="col-sm-2 labels text-muted">Category: </div>
+                        <div class="col-sm-10" style="padding-left: 15px">@Html.DisplayFor(model => model.Category)</div>
+                    </div>
+                    <div class="col-sm-12 row-content">
+                        <div class="col-sm-2 labels text-muted">Description: </div>
+                        <div class="col-sm-10" style="padding-left: 15px"><span class="pre-wrap" id="ticket-description">@Html.DisplayFor(model => model.Description)</span></div>
+                    </div>
+                    <div class="col-sm-12 row-content">
+                        <div class="col-sm-2 labels text-muted">Attachment: </div>
+                        <div class="col-sm-10" style="padding-left: 15px"><span id="ticket-attachment">None</span></div>
+                    </div>
+                    <div class="col-sm-12 row-content ">
+                        <div class="col-sm-2 labels text-muted">Solution: </div>
+                        <div class="col-sm-10" style="padding-left: 15px"><span class="pre-wrap" id="ticket-solution">@Html.DisplayFor(model => model.Solution)</span></div>
+                    </div>
+                    <div class="col-sm-6 row-content">
+                        <div class="col-sm-4 labels text-muted">Solved by: </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.SolvedBy)</div>
+                    </div>
+                    <div class="col-sm-6 row-content">
+                        <div class="col-sm-4 labels text-muted">Solved date: </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.SolvedTime)</div>
+                    </div>
+                    @if (Model.Status == 3)
+                    {
+                        <div id="approve-ticket">
+                            <div class="col-sm-12 row-content" style="text-align: center">
+                                <div class="col-sm-offset-2 col-sm-8" style="padding-left: 15px">
+                                    <i class="text-light-blue">Are you sastified with this solution?  </i>
+                                    <input type="hidden" id="ticketId" value="@Model.ID" />
+                                    <div class="radio-button" style="display: inline-block">
+                                        <div class="btn-group">
+                                            <ul class="pagination">
+                                                <li>
+                                                    <input id="yes" type="radio" name="radAnswer" value="Yes" checked="checked" />
+                                                    <a href="#">
+                                                        <label for="yes" class="input-group">Yes</label>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <input id="no" type="radio" name="radAnswer" value="No" />
+                                                    <a href="#">
+                                                        <label for="no" class="input-group">No</label>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="feedback-form">
+                                <div class="col-sm-12 row-content">
+                                    <div class="col-sm-offset-2 col-sm-8">
+                                        @Html.TextAreaFor(m => m.UnapproveReason, new { @class = "form-control", id = "feedback", rows = "6" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 row-content" style="text-align: center">
+                                    <input type="button" id="submitBtn" value="Submit" class="btn btn-primary btn-flat" />
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <a href="@(Url.Action("Index", "Ticket"))">
+                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
+                Back to ticket list
+            </a>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).on('click', '#see-more', function (event) {
+            $(this).parent().trunk8('revert').append(' <a id="see-less" href="#">See Less</a>');
+            return false;
+        });
+
+        $(document).on('click', '#see-less', function (event) {
+            $(this).parent().trunk8();
+            return false;
+        });
+
+        $('#ticket-solution, #ticket-description').trunk8({
+            tooltip: false,
+            lines: 3,
+            fill: '&hellip; <a id="see-more" href="#">See More</a>'
+        });
+
+        $(document).on('click', '#see-less', function (event) {
+            $(this).parent().trunk8();
+            return false;
+        });
+
+        $("#submitBtn").on("click", function () {
+            var agree = $('input:radio[name=radAnswer]:checked').val();
+            var id = $("#ticketId").val();
+            var fb = $("#feedback").val();
+            $.ajax({
+                url: "/Ticket/ApproveTicket/",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    id: id,
+                    feedback: fb,
+                    command: agree
+                },
+                success: function (data) {
+                    if (!data.success) { //
+                        noty({
+                            text: data.msg,
+                            layout: "topCenter",
+                            type: "error",
+                            timeout: 2000
+                        });
+                    }
+                    else {
+                        noty({
+                            text: data.msg,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $('#approve-ticket').hide(1000);
+                    }
+                },
+                processData: false,
+                error: function (data) {
+                    noty({
+                        text: "Some error occured! Please try again later!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2500
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+
+
