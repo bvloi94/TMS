@@ -723,6 +723,7 @@ namespace TMS.Controllers
             {
                 ticket.Status = ConstantUtil.TicketStatus.Unapproved;
                 ticket.UnapproveReason = unapprovedReason;
+                ticket.ModifiedTime = DateTime.Now;
                 _ticketService.UpdateTicket(ticket);
             }
             else
