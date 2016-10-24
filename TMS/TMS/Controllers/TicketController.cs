@@ -321,7 +321,7 @@ namespace TMS.Controllers
             {
                 model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
             }
-            
+
             switch (ticket.Mode)
             {
                 case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
@@ -353,7 +353,7 @@ namespace TMS.Controllers
 
             return View(model);
         }
-        
+
         [HttpGet]
         public ActionResult GetTicketDetail(int id)
         {
@@ -704,9 +704,8 @@ namespace TMS.Controllers
             });
         }
 
-        
         [HttpPost]
-        public ActionResult ApproveTicket(int id, string feedback, string command)
+        public ActionResult ApproveTicket(int id, string unapprovedReason)
         {
             Ticket ticket = _ticketService.GetTicketByID(id);
             if (ticket == null)
@@ -716,21 +715,24 @@ namespace TMS.Controllers
                 {
                     success = false,
                     error = true,
-                    msg = "Cannot find ticket!"
+                    msg = "Ticket is not exist. Please try again!"
                 });
             }
 
-            switch (command)
+            if (!string.IsNullOrWhiteSpace(unapprovedReason))
             {
-                case "Yes":
-                    ticket.Status = ConstantUtil.TicketStatus.Closed;
-                    _ticketService.UpdateTicket(ticket);
-                    break;
-                case "No":
-                    ticket.Status = ConstantUtil.TicketStatus.Unapproved;
-                    ticket.UnapproveReason = feedback;
-                    _ticketService.UpdateTicket(ticket);
-                    break;
+                ticket.Status = ConstantUtil.TicketStatus.Unapproved;
+                ticket.UnapproveReason = unapprovedReason;
+                _ticketService.UpdateTicket(ticket);
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    msg = "Please tell us what's wrong with this solution!"
+                }, JsonRequestBehavior.AllowGet);
             }
 
             return Json(new

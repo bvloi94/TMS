@@ -74,6 +74,10 @@
         color: transparent;
         visibility: hidden;
     }
+
+    #unapproved {
+        text-decoration: underline;
+    }
 </style>
 
 <div class="row">
@@ -135,36 +139,25 @@
                         <div id="approve-ticket">
                             <div class="col-sm-12 row-content" style="text-align: center">
                                 <div class="col-sm-offset-2 col-sm-8" style="padding-left: 15px">
-                                    <i class="text-light-blue">Are you sastified with this solution?  </i>
                                     <input type="hidden" id="ticketId" value="@Model.ID" />
-                                    <div class="radio-button" style="display: inline-block">
-                                        <div class="btn-group">
-                                            <ul class="pagination">
-                                                <li>
-                                                    <input id="yes" type="radio" name="radAnswer" value="Yes" checked="checked" />
-                                                    <a href="#">
-                                                        <label for="yes" class="input-group">Yes</label>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <input id="no" type="radio" name="radAnswer" value="No" />
-                                                    <a href="#">
-                                                        <label for="no" class="input-group">No</label>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                                    <a href="#" id="unapproved" class="text-light-blue">Click here</a>
+                                    <span class="text-light-blue"> if this solution didn't solve your problem!</span>
                                 </div>
                             </div>
-                            <div id="feedback-form">
+                            <div id="feedback-form" class="hidden">
+                                <div class="col-sm-12 row-content" style="text-align: left">
+                                    <div class="col-sm-offset-2 col-sm-8">
+                                        What's wrong with this solution?
+                                    </div>
+                                </div>
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-offset-2 col-sm-8">
                                         @Html.TextAreaFor(m => m.UnapproveReason, new { @class = "form-control", id = "feedback", rows = "6" })
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content" style="text-align: center">
-                                    <input type="button" id="submitBtn" value="Submit" class="btn btn-primary btn-flat" />
+                                    <input type="button" id="submitBtn" value="Send" style="width: 80px" class="btn btn-primary btn-flat" />
+                                    <input type="button" id="cancelBtn" value="Cancel"  style="width: 80px" class="btn btn-default btn-flat" />
                                 </div>
                             </div>
                         </div>
@@ -181,6 +174,7 @@
 
 @section scripts{
     <script>
+
         $(document).on('click', '#see-more', function (event) {
             $(this).parent().trunk8('revert').append(' <a id="see-less" href="#">See Less</a>');
             return false;
@@ -202,24 +196,40 @@
             return false;
         });
 
+        $('#unapproved').on('click', function () {
+            $('#feedback-form').removeClass('hidden');
+            $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
+            $('#feedback').focus();
+        });
+
+        $("#cancelBtn").on("click", function () {
+            $('#feedback-form').addClass('hidden');
+        });
+
+
         $("#submitBtn").on("click", function () {
-            var agree = $('input:radio[name=radAnswer]:checked').val();
             var id = $("#ticketId").val();
             var fb = $("#feedback").val();
+            if (fb === null || fb.match((/^ *$/) !== null)) {
+                noty({
+                    text: "Please tell us what's wrong with this solution!",
+                    layout: "topRight",
+                    type: "error",
+                    timeout: 2000
+                });
+            }
             $.ajax({
-                url: "/Ticket/ApproveTicket/",
-                dataType: "json",
+                url: '/Ticket/ApproveTicket/',
                 type: "POST",
                 data: {
                     id: id,
-                    feedback: fb,
-                    command: agree
+                    unapprovedreason: fb,
                 },
                 success: function (data) {
                     if (!data.success) { //
                         noty({
                             text: data.msg,
-                            layout: "topCenter",
+                            layout: "topRight",
                             type: "error",
                             timeout: 2000
                         });
@@ -227,14 +237,15 @@
                     else {
                         noty({
                             text: data.msg,
-                            layout: "topCenter",
-                            type: "success",
+                            layout: "topRight",
+                            type: "success", 
                             timeout: 2000
                         });
-                        $('#approve-ticket').hide(1000);
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 3000);
                     }
                 },
-                processData: false,
                 error: function (data) {
                     noty({
                         text: "Some error occured! Please try again later!",

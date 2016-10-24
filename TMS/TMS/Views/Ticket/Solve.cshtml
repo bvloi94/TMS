@@ -50,6 +50,12 @@
     .border-button {
         border-right: 1px solid #939393;
     }
+
+    .row-button {
+        text-align: center;
+        margin-left: 15px;
+        width: 70px;
+    }
 </style>
 <div class="row">
     <div class="col-md-12">
@@ -228,24 +234,19 @@
                     <hr />
                 </div>
                 <div class="row" style="text-align: center;">
-                    <div class="col-md-offset-4 col-md-6" style="padding: 0px">
-                        <div class="col-md-4 border-button">
-                            <input type="button" id="solveBtn" style="width: 80%;" value="Solve" name="command" class="btn btn-primary btn-flat" />
-                        </div>
-                        <div class="col-md-4">
-                            <input type="button" id="saveBtn" style="width: 80%;" value="Save" name="command" class="btn btn-success btn-flat" />
-                        </div>
+                    <div class="col-sm-12" style="padding: 0px">
+                        <input type="button" id="solveBtn" class="btn btn-primary btn-flat row-button" value="Solve" name="command" />
 
-                        <div class="col-md-4" style="text-align: left; padding-left: 0px">
-                            @if (ViewBag.Role == "Technician")
-                            {
-                                @Html.Raw("<a class='btn btn-default btn-flat' style='width: 80%' href='" + Url.Action("Index", "ManageTicket", new { Area = "Technician" }) + "'>Cancel</a>")
-                            }
-                            else
-                            {
-                                @Html.Raw("<a class='btn btn-default btn-flat' style='width: 80%' href='" + Url.Action("Index", "ManageTicket", new { Area = "HelpDesk" }) + "'>Cancel</a>")
-                            }
-                        </div>
+                        <input type="button" id="saveBtn" class="btn btn-success btn-flat row-button" value="Save" name="command" />
+
+                        @if (ViewBag.Role == "Technician")
+                        {
+                            @Html.Raw("<a class='btn btn-default btn-flat row-button' href='" + Url.Action("Index", "ManageTicket", new { Area = "Technician" }) + "'>Cancel</a>")
+                        }
+                        else
+                        {
+                            @Html.Raw("<a class='btn btn-default btn-flat' class='row-button' href='" + Url.Action("Index", "ManageTicket", new { Area = "HelpDesk" }) + "'>Cancel</a>")
+                        }
                     </div>
                 </div>
             </div>
