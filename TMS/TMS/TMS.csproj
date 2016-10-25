@@ -227,7 +227,6 @@
     <Compile Include="Controllers\KnowledgeBaseController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
-    <Compile Include="Services\SolutionAttachmentService.cs" />
     <Compile Include="Services\SolutionService.cs" />
     <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
