@@ -607,14 +607,20 @@ namespace TMS.Controllers
                             try
                             {
                                 _ticketService.UpdateTicket(ticket);
-                            }
-                            catch
-                            {
                                 return Json(new
                                 {
                                     success = true,
                                     msg = "Thank you for your feedback!"
                                 });
+                            }
+                            catch
+                            {
+                                return Json(new
+                                {
+                                    success = false,
+                                    msg = ConstantUtil.CommonError.DBExceptionError
+                                });
+
                             }
                         }
                         else
@@ -639,7 +645,6 @@ namespace TMS.Controllers
             return Json(new
             {
                 success = false,
-                error = true,
                 msg = ConstantUtil.CommonError.UnavailableTicket
             });
         }

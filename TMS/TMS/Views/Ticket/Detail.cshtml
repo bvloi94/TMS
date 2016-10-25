@@ -78,6 +78,12 @@
     #unapproved {
         text-decoration: underline;
     }
+
+    .vertical-center {
+        display: inline-block;
+        vertical-align: middle;
+        float: none;
+    }
 </style>
 
 <div class="row">
@@ -140,14 +146,19 @@
                             <div class="col-sm-12 row-content" style="text-align: center">
                                 <div class="col-sm-offset-2 col-sm-8" style="padding-left: 15px">
                                     <input type="hidden" id="ticketId" value="@Model.ID" />
-                                    <a href="#" id="unapproved" class="text-light-blue">Click here</a>
+                                    <a href="javascript:void{0}" id="unapproved" class="text-light-blue">Click here</a>
                                     <span class="text-light-blue"> if this solution didn't solve your problem!</span>
                                 </div>
                             </div>
                             <div id="feedback-form" class="hidden">
                                 <div class="col-sm-12 row-content" style="text-align: left">
-                                    <div class="col-sm-offset-2 col-sm-8">
+                                    <div class="col-sm-offset-2 col-sm-6 vertical-center">
                                         What's wrong with this solution?
+                                    </div>
+                                    <div class="col-sm-2 vertical-center" style="text-align: right; padding-right: 18px">
+                                        <a href="javascrip:void{0}" id="submitBtn" style="width: 80px" class="btn btn-primary btn-flat">
+                                            <i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;&nbsp;Send
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content">
@@ -155,19 +166,17 @@
                                         @Html.TextAreaFor(m => m.UnapproveReason, new { @class = "form-control", id = "feedback", rows = "6" })
                                     </div>
                                 </div>
-                                <div class="col-sm-12 row-content" style="text-align: center">
-                                    <input type="button" id="submitBtn" value="Send" style="width: 80px" class="btn btn-primary btn-flat" />
-                                    <input type="button" id="cancelBtn" value="Cancel"  style="width: 80px" class="btn btn-default btn-flat" />
-                                </div>
                             </div>
                         </div>
                     }
+                    <div class="col-sm-12 row-content" style="text-align: center">
+                        <a href="@(Url.Action("Index", "Ticket"))" class="btn btn-default btn-flat">
+                            <i class="fa fa-arrow-left fa-1x" aria-hidden="true"></i>
+                            Back
+                        </a>
+                    </div>
                 </div>
             </div>
-            <a href="@(Url.Action("Index", "Ticket"))">
-                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
-                Back to ticket list
-            </a>
         </div>
     </div>
 </div>
@@ -176,7 +185,7 @@
     <script>
 
         $(document).on('click', '#see-more', function (event) {
-            $(this).parent().trunk8('revert').append(' <a id="see-less" href="#">See Less</a>');
+            $(this).parent().trunk8('revert').append('<br/><a id="see-less" href="javascript:void{0}">See Less</a>');
             return false;
         });
 
@@ -187,8 +196,8 @@
 
         $('#ticket-solution, #ticket-description').trunk8({
             tooltip: false,
-            lines: 3,
-            fill: '&hellip; <a id="see-more" href="#">See More</a>'
+            lines: 5,
+            fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
         });
 
         $(document).on('click', '#see-less', function (event) {
@@ -197,64 +206,67 @@
         });
 
         $('#unapproved').on('click', function () {
-            $('#feedback-form').removeClass('hidden');
-            $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
-            $('#feedback').focus();
+            if ($('#unapproved').hasClass('active')) {
+                $('#feedback-form').addClass('hidden');
+                $('#unapproved').removeClass('active');
+            }
+            else {
+                $('#feedback-form').removeClass('hidden');
+                $('#unapproved').addClass('active')
+                $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
+                $('#feedback').focus();
+            }
         });
-
-        $("#cancelBtn").on("click", function () {
-            $('#feedback-form').addClass('hidden');
-        });
-
 
         $("#submitBtn").on("click", function () {
             var id = $("#ticketId").val();
             var fb = $("#feedback").val();
-            if (fb === null || fb.match((/^ *$/) !== null)) {
+            if (fb === null || fb.trim() == "") {
                 noty({
                     text: "Please tell us what's wrong with this solution!",
                     layout: "topRight",
                     type: "error",
                     timeout: 2000
                 });
-            }
-            $.ajax({
-                url: '/Ticket/ApproveTicket/',
-                type: "POST",
-                data: {
-                    id: id,
-                    unapprovedreason: fb,
-                },
-                success: function (data) {
-                    if (!data.success) { //
-                        noty({
-                            text: data.msg,
-                            layout: "topRight",
-                            type: "error",
-                            timeout: 2000
-                        });
-                    }
-                    else {
-                        noty({
-                            text: data.msg,
-                            layout: "topRight",
-                            type: "success", 
-                            timeout: 2000
-                        });
+            } else {
+                $.ajax({
+                    url: '/Ticket/ApproveTicket/',
+                    type: "POST",
+                    data: {
+                        id: id,
+                        unapprovedreason: fb,
+                    },
+                    success: function (data) {
+                        if (!data.success) { //
+                            noty({
+                                text: data.msg,
+                                layout: "topRight",
+                                type: "error",
+                                timeout: 2000
+                            });
+                        }
+                        else {
+                            noty({
+                                text: data.msg,
+                                layout: "topRight",
+                                type: "success",
+                                timeout: 2000
+                            });
+                        }
                         setTimeout(function () {
                             window.location.reload();
-                        }, 3000);
+                        }, 2000);
+                    },
+                    error: function (data) {
+                        noty({
+                            text: "Cannot connect to server! Please try again later!",
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2500
+                        });
                     }
-                },
-                error: function (data) {
-                    noty({
-                        text: "Some error occured! Please try again later!",
-                        type: "error",
-                        layout: "topRight",
-                        timeout: 2500
-                    });
-                }
-            });
+                });
+            }
         });
     </script>
 }
