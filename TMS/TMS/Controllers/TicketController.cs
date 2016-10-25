@@ -1,18 +1,12 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
 using System.Linq;
-using System.Net;
 using System.Web;
-using System.Web.ApplicationServices;
 using System.Web.Mvc;
-using System.Web.Security;
 using TMS.DAL;
-using TMS.Enumerator;
 using TMS.Models;
 using TMS.Services;
 using TMS.Utils;
@@ -23,7 +17,6 @@ namespace TMS.Controllers
     public class TicketController : Controller
     {
         UnitOfWork unitOfWork = new UnitOfWork();
-        private TMSEntities db = new TMSEntities();
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
         public DepartmentService _departmentService { get; set; }
@@ -44,21 +37,6 @@ namespace TMS.Controllers
         {
             return View();
         }
-
-        //// GET: Tickets/Details/5
-        //public ActionResult Details(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    Ticket ticket = db.Tickets.Find(id);
-        //    if (ticket == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(ticket);
-        //}
 
         [HttpGet]
         public ActionResult GetRequesterTickets(jQueryDataTableParamModel param)
@@ -206,126 +184,60 @@ namespace TMS.Controllers
             });
         }
 
-        //// GET: Tickets/Edit/5
-        //public ActionResult Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    Ticket ticket = db.Tickets.Find(id);
-        //    if (ticket == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
-        //    ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-        //    ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
-        //    ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
-        //    ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-        //    //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
-        //    ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
-        //    ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
-        //    ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
-        //    return View(ticket);
-        //}
-
-        // POST: Tickets/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit([Bind(Include = "ID,Type,Mode,SolveID,TechnicianID,DepartmentID,RequesterID,ImpactID,ImpactDetail,UrgencyID,PriorityID,CategoryID,Status,Subject,Description,Solution,UnapproveReason,ScheduleStartDate,ScheduleEndDate,ActualStartDate,ActualEndDate,SolvedDate,CreatedTime,ModifiedTime,CreatedID")] Ticket ticket)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Entry(ticket).State = EntityState.Modified;
-        //        db.SaveChanges();
-        //        return RedirectToAction("Index");
-        //    }
-        //    ViewBag.SolveID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.SolveID);
-        //    ViewBag.TechnicianID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.TechnicianID);
-        //    ViewBag.RequesterID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.RequesterID);
-        //    ViewBag.CreatedID = new SelectList(db.AspNetUsers, "Id", "SecurityStamp", ticket.CreatedID);
-        //    ViewBag.CategoryID = new SelectList(db.Categories, "ID", "Name", ticket.CategoryID);
-        //    //ViewBag.DepartmentID = new SelectList(db.Departments, "ID", "Name", ticket.DepartmentID);
-        //    ViewBag.ImpactID = new SelectList(db.Impacts, "ID", "Name", ticket.ImpactID);
-        //    ViewBag.PriorityID = new SelectList(db.Priorities, "ID", "Name", ticket.PriorityID);
-        //    ViewBag.UrgencyID = new SelectList(db.Urgencies, "ID", "Name", ticket.UrgencyID);
-        //    return View(ticket);
-        //}
-
         // Requester View Ticket
         [CustomAuthorize(Roles = "Requester")]
         [HttpGet]
-        public ActionResult Detail(int id)
+        public ActionResult Detail(int? id)
         {
-            RequesterTicketViewModel model = new RequesterTicketViewModel();
-            Ticket ticket = _ticketService.GetTicketByID(id);
-            AspNetUser solver = _userService.GetUserById(ticket.SolveID);
-            AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
-
-            string userRole = null;
-            if (User.Identity.GetUserId() != null)
+            if (id.HasValue)
             {
-                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
-            }
-
-            model.ID = ticket.ID;
-            model.Subject = ticket.Subject;
-            model.Description = ticket.Description == null ? "-" : ticket.Description;
-            model.CreatedBy = creater.Fullname;
-            model.SolvedBy = solver == null ? "-" : solver.Fullname;
-            model.Status = ticket.Status;
-            model.Code = ticket.Code;
-            model.UnapproveReason = ticket.UnapproveReason == null ? "" : ticket.UnapproveReason;
-
-            if (userRole == ConstantUtil.UserRoleString.Requester)
-            {
-                if (ticket.Status <= 2)
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
                 {
-                    model.Solution = "-";
+                    RequesterTicketViewModel model = new RequesterTicketViewModel();
+                    AspNetUser solver = _userService.GetUserById(ticket.SolveID);
+                    AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
+
+                    model.ID = ticket.ID;
+                    model.Subject = ticket.Subject;
+                    model.Description = ticket.Description == null ? "-" : ticket.Description;
+                    model.CreatedBy = creater.Fullname;
+                    model.SolvedBy = solver == null ? "-" : solver.Fullname;
+                    model.Status = ticket.Status;
+                    model.Code = ticket.Code;
+                    model.UnapproveReason = ticket.UnapproveReason == null ? "" : ticket.UnapproveReason;
+
+                    if (ticket.Status == ConstantUtil.TicketStatus.New || ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                    {
+                        model.Solution = "-";
+                    }
+                    else
+                    {
+                        model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
+                    }
+
+                    switch (ticket.Mode)
+                    {
+                        case ConstantUtil.TicketMode.PhoneCall: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
+                        case ConstantUtil.TicketMode.WebForm: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
+                        case ConstantUtil.TicketMode.Email: model.Mode = ConstantUtil.TicketModeString.Email; break;
+                        default: model.Mode = "-"; break;
+                    }
+
+                    model.CreateTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+                    model.SolvedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+                    model.Category = _categoryService.GetCategoryPath(ticket.Category);
+                    return View(model);
                 }
                 else
                 {
-                    model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
+                    return HttpNotFound();
                 }
             }
             else
             {
-                model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
+                return HttpNotFound();
             }
-
-            switch (ticket.Mode)
-            {
-                case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
-                case 2: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
-                case 3: model.Mode = ConstantUtil.TicketModeString.Email; break;
-                default: model.Mode = "-"; break;
-            }
-
-            model.CreateTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
-            model.SolvedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-
-
-            string categoryPath = "-";
-            if (ticket.Category != null)
-            {
-                categoryPath = ticket.Category.Name;
-                Category parentCate = ticket.Category;
-                while (parentCate.ParentID != null)
-                {
-                    parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
-                    categoryPath = parentCate.Name + "  >  " + categoryPath;
-                }
-                model.Category = categoryPath;
-            }
-            else
-            {
-                model.Category = "-";
-            }
-
-            return View(model);
         }
 
         [HttpGet]
@@ -678,51 +590,58 @@ namespace TMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult ApproveTicket(int id, string unapprovedReason)
+        public ActionResult ApproveTicket(int? id, string unapprovedReason)
         {
             if (id.HasValue)
             {
                 Ticket ticket = _ticketService.GetTicketByID(id.Value);
                 if (ticket != null)
                 {
-                    success = false,
-                    error = true,
-                    msg = "Ticket is not exist. Please try again!"
-                });
+                    if (ticket.Status == ConstantUtil.TicketStatus.Solved)
+                    {
+                        if (!string.IsNullOrWhiteSpace(unapprovedReason))
+                        {
+                            ticket.Status = ConstantUtil.TicketStatus.Unapproved;
+                            ticket.UnapproveReason = unapprovedReason;
+                            ticket.ModifiedTime = DateTime.Now;
+                            try
+                            {
+                                _ticketService.UpdateTicket(ticket);
+                            }
+                            catch
+                            {
+                                return Json(new
+                                {
+                                    success = true,
+                                    msg = "Thank you for your feedback!"
+                                });
+                            }
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                msg = "Please tell us what's wrong with this solution!"
+                            });
+                        }
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = ConstantUtil.CommonError.InvalidTicket
+                        });
+                    }
+                }
             }
-
-            if (!string.IsNullOrWhiteSpace(unapprovedReason))
-            {
-                ticket.Status = ConstantUtil.TicketStatus.Unapproved;
-                ticket.UnapproveReason = unapprovedReason;
-                ticket.ModifiedTime = DateTime.Now;
-                _ticketService.UpdateTicket(ticket);
-            }
-            else
-            {
-                return Json(new
-                {
-                    success = false,
-                    error = true,
-                    msg = "Please tell us what's wrong with this solution!"
-                }, JsonRequestBehavior.AllowGet);
-            }
-
             return Json(new
             {
                 success = false,
                 error = true,
-                msg = "This ticket is unavailable!"
+                msg = ConstantUtil.CommonError.UnavailableTicket
             });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
 
         [HttpGet]
