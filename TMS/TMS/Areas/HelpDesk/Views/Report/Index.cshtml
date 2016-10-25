@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Microsoft.Ajax.Utilities
+@{
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
     //ViewBag.Title = "Ticket Management";
 }
@@ -7,6 +8,23 @@
     .graph {
         width: 300px;
     }
+
+    #doughnut-legend {
+        margin-top: 20px;
+    }
+
+        #doughnut-legend li {
+            display: inline-block;
+            font-size: 20px;
+            margin-right: 20px;
+        }
+
+            #doughnut-legend li span {
+                display: inline-block;
+                width: 12px;
+                height: 12px;
+                margin-right: 5px;
+            }
 </style>
 
 <div class="row">
@@ -14,12 +32,13 @@
         <div class="box box-primary">
             <div class="box-body" id="draw-graph">
                 <canvas id="pieChart" width="400" height="200"></canvas>
+                <div id="doughnut-legend"></div>
             </div>
         </div>
     </div>
     <div class="col-xs-4">
         <div class="box box-primary">
-            <div class="box-body graph">
+            <div class="box-body">
                 <br />
                 <div class="form-horizontal">
                     <!--Dropdown type-->
@@ -27,7 +46,7 @@
                         <label class="col-sm-5 control-label">Type:</label>
                         <div class="col-sm-7">
                             <select class="form-control" id="dropdownType">
-                                <option value="0">All tickets</option>
+                                <option value="0" selected="selected">All tickets</option>
                                 <option value="1">All requests</option>
                                 <option value="2">All problems</option>
                                 <option value="3">All changes</option>
@@ -42,13 +61,13 @@
                         <label class="col-sm-5 control-label">By:</label>
                         <div class="col-sm-7">
                             <select class="form-control" id="dropdownBy">
-                                <option value="0">--Choose one--</option>
+                                <option value="0">Mode</option>
                                 <option value="1">Category</option>
                                 <option value="2">Impact</option>
                                 <option value="3">Urgency</option>
                                 <option value="4">Priority</option>
-                                <option value="5">Group</option>
-                                <option value="6">Status</option>
+                                <option value="5">Department</option>
+                                <option value="6" selected="selected">Status</option>
                             </select>
                         </div>
                     </div>
@@ -56,24 +75,23 @@
                     <div class="form-group">
                         <label class="col-sm-5 control-label">Date From:</label>
                         <div class="col-sm-7">
-                            <input type="text" class="form-control datetime" placeholder="DD/MM/YYYY" id="date-from-txt">
+                            <input type="text" class="form-control datetime" placeholder="DD/MM/YYYY" id="date-from-txt" value="@DateTime.Now.AddMonths(-1).ToShortDateString()">
                         </div>
                     </div>
                     <!--Date to-->
                     <div class="form-group">
                         <label class="col-sm-5 control-label">Date To:</label>
                         <div class="col-sm-7">
-                            <input type="datetime" class="form-control datetime" placeholder="DD/MM/YYYY" id="date-to-txt">
+                            <input type="datetime" class="form-control datetime" placeholder="DD/MM/YYYY" id="date-to-txt" value="@DateTime.Now.ToShortDateString()">
                         </div>
                     </div>
                     <!--Button Generate Report-->
                     <div class="form-group">
                         <div class="col-sm-offset-4">
-                            <button id="btnGenerate">Generate Report</button>
+                            <button id="btnExport">Export Report</button>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -86,13 +104,21 @@
             <table class="table table-bordered table-hover" id="ticket-table-report">
                 <thead>
                     <tr>
+                        <th>Code</th>
                         <th>Subject</th>
-                        <th>Requester</th>
-                        <th>Technician</th>
-                        <th>Sovle Date</th>
-                        <th>Create Time</th>
-                        <th>Status</th>
+                        <th>Created Time</th>
+                        <th>Schedule End Date</th>
+
+                        <th>Actual End Date</th>
                         <th>Type</th>
+                        <th>Mode</th>
+                        <th>Catagory</th>
+
+                        <th>Impact</th>
+                        <th>Urgency</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Department</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -106,8 +132,11 @@
 @section Scripts {
     @Scripts.Render("~/bundles/chart")
     <script>
-        var defaultColors = ["#FF6384", "#36A2EB", "#FFCE56", "#f0f8ff", "#a4c639", "#8db600", "#ff9966", "#007fff", "#fae7b5", "#000000",
-                              "#318ce7", "#ace5ee", "#8a2be2", "#1dacd6", "#ffc1cc", "#536872", "#006b3c"];
+        var defaultColors = [
+            "#FF6384", "#36A2EB", "#FFCE56", "#f0f8ff", "#a4c639", "#8db600", "#ff9966", "#007fff", "#fae7b5",
+            "#000000",
+            "#318ce7", "#ace5ee", "#8a2be2", "#1dacd6", "#ffc1cc", "#536872", "#006b3c"
+        ];
         var generatereport = $("#draw-graph");
 
         function ProcessGraph() {
@@ -126,21 +155,6 @@
             });
         }
 
-        $("#dropdownType").on("change", function () {
-            ProcessGraph();
-        });
-        $("#dropdownBy").on("change", function () {
-            ProcessGraph();
-        });
-
-        //var chartLabels = [];
-        //var chartData = [];
-        //for (var i=0; i<5; i++) {
-        //    chartLabels[i] = ""+i;
-        //    chartData[i] = i;
-        //}
-        //drawChart(chartLabels, chartData);
-
         function drawChart(chartLabels, chartData) {
             if (chartLabels == null) {
                 $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
@@ -153,39 +167,54 @@
             for (var i = 0; i < chartLabels.length; i++) {
                 colors[i] = defaultColors[i];
             }
+
             $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
             var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+            var options = {
+                legend: false,
+                elements: {
+                    arc: {
+                        borderWidth: 0
+                    }
+                }
+            }
+            var data = {
+                labels: chartLabels, // labels format: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                datasets: [
+                    {
+                        data: chartData, // data format: [12, 19, 3, 5, 2, 3]
+                        backgroundColor: colors
+                        //hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
+                    }
+                ]
+            }
             var pieChart = new Chart(pieChartCanvas,
             {
-                type: 'doughnut',
-                data: {
-                    labels: chartLabels, // labels format: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-                    datasets: [
-                        {
-                            data: chartData, // data format: [12, 19, 3, 5, 2, 3]
-                            backgroundColor: colors
-                            //hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
-                        }
-                    ]
-                }
+                type: "doughnut",
+                data: data,
+                options: options
             });
+            $("#doughnut-legend").html(pieChart.generateLegend());
+
         }
 
-        var
-            ticketTableReport = $("#ticket-table-report")
+        var ticketTableReport = $("#ticket-table-report")
             .dataTable({
                 processing: true,
                 serverSide: true,
-                paging: true,
-                sort: true,
-                ajax: {
+                paging: false,
+                sort: false,
+                filter: false,
+                ajax: ({
                     url: "/HelpDesk/Report/GetTickets",
                     type: "POST",
                     data: function (d) {
                         d.date_from_select = $("#date-from-txt").val(),
-                            d.date_to_select = $("#date-to-txt").val()
+                            d.date_to_select = $("#date-to-txt").val(),
+                            d.type = $("#dropdownType").val(),
+                            d.by = $("#dropdownBy").val()
                     }
-                },
+                }),
                 drawCallback: function (settings) {
                     //var api = this.api();
                 },
@@ -194,66 +223,190 @@
                         "render": function (data, type, row) {
                             return row[0];
                         },
+                        // Code
                         "targets": 0,
-                        "type": "date"
                     },
                     {
                         "render": function (data, type, row) {
                             return row[1];
                         },
+                        // Subject
                         "targets": 1
                     },
                     {
                         "render": function (data, type, row) {
                             return row[2]
                         },
+                        // CreatedTime
                         "targets": 2
                     },
                     {
                         "render": function (data, type, row) {
                             return row[3]
                         },
+                        // Schedule End Date
                         "targets": 3
                     },
                     {
                         "render": function (data, type, row) {
                             return row[4];
                         },
+                        // Actual End Date
                         "targets": 4,
-                        "type": "date"
                     },
                     {
                         "render": function (data, type, row) {
                             return row[5];
                         },
+                        // Type
                         "targets": 5
                     },
                     {
                         "render": function (data, type, row) {
                             return row[6];
                         },
-                        "targets": 6
+                        // Mode
+                        "targets": 6,
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[7];
+                        },
+                        // Category
+                        "targets": 7,
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[8];
+                        },
+                        // impact
+                        "targets": 8,
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[9];
+                        },
+                        // Urgency
+                        "targets": 9,
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[10];
+                        },
+                        // Priority
+                        "targets": 10,
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[11];
+                        },
+                        // Status
+                        "targets": 11,
+                        "visible": true
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[12];
+                        },
+                        // Department
+                        "targets": 12,
+                        "visible": false
                     }
                 ]
             });
 
+
+
         var reloadDataTable = function () {
             var oTable = $("#ticket-table-report").dataTable();
             oTable.api().ajax.reload();
-
         };
+        $("#dropdownType").on("change", function () {
+            ProcessGraph();
+            reloadDataTable();
+        });
 
-        $("#date-from-txt")
-            .on("change",
+        var resetVisibleColumns = function () {
+            var column = $("#ticket-table-report").dataTable().api().column("6");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("7");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("8");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("9");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("10");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("11");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("12");
+            column.visible(false);
+        }
+
+        $("#dropdownBy").on("change", function () {
+            ProcessGraph();
+            var byValue = $(this).val();
+            resetVisibleColumns();
+            switch (byValue) {
+
+                case "0": // Mode
+                    var column = $("#ticket-table-report").dataTable().api().column("6");
+                    column.visible(true);
+                    break;
+                case "1": // Category
+                    var column = $("#ticket-table-report").dataTable().api().column("7");
+                    column.visible(true);
+                    break;
+
+                case "2": //impact
+                    var column = $("#ticket-table-report").dataTable().api().column("8");
+                    column.visible(true);
+                    break;
+
+                case "3": //Urgency
+                    var column = $("#ticket-table-report").dataTable().api().column("9");
+                    column.visible(true);
+                    break;
+
+                case "4": // Priority
+                    var column = $("#ticket-table-report").dataTable().api().column("10");
+                    column.visible(true);
+                    break;
+
+                case "5": // Department
+                    var column = $("#ticket-table-report").dataTable().api().column("12");
+                    column.visible(true);
+                    break;
+                case "6": // Status
+                    var column = $("#ticket-table-report").dataTable().api().column("11");
+                    column.visible(true);
+                    break;
+            }
+
+
+        });
+
+        $("#date-from-txt").on("change",
                 function () {
+                    ProcessGraph();
                     ticketTableReport.fnDraw();
+                    reloadDataTable();
                 });
 
-        $("#date-to-txt")
-            .on("change",
+        $("#date-to-txt").on("change",
                 function () {
+                    ProcessGraph();
                     ticketTableReport.fnDraw();
+                    reloadDataTable();
                 });
 
+        $(document).ready(function () {
+            ProcessGraph();
+        });
     </script>
 }

@@ -37,7 +37,7 @@ namespace TMS.Services
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory
                 && m.ParentID == categoryId);
         }
-
+        
         public IEnumerable<Category> GetItems(int subCategoryId)
         {
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.Item
@@ -109,6 +109,22 @@ namespace TMS.Services
             }
             _unitOfWork.CategoryRepository.Delete(category);
             _unitOfWork.Save();
+        }
+
+        public List<int> GetChildrenCategoriesIdList(int categoryId)
+        {
+            List<int> list = new List<int>();
+            IEnumerable<Category> subCategories = GetSubCategories(categoryId);
+            foreach (Category subCategory in subCategories)
+            {
+                list.Add(subCategory.ID);
+                IEnumerable<Category> items = GetItems(subCategory.ID);
+                foreach (Category item in items)
+                {
+                    list.Add(item.ID);
+                }
+            }
+            return list;
         }
     }
 }

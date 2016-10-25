@@ -1,0 +1,66 @@
+﻿@model TMS.ViewModels.KnowledgeBaseViewModels
+@{
+    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Create knowledge Base";
+}
+
+<style>
+    h4, h5 {
+        color: #345aaa;
+        font-weight: bold;
+    }
+
+    .inputform {
+        padding: 20px;
+    }
+
+    input, textarea, select {
+        max-width: 674px;
+    }
+
+    .required {
+        color: #ff0000;
+    }
+</style>
+
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-solid">
+            @using (Html.BeginForm("CreateKB", "KnowledgeBase", FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label class="control-label col-md-2"><span class="required">*</span> Subject</label>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", id = "subject" })
+                        @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group" id="description">
+                    <label class="control-label col-md-2">Content</label>
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(m => m.Content, new { @class = "form-control", id = "description", rows = "10" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Attach file</label>
+                    <div class="col-md-10">
+                        <input type="file" name="SolutionAttachments" multiple class="form-control" placeholder="Drop file here" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" id="saveBtn" value="Save" class="btn btn-primary btn-flat" />
+                        <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "KnowledgeBase"))">Cancel</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+
+    </script>
+}

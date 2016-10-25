@@ -7,9 +7,11 @@ using System.Web.Mvc;
 using LumiSoft.Net.IMAP.Client;
 using Microsoft.Ajax.Utilities;
 using TMS.DAL;
+using TMS.Enumerator;
 using TMS.Models;
 using TMS.Services;
 using TMS.Utils;
+using TMS.ViewModels;
 using static TMS.Utils.ConstantUtil;
 using Switch = System.Diagnostics.Switch;
 
@@ -42,64 +44,75 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View();
         }
 
-
-        public ActionResult GetTickets(jQueryDataTableParamModel param)
+        // Helpdesk/report
+        [HttpPost]
+        public ActionResult Gettickets(int by, int type, DateTime? date_from_select, DateTime? date_to_select, jQueryDataTableParamModel param)
         {
-            var ticketList = _ticketService.GetAll();
-            var defaultSearchKey = Request["search[Value]"];
-            var date_from_select = Request["date_from_select"];
-            var date_to_select = Request["date_to_select"];
 
+            IEnumerable<Ticket> ticketsList = _ticketService.GetAll().OrderBy(m => m.CreatedTime);
             IEnumerable<Ticket> filteredListItems;
+            filteredListItems = ticketsList;
 
-            if (string.IsNullOrEmpty(defaultSearchKey))
+            if (!string.IsNullOrEmpty(date_from_select.ToString()))
             {
-                filteredListItems = ticketList;
+                filteredListItems = filteredListItems.Where(p => p.CreatedTime >= date_from_select.Value);
             }
-            else
+            if (!string.IsNullOrEmpty(date_to_select.ToString()))
             {
-                filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(defaultSearchKey));
+                filteredListItems = filteredListItems.Where(p => p.CreatedTime <= date_to_select.Value);
             }
 
-            if (!string.IsNullOrEmpty(date_from_select))
+            // Type
+            switch (type)
             {
-                DateTime fromDate = (DateTime)(date_from_select != null
-                ? DateTime.ParseExact(date_from_select, "dd/MM/yyyy", null)
-                : (DateTime?)null);
-                fromDate = fromDate.Date;
-                filteredListItems = filteredListItems.Where(p => DateTime.Compare(p.CreatedTime.Date, fromDate.Date) >= 0);
-            }
-            if (!string.IsNullOrEmpty(date_to_select))
-            {
-                DateTime toDate = (DateTime)(date_to_select != null
-                ? DateTime.ParseExact(date_to_select, "dd/MM/yyyy", null)
-                : (DateTime?)null);
-                filteredListItems = filteredListItems.Where(p => DateTime.Compare(p.CreatedTime.Date, toDate.Date) <= 0);
-            }
-            // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            var sortDirection = Request["sSortDir_0"]; // asc or desc
-
-            switch (sortColumnIndex)
-            {
-                case 2:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.ID)
-                        : filteredListItems.OrderByDescending(p => p.Subject);
+                // All Request 
+                case TicketTypeValue.Request:
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
                     break;
+                // All Problems
+                case TicketTypeValue.Problem:
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Problem);
+                    break;
+                // All Request
+                case TicketTypeValue.Change:
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Change);
+                    break;
+                // All pending requests
+                case TicketTypeValue.PendingRequest:
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
+                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                    break;
+                // All pending problems
+                case TicketTypeValue.PendingProblem:
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Problem);
+                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                    break;
+                // All pending changes
+                case TicketTypeValue.PendingChange:
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Change);
+                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                    break;
+                    // Default All tickets
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
             var result = filteredListItems.Select(p => new IConvertible[]
-            {
+                 {
+                p.Code,
                 p.Subject,
-                _userService.GetUserById(p.RequesterID).Fullname,
-                (p.TechnicianID == null) ? "-" : _userService.GetUserById(p.TechnicianID).Fullname,
-                (p.SolvedDate== null) ? "-" : ((DateTime) p.SolvedDate).ToString("dd/MM/yyyy"),
-                (p.CreatedTime == null) ? "" : ((DateTime) p.CreatedTime).ToString("dd/MM/yyyy"),
-                p.Status,
-                p.Type
-                });
+                (p.CreatedTime == null) ? "" : ((DateTime) p.CreatedTime).ToString("dd/MM/yyyy HH:mm"),
+                (p.ScheduleEndDate == null) ? "-": ((DateTime) p.ScheduleEndDate).ToString("dd/MM/yyyy"),
+                (p.ActualEndDate == null) ? "-": ((DateTime) p.ActualEndDate).ToString("dd/MM/yyyy"),
+                TMSUtils.ConvertTypeFromInt(p.Type),
+                TMSUtils.ConvertModeFromInt(p.Mode),
+                p.CategoryID == null ? "-" : _categoryService.GetCategoryById((int) p.CategoryID).Name,
+                p.ImpactID == null ? "-" : _impactService.GetImpactById((int)p.ImpactID).Name,
+                p.UrgencyID == null ? "-" : _urgencyService.GetUrgencyByID((int)p.UrgencyID).Name,
+                p.PriorityID == null ? "-" : _priorityService.GetPriorityByID((int) p.PriorityID).Name,
+                TMSUtils.ConvertStatusFromInt(p.Status),
+                p.TechnicianID == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name
+                   });
+
 
             return Json(new
             {
@@ -108,79 +121,95 @@ namespace TMS.Areas.HelpDesk.Controllers
                 iTotalDisplayRecords = filteredListItems.Count(),
                 aaData = result
             }, JsonRequestBehavior.AllowGet);
+
         }
 
-        [HttpPost] //int type, int by, 
-        public ActionResult DrawGraph(int type, int by, string date_from_select, string date_to_select)
+        // Helpdesk/report
+        [HttpPost]
+        public ActionResult DrawGraph(int type, int by, DateTime? date_from_select, DateTime? date_to_select)
         {
             var ticketList = _ticketService.GetAll();
             IEnumerable<Ticket> filteredListItems;
             filteredListItems = ticketList;
+            if (date_from_select.HasValue)
+            {
+                filteredListItems = filteredListItems.Where(p => p.CreatedTime.Date >= date_from_select.Value);
+            }
+            if (date_to_select.HasValue)
+            {
+                filteredListItems = filteredListItems.Where(p => p.CreatedTime.Date <= date_to_select.Value);
+            }
             switch (type)
             {
                 // All Request 
                 case 1:
-                    {
-                        filteredListItems = ticketList.Where(p => p.Type == TicketType.Request);
-                        break;
-                    }
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
+                    break;
                 // All Problems
                 case 2:
-                    {
-                        filteredListItems = ticketList.Where(p => p.Type == TicketType.Problem);
-                        break;
-                    }
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Problem);
+                    break;
                 // All Request
                 case 3:
-                    {
-                        filteredListItems = ticketList.Where(p => p.Type == TicketType.Change);
-                        break;
-                    }
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
+                    break;
                 // All pending requests
                 case 4:
-                    {
-                        break;
-                    }
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
+                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+
+                    break;
                 // All pending problems
                 case 5:
-                    {
-                        break;
-                    }
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Problem);
+                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                    break;
                 // All pending changes
                 case 6:
-                    {
-                        break;
-                    }
-                // All tickets
-                default:
-                    {
-                        filteredListItems = ticketList;
-                        break;
-                    }
+                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Change);
+                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                    break;
+                    // Default All tickets
             }
 
             List<string> labels = new List<string>();
             List<int> data = new List<int>();
+            // Switch by
             switch (by)
             {
+                // mode
+                case 0:
+                    foreach (TicketModeEnum mode in System.Enum.GetValues(typeof(TicketModeEnum)))
+                    {
+
+                        labels.Add(mode.ToString());
+                        var ticketModes = filteredListItems.Where(p => p.Mode == (int)mode);
+                        data.Add(ticketModes.Count());
+                    }
+                    return Json(new
+                    {
+                        label = labels,
+                        data = data
+                    });
+
 
                 //Category
                 case 1:
                     {
+                        labels.Add("Unassigned");
+                        data.Add(filteredListItems.Where(p => p.Category == null).Count());
                         IEnumerable<Category> categories = _categoryService.GetCategories();
-                        // cataglory list 
-                        IEnumerable<Ticket> categoryList = null;
-                        foreach (var category in categories)
+                        foreach (Category category in categories)
                         {
+                            List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(category.ID);
                             labels.Add(category.Name);
-                            categoryList = filteredListItems.Where(p => p.CategoryID == category.ID);
-                            data.Add(categoryList.Count());
+                            data.Add(filteredListItems.Where(m => m.CategoryID != null && (m.CategoryID == category.ID || childrenCategoriesIdList.Contains(m.CategoryID.Value))).Count());
                         }
+                        
                         return Json(new
                         {
                             label = labels,
                             data = data
-
                         }, JsonRequestBehavior.AllowGet);
 
                     }
@@ -192,6 +221,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                         IEnumerable<Impact> impacts = _impactService.GetAll();
                         //duyet list 
                         IEnumerable<Ticket> impactInTicketList = null;
+                        labels.Add("Unassign");
+                        data.Add(filteredListItems.Where(p => p.Impact == null).Count());
                         foreach (var impact in impacts)
                         {
                             labels.Add(impact.Name);
@@ -209,6 +240,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                     {
                         IEnumerable<Urgency> urgencyList = _urgencyService.GetAll();
                         IEnumerable<Ticket> urgencyListInTickets = null;
+                        labels.Add("Unassign");
+                        data.Add(filteredListItems.Where(p => p.Urgency == null).Count());
                         foreach (var urgency in urgencyList)
                         {
                             labels.Add(urgency.Name);
@@ -226,7 +259,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                 case 4:
                     {
                         IEnumerable<Priority> priorityList = _priorityService.GetAll();
-                        IEnumerable<Ticket> priorityInTickets = new List<Ticket>();
+                        IEnumerable<Ticket> priorityInTickets;
+                        // Label and data for null priority
+                        labels.Add("Unassigned");
+                        data.Add(filteredListItems.Where(p => p.PriorityID == null).Count());
+
                         foreach (var priority in priorityList)
                         {
                             labels.Add(priority.Name);
@@ -241,12 +278,13 @@ namespace TMS.Areas.HelpDesk.Controllers
                         });
 
                     }
-                // Group
+                // Department
                 case 5:
                     {
                         IEnumerable<AspNetUser> listTechinicians = _userService.GetTechnicians();
-
                         IEnumerable<Ticket> techinicianInteTickets = new List<Ticket>();
+                        labels.Add("Unassign");
+                        data.Add(filteredListItems.Where(p => p.TechnicianID == null).Count());
                         foreach (var techinician in listTechinicians)
                         {
                             techinicianInteTickets = filteredListItems.Where(p => p.TechnicianID == techinician.Id);
@@ -268,77 +306,22 @@ namespace TMS.Areas.HelpDesk.Controllers
                 // Status
                 case 6:
                     {
-                        IEnumerable<Ticket> statusInTickets = _ticketService.GetAll();
-                        //labels.Add("New");
-                        //labels.Add("Assigned");
-                        //labels.Add("Solved");
-                        //labels.Add("Unapproved");
-                        //labels.Add("Cancelled");
-                        //labels.Add("Closed");
-
-                        foreach (var statusInTicket in statusInTickets)
+                        IEnumerable<Ticket> statusInTickets;
+                        labels.Add("Unassign");
+                        data.Add(filteredListItems.Where(p => p.Status == null).Count());
+                        foreach (TicketStatusEnum status in Enum.GetValues(typeof(TicketStatusEnum)))
                         {
-                            if (statusInTicket.Status == 1)
-                            {
-                                labels.Add("New");
-                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.New);
-                                data.Add(statusInTickets.Count());
-                            }
-                            else if (statusInTicket.Status == 2)
-                            {
-                                labels.Add("Assigned");
-                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Assigned);
-                                data.Add(statusInTickets.Count());
-                            }
-                            else if (statusInTicket.Status == 3)
-                            {
-                                labels.Add("Solved");
-                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Solved);
-                                data.Add(statusInTickets.Count());
-                            }
-                            else if (statusInTicket.Status == 4)
-                            {
-                                labels.Add("Unapproved");
-                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Unapproved);
-                                data.Add(statusInTickets.Count());
-                            }
-                            else if (statusInTicket.Status == 5)
-                            {
-                                labels.Add("Cancelled");
-                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Cancelled);
-                                data.Add(statusInTickets.Count());
-                            }
-                            else if (statusInTicket.Status == 6)
-                            {
-                                labels.Add("Closed");
-                                statusInTickets = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Closed);
-                                data.Add(statusInTickets.Count());
-                            }
+                            labels.Add(status.ToString());
+                            statusInTickets = filteredListItems.Where(p => p.Status == (int)status);
+                            data.Add(statusInTickets.Count());
                         }
+
                         return Json(new
                         {
                             label = labels,
                             data = data
                         }, JsonRequestBehavior.AllowGet);
                     }
-                // Choose one
-                default: break;
-
-            }
-            if (!string.IsNullOrEmpty(date_from_select))
-            {
-                DateTime fromDate = (DateTime)(date_from_select != null
-                ? DateTime.ParseExact(date_from_select, "dd/MM/yyyy", null)
-                : (DateTime?)null);
-                fromDate = fromDate.Date;
-                filteredListItems = filteredListItems.Where(p => DateTime.Compare(p.CreatedTime.Date, fromDate.Date) >= 0);
-            }
-            if (!string.IsNullOrEmpty(date_to_select))
-            {
-                DateTime toDate = (DateTime)(date_to_select != null
-                ? DateTime.ParseExact(date_to_select, "dd/MM/yyyy", null)
-                : (DateTime?)null);
-                filteredListItems = filteredListItems.Where(p => DateTime.Compare(p.CreatedTime.Date, toDate.Date) <= 0);
             }
             return null;
         }
