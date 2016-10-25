@@ -31,6 +31,16 @@ namespace TMS.Utils
             public const int Change = 3;
         }
 
+        public class TicketTypeValue
+        {
+            public const int Request = 1;
+            public const int Problem = 2;
+            public const int Change = 3;
+            public const int PendingRequest = 4;
+            public const int PendingProblem = 5;
+            public const int PendingChange = 6;
+        }
+
         public class TicketTypeString
         {
             public static readonly string Request = "Request";
@@ -52,16 +62,18 @@ namespace TMS.Utils
             public static readonly string Email = "Email";
         }
 
+
+
         public class TicketStatus
         {
-            public static readonly int New = 1;
-            public static readonly int Assigned = 2;
-            public static readonly int Solved = 3;
-            public static readonly int Unapproved = 4;
-            public static readonly int Cancelled = 5;
-            public static readonly int Closed = 6;
+            public const int New = 1;
+            public const int Assigned = 2;
+            public const int Solved = 3;
+            public const int Unapproved = 4;
+            public const int Cancelled = 5;
+            public const int Closed = 6;
         }
-        
+
         public class ContactEmailInfo
         {
             public static readonly string MailAddress = "huytcd16@gmail.com";
