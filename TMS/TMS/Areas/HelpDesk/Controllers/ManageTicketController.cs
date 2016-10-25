@@ -83,7 +83,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
+        public ActionResult AddNewTicket(TicketViewModel model)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -205,13 +205,13 @@ namespace TMS.Areas.HelpDesk.Controllers
             try
             {
                 _ticketService.AddTicket(ticket);
-                if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
+                if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                    _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
                 }
-                if (solutionFiles.ToList()[0] != null && solutionFiles.ToList().Count > 0)
+                if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, solutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                    _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
                 }
             }
             catch (DbUpdateException ex)
@@ -340,7 +340,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
+        public ActionResult UpdateTicket(TicketViewModel model)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -447,16 +447,18 @@ namespace TMS.Areas.HelpDesk.Controllers
             if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
             else ticket.CategoryID = null;
 
-            if (!string.IsNullOrEmpty(model.TechnicianId))
+            if (ticket.TechnicianID != model.TechnicianId)
             {
-                if (ticket.TechnicianID != model.TechnicianId)
+                ticket.TechnicianID = model.TechnicianId;
+                ticket.AssignedByID = User.Identity.GetUserId();
+                if ((ticket.Status == ConstantUtil.TicketStatus.New ||
+                    ticket.Status == ConstantUtil.TicketStatus.Unapproved) && model.TechnicianId != null)
                 {
-                    ticket.TechnicianID = model.TechnicianId;
-                    ticket.AssignedByID = User.Identity.GetUserId();
-                    if (ticket.Status == (int?)TicketStatusEnum.New || ticket.Status == (int?)TicketStatusEnum.Unapproved)
-                    {
-                        ticket.Status = (int?)TicketStatusEnum.Assigned;
-                    }
+                    ticket.Status = ConstantUtil.TicketStatus.Assigned;
+                }
+                else if (ticket.Status == ConstantUtil.TicketStatus.Assigned && model.TechnicianId == null)
+                {
+                    ticket.Status = ConstantUtil.TicketStatus.New;
                 }
             }
 
@@ -497,13 +499,13 @@ namespace TMS.Areas.HelpDesk.Controllers
             try
             {
                 _ticketService.UpdateTicket(ticket);
-                if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
+                if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                    _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
                 }
-                if (solutionFiles.ToList()[0] != null && solutionFiles.ToList().Count > 0)
+                if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, solutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                    _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
                 }
             }
             catch (DbUpdateException ex)

@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using EAGetMail;
 using TMS.Enumerator;
 using TMS.Models;
+using TMS.Utils;
 
 namespace TMS.ViewModels
 {
@@ -52,6 +53,10 @@ namespace TMS.ViewModels
         public string CreatedId { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
+        public IEnumerable<HttpPostedFileBase> DescriptionFiles { get; set; }
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
+        public IEnumerable<HttpPostedFileBase> SolutionFiles { get; set; }
         public List<AttachmentViewModel> DescriptionAttachments { get; set; }
         public List<AttachmentViewModel> SolutionAttachments { get; set; }
 

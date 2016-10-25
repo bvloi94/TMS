@@ -17,11 +17,17 @@
     }
 
     input, textarea, select {
-        max-width: 674px;
+        max-width: 800px;
     }
 
     .required {
         color: #ff0000;
+    }
+    .button {
+        margin-left: 10px;
+        width: 30%;
+        min-width: 50px;
+        max-width: 100px;
     }
 </style>
 
@@ -33,27 +39,27 @@
                 @Html.AntiForgeryToken()
                 <div class="form-group">
                     <label class="control-label col-md-2"><span class="required">*</span> Subject</label>
-                    <div class="col-md-10">
+                    <div class="col-md-8">
                         @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", id = "subject" })
                         @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="form-group" id="description">
                     <label class="control-label col-md-2">Description</label>
-                    <div class="col-md-10">
+                    <div class="col-md-8">
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", id = "description", rows = "10" })
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-md-2">Attach file</label>
-                    <div class="col-md-10">
+                    <div class="col-md-8">
                         <input type="file" id="upFile" name="uploadFiles" multiple class="form-control" placeholder="Drop file here" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="button" id="saveBtn" value="Save" class="btn btn-primary btn-flat" />
-                        <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
+                    <div class="col-md-offset-2 col-md-8" style="text-align: center" >
+                        <input type="button" id="saveBtn" value="Save" class="btn btn-primary btn-flat button" />
+                        <a class="btn btn-default btn-flat button" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
                     </div>
                 </div>
             }
