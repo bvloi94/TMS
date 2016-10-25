@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
 }
-@{ 
+@{
     ViewBag.Title = "Ticket List";
 }
 <style>
@@ -60,8 +60,8 @@
             <div class="box-body">
                 <a class="btn btn-primary btn-flat" href="@(Url.Action("Create", "Ticket"))">Create new ticket</a>
                 <div class="pull-right">
-                    <div class="input-group">
-                        <input type="text" id="search-txt" class="form-control" placeholder="Search...">
+                    <div class="input-group" style="width: 300px">
+                        <input type="text" id="search-txt" class="form-control" placeholder="Search by subject...">
                         <span class="input-group-btn">
                             <button name="search" id="search-btn" class="btn btn-default btn-flat">
                                 <i class="fa fa-search"></i>
@@ -104,7 +104,9 @@
                                                     <div class="col-sm-2 labels">
                                                         <b>Description: </b>
                                                     </div>
-                                                    <div class="col-sm-10 pre-wrap" id="ticket-description" style="padding-left: 10px"></div>
+                                                    <div class="col-sm-10" style="padding-left: 10px">
+                                                        <span id="ticket-description"></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="col-sm-12 row-content ">
@@ -112,7 +114,14 @@
                                                     <div class="col-sm-2 labels">
                                                         <b>Solution: </b>
                                                     </div>
-                                                    <div class="col-sm-10 pre-wrap" id="ticket-solution" style="padding-left: 10px"></div>
+                                                    <div class="col-sm-10" style="padding-left: 10px">
+                                                        <span id="ticket-solution"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12 row-content" id="approve-ticket">
+                                                <div class="col-sm-offset-2 col-sm-10" style="padding-left: 20px">
+                                                    <b><i>Are you sastified with this solution?</i></b>
                                                 </div>
                                             </div>
                                             <div class="col-sm-12 row-content ">
@@ -202,7 +211,14 @@
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
+        var tempDescription, tempSolution, fullDescription, fullSolution;
         setActiveTicketMenu();
+        $(window).on('resize', function () {
+            $('#ticket-table .long-table-column').trunk8({
+                lines: 2,
+                tooltip: false
+            });
+        });
         var initDataTable = function () {
             $("#ticket-table").DataTable({
                 processing: true,
@@ -210,8 +226,15 @@
                 paging: true,
                 sort: true,
                 "order": [[0, 'dsc']],
+                lengthMenu: [10],
                 lengthChange: false,
                 filter: false,
+                drawCallback: function () {
+                    $('#ticket-table .long-table-column').trunk8({
+                        lines: 2,
+                        tooltip: false
+                    });
+                },
                 ajax: {
                     url: "/Ticket/GetRequesterTickets",
                     data: function (d) {
@@ -228,7 +251,8 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="#" class="view-detail" data-id=' + row[4] + '>' + row[1] + '</a>';
+                            //return '<a href="#" class="view-detail" data-id=' + row[4] + '>' + row[1] + '</a>';
+                            return '<a href="/Ticket/Detail/' + row[4] + '" class="view-detail">' + row[1] + '</a>';
                         },
                         "targets": 1
                     },
@@ -249,27 +273,11 @@
                                 return "<label class='label label-default'>Closed</label>";
                             }
                         },
-                        "sortable": false,
                         "targets": 2
                     },
                     {
                         "render": function (data, type, row) {
-                            if (row[2] <= 2) {
-                                return "-";
-                            }
-                            else {
-                                if (row[3] != null) {
-                                    if (row[3].toString().length > 135) {
-                                        return "<span>" + row[3].substring(0, 134) + "..." + "</span>";
-                                    }
-                                    else {
-                                        return "<span>" + (row[3]) + "</span>";
-                                    }
-                                }
-                                else {
-                                    return "-";
-                                }
-                            }
+                            return "<span class='long-table-column'>" + row[3] + "</span>";
                         },
                         "sortable": false,
                         "targets": 3
@@ -283,17 +291,26 @@
         };
 
         $(document).ready(function () {
-            initDataTable();
+            initDataTable();    
         });
 
+        //$(document).on('click', '#see-more-desc', function () {
+        //    $('#ticket-description').addClass('pre-wrap');
+        //    $('#ticket-description').text(fullDescription);
+        //});
+
+        //$(document).on('click', '#see-more-solution', function () {
+        //    $('#ticket-solution').addClass('pre-wrap');
+        //    $('#ticket-solution').text(fullSolution);
+        //});
+        
         $("#search-txt").keyup(function () {
             reloadDataTable();
         });
 
-        $("#ticket-table").on("click", ".view-detail", function () {
+        @*$("#ticket-table").on("click", ".view-detail", function () {
             var id = $(this).attr('data-id'),
                 $modal = $('#detail-modal');
-
             $.ajax({
                 url: '@Url.Action("GetTicketDetail", "Ticket", new { area=""})',
                 type: "GET",
@@ -302,20 +319,44 @@
                     id: id
                 },
                 success: function (data) {
+                    fullDescription = data.description;
+                    fullSolution = data.solution;
+                    
+                    
+                    if (fullDescription.length > 300) {
+                        tempDescription = fullDescription.substring(0, 299) + "...";
+                        $('#ticket-description').removeClass('pre-wrap');
+                        $('#ticket-description').empty().append(tempDescription + "<a id='see-more-desc' href='#'>See More</a>");
+                    }
+                    else {
+                        tempDescription = fullDescription;
+                        $('#ticket-description').addClass('pre-wrap');
+                        $('#ticket-description').text(fullDescription);
+                    }
                     $('#ticket-subject').text(data.subject);
-                    $('#ticket-description').text(data.description);
                     $('#ticket-created-by').text(data.creater);
                     $('#ticket-solved-by').text(data.solver);
                     $('#ticket-type').text(data.type);
                     $('#ticket-mode').text(data.mode);
                     $('#ticket-category').text(data.category);
-
+                    
                     if (data.solution == "-") {
-                        $('#ticket-solution').text("This ticket is not solved yet.");
+                        $('#ticket-solution').empty().append('<i>This ticket is not solved yet.</i>');
+                        $('#approve-ticket').addClass('hidden');
                     }
                     else {
-                        $('#ticket-solution').text(data.solution);
+                        if (fullSolution.length > 300) {
+                            tempSolution = fullSolution.substring(0, 299) + "...";
+                            $('#ticket-solution').removeClass('pre-wrap');
+                            $('#ticket-solution').empty().append(tempSolution + "<a id='see-more-solution' href='#'>See More</a>");
+                        }
+                        else {
+                            tempSolution = fullSolution;
+                            $('#ticket-solution').addClass('pre-wrap');
+                            $('#ticket-solution').text(fullSolution);
+                        }
                     }
+
 
                     if (data.status == 1) {
                         $('#ticket-status').empty().append('<label class="label label-info">New</label>');
@@ -323,6 +364,7 @@
                         $('#ticket-status').empty().append('<label class="label label-warning">Assigned</label>');
                     } else if (data.status == 3) {
                         $('#ticket-status').empty().append('<label class="label label-success">Solved</label>');
+                        $('#approve-ticket').removeClass('hidden');
                     } else if (data.status == 4) {
                         $('#ticket-status').empty().append('<label class="label label-danger">Unapproved</label>');
                     } else if (data.status == 5) {
@@ -340,7 +382,9 @@
                     alert(data.d);
                 }
             });
-        });
+        });*@
+
+
     </script>
 }
 

@@ -1,4 +1,5 @@
 ﻿@using TMS.Models
+@using TMS.Utils
 @model TMS.ViewModels.TicketViewModel
 @{
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
@@ -56,7 +57,7 @@
                                                 @Html.HiddenFor(it => Model.DescriptionAttachments[i].id)
                                                 @Html.HiddenFor(it => Model.DescriptionAttachments[i].name)
                                                 <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.DescriptionAttachments[i].id">@Model.DescriptionAttachments[i].name</label>
-                                                <span class='attachment-delete' onclick='this.parentNode.parentNode.removeChild(this.parentNode); return false;'> x </span>
+                                                <span class='attachment-delete'> x </span>
                                             </div>
                                         }
                                     </div>
@@ -164,7 +165,7 @@
                                                 @Html.HiddenFor(it => Model.SolutionAttachments[i].id)
                                                 @Html.HiddenFor(it => Model.SolutionAttachments[i].name)
                                                 <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.SolutionAttachments[i].id">@Model.SolutionAttachments[i].name</label>
-                                                <span class='attachment-delete' onclick='this.parentNode.innerHTML=""; return false;'> x </span>
+                                                <span class='attachment-delete'> x </span>
                                             </div>
                                         }
                                     </div>
@@ -282,24 +283,21 @@
                     window.location.href = "/HelpDesk/ManageTicket";
                 });
 
+
         $("[data-role=btn-update-ticket]")
             .on("click",
                 function() {
+                    $("[data-role=btn-update-ticket]").prop('disabled', true);
+                    $("[data-role=btn-cancel]").prop("disabled", true);
                     var formData = new FormData($("#form-edit-ticket")[0]);
                     var dict = new Array();
                     $(".attachments")
                         .each(function(index) {
                             dict.push({
-                                "id":   $(".attachments")[index].getAttribute("data-id"),
+                                "id": $(".attachments")[index].getAttribute("data-id"),
                                 "name": $(".attachments")[index].textContent
                             });
                         });
-                    //formData.append('Attachments', dict);
-                    //formData.append('testAppend', "0000");
-
-                    //var token = $('input[name="__RequestVerificationToken"]', $("#form-edit-ticket")).val();
-                    //formData.append('__RequestVerificationToken', token);
-                    //var formData = $("#form-edit-ticket").serialize();
                     $.ajax({
                         "url": "/HelpDesk/ManageTicket/UpdateTicket",
                         "method": "POST",
@@ -310,18 +308,21 @@
                                     text: "Ticket was updated successfully!",
                                     layout: "topCenter",
                                     type: "success",
-                                    timeout: 1000
+                                    timeout: 300,
+                                    callback: {
+                                        onClose: function() {
+                                            window.location.href = "/HelpDesk/ManageTicket";
+                                        }
+                                    }
                                 });
-                                setTimeout(function() {
-                                    window.location.href = "/HelpDesk/ManageTicket";
-                                },
-                                    1000);
                             } else {
+                                $("[data-role=btn-update-ticket]").prop('disabled', false);
+                                $("[data-role=btn-cancel]").prop("disabled", false);
                                 noty({
                                     text: data.msg,
                                     type: "error",
                                     layout: "topRight",
-                                    timeout: 2000
+                                    timeout: 2000,
                                 });
                                 if (data.data != null) {
                                     $("#form-edit-ticket [data-role=group-form-error]").html("");
@@ -343,8 +344,10 @@
                         processData: false,
                         enctype: 'multipart/form-data',
                         "error": function(e) {
+                            $("[data-role=btn-update-ticket]").prop('disabled', false);
+                            $("[data-role=btn-cancel]").prop("disabled", false);
                             noty({
-                                text: "Failed! Please try again!",
+                                text: "Some error occured. Please try again later!",
                                 type: "error",
                                 layout: "topRight",
                                 timeout: 2000
@@ -404,34 +407,20 @@
         }
 
         function loadEditData() {
-            @*$("[name='Id']").val(@Model.Id);
-            $("[name='Subject']:eq(0)").val('@Model.Subject');
-            $("[name='Type']").val(@Model.Type);
-            $("[name='Mode']").val(@Model.Mode);
-            $("#descriptionEditor").html('@Model.Description.Replace("\r\n", "\\r\\n")');
-            $("[name='ImpactDetail']").val('@Model.ImpactDetail');
-            $("#requesterId").val('@Model.RequesterId');
-            $("#requesterName").val('@Model.Requester');
-            $("[name='ScheduleStartDate']").val('@Model.ScheduleStartDate');
-            $("[name='ScheduleEndDate']").val('@Model.ScheduleEndDate');
-            $("[name='ActualStartDate']").val('@Model.ActualStartDate');
-            $("[name='ActualEndDate']").val('@Model.ActualEndDate');
-            $("[name='SolvedDate']").val('@Model.SolvedDate');
-            $("[name='CreatedTime']").val('@Model.CreatedTime');
-            $("[name='ModifiedTime']").val('@Model.ModifiedTime');
-            $("#createdId").val('@Model.CreatedId');
-            $("#createdBy").html('@Model.CreatedBy');
-            $("#solveId").val('@Model.SolvedId');
-            $("#solveBy").html('@Model.SolvedBy');
-            $("#solutionEditor").html('@Model.Solution.Replace("\r\n", "\\r\\n")');
-            $("[name='statusId']").val(@Model.StatusId);*@
+
+            if ((@Model.Mode != @ConstantUtil.TicketMode.PhoneCall) ||
+            (@Model.StatusId != @ConstantUtil.TicketStatus.New &&
+                @Model.StatusId != @ConstantUtil.TicketStatus.Assigned)) {
+                $('[name="Subject"]').prop("readonly", true);
+            }
+
             $("#div-status").html(getStatusLabel('@Model.Status'));
             $("[name='Type']").val(@Model.Type);
             loadInitDropdown('ddl-urgency', '@(Model.UrgencyId == 0 ? "None" : Model.Urgency)', @Model.UrgencyId);
             loadInitDropdown('ddl-priority', '@(Model.PriorityId == 0 ? "None" : Model.Priority)', @Model.PriorityId);
             loadInitDropdown('ddl-impact', '@(Model.ImpactId == 0 ? "None" : Model.Impact)', @Model.ImpactId);
             loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
-            loadInitDropdown('ddl-department', '@Model.Department', @Model.DepartmentId);
+            loadInitDropdown('ddl-department', '@(Model.DepartmentId == 0 ? "Chooose Department" :@Model.Department)', @Model.DepartmentId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
         }
 

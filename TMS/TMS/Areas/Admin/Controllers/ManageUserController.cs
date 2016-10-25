@@ -1161,7 +1161,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> ResendEmail(string id)
+        public ActionResult ResendEmail(string id)
         {
             AspNetUser user = _userService.GetUserById(id);
             if (user == null)
@@ -1174,7 +1174,7 @@ namespace TMS.Areas.Admin.Controllers
             }
             string generatedPassword = GeneralUtil.GeneratePassword();
             // Send email asynchronously
-            bool sendEmailResult = await EmailUtil.ResendToUserWhenCreate(user.UserName, generatedPassword, user.Fullname, user.Email);
+            bool sendEmailResult = EmailUtil.ResendToUserWhenCreate(user.UserName, generatedPassword, user.Fullname, user.Email);
             if (sendEmailResult)
             {
                 return Json(new

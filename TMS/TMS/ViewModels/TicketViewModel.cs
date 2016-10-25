@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using EAGetMail;
 using TMS.Enumerator;
 using TMS.Models;
+using TMS.Utils;
 
 namespace TMS.ViewModels
 {
@@ -14,10 +15,11 @@ namespace TMS.ViewModels
     {
         public int No { get; set; }
         public int Id { get; set; }
+        [AllowHtml]
         public string Subject { get; set; }
-        //[AllowHtml]
+        [AllowHtml]
         public string Description { get; set; }
-        //[AllowHtml]
+        [AllowHtml]
         public string Solution { get; set; }
         public string RequesterId { get; set; }
         public string Requester { get; set; }
@@ -33,6 +35,7 @@ namespace TMS.ViewModels
         public string Priority { get; set; }
         public int ImpactId { get; set; }
         public string Impact { get; set; }
+        [AllowHtml]
         public string ImpactDetail { get; set; }
         public int CategoryId { get; set; }
         public string Category { get; set; }
@@ -50,6 +53,10 @@ namespace TMS.ViewModels
         public string CreatedId { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
+        public IEnumerable<HttpPostedFileBase> DescriptionFiles { get; set; }
+        [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
+        public IEnumerable<HttpPostedFileBase> SolutionFiles { get; set; }
         public List<AttachmentViewModel> DescriptionAttachments { get; set; }
         public List<AttachmentViewModel> SolutionAttachments { get; set; }
 

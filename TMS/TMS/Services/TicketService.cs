@@ -61,6 +61,11 @@ namespace TMS.Services
             return handlingTicket;
         }
 
+        public IEnumerable<Ticket> GetSolvedTickets()
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.Status == ConstantUtil.TicketStatus.Solved);
+        }
+
         private bool IsSatisfiedWithMultipleConditions(Ticket handlingTicket, ICollection<BusinessRuleConditionCustom> businessRuleConditionCustomList)
         {
             int highestLevel = businessRuleConditionCustomList.Aggregate((i1, i2) => i1.BusinessRuleCondition.BusinessRuleConditionLevel > i2.BusinessRuleCondition.BusinessRuleConditionLevel ? i1 : i2).BusinessRuleCondition.BusinessRuleConditionLevel.Value;
@@ -385,41 +390,19 @@ namespace TMS.Services
             return _unitOfWork.Save() > 0;
         }
 
-        /// <summary>
-        /// cancel ticket which return int value
-        /// 1: success, 2: unavailable ticket, 3: wrong ticket status, 4: error
-        /// </summary>
-        /// <param name="ticketId"></param>
-        /// <returns>int</returns>
-        public int CancelTicket(int? ticketId)
+        public void CancelTicket(Ticket ticket)
         {
-            if (ticketId.HasValue)
+            ticket.Status = ConstantUtil.TicketStatus.Cancelled;
+            ticket.ModifiedTime = DateTime.Now;
+            try
             {
-                Ticket ticket = GetTicketByID(ticketId.Value);
-                //if invalid ticket
-                if (ticket == null)
-                {
-                    return 2;
-                }
-                //if status is not new or assigned
-                if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
-                {
-                    return 3;
-                }
-                ticket.Status = ConstantUtil.TicketStatus.Cancelled;
-                ticket.ModifiedTime = DateTime.Now;
-                try
-                {
-                    _unitOfWork.TicketRepository.Update(ticket);
-                    _unitOfWork.Save();
-                    return 1;
-                }
-                catch
-                {
-                    return 4;
-                }
+                _unitOfWork.TicketRepository.Update(ticket);
+                _unitOfWork.Save();
             }
-            return 2;
+            catch
+            {
+                throw;
+            }
         }
 
         public void SolveTicket(Ticket ticket)
@@ -437,6 +420,27 @@ namespace TMS.Services
         public IEnumerable<Ticket> GetRequesterTickets(string id)
         {
             return _unitOfWork.TicketRepository.Get(m => m.RequesterID == id);
+        }
+
+        public void CloseTicket(Ticket ticket)
+        {
+            ticket.Status = ConstantUtil.TicketStatus.Closed;
+            ticket.ModifiedTime = DateTime.Now;
+            try
+            {
+                _unitOfWork.TicketRepository.Update(ticket);
+                _unitOfWork.Save();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public IEnumerable<Ticket> GetPendingTickets()
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.Status != ConstantUtil.TicketStatus.Cancelled
+                && m.Status != ConstantUtil.TicketStatus.Closed);
         }
     }
 }

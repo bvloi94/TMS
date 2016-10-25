@@ -1,0 +1,21 @@
+﻿@using TMS.Models
+<table class="table table-bordered">
+    <tr>
+        <th></th>
+        @foreach (Impact impact in ViewBag.impactList)
+        {
+            <th>@impact.Name</th>
+        }
+    </tr>
+    @foreach (Urgency urgency in ViewBag.urgencyList)
+    {
+        <tr>
+            <th>@urgency.Name</th>
+            @foreach (Impact impact in ViewBag.impactList)
+            {
+                <td>@Html.DropDownList("PriorityMatrixItem", (SelectList) ViewBag.priorityList, "--Select Priority--", new { @class = "priority-matrix-item-select", data_urgency = urgency.ID, data_impact = impact.ID })</td>
+            }
+        </tr>
+    }
+</table>
+

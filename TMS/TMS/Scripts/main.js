@@ -129,6 +129,16 @@ function initRequesterTable(selector) {
     });
 }
 
+$(".attachment-delete")
+            .on("click",
+                function () {
+                    var inputs = $(this).parent().find(':input');
+                    inputs.each(function (index, element) {
+                        element.value = "";
+                    });
+                    $(this).parent().addClass("hidden");
+                });
+
 function handleFileSelect(evt) {
     var files = evt.target.files;
     var f = files[0];

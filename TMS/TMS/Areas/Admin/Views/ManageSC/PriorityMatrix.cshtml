@@ -2,10 +2,26 @@
     ViewBag.Title = "Priority Matrix";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
+<style>
+    table th {
+        background-color: #bfcaca;
+    }
+</style>
 
-<h2>Priority Matrix</h2>
-<div id="priority-matrix-div">
-    @*priority matrix table*@
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-body">
+                <div id="priority-matrix-div">
+                    <center><img src='/Content/img/loading.gif' /></center>
+                    @*priority matrix table*@
+                </div>
+                <div style="text-align: center">
+                    <button id="save-btn" class="btn btn-flat btn-success">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
@@ -13,16 +29,73 @@
     <script>
         var initPriorityMatrixTable = function () {
             $.ajax({
-                url: "/Admin/ManageSC/GetPriorityMatrixItems",
+                url: "/Admin/ManageSC/GetPriorityMatrixTable",
                 type: "GET",
                 dataType: "html",
+                beforeSend: function() {
+                    $("#priority-matrix-div").html("<center><img src='/Content/img/loading.gif' /></center>");
+                },
                 success: function (data) {
                     $("#priority-matrix-div").html(data);
+                    checkPriority();
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
                 }
             });
-        }
+        };
+
+        var checkPriority = function () {
+            $.ajax({
+                url: "/Admin/ManageSC/GetPriorityMatrixItems",
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    $(".priority-matrix-item-select").each(function (i, e) {
+                        var urgencyId = $(e).attr("data-urgency");
+                        var impactId = $(e).attr("data-impact");
+                        var items = data.data;
+                        for (i = 0; i < items.length; i++) {
+                            var item = items[i];
+                            if (item.ImpactID == impactId && item.UrgencyID == urgencyId) {
+                                $(e).val(item.PriorityID);
+                                break;
+                            }
+                        }
+                    });
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
+        };
+
         $(document).ready(function () {
             initPriorityMatrixTable();
+        });
+
+        $("#priority-matrix-div").on("change", ".priority-matrix-item-select", function () {
+            $.ajax({
+                url: "/Admin/ManageSC/ChangePriorityMatrixItem",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    UrgencyID: $(this).attr("data-urgency"),
+                    ImpactID: $(this).attr("data-impact"),
+                    PriorityID: $(this).val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $.notify(data.message, "success");
+                    } else {
+                        $.notify(data.message, "error");
+                    }
+                    initPriorityMatrixTable();
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
         });
     </script>
 }

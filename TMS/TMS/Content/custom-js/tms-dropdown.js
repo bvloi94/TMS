@@ -245,6 +245,7 @@ function initDepartmentDropdown(param) {
             },
             cache: true
         },
+        placeholder: "--Select Department--",
         minimumResultsForSearch: Infinity,
         escapeMarkup: function (markup) {
             return markup;
@@ -311,6 +312,7 @@ function initTechnicianDropdown(param) {
             },
             cache: true
         },
+        placeholder: "--Select Technician--",
         escapeMarkup: function (markup) {
             return markup;
         }, // let our custom formatter work

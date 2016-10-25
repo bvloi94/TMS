@@ -9,6 +9,7 @@ using TMS.Services;
 using TMS.ViewModels;
 using TMS.DAL;
 using System.IO;
+using TMS.Utils;
 
 namespace TMS.Areas.Admin.Controllers
 {
@@ -24,7 +25,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // GET: Admin/Profile
-        [Utils.Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult Index()
         {
@@ -44,7 +45,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         //GET: /Admin/Profile/UpdateProfile
-        [Utils.Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult UpdateProfile()
         {
@@ -64,7 +65,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         // POST: Admin/Profile/UpdateProfile
-        [Utils.Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         [HttpPost]
         public ActionResult EditProfie(ProfileAdminViewModel model)

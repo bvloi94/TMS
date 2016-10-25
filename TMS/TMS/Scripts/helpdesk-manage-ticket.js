@@ -1,5 +1,7 @@
 ﻿var ticketTable = null;
 var cancelTicketId = null;
+var closeTicketId = null;
+var reassignTicketId = null;
 var selectedTickets = [];
 
 function initTicketTable() {
@@ -8,8 +10,8 @@ function initTicketTable() {
         processing: true,
         sort: true,
         filter: false,
-        lengthMenu: [8],
-        "order": [[1, 'asc']],
+        lengthMenu: [7],
+        order: [[6, 'des']],
         lengthChange: false,
         fnDrawCallback: function () {
             checkSelectedCheckbox();
@@ -43,7 +45,6 @@ function initTicketTable() {
              },
             {
                 "targets": [2],
-                "sortable": false,
                 "render": function (data, type, row) {
                     return row.Requester != "" ? row.Requester : "-";
                 }
@@ -80,7 +81,7 @@ function initTicketTable() {
                 "render": function (data, type, row) {
                     //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
                     var ediBtn;
-                    switch(row.Status) {
+                    switch (row.Status) {
                         case "Closed":
                         case "Canceled":
                         case "Solved":
@@ -152,7 +153,7 @@ function initTicketTable() {
                                 "data-role": "btn-show-cancel-modal",
                                 "html": "Cancel",
                                 "disabled": "disabled",
-                                "data-tickeId": row.Id
+                                "data-ticket-id": row.Id
                             });
                             break;
                         case "New":
@@ -162,7 +163,7 @@ function initTicketTable() {
                                 "class": "btn btn-sm btn-default margin-left10",
                                 "data-role": "btn-show-cancel-modal",
                                 "html": "Cancel",
-                                "data-tickeId": row.Id
+                                "data-ticket-id": row.Id
                             });
                             break;
                     }
@@ -195,6 +196,45 @@ function checkSelectedCheckbox() {
     });
 }
 
+function initDropdownControl() {
+    initUrgencyDropdown({
+        control: $("[data-role=ddl-urgency]"),
+        ignore: function () {
+            return [];
+        }
+    });
+    initPriorityDropdown({
+        control: $("[data-role=ddl-priority]"),
+        ignore: function () {
+            return [];
+        }
+    });
+    initImpactDropdown({
+        control: $("[data-role=ddl-impact]"),
+        ignore: function () {
+            return [];
+        }
+    });
+    initDepartmentDropdown({
+        control: $("[data-role=ddl-department]"),
+        ignore: function () {
+            return [];
+        }
+    });
+    initCategoryDropdown({
+        control: $("[data-role=ddl-category]"),
+        ignore: function () {
+            return [];
+        }
+    });
+    initTechnicianDropdown({
+        control: $("[data-role=ddl-technician]"),
+        ignore: function () {
+            return [];
+        }
+    });
+}
+
 function openTicketDetailModal(ticketId) {
     $.ajax({
         url: '/Ticket/GetTicketDetail',
@@ -204,8 +244,6 @@ function openTicketDetailModal(ticketId) {
             id: ticketId
         },
         success: function (data) {
-
-
             $('#ticket-subject').text(data.subject);
             $('#ticket-description').text(data.description);
             $('#ticket-department').text(data.department);
@@ -220,6 +258,9 @@ function openTicketDetailModal(ticketId) {
             $('#ticket-category').text(data.category);
             $('#ticket-impact').text(data.impact);
             $('#ticket-impact-detail').text(data.impactDetail);
+            $("#reopen-close-btn").attr("data-ticket-id", data.id);
+            $("#reopen-resolve-btn").attr("href", "/Ticket/Solve/" + data.id);
+            $("#reopen-reassign-btn").attr("data-ticket-id", data.id);
 
             if (!data.solution || data.solution == "-") {
                 $('#ticket-solution').text("This ticket is not solved yet.");
@@ -240,27 +281,27 @@ function openTicketDetailModal(ticketId) {
             if (data.status == 1) {
                 $('#ticket-status').html(getStatusLabel('New'));
                 $('[data-role="modal-btn-solve"]').removeClass("disabled");
-                $('[data-role="modal-btn-reopen"]').addClass("disabled");
+                $("#reopen-div").hide();
             } else if (data.status == 2) {
                 $('#ticket-status').html(getStatusLabel('Assigned'));
                 $('[data-role="modal-btn-solve"]').removeClass("disabled");
-                $('[data-role="modal-btn-reopen"]').addClass("disabled");
+                $("#reopen-div").hide();
             } else if (data.status == 3) {
                 $('#ticket-status').html(getStatusLabel('Solved'));
                 $('[data-role="modal-btn-solve"]').addClass("disabled");
-                $('[data-role="modal-btn-reopen"]').addClass("disabled");
+                $("#reopen-div").hide();
             } else if (data.status == 4) {
                 $('#ticket-status').html(getStatusLabel('Unapproved'));
-                $('[data-role="modal-btn-solve"]').addClass("disabled");
-                $('[data-role="modal-btn-reopen"]').removeClass("disabled");
+                $('[data-role="modal-btn-solve"]').addClass("invisible");
+                $("#reopen-div").show();
             } else if (data.status == 5) {
                 $('#ticket-status').html(getStatusLabel('Cancelled'));
                 $('[data-role="modal-btn-solve"]').addClass("disabled");
-                $('[data-role="modal-btn-reopen"]').addClass("disabled");
+                $("#reopen-div").hide();
             } else if (data.status == 6) {
                 $('#ticket-status').html(getStatusLabel('Closed'));
                 $('[data-role="modal-btn-solve"]').addClass("disabled");
-                $('[data-role="modal-btn-reopen"]').addClass("disabled");
+                $("#reopen-div").hide();
             }
 
             $('#ticket-created-date').text(data.createdDate);
@@ -299,13 +340,14 @@ $(document)
                 .on('click',
                     'a[data-role="btn-show-cancel-modal"]:not([disabled])',
                     function () {
-                        cancelTicketId = this.getAttribute("data-tickeId");
+                        cancelTicketId = this.getAttribute("data-ticket-id");
                         $("#modal-cancel-ticket").modal("show");
                     });
 
             $("[data-role='btn-confirm-cancel']")
                 .on('click',
                     function () {
+                        $("[data-role='btn-confirm-cancel']").prop("disabled", true);
                         $.ajax({
                             "url": "/HelpDesk/ManageTicket/CancelTicket",
                             "method": "POST",
@@ -332,6 +374,7 @@ $(document)
                                     });
                                     ticketTable.draw();
                                 }
+                                $("[data-role='btn-confirm-cancel']").prop("disabled", false);
                             },
                             "error": function () {
                                 $("#modal-cancel-ticket").modal("hide");
@@ -364,6 +407,7 @@ $(document)
             $("[data-role='btn-confirm-merge']")
                 .on('click',
                     function () {
+                        $("[data-role='btn-confirm-merge']").prop("disabled", true);
                         $.ajax({
                             "url": "/HelpDesk/ManageTicket/MergeTicket",
                             "method": "POST",
@@ -373,24 +417,28 @@ $(document)
                             "success": function (data) {
                                 if (data.success) {
                                     noty({
-                                        text: "Ticket was merged!",
+                                        text: data.msg,
                                         type: "success",
                                         layout: "topCenter",
                                         timeout: 2000
                                     });
-                                    ticketTable.draw();
                                     $("#modal-merge-ticket").modal("hide");
                                     selectedTickets = [];
                                     $("a[data-role='btn-merge-ticket']").addClass("disabled");
+                                    ticketTable.draw();
                                 } else {
-                                    $("#modal-merge-ticket").modal("hide");
                                     noty({
                                         text: data.msg,
                                         type: "error",
                                         layout: "topCenter",
                                         timeout: 2000
                                     });
+                                    $("#modal-merge-ticket").modal("hide");
+                                    selectedTickets = [];
+                                    $("a[data-role='btn-merge-ticket']").addClass("disabled");
+                                    ticketTable.draw();
                                 }
+                                $("[data-role='btn-confirm-merge']").prop("disabled", false);
                             },
                             "error": function () {
                                 $("#modal-merge-ticket").modal("hide");
@@ -402,12 +450,6 @@ $(document)
                                 });
                             }
                         });
-                    });
-
-            $("[data-role='btn-cancel-merge']")
-                .on('click',
-                    function () {
-                        $("#modal-merge-ticket").modal("hide");
                     });
 
             $('#ticket-table tbody').on('click', 'input[data-role="cbo-ticket"]', function (e) {
@@ -422,5 +464,144 @@ $(document)
                 } else {
                     $("a[data-role='btn-merge-ticket']").removeClass("disabled");
                 }
+            });
+
+            $('#detail-modal').on('click', 'a[data-role="btn-show-close-modal"]', function () {
+                closeTicketId = this.getAttribute("data-ticket-id");
+                $("#modal-close-ticket").css("z-index", "1100");
+                $("#modal-close-ticket").modal("show");
+            });
+
+            $('#detail-modal').on('click', 'a[data-role="btn-show-reassign-modal"]', function () {
+                reassignTicketId = $(this).attr("data-ticket-id");
+                initDropdownControl();
+                $.ajax({
+                    url: "/HelpDesk/ManageTicket/GetTicketDetailForReassign",
+                    type: "GET",
+                    dataType: "json",
+                    data: {
+                        ticketId: reassignTicketId
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            loadInitDropdown('ddl-department', data.department, data.departmentId);
+                            loadInitDropdown('ddl-technician', data.technician, data.technicianId);
+                        } else {
+                            noty({
+                                text: data.message,
+                                layout: "topRight",
+                                type: "error",
+                                timeout: 2000
+                            });
+                        }
+                    },
+                    error: function () {
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
+                    }
+                });
+                $("#reassign-validation-message").hide();
+                $("#modal-reassign-ticket").css("z-index", "1100");
+                $("#modal-reassign-ticket").modal("show");
+            });
+
+            $("[data-role='ddl-department']").on("change", function () {
+                $("[data-role='ddl-technician']").select2("val", "");
+            });
+
+            $("[data-role='btn-confirm-reassign']").click(function () {
+                var technicianId = $("#technician-select").val();
+                if (technicianId == null || technicianId.trim() == "") {
+                    $("#reassign-validation-message").html("Please select technician!");
+                    $("#reassign-validation-message").show();
+                } else {
+                    $.ajax({
+                        url: "/HelpDesk/ManageTicket/Reassign",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            technicianId: technicianId,
+                            ticketId: reassignTicketId
+                        },
+                        success: function (data) {
+                            if (data.success) {
+                                noty({
+                                    text: data.message,
+                                    layout: "topCenter",
+                                    type: "success",
+                                    timeout: 2000
+                                });
+                                $("#modal-reassign-ticket").modal("hide");
+                                $("#detail-modal").modal("hide");
+                                ticketTable.draw();
+                            } else {
+                                noty({
+                                    text: data.message,
+                                    layout: "topRight",
+                                    type: "error",
+                                    timeout: 2000
+                                });
+                                $("#modal-reassign-ticket").modal("hide");
+                                $("#detail-modal").modal("hide");
+                                ticketTable.draw();
+                            }
+                        },
+                        error: function () {
+                            noty({
+                                text: "Cannot connect to server!",
+                                layout: "topRight",
+                                type: "error",
+                                timeout: 2000
+                            });
+                        }
+                    });
+                }
+            });
+
+            $("[data-role='btn-confirm-close']").on('click', function () {
+                $.ajax({
+                    url: "/HelpDesk/ManageTicket/CloseTicket",
+                    type: "POST",
+                    data: {
+                        ticketId: closeTicketId
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            noty({
+                                text: data.msg,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
+                            $("#modal-close-ticket").modal("hide");
+                            $('#detail-modal').modal("hide");
+                            ticketTable.draw();
+                        } else {
+                            noty({
+                                text: data.msg,
+                                type: "error",
+                                layout: "topRight",
+                                timeout: 2000
+                            });
+                            $("#modal-close-ticket").modal("hide");
+                            $('#detail-modal').modal("hide");
+                            ticketTable.draw();
+                        }
+                    },
+                    error: function () {
+                        noty({
+                            text: "Cannot connect to server!",
+                            type: "error",
+                            layout: "topCenter",
+                            timeout: 2000
+                        });
+                        $("#modal-cancel-ticket").modal("hide");
+                        $('#detail-modal').modal("hide");
+                    }
+                });
             });
         });

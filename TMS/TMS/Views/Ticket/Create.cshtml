@@ -17,43 +17,49 @@
     }
 
     input, textarea, select {
-        max-width: 674px;
+        max-width: 800px;
     }
 
     .required {
         color: #ff0000;
+    }
+    .button {
+        margin-left: 10px;
+        width: 30%;
+        min-width: 50px;
+        max-width: 100px;
     }
 </style>
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-solid">
-            @using (Html.BeginForm("Create", "Ticket", FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
+            @using (Html.BeginForm("Create", "Ticket", FormMethod.Post, new { @id = "create-ticket-form", @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
                 <div class="form-group">
                     <label class="control-label col-md-2"><span class="required">*</span> Subject</label>
-                    <div class="col-md-10">
+                    <div class="col-md-8">
                         @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", id = "subject" })
                         @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="form-group" id="description">
                     <label class="control-label col-md-2">Description</label>
-                    <div class="col-md-10">
+                    <div class="col-md-8">
                         @Html.TextAreaFor(m => m.Description, new { @class = "form-control", id = "description", rows = "10" })
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-md-2">Attach file</label>
-                    <div class="col-md-10">
-                        <input type="file" name="uploadFiles" multiple class="form-control" placeholder="Drop file here" />
+                    <div class="col-md-8">
+                        <input type="file" id="upFile" name="uploadFiles" multiple class="form-control" placeholder="Drop file here" />
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" id="saveBtn" value="Save" class="btn btn-primary btn-flat" />
-                        <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
+                    <div class="col-md-offset-2 col-md-8" style="text-align: center" >
+                        <input type="button" id="saveBtn" value="Save" class="btn btn-primary btn-flat button" />
+                        <a class="btn btn-default btn-flat button" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
                     </div>
                 </div>
             }
@@ -62,7 +68,46 @@
 </div>
 @section scripts{
     <script>
-
+        $("#saveBtn").on("click", function () {
+            var formData = new FormData($('#create-ticket-form')[0]);
+            $.ajax({
+                "url": "/Ticket/Create/",
+                "method": "POST",
+                "data": formData,
+                success: function (data) {
+                    if (!data.success) {
+                        noty({
+                            text: data.msg,
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2500
+                        });
+                    }
+                    else {
+                        noty({
+                            text: data.msg,
+                            layout: "topRight",
+                            type: "success",
+                            timeout: 2500
+                        });
+                        setTimeout(function () {
+                            window.location.href = "/Ticket/Index";
+                        }, 1000);
+                    }
+                },
+                contentType: false,
+                processData: false,
+                enctype: 'multipart/form-data',
+                "error": function (e) {
+                    noty({
+                        text: "Some error occured! Please try again!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2500
+                    });
+                }
+            });
+        });
     </script>
 }
 

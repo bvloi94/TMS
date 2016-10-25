@@ -21,5 +21,38 @@ namespace TMS.Services
         {
             return _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactId && m.UrgencyID == urgencyId).FirstOrDefault();
         }
+
+        public IEnumerable<PriorityMatrixItem> GetPriorityMatrixItems()
+        {
+            return _unitOfWork.PriorityMatrixItemRepository.Get();
+        }
+
+        public void ChangePriorityMatrixItem(int impactID, int urgencyID, int? priorityID)
+        {
+            try
+            {
+                PriorityMatrixItem entity = _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactID && m.UrgencyID == urgencyID).FirstOrDefault();
+                if (entity != null)
+                {
+                    entity.PriorityID = priorityID;
+                    _unitOfWork.PriorityMatrixItemRepository.Update(entity);
+                }
+                else
+                {
+                    entity = new PriorityMatrixItem
+                    {
+                        ImpactID = impactID,
+                        UrgencyID = urgencyID,
+                        PriorityID = priorityID
+                    };
+                    _unitOfWork.PriorityMatrixItemRepository.Insert(entity);
+                }
+                _unitOfWork.Save();
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

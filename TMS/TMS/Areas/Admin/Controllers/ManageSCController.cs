@@ -295,10 +295,27 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetPriorityMatrixTable()
+        {
+            ViewBag.priorityList = new SelectList(_priorityService.GetAll(), "ID", "Name"); 
+            ViewBag.impactList = _impactService.GetAll();
+            ViewBag.urgencyList = _urgencyService.GetAll();
+            return PartialView("_PriorityMatrixTable");
+        }
+
+        [HttpGet]
         public ActionResult GetPriorityMatrixItems()
         {
-            ViewBag.priorityList = _priorityService.GetAll();
-            return PartialView("_PriorityMatrixTable");
+            var result = _priorityMatrixService.GetPriorityMatrixItems().Select(m => new PriorityMatrixItem
+            {
+                ImpactID = m.ImpactID,
+                UrgencyID = m.UrgencyID,
+                PriorityID = m.PriorityID
+            }).ToArray();
+            return Json(new
+            {
+                data = result
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -1213,5 +1230,40 @@ namespace TMS.Areas.Admin.Controllers
                 }
             }
         }
+
+        [HttpPost]
+        public ActionResult ChangePriorityMatrixItem(PriorityMatrixItemViewModel model)
+        {
+            if (model.ImpactID.HasValue && model.UrgencyID.HasValue)
+            {
+                try
+                {
+                    _priorityMatrixService.ChangePriorityMatrixItem(model.ImpactID.Value, model.UrgencyID.Value, model.PriorityID);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Change priority matrix item successfully!"
+                    });
+                }
+                catch (Exception e)
+                {
+                    log.Error("Change priority matrix item error", e);
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Some error occured! Please try again later!"
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Change priority matrix item unsuccessfully!"
+                });
+            }
+        }
+        
     }
 }

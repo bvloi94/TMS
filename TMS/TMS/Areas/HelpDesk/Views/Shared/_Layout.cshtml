@@ -7,7 +7,6 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
     @Styles.Render("~/Content/datatables")
 
 </head>
@@ -158,20 +157,21 @@
                             <span>REPORT</span>
                         </a>
                     </li>
-                    </li>
                 </ul>
             <!-- /.sidebar -->
         </aside>
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
-            @*<section class="content-header">
-                <h1>
-                    @ViewBag.Title
-                </h1>
-            </section>*@
+            <section class="content-header">
+                <div class="box box-solid bg-blue big-title">
+                    <div class="box-header">
+                        <h3>@ViewBag.Title</h3>
+                    </div>
+                </div>
+            </section>
             <!-- Main content -->
-            <section class="content">
+            <section class="content clearfix">
                 @RenderBody()
             </section>
             <!-- /.content -->
@@ -187,6 +187,7 @@
     </div>
 <!-- ./wrapper -->
     @RenderSection("InitModal", false)
+    @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")

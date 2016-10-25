@@ -100,6 +100,7 @@ namespace TMS.Controllers
                             case "helpdesk":
                                 return RedirectToAction("Index", "ManageTicket", new { area = "HelpDesk" });
                             case "requester":
+                                return RedirectToAction("Index", "Home");
                             default:
                                 return RedirectToLocal(returnUrl);
                         }

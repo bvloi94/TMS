@@ -126,5 +126,26 @@ namespace TMS.Services
             }
             return list;
         }
+
+        public string GetCategoryPath(Category category)
+        {
+            if (category == null)
+            {
+                return "-";
+            }
+            else
+            {
+                string path = "";
+                path = category.Name;
+
+                while (category.ParentID != null)
+                {
+                    category = GetCategoryById(category.ParentID.Value);
+                    path = category.Name + " > " + path;
+                }
+
+                return path;
+            }
+        }
     }
 }

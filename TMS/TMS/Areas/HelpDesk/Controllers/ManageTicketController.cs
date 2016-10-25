@@ -18,9 +18,12 @@ using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
 using ModelError = TMS.ViewModels.ModelError;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
+    [CustomAuthorize(Roles = "Helpdesk")]
     public class ManageTicketController : Controller
     {
 
@@ -51,7 +54,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
         }
 
-        // GET: HelpDesk/ManageTicket
         public ActionResult Index()
         {
             //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
@@ -79,10 +81,9 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View();
         }
 
-        [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddNewTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
+        public ActionResult AddNewTicket(TicketViewModel model)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -204,13 +205,13 @@ namespace TMS.Areas.HelpDesk.Controllers
             try
             {
                 _ticketService.AddTicket(ticket);
-                if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
+                if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                    _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
                 }
-                if (solutionFiles.ToList()[0] != null && solutionFiles.ToList().Count > 0)
+                if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, solutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                    _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
                 }
             }
             catch (DbUpdateException ex)
@@ -236,7 +237,9 @@ namespace TMS.Areas.HelpDesk.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Ticket ticket = _ticketService.GetTicketByID((int)id);
-            if (ticket == null)
+            if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled
+                || ticket.Status == ConstantUtil.TicketStatus.Closed
+                || ticket.Status == ConstantUtil.TicketStatus.Unapproved)
             {
                 return HttpNotFound();
             }
@@ -252,6 +255,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.RequesterId = ticket.RequesterID;
                 model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
             }
+            model.Mode = ticket.Mode;
             if (ticket.Type != null) model.Type = (int)ticket.Type;
             if (ticket.Status != null)
             {
@@ -334,10 +338,9 @@ namespace TMS.Areas.HelpDesk.Controllers
             return View(model);
         }
 
-        [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateTicket(TicketViewModel model, IEnumerable<HttpPostedFileBase> descriptionFiles, IEnumerable<HttpPostedFileBase> solutionFiles)
+        public ActionResult UpdateTicket(TicketViewModel model)
         {
             ModelErrorViewModel errs = null;
             errs = new ModelErrorViewModel();
@@ -444,16 +447,18 @@ namespace TMS.Areas.HelpDesk.Controllers
             if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
             else ticket.CategoryID = null;
 
-            if (!string.IsNullOrEmpty(model.TechnicianId))
+            if (ticket.TechnicianID != model.TechnicianId)
             {
-                if (ticket.TechnicianID != model.TechnicianId)
+                ticket.TechnicianID = model.TechnicianId;
+                ticket.AssignedByID = User.Identity.GetUserId();
+                if ((ticket.Status == ConstantUtil.TicketStatus.New ||
+                    ticket.Status == ConstantUtil.TicketStatus.Unapproved) && model.TechnicianId != null)
                 {
-                    ticket.TechnicianID = model.TechnicianId;
-                    ticket.AssignedByID = User.Identity.GetUserId();
-                    if (ticket.Status == (int?)TicketStatusEnum.New || ticket.Status == (int?)TicketStatusEnum.Unapproved)
-                    {
-                        ticket.Status = (int?)TicketStatusEnum.Assigned;
-                    }
+                    ticket.Status = ConstantUtil.TicketStatus.Assigned;
+                }
+                else if (ticket.Status == ConstantUtil.TicketStatus.Assigned && model.TechnicianId == null)
+                {
+                    ticket.Status = ConstantUtil.TicketStatus.New;
                 }
             }
 
@@ -494,13 +499,13 @@ namespace TMS.Areas.HelpDesk.Controllers
             try
             {
                 _ticketService.UpdateTicket(ticket);
-                if (descriptionFiles.ToList()[0] != null && descriptionFiles.ToList().Count > 0)
+                if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, descriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                    _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
                 }
-                if (solutionFiles.ToList()[0] != null && solutionFiles.ToList().Count > 0)
+                if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, solutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                    _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
                 }
             }
             catch (DbUpdateException ex)
@@ -519,39 +524,122 @@ namespace TMS.Areas.HelpDesk.Controllers
             });
         }
 
+        [HttpPost]
         public ActionResult CancelTicket(int? ticketId)
         {
-            int result = _ticketService.CancelTicket(ticketId);
-            switch (result)
+            if (ticketId.HasValue)
             {
-                case 1: //success
-                    return Json(new
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
                     {
-                        success = true,
-                        msg = "Ticket was cancelled successfully!"
-                    });
-                case 2: //unavailable ticket
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Ticket cannot be cancelled!"
+                        });
+                    }
+                    try
+                    {
+                        int? status = ticket.Status;
+                        _ticketService.CancelTicket(ticket);
+                        if (status == ConstantUtil.TicketStatus.Assigned)
+                        {
+                            AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                            Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(ticket, technician));
+                            thread.Start();
+                        }
+                        return Json(new
+                        {
+                            success = true,
+                            msg = "Ticket was cancelled successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Cancel ticket error", e);
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Some error occured! Please try again later!"
+                        });
+                    }
+                }
+                else
+                {
                     return Json(new
                     {
                         success = false,
-                        msg = "This ticket is unvailable"
+                        msg = "This ticket is unavailable"
                     });
-                case 3: //wrong ticket status
-                    return Json(new
-                    {
-                        success = false,
-                        msg = "This ticket cannot be cancelled!"
-                    });
-                case 4: //error
-                default:
-                    return Json(new
-                    {
-                        success = false,
-                        msg = "Some error occured! Please try again later!"
-                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "This ticket is unavailable"
+                });
             }
         }
 
+        [HttpPost]
+        public ActionResult CloseTicket(int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    if (ticket.Status != ConstantUtil.TicketStatus.Unapproved)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Ticket cannot be closed!"
+                        });
+                    }
+                    try
+                    {
+                        _ticketService.CloseTicket(ticket);
+                        return Json(new
+                        {
+                            success = true,
+                            msg = "Ticket was closed successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Close ticket error", e);
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Some error occured! Please try again later!"
+                        });
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        msg = "This ticket is unavailable"
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "This ticket is unavailable"
+                });
+            }
+        }
+
+        [HttpPost]
         public ActionResult MergeTicket(int[] selectedTickets)
         {
             if (selectedTickets.Length < 2)
@@ -577,43 +665,54 @@ namespace TMS.Areas.HelpDesk.Controllers
                             msg = "Merging tickets must have the same requester!"
                         });
                     }
-                    if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
-                    {
-                        return Json(new
-                        {
-                            success = false,
-                            msg = "There are some tickets which cannot be merged! \nOnly New or Assigned tickets can be merged!"
-                        });
-                    }
                     requesterId = ticket.RequesterID;
                     tickets.Add(ticket);
                 }
             }
             try
             {
-                tickets.Sort((x, y) => DateTime.Compare((DateTime)x.CreatedTime, (DateTime)y.CreatedTime));
+                tickets.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));
                 Ticket newTicket = tickets[0];
+                for (int i = 1; i < tickets.Count; i++)
+                {
+                    Ticket oldTicket = tickets[i];
+                    if (oldTicket.Status != ConstantUtil.TicketStatus.New && oldTicket.Status != ConstantUtil.TicketStatus.Assigned)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "There are some children tickets which cannot be merged! \nOnly New or Assigned children tickets can be merged!"
+                        });
+                    }
+                }
                 for (int i = 1; i < tickets.Count; i++)
                 {
                     Ticket oldTicket = tickets[i];
                     if (!string.IsNullOrWhiteSpace(newTicket.Description))
                     {
-                        newTicket.Description += "\n" + oldTicket.Description;
+                        newTicket.Description += "\n\n[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
                     }
                     else
                     {
-                        newTicket.Description = oldTicket.Description;
+                        newTicket.Description = "[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
                     }
                     oldTicket.ModifiedTime = DateTime.Now;
-                    oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
+                    int? status = oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
                     _ticketService.UpdateTicket(oldTicket);
+                    if (status == ConstantUtil.TicketStatus.Assigned)
+                    {
+                        AspNetUser technician = _userService.GetUserById(oldTicket.TechnicianID);
+                        Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(oldTicket, technician));
+                        thread.Start();
+                    }
                 }
                 newTicket.ModifiedTime = DateTime.Now;
                 _ticketService.UpdateTicket(newTicket);
 
                 return Json(new
                 {
-                    success = true
+                    success = true,
+                    msg = string.Format("Tickets were merged into ticket #{0}!", newTicket.Code)
                 });
             }
             catch
@@ -652,10 +751,13 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     filteredListItems = filteredListItems.Where(p => p.Status == statusNo);
                 }
+                else
+                {
+                    //Hide Canceled and Closed Tickets
+                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Canceled);
+                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Closed);
+                }
             }
-
-            //Hide Canceled Tickets
-            filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Canceled);
 
             if (!string.IsNullOrEmpty(search_text))
             {
@@ -672,6 +774,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Subject)
                         : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+                case 2:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => _userService.GetUserById(p.RequesterID).Fullname)
+                        : filteredListItems.OrderByDescending(p => _userService.GetUserById(p.RequesterID).Fullname);
                     break;
                 case 5:
                     filteredListItems = sortDirection == "asc"
@@ -845,6 +952,119 @@ namespace TMS.Areas.HelpDesk.Controllers
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = requesters;
             return Json(rsModel, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetTicketDetailForReassign(int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                    if (technician != null)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            technicianId = ticket.TechnicianID,
+                            technician = technician.Fullname,
+                            departmentId = technician.DepartmentID,
+                            department = technician.Department.Name
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            technicianId = "",
+                            technician = "",
+                            departmentId = "",
+                            department = ""
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = "This ticket is unavailable"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult Reassign(string technicianId, int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                AspNetUser technician = _userService.GetActiveUserById(technicianId);
+                if (technician != null)
+                {
+                    Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                    if (ticket != null)
+                    {
+                        if (ticket.Status == ConstantUtil.TicketStatus.Unapproved)
+                        {
+                            try
+                            {
+                                ticket.TechnicianID = technicianId;
+                                ticket.Status = ConstantUtil.TicketStatus.Assigned;
+                                ticket.ModifiedTime = DateTime.Now;
+                                _ticketService.UpdateTicket(ticket);
+                                Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenAssignTicket(ticket, technician));
+                                thread.Start();
+                                return Json(new
+                                {
+                                    success = true,
+                                    message = "Ticket was reassigned successfully!"
+                                });
+                            }
+                            catch
+                            {
+                                return Json(new
+                                {
+                                    success = false,
+                                    message = ConstantUtil.CommonError.DBExceptionError
+                                });
+                            }
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = ConstantUtil.CommonError.InvalidTicket
+                            });
+                        }
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.UnavailableTicket
+                        });
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.UnavailableTechnician
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.UnavailableTicket
+                });
+            }
         }
 
         protected override void Dispose(bool disposing)
