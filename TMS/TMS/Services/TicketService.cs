@@ -61,6 +61,11 @@ namespace TMS.Services
             return handlingTicket;
         }
 
+        public IEnumerable<Ticket> GetSolvedTickets()
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.Status == ConstantUtil.TicketStatus.Solved);
+        }
+
         private bool IsSatisfiedWithMultipleConditions(Ticket handlingTicket, ICollection<BusinessRuleConditionCustom> businessRuleConditionCustomList)
         {
             int highestLevel = businessRuleConditionCustomList.Aggregate((i1, i2) => i1.BusinessRuleCondition.BusinessRuleConditionLevel > i2.BusinessRuleCondition.BusinessRuleConditionLevel ? i1 : i2).BusinessRuleCondition.BusinessRuleConditionLevel.Value;
@@ -430,6 +435,12 @@ namespace TMS.Services
             {
                 throw;
             }
+        }
+
+        public IEnumerable<Ticket> GetPendingTickets()
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.Status != ConstantUtil.TicketStatus.Cancelled
+                && m.Status != ConstantUtil.TicketStatus.Closed);
         }
     }
 }

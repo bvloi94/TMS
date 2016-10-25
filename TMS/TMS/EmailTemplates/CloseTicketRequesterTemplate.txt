@@ -4,5 +4,6 @@
 <p>Ticket #$code information:</p>
 <p><strong>Subject</strong>: $subject</p>
 <p><strong>Description</strong>: $description</p>
-<p>has been cancelled.</p>
+<p>has been closed.</p>
+<p>For more information, please login into www.tms.com.</p>
 </div>

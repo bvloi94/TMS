@@ -58,7 +58,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$fullname", technician.Fullname);
             emailMessage = emailMessage.Replace("$code", ticket.Code);
             emailMessage = emailMessage.Replace("$subject", ticket.Subject);
-            emailMessage = emailMessage.Replace("$description", ticket.Description.Replace(Environment.NewLine, "<br />"));
+            emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
             try
             {
                 SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
@@ -66,6 +66,64 @@ namespace TMS.Utils
             catch
             {
                 log.Warn(string.Format("Send cancel ticket notification email to {0} unsuccessfully!", technician.Fullname));
+            }
+        }
+
+        public static void SendToTechnicianWhenAssignTicket(Ticket ticket, AspNetUser technician)
+        {
+            string emailSubject = "[TMS] Assign Ticket Notification";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/AssignTicketTechnicianTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", technician.Fullname);
+            emailMessage = emailMessage.Replace("$code", ticket.Code);
+            emailMessage = emailMessage.Replace("$subject", ticket.Subject);
+            emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
+            emailMessage = emailMessage.Replace("$scheduleStartDate", (ticket.ScheduleStartDate == null) ? "-" : ticket.ScheduleStartDate.ToString());
+            emailMessage = emailMessage.Replace("$scheduleEndDate", (ticket.ScheduleEndDate == null) ? "-" : ticket.ScheduleEndDate.ToString());
+            try
+            {
+                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send assign ticket notification email to {0} unsuccessfully!", technician.Fullname));
+            }
+        }
+
+        public static void SendToHelpdesksWhenTicketIsOverdue(Ticket ticket, IEnumerable<AspNetUser> helpdesks)
+        {
+            string emailSubject = "[TMS] Overdue Ticket Notification";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/OverdueTicketHelpdeskTemplate.txt"));
+            foreach (AspNetUser helpdesk in helpdesks)
+            {
+                emailMessage = emailMessage.Replace("$fullname", helpdesk.Fullname);
+                emailMessage = emailMessage.Replace("$code", ticket.Code);
+                emailMessage = emailMessage.Replace("$delayDay", ((int)(DateTime.Now - ticket.ScheduleEndDate).Value.TotalDays).ToString());
+                try
+                {
+                    SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                }
+                catch
+                {
+                    log.Warn(string.Format("Send overdue ticket notification email to {0} unsuccessfully!", helpdesk.Fullname));
+                }
+            }
+        }
+
+        public static void SendToRequesterWhenCloseTicket(Ticket ticket, AspNetUser requester)
+        {
+            string emailSubject = "[TMS] Closed Ticket Notification";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CloseTicketRequesterTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", requester.Fullname);
+            emailMessage = emailMessage.Replace("$code", ticket.Code);
+            emailMessage = emailMessage.Replace("$subject", ticket.Subject);
+            emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
+            try
+            {
+                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send closed ticket notification email to {0} unsuccessfully!", requester.Fullname));
             }
         }
 

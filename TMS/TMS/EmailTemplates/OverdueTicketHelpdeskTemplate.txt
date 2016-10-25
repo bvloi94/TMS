@@ -1,0 +1,6 @@
+﻿<div>
+<p>Dear $fullname,</p>
+<br />
+<p>Ticket #$code is overdued for $delayDay day(s)</p>
+<p>Please check this ticket as soon as possible.</p>
+</div>

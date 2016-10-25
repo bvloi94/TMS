@@ -417,7 +417,7 @@ $(document)
                             "success": function (data) {
                                 if (data.success) {
                                     noty({
-                                        text: "Ticket was merged!",
+                                        text: data.msg,
                                         type: "success",
                                         layout: "topCenter",
                                         timeout: 2000
@@ -489,7 +489,7 @@ $(document)
                         } else {
                             noty({
                                 text: data.message,
-                                layout: "topCenter",
+                                layout: "topRight",
                                 type: "error",
                                 timeout: 2000
                             });
@@ -498,14 +498,68 @@ $(document)
                     error: function () {
                         noty({
                             text: "Cannot connect to server!",
-                            layout: "topCenter",
+                            layout: "topRight",
                             type: "error",
                             timeout: 2000
                         });
                     }
                 });
+                $("#reassign-validation-message").hide();
                 $("#modal-reassign-ticket").css("z-index", "1100");
                 $("#modal-reassign-ticket").modal("show");
+            });
+
+            $("[data-role='ddl-department']").on("change", function () {
+                $("[data-role='ddl-technician']").select2("val", "");
+            });
+
+            $("[data-role='btn-confirm-reassign']").click(function () {
+                var technicianId = $("#technician-select").val();
+                if (technicianId == null || technicianId.trim() == "") {
+                    $("#reassign-validation-message").html("Please select technician!");
+                    $("#reassign-validation-message").show();
+                } else {
+                    $.ajax({
+                        url: "/HelpDesk/ManageTicket/Reassign",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            technicianId: technicianId,
+                            ticketId: reassignTicketId
+                        },
+                        success: function (data) {
+                            if (data.success) {
+                                noty({
+                                    text: data.message,
+                                    layout: "topCenter",
+                                    type: "success",
+                                    timeout: 2000
+                                });
+                                $("#modal-reassign-ticket").modal("hide");
+                                $("#detail-modal").modal("hide");
+                                ticketTable.draw();
+                            } else {
+                                noty({
+                                    text: data.message,
+                                    layout: "topRight",
+                                    type: "error",
+                                    timeout: 2000
+                                });
+                                $("#modal-reassign-ticket").modal("hide");
+                                $("#detail-modal").modal("hide");
+                                ticketTable.draw();
+                            }
+                        },
+                        error: function () {
+                            noty({
+                                text: "Cannot connect to server!",
+                                layout: "topRight",
+                                type: "error",
+                                timeout: 2000
+                            });
+                        }
+                    });
+                }
             });
 
             $("[data-role='btn-confirm-close']").on('click', function () {

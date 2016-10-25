@@ -132,7 +132,7 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <div id="modal-reassign-ticket" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div id="modal-reassign-ticket" class="modal fade" aria-hidden="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -146,20 +146,23 @@
                         <div class="form-group">
                             <label class="control-label col-md-3">Department</label>
                             <div class="col-md-9">
-                                <select class="form-control" name="DepartmentId" data-role="ddl-department"></select>
+                                <select class="form-control" id="department-select" data-role="ddl-department"></select>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label col-md-3">Technician</label>
                             <div class="col-md-9">
-                                <select class="form-control" name="TechnicianId" data-role="ddl-technician"></select>
+                                <select class="form-control" id="technician-select" data-role="ddl-technician"></select>
                             </div>
+                        </div>
+                        <div>
+                            <span id="reassign-validation-message" class="col-md-offset-3 col-md-9 text-danger" style="display: none"></span>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-role="btn-confirm-close"><i class="fa fa-check" aria-hidden="true"></i> Yes</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> No</button>
+                    <button type="button" class="btn btn-primary" data-role="btn-confirm-reassign"><i class="fa fa-check" aria-hidden="true"></i> Reassign</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
                 </div>
             </div>
             <!-- /.modal-content -->

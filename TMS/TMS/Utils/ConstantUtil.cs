@@ -110,5 +110,12 @@ namespace TMS.Utils
             public const bool Solution = false;
         }
 
+        public class CommonError
+        {
+            public const string DBExceptionError = "Some error occured! Please try again later!";
+            public const string UnavailableTicket = "This ticket is not available!";
+            public const string UnavailableTechnician = "This technician is not available!";
+            public const string InvalidTicket = "This ticket is invalid!";
+        }
     }
 }

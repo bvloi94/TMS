@@ -207,7 +207,7 @@
             var id = $("#ticketId").val();
             var fb = $("#feedback").val();
             $.ajax({
-                url: "/Ticket/ApproveTicket/",
+                url: "/Ticket/ApproveTicket",
                 dataType: "json",
                 type: "POST",
                 data: {
@@ -231,10 +231,9 @@
                             type: "success",
                             timeout: 2000
                         });
-                        $('#approve-ticket').hide(1000);
+                        window.location.href = "/Ticket/Detail/" + id;
                     }
                 },
-                processData: false,
                 error: function (data) {
                     noty({
                         text: "Some error occured! Please try again later!",

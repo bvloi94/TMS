@@ -304,6 +304,8 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Schedulers\CheckToCloseTicketJob.cs" />
+    <Compile Include="Schedulers\CheckOverdueTicketJob.cs" />
     <Compile Include="Services\PriorityMatrixService.cs" />
     <Compile Include="Services\TicketAttachmentService.cs" />
     <Compile Include="Services\CategoryService.cs" />
@@ -470,6 +472,9 @@
     <Content Include="Content\skins\_all-skins.css" />
     <Content Include="Content\skins\_all-skins.min.css" />
     <Content Include="Content\login.css" />
+    <Content Include="EmailTemplates\CloseTicketRequesterTemplate.txt" />
+    <Content Include="EmailTemplates\AssignTicketTechnicianTemplate.txt" />
+    <Content Include="EmailTemplates\OverdueTicketHelpdeskTemplate.txt" />
     <Content Include="EmailTemplates\CancelTicketTechnicianTemplate.txt" />
     <Content Include="EmailTemplates\CreateRequesterEmailTemplate.txt" />
     <Content Include="favicon.ico" />

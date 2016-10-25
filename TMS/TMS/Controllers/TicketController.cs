@@ -256,7 +256,7 @@ namespace TMS.Controllers
         //}
 
         // Requester View Ticket
-        [Utils.Authorize(Roles = "Requester")]
+        [CustomAuthorize(Roles = "Requester")]
         [HttpGet]
         public ActionResult Detail(int id)
         {
@@ -455,6 +455,10 @@ namespace TMS.Controllers
         public ActionResult Solve(int id)
         {
             Ticket ticket = _ticketService.GetTicketByID(id);
+            if (ticket == null)
+            {
+                return HttpNotFound();
+            }
             AspNetRole userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
 
             if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
@@ -472,7 +476,7 @@ namespace TMS.Controllers
                     ticket.Status != ConstantUtil.TicketStatus.New &&
                     ticket.Status != ConstantUtil.TicketStatus.Unapproved)
                 {
-                    return RedirectToAction("Index", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.
+                    return RedirectToAction("Index", "ManageTicket", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.
                 }
             }
             // Get Ticket information
@@ -615,7 +619,7 @@ namespace TMS.Controllers
             return View(model);
         }
 
-        [Utils.Authorize(Roles = "Technician, Helpdesk")]
+        [CustomAuthorize(Roles = "Helpdesk,Technician")]
         [HttpPost]
         public ActionResult SolveTicket(int id, string solution, string command)
         {
@@ -673,40 +677,40 @@ namespace TMS.Controllers
             });
         }
 
-        
         [HttpPost]
-        public ActionResult ApproveTicket(int id, string feedback, string command)
+        public ActionResult ApproveTicket(int? id, string feedback, string command)
         {
-            Ticket ticket = _ticketService.GetTicketByID(id);
-            if (ticket == null)
+            if (id.HasValue)
             {
-                //return HttpNotFound();
-                return Json(new
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
                 {
-                    success = false,
-                    error = true,
-                    msg = "Cannot find ticket!"
-                });
-            }
+                    switch (command)
+                    {
+                        case "Yes":
+                            ticket.Status = ConstantUtil.TicketStatus.Closed;
+                            _ticketService.UpdateTicket(ticket);
+                            break;
+                        case "No":
+                            ticket.Status = ConstantUtil.TicketStatus.Unapproved;
+                            ticket.UnapproveReason = feedback;
+                            _ticketService.UpdateTicket(ticket);
+                            break;
+                    }
 
-            switch (command)
-            {
-                case "Yes":
-                    ticket.Status = ConstantUtil.TicketStatus.Closed;
-                    _ticketService.UpdateTicket(ticket);
-                    break;
-                case "No":
-                    ticket.Status = ConstantUtil.TicketStatus.Unapproved;
-                    ticket.UnapproveReason = feedback;
-                    _ticketService.UpdateTicket(ticket);
-                    break;
+                    return Json(new
+                    {
+                        success = true,
+                        msg = "Thank you for your feedback!"
+                    });
+                }
             }
-
             return Json(new
             {
-                success = true,
-                msg = "Thank you for your feedback!"
-            }, JsonRequestBehavior.AllowGet);
+                success = false,
+                error = true,
+                msg = "This ticket is unavailable!"
+            });
         }
 
         protected override void Dispose(bool disposing)
