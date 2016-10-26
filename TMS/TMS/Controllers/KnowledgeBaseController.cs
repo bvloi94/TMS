@@ -17,7 +17,6 @@ namespace TMS.Controllers
         private TicketService _ticketService;
         private UserService _userService;
         private SolutionService _solutionServices;
-        private SolutionAttachmentService _SolutionAttachmentService;
         private FileUploader _fileUploader;
 
         public KnowledgeBaseController()
@@ -25,7 +24,6 @@ namespace TMS.Controllers
             _ticketService = new TicketService(_unitOfWork);
             _userService = new UserService(_unitOfWork);
             _solutionServices = new SolutionService(_unitOfWork);
-            _SolutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
             _fileUploader = new FileUploader();
         }
 
@@ -63,7 +61,7 @@ namespace TMS.Controllers
                         solution.SolutionAttachments.Add(attachment);
                     }
                 }
-                
+
 
                 try
                 {
@@ -76,6 +74,30 @@ namespace TMS.Controllers
                 }
             }
             return View(model);
+        }
+
+        [HttpGet]
+        public ActionResult GetSolutionsByCategory(int? id)
+        {
+            List<KnowledgeBaseViewModels> modelList;
+            var solutionList = _solutionServices.GetSolutionsByCategory(id.Value).ToList();
+
+            if (id.HasValue)
+            {
+
+                return Json(new
+                {
+                    success = true,
+                    solutionList = solutionList
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            return Json(new
+            {
+                success = false,
+                error = true,
+                msg = "There is nothing to show!"
+            });
         }
     }
 }

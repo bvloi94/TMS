@@ -155,7 +155,7 @@
         <div class="left-menu col-md-2">
             <div class="menu-collapse">
                 <div class="header"><h5>Topic</h5></div>
-                <a class="menu-item" id="alltopic" href="#">All topics</a>
+                <a class="menu-item" id="0" href="#">All topics</a>
                 <a class="menu-item" id="general" href="#">General</a>
                 <a class="menu-item" href="#">Hardware</a>
                 <div class="menu-list">
@@ -365,7 +365,7 @@ After making a change, click the ‘Update’ button to save the changes in the 
 </div>
 @section scripts{
     <script>
-        jQuery(document).ready(function () {
+        $(document).ready(function () {
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -410,6 +410,28 @@ After making a change, click the ‘Update’ button to save the changes in the 
                 }
             });
             $('#create-solution-form textarea').wysihtml5();
+        });
+
+        $("#0").click(function () {
+            $.ajax({
+                url: '/KnowledgeBase/GetSolutionsByCategory/',
+                type: "POST",
+                data: {
+                    id: 2
+                },
+                success: function (data) {
+                    $("#question-title").empty();
+                    $("#question-title").append(data.solutionList.subject[0]);
+                },
+                error: function (data) {
+                noty({
+                    text: "Cannot connect to server! Please try again later!",
+                    type: "error",
+                    layout: "topRight",
+                    timeout: 2500
+                });
+            }
+            });
         });
     </script>
 }
