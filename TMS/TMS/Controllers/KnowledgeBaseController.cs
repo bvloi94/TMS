@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -17,7 +19,6 @@ namespace TMS.Controllers
         private TicketService _ticketService;
         private UserService _userService;
         private SolutionService _solutionServices;
-        private SolutionAttachmentService _SolutionAttachmentService;
         private FileUploader _fileUploader;
 
         public KnowledgeBaseController()
@@ -25,7 +26,6 @@ namespace TMS.Controllers
             _ticketService = new TicketService(_unitOfWork);
             _userService = new UserService(_unitOfWork);
             _solutionServices = new SolutionService(_unitOfWork);
-            _SolutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
             _fileUploader = new FileUploader();
         }
 
@@ -36,22 +36,57 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult CreateKB()
+        public ActionResult Create()
         {
             return View();
         }
 
+        [HttpGet]
+        public ActionResult Edit(int? id)
+        {
+            if (id.HasValue)
+            {
+                Solution solution = _solutionServices.GetSolutionById(id.Value);
+                if (solution != null)
+                {
+                    KnowledgeBaseViewModels model = new KnowledgeBaseViewModels();
+                    model.Subject = solution.Subject;
+                    model.Content = solution.ContentText;
+                    model.CategoryID = solution.CategoryID.Value;
+
+                    ViewBag.ID = solution.ID;
+                    ViewBag.SolutionAttachments = solution.SolutionAttachments;
+
+                    return View(model);
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+            else
+            {
+                return HttpNotFound();
+            }
+        }
+
+
         //   [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateKB(KnowledgeBaseViewModels model)
+        public ActionResult Create(KnowledgeBaseViewModels model)
         {
+            bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(null, (model.Subject == null ? null : model.Subject.Trim()));
+            if (isDuplicateSubject)
+            {
+                ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", model.Subject));
+            }
             if (ModelState.IsValid)
             {
                 Solution solution = new Solution();
                 solution.Subject = model.Subject.Trim();
                 solution.ContentText = model.Content;
-
+                solution.CategoryID = model.CategoryID;
                 string containFolder = "Attachments";
                 if (model.SolutionAttachments != null && model.SolutionAttachments.ToList()[0] != null && model.SolutionAttachments.ToList().Count > 0)
                 {
@@ -63,7 +98,6 @@ namespace TMS.Controllers
                         solution.SolutionAttachments.Add(attachment);
                     }
                 }
-                
 
                 try
                 {
@@ -72,10 +106,74 @@ namespace TMS.Controllers
                 }
                 catch
                 {
+                    // Loi chua lam 
                     return View(model);
                 }
             }
             return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(int? id, KnowledgeBaseViewModels model)
+        {
+            if (id.HasValue)
+            {
+                bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(id, (model.Subject == null ? null : model.Subject.Trim()));
+                if (isDuplicateSubject)
+                {
+                    ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", model.Subject));
+                }
+
+                Solution solution = _solutionServices.GetSolutionById(id.Value);
+
+                if (solution != null)
+                {
+                    if (ModelState.IsValid)
+                    {
+
+                        solution.Subject = model.Subject;
+                        solution.ContentText = model.Content;
+                        solution.CategoryID = model.CategoryID;
+
+                        string containFolder = "Attachments";
+                        if (model.SolutionAttachments != null && model.SolutionAttachments.ToList()[0] != null &&
+                            model.SolutionAttachments.ToList().Count > 0)
+                        {
+                            foreach (HttpPostedFileBase file in model.SolutionAttachments)
+                            {
+                                SolutionAttachment attachment = new SolutionAttachment();
+                                attachment.Path = _fileUploader.UploadFile(file, containFolder);
+                                attachment.Filename = file.FileName;
+                                solution.SolutionAttachments.Add(attachment);
+                            }
+                        }
+
+                        try
+                        {
+                            _solutionServices.EditSolution(solution);
+                            return RedirectToAction("Index");
+                        }
+                        catch (Exception e)
+                        {
+                            // Loi chua lam 
+                            return View(model);
+                        }
+
+                    }
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+                ViewBag.ID = solution.ID;
+                ViewBag.SolutionAttachments = solution.SolutionAttachments;
+
+                return View(model);
+            }
+            else
+            {
+                return HttpNotFound();
+            }
         }
     }
 }

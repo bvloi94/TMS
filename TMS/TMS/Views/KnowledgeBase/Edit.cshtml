@@ -1,0 +1,125 @@
+﻿@using TMS.Models
+@using TMS.Utils
+@model TMS.ViewModels.KnowledgeBaseViewModels
+@{
+    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Edit knowledge Base";
+}
+
+
+<style>
+    h4, h5 {
+        color: #345aaa;
+        font-weight: bold;
+    }
+
+    .inputform {
+        padding: 20px;
+    }
+
+    input, textarea, select {
+        max-width: 674px;
+    }
+
+    .required {
+        color: #ff0000;
+    }
+
+    .category-option {
+        font-size: 15px;
+        font-weight: bold;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-solid">
+            @using (Html.BeginForm("Edit", "KnowledgeBase", new { id = ViewBag.ID }, FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label class="control-label col-md-2"><span class="required">*</span> Subject</label>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group" id="description">
+                    <label class="control-label col-md-2">Content</label>
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(m => m.Content, new { @class = "form-control", rows = "10" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Attach file</label>
+                    <div class="col-md-10">
+                        <input type="file" name="SolutionAttachments" multiple class="form-control" placeholder="Drop file here" />
+                        @foreach (SolutionAttachment solutionAttachment in ViewBag.SolutionAttachments)
+                        {
+                            <span>@solutionAttachment.Filename</span>
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Topic</label>
+                    <div class="col-md-10">
+                        <select id="category-dropdown" class="form-control" name="CategoryID"></select>
+                        @Html.ValidationMessageFor(m => m.CategoryID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" id="saveBtn" value="Save" class="btn btn-primary btn-flat" />
+                        <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "KnowledgeBase"))">Cancel</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document)
+         .ready(function () {
+             loadCategoryDropdown();
+         });
+
+        var loadCategoryDropdown = function () {
+            $.ajax({
+                url: "/Dropdown/LoadCategoryDropDown",
+                type: "GET",
+                dataType: "Json",
+                success: function (data) {
+                    console.log(data);
+                    $("#category-dropdown").append("<option value>--Select Topic--</option>");
+
+                    for (i = 0; i < data.length; i++) {
+                        var row = data[i];
+                        if (row.Level == '@ConstantUtil.CategoryLevel.Category') {
+                            var option = "<option value='" + row.ID + "' class='category-option'>" + row.Name + "</option>";
+                        } else if (row.Level == '@ConstantUtil.CategoryLevel.SubCategory') {
+                            var option = "<option value='" + row.ID + "'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + row.Name + "</option>";
+                        } else {
+                            var option = "<option value='" + row.ID + "'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + row.Name + "</option>";
+                        }
+                        $("#category-dropdown").append(option);
+                    }
+                    @if (Model.CategoryID == 0)
+                    {
+                        <text>
+                            $("#category-dropdown").val($("#category-dropdown").first().val());
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            $("#category-dropdown").val(@Model.CategoryID);
+                        </text>
+                    }
+                }
+            });
+        }
+    </script>
+}

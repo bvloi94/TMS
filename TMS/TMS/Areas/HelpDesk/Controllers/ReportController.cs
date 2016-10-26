@@ -104,12 +104,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                 (p.ScheduleEndDate == null) ? "-": ((DateTime) p.ScheduleEndDate).ToString("dd/MM/yyyy"),
                 (p.ActualEndDate == null) ? "-": ((DateTime) p.ActualEndDate).ToString("dd/MM/yyyy"),
                 TMSUtils.ConvertTypeFromInt(p.Type),
+                TMSUtils.ConvertStatusFromInt(p.Status),
                 TMSUtils.ConvertModeFromInt(p.Mode),
                 p.CategoryID == null ? "-" : _categoryService.GetCategoryById((int) p.CategoryID).Name,
                 p.ImpactID == null ? "-" : _impactService.GetImpactById((int)p.ImpactID).Name,
                 p.UrgencyID == null ? "-" : _urgencyService.GetUrgencyByID((int)p.UrgencyID).Name,
                 p.PriorityID == null ? "-" : _priorityService.GetPriorityByID((int) p.PriorityID).Name,
-                TMSUtils.ConvertStatusFromInt(p.Status),
                 p.TechnicianID == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name
                    });
 
@@ -221,7 +221,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                         IEnumerable<Impact> impacts = _impactService.GetAll();
                         //duyet list 
                         IEnumerable<Ticket> impactInTicketList = null;
-                        labels.Add("Unassign");
+                        labels.Add("Unassigned");
                         data.Add(filteredListItems.Where(p => p.Impact == null).Count());
                         foreach (var impact in impacts)
                         {
@@ -240,7 +240,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     {
                         IEnumerable<Urgency> urgencyList = _urgencyService.GetAll();
                         IEnumerable<Ticket> urgencyListInTickets = null;
-                        labels.Add("Unassign");
+                        labels.Add("Unassigned");
                         data.Add(filteredListItems.Where(p => p.Urgency == null).Count());
                         foreach (var urgency in urgencyList)
                         {
@@ -283,7 +283,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     {
                         IEnumerable<AspNetUser> listTechinicians = _userService.GetTechnicians();
                         IEnumerable<Ticket> techinicianInteTickets = new List<Ticket>();
-                        labels.Add("Unassign");
+                        labels.Add("Unassigned");
                         data.Add(filteredListItems.Where(p => p.TechnicianID == null).Count());
                         foreach (var techinician in listTechinicians)
                         {
@@ -307,7 +307,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 case 6:
                     {
                         IEnumerable<Ticket> statusInTickets;
-                        labels.Add("Unassign");
+                        labels.Add("Unassigned");
                         data.Add(filteredListItems.Where(p => p.Status == null).Count());
                         foreach (TicketStatusEnum status in Enum.GetValues(typeof(TicketStatusEnum)))
                         {
