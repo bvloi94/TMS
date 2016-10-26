@@ -307,8 +307,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 case 6:
                     {
                         IEnumerable<Ticket> statusInTickets;
-                        labels.Add("Unassigned");
-                        data.Add(filteredListItems.Where(p => p.Status == null).Count());
                         foreach (TicketStatusEnum status in Enum.GetValues(typeof(TicketStatusEnum)))
                         {
                             labels.Add(status.ToString());

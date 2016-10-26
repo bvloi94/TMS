@@ -137,197 +137,31 @@
     }
 </style>
 
-<div class="row col-md-12">
-    <div class="box box-primary">
-        <div class="left-menu col-md-2 menu-collapse">
-            <div class="header"><h5>Topic</h5></div>
-            <div id="category-treeview-div">
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="left-menu col-md-3 menu-collapse">
+                <div class="header"><h5>Topic</h5></div>
+                <div id="category-treeview-div">
 
-            </div>
-        </div>
-        <div class="questions col-md-10">
-            <div class="header-content col-md-12">
-                <div class="col-md-6">
-                    <a class="btn btn-default fa fa-plus" href="/KnowledgeBase/Create">&nbsp;&nbsp;New solution</a>
-                    <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
-                </div>
-                <div class="box-tools pull-right col-md-4">
-                    <div class="has-feedback">
-                        <input type="text" class="form-control input-sm" placeholder="Search solution..." />
-                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                    </div>
                 </div>
             </div>
-            <div class="question-list" id="general1">
-                <div class="question-row">
-                    <div class="question-header col-sm-11">
-                        <input type="checkbox" />
-                        <a class="question-title" href="#">
-                            How can I modify my personal information?
-                        </a>
+            <div class="questions col-md-9">
+                <div class="header-content col-md-12">
+                    <div class="col-md-6">
+                        <a class="btn btn-default" href="/KnowledgeBase/CreateKB">New solution</a>
+                        <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
                     </div>
-                    <div class="col-sm-1">
-                        <a data-toggle="modal" data-target="#EditSolution"><i class="fa fa-pencil"></i>Edit</a>
-                    </div>
-                    <div class="question-detail col-sm-12">
-                        <p>
-                            To modify your personal information in ABC.vn, including your password, please follow these steps: <br />
-                            Login to access your account and dashboard.<br />
-                            Click ‘Settings’ on the toolbar, shown on the left side of the screen.<br />
-                            After making a change, click the ‘Update’ button to save the changes in the system.
-                        </p>
-                        <p><i>Keyword: customize, personal information, profile, setting</i></p>
-                    </div>
-                </div>
-                <div class="question-row">
-                    <div class="question-header col-sm-11">
-                        <input type="checkbox" />
-                        <a class="question-title" href="#">
-                            Can I edit my username?
-                        </a>
-                    </div>
-                    <div class="col-sm-1">
-                        <a href="#"><i class="fa fa-pencil"></i>Edit</a>
-                    </div>
-                    <div class="question-detail col-sm-12">
-                        <p>
-                            The username is the same with your email from the first time. <br />
-                            You can change your email but you cannot change your username. <br />
-                        </p>
-                        <p><i>Keyword: username, email, personal information, profile, setting</i></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Create new solution Modal -->
-        <div id="CreateNew" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Create new solution</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="box box-body">
-                            <form class="form-horizontal" id="create-solution-form">
-                                <div class="form-group">
-                                    <label class="control-label col-md-2"><span class="required">(*)</span>Title</label>
-                                    <div class="col-md-10">
-                                        <input type="text" class="form-control" placeholder="Enter title here" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-2"><span class="required">(*)</span>Description</label>
-                                    <div class="col-md-10">
-                                        <textarea class="form-control" rows="5" placeholder="Place some text here"></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-2">Attach file</label>
-                                    <div class="col-md-10">
-                                        <input type="file" name="files" multiple class="form-control" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-2"><span class="required">(*)</span>Topic</label>
-                                    <div class="col-md-10">
-                                        <select class="form-control">
-                                            <option value="All topic">All topic</option>
-                                            <option value="General">General</option>
-                                            <option value="Hardware">Hardware</option>
-                                            <option value="Network">Network</option>
-                                            <option value="Software">Software</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-2">Keyword</label>
-                                    <div class="col-md-10">
-                                        <input type="text" class="form-control" />
-                                    </div>
-                                </div>
-                            </form>
+                    <div class="box-tools pull-right col-md-4" style="">
+                        <div class="has-feedback">
+                            <input type="text" id="key_search" class="form-control input-sm" placeholder="Search solution..." />
+                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Save Changes</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
                 </div>
-
-            </div>
-
-        </div>
-
-        <!-- Edit solution Modal -->
-        <div id="EditSolution" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Edit solution</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="box box-body">
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Title</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" placeholder="Enter title here"
-                                               value="How can I modify my personal information?" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Description</label>
-                                    <div class="col-md-9">
-                                        <textarea class="form-control" rows="6">
-                                            To modify your personal information in ABC.vn, including your password, please follow these steps:
-                                            Login to access your account and dashboard.
-                                            Click ‘Settings’ on the toolbar, shown on the left side of the screen.
-                                            After making a change, click the ‘Update’ button to save the changes in the system.
-                                        </textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3">Attach file</label>
-                                    <div class="col-md-9">
-                                        <input type="file" name="files" multiple class="form-control" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Topic</label>
-                                    <div class="col-md-9">
-                                        <select class="form-control">
-                                            <option value="All topic">All topic</option>
-                                            <option value="General" selected="selected">General</option>
-                                            <option value="Hardware">Hardware</option>
-                                            <option value="Network">Network</option>
-                                            <option value="Software">Software</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3">Keyword</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" />
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Save Changes</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
+                <div class="question-list">
                 </div>
-
             </div>
-
         </div>
     </div>
 </div>
@@ -360,7 +194,7 @@
                 }
             });
 
-            $(".question-title").click(function () {
+            $(".question-list").on("click", ".question-title", function () {
 
                 // if submenu is hidden, does not have active class
                 if (!$(this).hasClass("active")) {
@@ -414,7 +248,8 @@
                                         "style": ""
                                     },
                                     a_attr: {
-                                        "class": ""
+                                        "data-id": dataItem.ID,
+                                        "class" : "category-node"
                                     }
                                 };
                                 nodes.push(node);
@@ -425,6 +260,73 @@
                 },
             });
         };
+
+        $(document).load(function () {
+            $.ajax({
+                url: "/KnowledgeBase/GetSolutions/",
+                type: "GET",
+                data: {
+                    key_search: $("#key_search").val()
+                },
+                success: function (data) {
+                    $(".question-list").empty();
+                    if (data.data.length == 0) {
+                        $(".question-list").append("<p>There is no solution to display. </p>");
+                    } else {
+                        for (i = 0; i < data.data.length; i++) {
+                            $(".question-list").append(
+                                '<div class="question-row"><div class="question-header col-sm-11"><input type="checkbox" />'
+                                + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
+                                + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
+                                + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
+                                + '</div></div>');
+                        }
+                    }
+                },
+                error: function (data) {
+                    noty({
+                        text: "Cannot connect to server! Please try again later!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2500
+                    });
+                }
+            });
+        });
+
+        $("#category-treeview-div").on("click", ".category-node", function () {
+            $.ajax({
+                url: "/KnowledgeBase/GetSolutionsByCategory/",
+                type: "GET",
+                data: {
+                    id: $(this).attr("data-id"),
+                    key_search: $("#key_search").val()
+                },
+                success: function (data) {
+                    $(".question-list").empty();
+                    if (data.data.length == 0) {
+                        $(".question-list").append("<p>There is no solution to display. </p>");
+                    } else {
+                        for (i = 0; i < data.data.length; i++) {
+                            $(".question-list").append(
+                                '<div class="question-row"><div class="question-header col-sm-11"><input type="checkbox" />'
+                                + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
+                                + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
+                                + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
+                                + '</div></div>');
+                        }
+                    }
+                },
+                error: function (data) {
+                    noty({
+                        text: "Cannot connect to server! Please try again later!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2500
+                    });
+                }
+            });
+        });
 
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
             data.instance.toggle_node(data.node);
