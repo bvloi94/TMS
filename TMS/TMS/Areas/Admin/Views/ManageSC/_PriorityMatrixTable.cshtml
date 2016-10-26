@@ -1,7 +1,56 @@
 ﻿@using TMS.Models
+<style>
+    .iu-cell {
+        width: 103px;
+        min-width: 103px;
+        height: 40px;
+        background-color: white;
+        position: relative;
+        line-height: 20px !important;
+        padding: 0 !important;
+        z-index: 1;
+    }
+
+    .iu-top {
+        text-align: right;
+        padding-right: 5px;
+    }
+
+    .iu-bottom {
+        text-align: left;
+        padding-left: 5px;
+    }
+
+    .iu-cell div:before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        width: 0px;
+        height: 0px;
+        border-style: solid;
+        z-index: -1;
+    }
+
+    .iu-top:before {
+        border-width: 0px 100px 40px 0;
+        border-color: transparent #bfcaca transparent transparent;
+        top: 0px;
+        left: 2px;
+    }
+
+    .iu-bottom:before {
+        border-width: 40px 0px 0px 100px;
+        border-color: transparent transparent transparent #bfcaca;
+        top: 0px;
+        left: 0px;
+    }
+</style>
 <table class="table table-bordered">
     <tr>
-        <th></th>
+        <th class="iu-cell">
+            <div class="iu-top">Impact</div>
+            <div class="iu-bottom">Urgency</div>
+        </th>
         @foreach (Impact impact in ViewBag.impactList)
         {
             <th>@impact.Name</th>
@@ -13,7 +62,7 @@
             <th>@urgency.Name</th>
             @foreach (Impact impact in ViewBag.impactList)
             {
-                <td>@Html.DropDownList("PriorityMatrixItem", (SelectList) ViewBag.priorityList, "--Select Priority--", new { @class = "priority-matrix-item-select", data_urgency = urgency.ID, data_impact = impact.ID })</td>
+                <td>@Html.DropDownList("PriorityMatrixItem", (SelectList)ViewBag.priorityList, "--Select Priority--", new { @class = "priority-matrix-item-select", data_urgency = urgency.ID, data_impact = impact.ID })</td>
             }
         </tr>
     }

@@ -27,6 +27,11 @@ namespace TMS.Services
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.Category);
         }
 
+        public IEnumerable<Category> GetAll()
+        {
+            return _unitOfWork.CategoryRepository.Get();
+        }
+
         public IEnumerable<Category> GetSubCategories()
         {
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory);
