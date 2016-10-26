@@ -77,18 +77,54 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetSolutionsByCategory(int? id)
+        public ActionResult GetSolutions (string key_search)
         {
-            List<KnowledgeBaseViewModels> modelList;
-            var solutionList = _solutionServices.GetSolutionsByCategory(id.Value).ToList();
+            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
+            filteredListItems = _solutionServices.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
+            {
+                ID = m.ID,
+                Subject = m.Subject,
+                CategoryID = m.CategoryID,
+                Content = m.ContentText,
+                CreatedTime = m.CreatedTime,
+                ModifiedTime = m.ModifiedTime
+            }).ToArray();
 
+            if (!string.IsNullOrEmpty(key_search))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+            }
+
+            return Json(new
+            {
+                data = filteredListItems
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetSolutionsByCategory(int? id, string key_search)
+        {
             if (id.HasValue)
             {
+                IEnumerable<KnowledgeBaseViewModels> filteredListItems;
+                filteredListItems = _solutionServices.GetSolutionsByCategory(id.Value).Select(m => new KnowledgeBaseViewModels
+                {
+                    ID = m.ID,
+                    Subject = m.Subject,
+                    CategoryID = m.CategoryID,
+                    Content = m.ContentText,
+                    CreatedTime = m.CreatedTime,
+                    ModifiedTime = m.ModifiedTime
+                }).ToArray();
+
+                if (!string.IsNullOrEmpty(key_search))
+                {
+                    filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                }
 
                 return Json(new
                 {
-                    success = true,
-                    solutionList = solutionList
+                    data = filteredListItems
                 }, JsonRequestBehavior.AllowGet);
             }
 
@@ -96,7 +132,7 @@ namespace TMS.Controllers
             {
                 success = false,
                 error = true,
-                msg = "There is nothing to show!"
+                msg = "Cannot find solutions!"
             });
         }
     }

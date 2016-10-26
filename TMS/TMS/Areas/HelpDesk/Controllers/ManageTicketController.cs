@@ -182,7 +182,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             ticket.CreatedTime = DateTime.Now;
             ticket.ModifiedTime = DateTime.Now;
-            ticket.Status = (int?)TicketStatusEnum.New;
+            ticket.Status = (int)TicketStatusEnum.New;
             ticket.RequesterID = model.RequesterId;
             ticket.Subject = model.Subject;
             ticket.Description = model.Description;
@@ -199,7 +199,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 ticket.TechnicianID = model.TechnicianId;
                 ticket.AssignedByID = User.Identity.GetUserId();
-                ticket.Status = (int?)TicketStatusEnum.Assigned;
+                ticket.Status = (int)TicketStatusEnum.Assigned;
             }
 
             try
@@ -257,11 +257,8 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             model.Mode = ticket.Mode;
             if (ticket.Type != null) model.Type = (int)ticket.Type;
-            if (ticket.Status != null)
-            {
-                model.StatusId = (int)ticket.Status;
-                model.Status = ((TicketStatusEnum)ticket.Status).ToString();
-            }
+            model.StatusId = ticket.Status;
+            model.Status = ((TicketStatusEnum)ticket.Status).ToString();
             if (ticket.CategoryID != null)
             {
                 model.CategoryId = (int)ticket.CategoryID;
@@ -812,7 +809,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     s.Technician = "";
                 }
                 s.SolvedDate = item.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-                s.Status = item.Status.HasValue ? ((TicketStatusEnum)item.Status).ToString() : "";
+                s.Status = ((TicketStatusEnum)item.Status).ToString();
                 s.ModifiedTime = item.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
                 tickets.Add(s);
             }
@@ -839,11 +836,9 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             if (ticket.Type != null) model.Type = (int)ticket.Type;
             model.Mode = ticket.Mode;
-            if (ticket.Status != null)
-            {
-                model.StatusId = (int)ticket.Status;
-                model.Status = ((TicketStatusEnum)ticket.Status).ToString();
-            }
+
+            model.StatusId = ticket.Status;
+            model.Status = ((TicketStatusEnum)ticket.Status).ToString();
             if (ticket.CategoryID != null)
             {
                 model.CategoryId = (int)ticket.CategoryID;

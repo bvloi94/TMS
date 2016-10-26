@@ -9,6 +9,7 @@ namespace TMS.ViewModels
     public class KnowledgeBaseViewModels
     {
         [Required(ErrorMessage = "Subject is not empty!")]
+        public int? ID { get; set; }
         public string Subject { get; set; }
         public string Content { get; set; }
         public int CategoryID { get; set; }

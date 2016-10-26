@@ -30,7 +30,7 @@ namespace TMS.Models
         public Nullable<int> UrgencyID { get; set; }
         public Nullable<int> PriorityID { get; set; }
         public Nullable<int> CategoryID { get; set; }
-        public Nullable<int> Status { get; set; }
+        public int Status { get; set; }
         public string Subject { get; set; }
         public string Description { get; set; }
         public string Solution { get; set; }
