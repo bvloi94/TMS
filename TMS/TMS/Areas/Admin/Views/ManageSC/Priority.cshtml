@@ -7,13 +7,11 @@
     <div class="col-xs-12">
         <div class="box box-primary">
             <div class="box-header padding-bottom-20">
-                <button type="button" class="btn btn-success" data-target="#myModal" onclick="showCreateModal()">
-                    New Priority
-                </button>
+                <button type="button" class="btn btn-flat btn-primary" data-target="#myModal" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Priority</button>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
-                <table class="table table-bordered table-hover" id="priority-table">
+                <table class="table dataTable" id="priority-table">
                     <thead>
                         <tr>
                             <th>
@@ -64,7 +62,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="create-btn" onclick="createPriority()">Save changes</button>
+                <button type="button" class="btn btn-success" id="create-btn" onclick="createPriority()">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -102,8 +100,10 @@
             .DataTable({
                 processing: true,
                 serverSide: true,
+                lengthChange: false,
                 paging: true,
-                sort: true,
+                sort: false,
+                filter: false,
                 ajax: {
                     url: "/Admin/ManageSC/GetPriority"
                 },
@@ -123,8 +123,8 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<button type="button" class="fa fa-pencil" data-toggle="modal" onclick="getPriorityDetail(\'' + row[0] + '\')"></button>' +
-                                   '<button type="button" class="fa fa-trash-o" onclick="showDeleteModal(\'' + row[0] + '\')"></button>';
+                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getPriorityDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                                   '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                         },
                         "targets": 2
                     }

@@ -43,10 +43,10 @@ namespace TMS.Services
             }
             catch (Exception)
             {
-                
+
                 throw;
             }
-           
+
         }
 
         public Priority GetPriorityByID(int id)
@@ -75,7 +75,7 @@ namespace TMS.Services
             }
             catch (Exception)
             {
-                
+
                 throw;
             }
         }
@@ -87,8 +87,20 @@ namespace TMS.Services
 
         internal void DeletePriority(Priority priority)
         {
-           _unitOfWork.PriorityRepository.Delete(priority);
-           _unitOfWork.Save();
+            try
+            {
+                foreach (var priorityMatrix in _unitOfWork.PriorityMatrixItemRepository.Get())
+                {
+                 _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrix);   
+                }
+                _unitOfWork.PriorityRepository.Delete(priority);
+                _unitOfWork.Save();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+       
         }
     }
 }

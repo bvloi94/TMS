@@ -52,7 +52,7 @@ namespace TMS.Controllers
                     KnowledgeBaseViewModels model = new KnowledgeBaseViewModels();
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
-                    model.CategoryID = solution.CategoryID.Value;
+                    model.CategoryID = solution.CategoryID;
 
                     ViewBag.ID = solution.ID;
                     ViewBag.SolutionAttachments = solution.SolutionAttachments;
