@@ -1264,6 +1264,21 @@ namespace TMS.Areas.Admin.Controllers
                 });
             }
         }
-        
+
+        [HttpGet]
+        public ActionResult GetCategoryTreeViewData()
+        {
+            IEnumerable<CategoryViewModel> list = _categoryService.GetAll().Select(m => new CategoryViewModel
+            {
+                ID = m.ID,
+                Name = m.Name,
+                ParentId = m.ParentID,
+                Level = m.CategoryLevel
+            }).ToArray();
+            return Json(new
+            {
+                data = list
+            }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

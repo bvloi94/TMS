@@ -1,9 +1,10 @@
-﻿@using TMS.Utils
-@{
+﻿@{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+}
+@{
     ViewBag.Title = "Solutions";
 }
-<link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
+
 <style>
     #custom-search-input {
         padding: 3px;
@@ -33,6 +34,7 @@
 
     .box-primary {
         overflow: hidden;
+        height: 70vh;
     }
 
     .left-menu {
@@ -43,7 +45,7 @@
     }
     /*remove list style (circles)*/
     .menu-collapse {
-        color: white;
+        list-style: none;
     }
     /*header line style and border*/
     .header {
@@ -51,6 +53,52 @@
         background-color: #085c9a;
         padding: 4px 12px;
     }
+
+    /*set border for every line of menu nad remove top border becouse we dont want double border with header border. */
+    .menu-item {
+        border-top: 0;
+        margin: 0;
+        background: #188de1;
+        text-decoration: none;
+        color: #ffffff;
+        display: block;
+        padding: 8px 12px;
+    }
+        /*we dont want text to be underline as regular link*/
+        .menu-item:hover {
+            background: #1283d7;
+            text-decoration: none;
+        }
+    /*remove list style (circles) for submenu*/
+    .menu-list {
+        list-style: none;
+        background: #5aa4d9;
+        display: none;
+        margin: 0;
+        padding: 0;
+    }
+    /*remove border and set only bottom border for submenu*/
+    .menu-sub-item {
+        margin: 0;
+        border: 0;
+    }
+        /*remove bottom border from last element in submenu*/
+        .menu-sub-item:last-child {
+            border-bottom: 0;
+        }
+        /*set padding for submenu to be inline with maimenu*/
+        .menu-sub-item a {
+            color: #ffffff;
+            padding: 5px 10px;
+            display: block;
+            padding-left: 33px;
+            background: #5aa4d9;
+        }
+            /*remove text decoration for links*/
+            .menu-sub-item a:hover {
+                text-decoration: none;
+                background: #4196d3;
+            }
 
     .questions {
         padding: 0;
@@ -63,7 +111,7 @@
         background-color: #b4d2ef;
         padding: 5px 12px 4px 12px;
     }
-
+    
     .question-row {
         border-bottom: solid 1px #b4d2ef;
         padding: 10px;
@@ -78,6 +126,7 @@
     .rightItems {
         text-align: right;
     }
+
 
     .modal-title {
         color: #ffffff;
@@ -99,50 +148,33 @@
     .required {
         color: red;
     }
-
-    .jstree-node {
-        margin-left: 0px !important;
-        padding-left: 12px !important;
-    }
-
-    .jstree-icon {
-        display: none !important;
-    }
-
-    li[aria-level="1"] > .jstree-children {
-        background-color: #5aa4d9;
-        margin-left: -12px !important;
-        padding-left: 12px !important;
-    }
-
-    .jstree-default .jstree-anchor {
-        min-height: 30px;
-        line-height: 30px;
-    }
-
-    .jstree-anchor {
-        width: 150%;
-        margin-left: -50%;
-        padding-left: 50%;
-        white-space: normal !important;
-        height: auto !important;
-    }
-
-    .jstree-clicked {
-        background: #085c9a !important;
-    }
-
-    .jstree-anchor:hover {
-        background: #085c9a;
-    }
 </style>
 
 <div class="row col-md-12">
     <div class="box box-primary">
-        <div class="left-menu col-md-2 menu-collapse">
-            <div class="header"><h5>Topic</h5></div>
-            <div id="category-treeview-div">
-
+        <div class="left-menu col-md-2">
+            <div class="menu-collapse">
+                <div class="header"><h5>Topic</h5></div>
+                <a class="menu-item" id="alltopic" href="#">All topics</a>
+                <a class="menu-item" id="general" href="#">General</a>
+                <a class="menu-item" href="#">Hardware</a>
+                <div class="menu-list">
+                    <div class="menu-sub-item"><a href="#">Desktop Hardware</a></div>
+                    <div class="menu-sub-item"><a href="#">Printer</a></div>
+                    <div class="menu-sub-item"><a href="#">Switch</a></div>
+                    <div class="menu-sub-item"><a href="#">Router</a></div>
+                </div>
+                <a class="menu-item" href="#">Network</a>
+                <div class="menu-list">
+                    <div class="menu-sub-item"><a href="#">LAN</a></div>
+                    <div class="menu-sub-item"><a href="#">WAN</a></div>
+                </div>
+                <a class="menu-item" href="#">Software</a>
+                <div class="menu-list">
+                    <div class="menu-sub-item"><a href="#">Web application</a></div>
+                    <div class="menu-sub-item"><a href="#">Window application</a></div>
+                    <div class="menu-sub-item"><a href="#">Mobile application</a></div>
+                </div>
             </div>
         </div>
         <div class="questions col-md-10">
@@ -278,18 +310,18 @@
                                 <div class="form-group">
                                     <label class="control-label col-md-3"><span class="required">(*)</span>Title</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" placeholder="Enter title here"
-                                               value="How can I modify my personal information?" />
+                                        <input type="text" class="form-control" placeholder="Enter title here" 
+                                               value="How can I modify my personal information?"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-md-3"><span class="required">(*)</span>Description</label>
                                     <div class="col-md-9">
                                         <textarea class="form-control" rows="6">
-                                            To modify your personal information in ABC.vn, including your password, please follow these steps:
-                                            Login to access your account and dashboard.
-                                            Click ‘Settings’ on the toolbar, shown on the left side of the screen.
-                                            After making a change, click the ‘Update’ button to save the changes in the system.
+To modify your personal information in ABC.vn, including your password, please follow these steps:
+Login to access your account and dashboard. 
+Click ‘Settings’ on the toolbar, shown on the left side of the screen. 
+After making a change, click the ‘Update’ button to save the changes in the system.
                                         </textarea>
                                     </div>
                                 </div>
@@ -332,11 +364,8 @@
     </div>
 </div>
 @section scripts{
-    <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
-        $(document).ready(function () {
-            showTreeViewModal();
-
+        jQuery(document).ready(function () {
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -381,52 +410,6 @@
                 }
             });
             $('#create-solution-form textarea').wysihtml5();
-        });
-
-        var showTreeViewModal = function () {
-            $("#category-treeview-div").jstree({
-                "core": {
-                    "check_callback": true,
-                    "themes": {
-                        "stripes": false,
-                        "icons": false,
-                        "dots": false
-                    },
-                    "data": {
-                        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
-                        "type": "GET",
-                        "contentType": "application/json; charset=utf-8",
-                        "dataFilter": function (json) {
-                            var data = $.parseJSON(json);
-                            var nodes = [];
-                            for (i = 0; i < data.data.length; i++) {
-                                var dataItem = data.data[i];
-                                var node = {
-                                    id: dataItem.ID,
-                                    parent: dataItem.ParentId == null ? "#" : dataItem.ParentId,
-                                    text: dataItem.Name,
-                                    state: {
-                                        'opened': false,
-                                        'selected': false
-                                    },
-                                    li_attr: {
-                                        "style": ""
-                                    },
-                                    a_attr: {
-                                        "class": ""
-                                    }
-                                };
-                                nodes.push(node);
-                            }
-                            return JSON.stringify(nodes);
-                        }
-                    }
-                },
-            });
-        };
-
-        $('#category-treeview-div').on("select_node.jstree", function (e, data) {
-            data.instance.toggle_node(data.node);
         });
     </script>
 }

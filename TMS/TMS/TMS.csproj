@@ -365,6 +365,7 @@
     <Content Include="Content\custom-css\tms-dropdown.css" />
     <Content Include="Content\custom-js\tms-dropdown.js" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\img\impact_urgency.jpg" />
     <Content Include="Content\img\add-requester-icon.ico" />
     <Content Include="Content\img\avatar.png" />
     <Content Include="Content\img\avatar04.png" />
@@ -449,6 +450,9 @@
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.full.min.js" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.css" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.min.js" />
+    <Content Include="Content\Plugins\jstree\32px.png" />
+    <Content Include="Content\Plugins\jstree\style.min.css" />
+    <Content Include="Content\Plugins\jstree\throbber.gif" />
     <Content Include="Content\skins\skin-black-light.css" />
     <Content Include="Content\skins\skin-black-light.min.css" />
     <Content Include="Content\skins\skin-black.css" />
@@ -566,6 +570,7 @@
     <Content Include="Scripts\globalize\plural.js" />
     <Content Include="Scripts\globalize\relative-time.js" />
     <Content Include="Scripts\globalize\unit.js" />
+    <Content Include="Content\Plugins\jstree\jstree.min.js" />
     <Content Include="Scripts\tms-dropdown.js" />
     <Content Include="Scripts\helpdesk-manage-ticket.js" />
     <Content Include="Scripts\jquery.cookie.js" />
@@ -632,10 +637,11 @@
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
     <Content Include="Views\Error\Error500.cshtml" />
-    <Content Include="Views\KnowledgeBase\Index.cshtml" />
+    <Content Include="Views\KnowledgeBase\Index_bk.cshtml" />
     <Content Include="Views\Ticket\Solve.cshtml" />
     <Content Include="Views\KnowledgeBase\CreateKB.cshtml" />
     <Content Include="Views\Ticket\Detail.cshtml" />
+    <Content Include="Views\KnowledgeBase\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
