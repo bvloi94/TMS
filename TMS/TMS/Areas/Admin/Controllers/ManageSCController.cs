@@ -461,15 +461,17 @@ namespace TMS.Areas.Admin.Controllers
                         message = "Impact is being used! Can not be deleted!"
                     });
                 }
-                _impactService.DeleteImpact(impact);
-                return Json(new
+                else
                 {
-                    success = true,
-                    message = "Delete impact successfully!"
-                });
-
+                    _impactService.DeleteImpact(impact);
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Delete impact successfully!"
+                    });
+                }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return Json(new
                 {
@@ -478,6 +480,7 @@ namespace TMS.Areas.Admin.Controllers
                     message = "Some error occured! Please try again later!"
                 });
             }
+
         }
 
         [HttpPost]

@@ -98,22 +98,25 @@ namespace TMS.Controllers
                         solution.SolutionAttachments.Add(attachment);
                     }
                 }
-
                 try
                 {
                     _solutionServices.AddSolution(solution);
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create solution successfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
                     return RedirectToAction("Index");
                 }
                 catch
                 {
-                    // Loi chua lam 
-                    return View(model);
+                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Create solution unsuccessfully!") { Path = "/" });
+                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                    return RedirectToAction("Index");
                 }
             }
             return View(model);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(int? id, KnowledgeBaseViewModels model)
         {
             if (id.HasValue)
@@ -151,12 +154,15 @@ namespace TMS.Controllers
                         try
                         {
                             _solutionServices.EditSolution(solution);
+                            Response.Cookies.Add(new HttpCookie("FlashMessage", "Update solution successfully!") { Path = "/" });
+                            Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
                             return RedirectToAction("Index");
                         }
-                        catch (Exception e)
+                        catch
                         {
-                            // Loi chua lam 
-                            return View(model);
+                            Response.Cookies.Add(new HttpCookie("FlashMessage", "Update solution unsuccessfully!") { Path = "/" });
+                            Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                            return RedirectToAction("Index");
                         }
 
                     }

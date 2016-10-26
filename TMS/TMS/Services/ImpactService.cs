@@ -70,12 +70,15 @@ namespace TMS.Services
         {
             try
             {
+                foreach (PriorityMatrixItem priorityMatrixItem in impact.PriorityMatrixItems.ToList())
+                {
+                    _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
+                }
                 _unitOfWork.ImpactRepository.Delete(impact);
                 _unitOfWork.Save();
             }
             catch (Exception)
             {
-                
                 throw;
             }
         }
