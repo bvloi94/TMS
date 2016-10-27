@@ -38,7 +38,6 @@
     .left-menu {
         padding: 0;
         background: #188de1;
-        min-height: 70vh;
         height: 100%;
     }
     /*remove list style (circles)*/
@@ -52,9 +51,12 @@
         padding: 4px 12px;
     }
 
+    #category-treeview-div {
+        min-height: 70vh;
+    }
+
     .questions {
         padding: 0;
-        height: 70vh;
         background: #ffffff;
     }
 
@@ -67,6 +69,11 @@
     .question-row {
         border-bottom: solid 1px #b4d2ef;
         padding: 10px;
+        overflow-y: auto;
+    }
+
+    .question-list {
+        height: 70vh;
         overflow-y: auto;
     }
 
@@ -149,8 +156,8 @@
             <div class="questions col-md-9">
                 <div class="header-content col-md-12">
                     <div class="col-md-6">
-                        <a class="btn btn-default" href="/KnowledgeBase/CreateKB">New solution</a>
-                        <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-primary btn-flat" href="/KnowledgeBase/CreateKB">New solution</a>
+                        <a class="btn btn-default btn-flat" href="#"><i class="fa fa-trash"></i></a>
                     </div>
                     <div class="box-tools pull-right col-md-4" style="">
                         <div class="has-feedback">
@@ -159,7 +166,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="question-list">
+                <div class="question-list col-md-12">
                 </div>
             </div>
         </div>
@@ -170,7 +177,7 @@
     <script>
         $(document).ready(function () {
             showTreeViewModal();
-
+            getAllSolution();
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -215,6 +222,7 @@
                 }
             });
             $('#create-solution-form textarea').wysihtml5();
+
         });
 
         var showTreeViewModal = function () {
@@ -260,7 +268,7 @@
             });
         };
 
-        $(document).load(function () {
+        function getAllSolution () {
             $.ajax({
                 url: "/KnowledgeBase/GetSolutions/",
                 type: "GET",
@@ -270,7 +278,7 @@
                 success: function (data) {
                     $(".question-list").empty();
                     if (data.data.length == 0) {
-                        $(".question-list").append("<p>There is no solution to display. </p>");
+                        $(".question-list").append("<div class='col-sm-12' style='text-align:center'><p>There is no solution to display. </p></div>");
                     } else {
                         for (i = 0; i < data.data.length; i++) {
                             $(".question-list").append(
@@ -291,20 +299,20 @@
                     });
                 }
             });
-        });
+        }
 
-        $("#category-treeview-div").on("click", ".category-node", function () {
+        function getSolutionsByActiveNode(id) {
             $.ajax({
                 url: "/KnowledgeBase/GetSolutionsByCategory/",
                 type: "GET",
                 data: {
-                    id: $(this).attr("data-id"),
+                    id: id,
                     key_search: $("#key_search").val()
                 },
                 success: function (data) {
                     $(".question-list").empty();
                     if (data.data.length == 0) {
-                        $(".question-list").append("<p>There is no solution to display. </p>");
+                        $(".question-list").append("<div class='col-sm-12' style='text-align:center'><p>There is no solution to display. </p></div>");
                     } else {
                         for (i = 0; i < data.data.length; i++) {
                             $(".question-list").append(
@@ -325,7 +333,34 @@
                     });
                 }
             });
+        }
+
+        function setQuestionListHeight() {
+            var contentHeight = $("#category-treeview-div").height();
+            $(".question-list").css("height", contentHeight);
+        }
+
+        $("#key_search").on("keyup", function () {
+            if ($("#category-treeview-div .category-node").hasClass("jstree-clicked")) {
+                getSolutionsByActiveNode($(".jstree-clicked").attr("data-id"));
+            }
+            else {
+                getAllSolution();
+            }
         });
+
+        $("#category-treeview-div").on("click", ".category-node", function () {
+            getSolutionsByActiveNode($(this).attr("data-id"));
+        });
+
+        $("#category-treeview-div").on("after_open.jstree", function () {
+            setQuestionListHeight();
+        });
+
+        $("#category-treeview-div").on("after_close.jstree", function () {
+            setQuestionListHeight();
+        });
+
 
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
             data.instance.toggle_node(data.node);
