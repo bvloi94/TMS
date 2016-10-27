@@ -127,14 +127,17 @@ namespace TMS.Services
         public List<int> GetChildrenCategoriesIdList(int categoryId)
         {
             List<int> list = new List<int>();
-            IEnumerable<Category> subCategories = GetSubCategories(categoryId);
-            foreach (Category subCategory in subCategories)
+            IEnumerable<Category> childrenCategories = GetChildrenCategories(categoryId);
+            foreach (Category childCategory in childrenCategories)
             {
-                list.Add(subCategory.ID);
-                IEnumerable<Category> items = GetItems(subCategory.ID);
-                foreach (Category item in items)
+                list.Add(childCategory.ID);
+                if (childCategory.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory)
                 {
-                    list.Add(item.ID);
+                    IEnumerable<Category> items = GetChildrenCategories(childCategory.ID);
+                    foreach (Category item in items)
+                    {
+                        list.Add(item.ID);
+                    }
                 }
             }
             return list;
