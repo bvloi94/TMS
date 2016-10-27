@@ -103,13 +103,21 @@ namespace TMS.Services
                     return true;
                 }
             }
-            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any();
+            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any() 
+                || _unitOfWork.SolutionRepository.Get(m => m.CategoryID == category.ID).Any();
         }
 
         public void DeleteCategory(Category category)
         {
-            foreach (Category childCategory in GetChildrenCategories(category.ID))
+            foreach (Category childCategory in GetChildrenCategories(category.ID).ToList())
             {
+                if (childCategory.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory)
+                {
+                    foreach (Category item in GetChildrenCategories(childCategory.ID).ToList())
+                    {
+                        _unitOfWork.CategoryRepository.Delete(item);
+                    }
+                }
                 _unitOfWork.CategoryRepository.Delete(childCategory);
             }
             _unitOfWork.CategoryRepository.Delete(category);
