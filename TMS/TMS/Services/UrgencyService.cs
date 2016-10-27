@@ -74,9 +74,9 @@ namespace TMS.Services
         {
             try
             {
-                foreach (var urgencyMatrix in _unitOfWork.PriorityMatrixItemRepository.Get())
+                foreach (PriorityMatrixItem priorityMatrixItem in urgency.PriorityMatrixItems.ToList())
                 {
-                    _unitOfWork.PriorityMatrixItemRepository.Delete(urgencyMatrix);
+                    _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
                 }
                 _unitOfWork.UrgencyRepository.Delete(urgency);
                 _unitOfWork.Save();

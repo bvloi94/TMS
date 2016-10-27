@@ -53,13 +53,13 @@ namespace TMS.Areas.HelpDesk.Controllers
             IEnumerable<Ticket> filteredListItems;
             filteredListItems = ticketsList;
 
-            if (!string.IsNullOrEmpty(date_from_select.ToString()))
+            if (date_from_select.HasValue)
             {
-                filteredListItems = filteredListItems.Where(p => p.CreatedTime >= date_from_select.Value);
+                filteredListItems = filteredListItems.Where(p => p.CreatedTime.Date >= date_from_select.Value.Date);
             }
-            if (!string.IsNullOrEmpty(date_to_select.ToString()))
+            if (date_to_select.HasValue)
             {
-                filteredListItems = filteredListItems.Where(p => p.CreatedTime <= date_to_select.Value);
+                filteredListItems = filteredListItems.Where(p => p.CreatedTime.Date <= date_to_select.Value.Date);
             }
 
             // Type

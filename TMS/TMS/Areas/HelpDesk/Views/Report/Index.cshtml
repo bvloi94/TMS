@@ -218,7 +218,7 @@
                     url: "/HelpDesk/Report/GetTickets",
                     type: "POST",
                     data: function (d) {
-                        d.date_from_select = $("#date-from-txt").val(),
+                            d.date_from_select = $("#date-from-txt").val(),
                             d.date_to_select = $("#date-to-txt").val(),
                             d.type = $("#dropdownType").val(),
                             d.by = $("#dropdownBy").val()
@@ -392,14 +392,12 @@
         $("#date-from-txt").on("change",
                 function () {
                     ProcessGraph();
-                    ticketTableReport.fnDraw();
                     reloadDataTable();
                 });
 
         $("#date-to-txt").on("change",
                 function () {
                     ProcessGraph();
-                    ticketTableReport.fnDraw();
                     reloadDataTable();
                 });
 

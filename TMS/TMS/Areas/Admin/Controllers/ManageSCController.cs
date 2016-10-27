@@ -89,7 +89,12 @@ namespace TMS.Areas.Admin.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var displayedList = filteredListItems;
+            if (param.length != -1)
+            {
+                displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            }
+
             var result = displayedList.Select(p => new IConvertible[]
             {
                 p.ID,
@@ -111,12 +116,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             var urgencyList = _urgencyService.GetAll();
             var default_search_key = Request["search[value]"];
-            //var jsonData = new
-            //{
-            //    data = ticketList
-            //};
-            //return Json(jsonData, JsonRequestBehavior.AllowGet);
-
+           
             IEnumerable<Urgency> filteredListItems;
             if (!string.IsNullOrEmpty(default_search_key))
             {
@@ -139,7 +139,12 @@ namespace TMS.Areas.Admin.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var displayedList = filteredListItems;
+            if (param.length != -1)
+            {
+                displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            }
+
             var result = displayedList.Select(p => new IConvertible[]
             {
                 p.ID,
@@ -161,12 +166,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             var priorityList = _priorityService.GetAll();
             var default_search_key = Request["search[value]"];
-            //var jsonData = new
-            //{
-            //    data = ticketList
-            //};
-            //return Json(jsonData, JsonRequestBehavior.AllowGet);
-
+           
             IEnumerable<Priority> filteredListItems;
             if (!string.IsNullOrEmpty(default_search_key))
             {
@@ -189,7 +189,13 @@ namespace TMS.Areas.Admin.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+
+            var displayedList = filteredListItems;
+            if (param.length != -1)
+            {
+                displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            }
+
             var result = displayedList.Select(p => new IConvertible[]
             {
                 p.ID,
