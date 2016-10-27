@@ -11,13 +11,13 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
+            <div class="box-header">
+                <h3>Priority Matrix</h3>
+            </div>
             <div class="box-body">
                 <div id="priority-matrix-div">
                     <center><img src='/Content/img/loading.gif' /></center>
                     @*priority matrix table*@
-                </div>
-                <div style="text-align: center">
-                    <button id="save-btn" class="btn btn-flat btn-success">Save</button>
                 </div>
             </div>
         </div>
@@ -89,8 +89,8 @@
                         $.notify(data.message, "success");
                     } else {
                         $.notify(data.message, "error");
+                        initPriorityMatrixTable();
                     }
-                    initPriorityMatrixTable();
                 },
                 error: function () {
                     $.notify("Cannot connect to server!", "error");

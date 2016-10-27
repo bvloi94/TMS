@@ -161,6 +161,7 @@
           <Property Name="ContentText" Type="nvarchar(max)" />
           <Property Name="CategoryID" Type="int" Nullable="false" />
           <Property Name="Keyword" Type="nvarchar" MaxLength="255" />
+          <Property Name="Path" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="CreatedTime" Type="datetime" />
           <Property Name="ModifiedTime" Type="datetime" />
         </EntityType>
@@ -1027,6 +1028,7 @@
           <Property Name="ContentText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
           <Property Name="Keyword" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Path" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="CreatedTime" Type="DateTime" Precision="3" />
           <Property Name="ModifiedTime" Type="DateTime" Precision="3" />
           <NavigationProperty Name="Category" Relationship="TMSModel.FK_KnowledgeBase_Category" FromRole="Solution" ToRole="Category" />
@@ -1599,6 +1601,7 @@
               <MappingFragment StoreEntitySet="Solution">
                 <ScalarProperty Name="ModifiedTime" ColumnName="ModifiedTime" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="Path" ColumnName="Path" />
                 <ScalarProperty Name="Keyword" ColumnName="Keyword" />
                 <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
                 <ScalarProperty Name="ContentText" ColumnName="ContentText" />

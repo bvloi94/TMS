@@ -1224,7 +1224,7 @@ namespace TMS.Areas.Admin.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = "Delete category successfully!"
+                        message = "Delete successfully!"
                     });
                 }
                 catch (Exception e)
