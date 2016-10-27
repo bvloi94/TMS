@@ -103,13 +103,21 @@ namespace TMS.Services
                     return true;
                 }
             }
-            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any();
+            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any() 
+                || _unitOfWork.SolutionRepository.Get(m => m.CategoryID == category.ID).Any();
         }
 
         public void DeleteCategory(Category category)
         {
-            foreach (Category childCategory in GetChildrenCategories(category.ID))
+            foreach (Category childCategory in GetChildrenCategories(category.ID).ToList())
             {
+                if (childCategory.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory)
+                {
+                    foreach (Category item in GetChildrenCategories(childCategory.ID).ToList())
+                    {
+                        _unitOfWork.CategoryRepository.Delete(item);
+                    }
+                }
                 _unitOfWork.CategoryRepository.Delete(childCategory);
             }
             _unitOfWork.CategoryRepository.Delete(category);
@@ -119,14 +127,17 @@ namespace TMS.Services
         public List<int> GetChildrenCategoriesIdList(int categoryId)
         {
             List<int> list = new List<int>();
-            IEnumerable<Category> subCategories = GetSubCategories(categoryId);
-            foreach (Category subCategory in subCategories)
+            IEnumerable<Category> childrenCategories = GetChildrenCategories(categoryId);
+            foreach (Category childCategory in childrenCategories)
             {
-                list.Add(subCategory.ID);
-                IEnumerable<Category> items = GetItems(subCategory.ID);
-                foreach (Category item in items)
+                list.Add(childCategory.ID);
+                if (childCategory.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory)
                 {
-                    list.Add(item.ID);
+                    IEnumerable<Category> items = GetChildrenCategories(childCategory.ID);
+                    foreach (Category item in items)
+                    {
+                        list.Add(item.ID);
+                    }
                 }
             }
             return list;

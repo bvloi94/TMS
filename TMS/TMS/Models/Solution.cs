@@ -25,6 +25,7 @@ namespace TMS.Models
         public string ContentText { get; set; }
         public int CategoryID { get; set; }
         public string Keyword { get; set; }
+        public string Path { get; set; }
         public Nullable<System.DateTime> CreatedTime { get; set; }
         public Nullable<System.DateTime> ModifiedTime { get; set; }
     
