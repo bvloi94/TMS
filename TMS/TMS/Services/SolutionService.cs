@@ -5,7 +5,7 @@ using TMS.Models;
 
 namespace TMS.Services
 {
-    internal class SolutionService
+    public class SolutionService
     {
         private UnitOfWork _unitOfWork;
 

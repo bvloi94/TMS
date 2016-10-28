@@ -19,7 +19,7 @@
     }
 
     .big-textbox {
-        width: 200px;
+        width: 400px;
         font-size: 16px;
     }
 </style>
@@ -39,10 +39,10 @@
                         <div class="row form-group">
                             <div class="col-md-12 col-xs-12">
                                 <label class="control-label">SUBJECT <font color="red">*</font></label>
-                                    <a href="javascript:void(0)" id="refer-older-ticket-link">Refer older tickets</a>
                             </div>
                             <div class="col-md-12 col-xs-12">
                                 <input type="text" class="form-control" name="Subject" placeholder="Subject" />
+                                <a href="javascript:void(0)" id="refer-older-ticket-link">Refer older tickets</a>
                             </div>
                         </div>
                         <div class="row form-group">
@@ -463,13 +463,14 @@
     </div>
 </div>
 
-@section InitScript
+@*@section InitScript
 {
     @Scripts.Render("~/bundles/helpdesk-manage-ticket")
-}
+}*@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/helpdesk-manage-ticket")
     <script src="~/Content/Plugins/mark/jquery.mark.min.js"></script>
     <script>
 
@@ -644,86 +645,5 @@
                 initOlderTicketsTable();
                 $(self._select2).parent().find(".select2-container").css('width', '');
             });
-
-        $("#refer-older-ticket-link").click(function () {
-            var keywords = $("#subject-txt").val();
-            $("#refer-older-tickets-search").val(keywords);
-            $("#older-tickets-table").dataTable().api().ajax.reload();
-            $("#older-tickets-modal").modal("show");
-        });
-
-        $("#refer-older-tickets-search").on("keyup", function () {
-            $("#older-tickets-table").dataTable().api().ajax.reload();
-        });
-
-        var initOlderTicketsTable = function () {
-            $("#older-tickets-table").dataTable({
-                processing: true,
-                serverSide: true,
-                paging: true,
-                sort: true,
-                filter: false,
-                lengthMenu: [5],
-                order: [[0, 'asc']],
-                lengthChange: false,
-                drawCallback: function () {
-                    var options = {
-                        accuracy: "complementary"
-                    };
-                    var keywords = $("#refer-older-tickets-search").val().replace(/[^a-z0-9\s]/gi, '');
-                    $(".subject-link").mark(keywords, options);
-                    $("#older-tickets-table .description-text").trunk8({
-                        lines: 3,
-                        tooltip: false
-                    });
-                },
-                ajax: {
-                    url: "/HelpDesk/ManageTicket/GetOlderTickets",
-                    data: function (d) {
-                        d.keywords = $("#refer-older-tickets-search").val()
-                    }
-                },
-                autoWidth: false,
-                columnDefs: [
-                    {
-                        "targets": 0,
-                        "width": "15%",
-                        "render": function (data, type, row) {
-                            return row.Code;
-                        }
-                    },
-                    {
-                        "targets": 1,
-                        "width": "30%",
-                        "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" onclick="openTicketDetailModal(\'' + row.ID + '\')" class="subject-link">' + row.Subject + '</a>';
-                        }
-                    },
-                    {
-                        "targets": 2,
-                        "sortable": false,
-                        "width": "45%",
-                        "render": function (data, type, row) {
-                            return (row.Description == "") ? "-" : '<span class="description-text">' + row.Description + '</span>';
-                        }
-                    },
-                    {
-                        "targets": 3,
-                        "width": "10%",
-                        "sortable": false,
-                        "render": function (data, type, row) {
-                            return '<button type="button" class="btn btn-flat btn-primary" data-role="refer-older-ticket"'
-                                + ' data-id="' + row.ID + '">Refer</button>';
-                        }
-                    }
-                ]
-            });
-        }
-
-        $(".modal").on("click", "[data-role='refer-older-ticket']", function () {
-            var ticketId = $(this).attr("data-id");
-            $("#refer-older-ticket-confirm-btn").attr("data-id", ticketId);
-            $("#older-tickets-confirm-modal").modal("show");
-        });
     </script>
 }
