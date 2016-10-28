@@ -305,6 +305,7 @@
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Services\PriorityMatrixService.cs" />
+    <Compile Include="Services\SolutionService.cs" />
     <Compile Include="Services\TicketAttachmentService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ImpactService.cs" />
@@ -331,6 +332,7 @@
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
+    <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
     <Compile Include="ViewModels\TicketSolveViewModel.cs" />
     <Compile Include="ViewModels\ProfileAdminViewModel.cs" />

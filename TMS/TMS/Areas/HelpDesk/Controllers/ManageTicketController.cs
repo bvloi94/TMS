@@ -322,7 +322,15 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     var att = new AttachmentViewModel();
                     att.id = attachment.ID;
-                    att.name = attachment.Filename;
+                    if (attachment.Filename.Length > 17)
+                    {
+                        string ext = attachment.Filename.Split('.').Last();
+                        att.name = attachment.Filename.Substring(0, 10) + "...." + ext;
+                    }
+                    else
+                    {
+                        att.name = attachment.Filename;
+                    }
                     if (attachment.Type == ConstantUtil.TicketAttachmentType.Description)
                     {
                         model.DescriptionAttachments.Add(att);

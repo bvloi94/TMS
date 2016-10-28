@@ -16,6 +16,35 @@
 
 }
 <style>
+    .nav-stacked > li {
+        border-bottom: 1px solid #f4f4f4;
+        margin: 0;
+    }
+
+    .editable {
+        display: block;
+        padding: 9.5px;
+        margin: 0 0 10px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        word-wrap: break-word;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .solution-subject {
+        cursor: pointer;
+    }
+
+    .solution-content {
+        white-space: pre-wrap;
+    }
+
+    .timeline > li > .timeline-item {
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
     h4, h5 {
         color: #345aaa;
         font-weight: bold;
@@ -181,7 +210,7 @@
                         <div class="col-sm-2 labels">
                             <b>Subject: </b>
                         </div>
-                        <div class="col-sm-10">@Html.DisplayFor(model => model.Subject)</div>
+                        <div class="col-sm-10" id="Subject">@Html.DisplayFor(model => model.Subject)</div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content ">
@@ -222,7 +251,7 @@
                     </div>
                 </div>
                 <div class="col-sm-offset-3 col-sm-9">
-                    <a href="#" id="refer-solution">Refer knowledge base</a>
+                    <a id="refer-solution" href="javascript:openReferKnowledgebaseModal()">Refer knowledge base</a>
                 </div>
                 <div class="col-sm-12">
                     <hr />
@@ -252,8 +281,141 @@
         </div>
     </div>
 </div>
+
+<div id="modal-refer-knowledgebase" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Knowledge Base</h4>
+            </div>
+            <div class="modal-body" style="background-color: #ecf0f5; height: 500px; overflow-y: auto;">
+                <a style="padding: 10px;">
+                    <div class="input-group">
+                        <input type="text" id="solution-search" placeholder="Type something ..." class="form-control">
+                        <span class="input-group-btn">
+                            <button type="button" id="search-btn" class="btn btn-warning btn-flat">Search</button>
+                        </span>
+                    </div>
+                </a>
+                <ul id="result-list" class="nav nav-pills nav-stacked timeline solution-result"></ul>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 @section scripts{
     <script>
+
+
+
+        $("#search-btn")
+            .on("click",
+                function () {
+                    $.ajax({
+                        "url": "/Ticket/SearchSolution/",
+                        "method": "POST",
+                        "data": {
+                            searchtxt: $("#solution-search").val()
+                        },
+                        "success": function (data) {
+                            if (data.success) {
+                                $('#result-list').empty();
+                                if (data.data.length == 0) {
+                                    $('#result-list').append('<li>No result.</li>');
+                                }
+                                $.each(data.data,
+                                    function (index, element) {
+                                        $('#result-list')
+                                            .append('<li><div class="timeline-item"><a class="time text-green solution-refer" href="javascript:insertURL('
+                                                //+ element.URL
+                                                + ')">Refer</a><h3 class="timeline-header no-border"><a class="solution-subject" data-id="'
+                                                + element.Id + '">' + element.Subject
+                                                + '</a></h3><div class="timeline-body" style="display:none;"><div contentEditable="true" class="solution-content editable"></div></div></div></li>');
+                                        //$('#result-list')
+                                        //        .append('<li><div class="timeline-item"><a class="time text-green solution-refer" href="javascript:insertURL('
+                                        //        //+ element.URL
+                                        //        + ')">Refer</a><h3 class="timeline-header no-border"><a class="solution-subject" data-id="'
+                                        //        + element.Id + '">' + element.Subject
+                                        //        + '</a></h3><div class="timeline-body" style="display:none;"><pre class="solution-content" style="font-weight: 600;"></pre></div></div></li>');
+
+                                    });
+                            } else {
+                                //
+                            }
+                        },
+                        "error": function (e) {
+                            noty({
+                                text: "Some error occured. Please try again later!",
+                                type: "error",
+                                layout: "topRight",
+                                timeout: 2000
+                            });
+                        }
+                    });
+                });
+
+        $('#result-list').on('click', 'a[class="solution-subject"]', function (e) {
+            var index = $(".solution-subject").index(this);
+            var contentBox = $(".timeline-body").eq(index);
+            var content = $(".solution-content").eq(index);
+            if (contentBox.is(":hidden")) {
+                $.ajax({
+                    "url": "/Ticket/GetSolutionContent/",
+                    "method": "POST",
+                    "data": {
+                        id: $(this)[0].getAttribute("data-id")
+                    },
+                    "success": function (data) {
+                        if (data.success) {
+                            content.html(data.data);
+                            //content.text(data.data.replace(/\r\n/g, EOL));
+                        } else {
+                            content.text("No solution.");
+                        }
+                        $(".timeline-body").hide();
+                        contentBox.toggle();
+                    },
+                    "error": function (e) {
+                        noty({
+                            text: "Some error occured. Please try again later!",
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                    }
+                });
+            } else {
+                contentBox.toggle();
+            }
+        });
+
+        function insertURL(url) {
+            // blah blah
+            var messUrl = "http://tms.com/KB/1";
+            $("#new-solution").html($("#new-solution").val() + '&#13' + messUrl);
+            noty({
+                text: 'Link inserted!',
+                layout: "topCenter",
+                type: "success",
+                timeout: 2000
+            });
+        };
+
+        function openReferKnowledgebaseModal() {
+            $("#solution-search").val($("#Subject")[0].innerHTML);
+            $("#modal-refer-knowledgebase").modal("show");
+            $("#search-btn").click();
+        }
+
         $("#solveBtn, #saveBtn")
             .on("click",
                 function () {
@@ -273,8 +435,7 @@
                                     type: "error",
                                     timeout: 2000
                                 });
-                            }
-                            else {
+                            } else {
                                 noty({
                                     text: data.msg,
                                     layout: "topCenter",
@@ -284,11 +445,13 @@
                                 if (data.userRole == "Helpdesk") {
                                     setTimeout(function () {
                                         window.location.href = "/HelpDesk/ManageTicket/";
-                                    }, 1000);
+                                    },
+                                        1000);
                                 } else if (data.userRole == "Technician") {
                                     setTimeout(function () {
                                         window.location.href = "/Technician/ManageTicket/";
-                                    }, 1000);
+                                    },
+                                        1000);
                                 }
                             }
                         }
