@@ -103,6 +103,12 @@ namespace TMS.Controllers
         {
             var result = new List<DepartmentViewModel>();
             var queryResult = _departmentService.GetAll();
+            result.Add(new DepartmentViewModel()
+            {
+                Name = "None",
+                Description = "None",
+                Id = 0,
+            });
             foreach (var urg in queryResult)
             {
                 result.Add(new DepartmentViewModel()
