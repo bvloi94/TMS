@@ -18,6 +18,7 @@ namespace TMS.Controllers
         private UserService _userService;
         private SolutionService _solutionServices;
         private FileUploader _fileUploader;
+        private CategoryService _categoryServices;
 
         public KnowledgeBaseController()
         {
@@ -25,6 +26,7 @@ namespace TMS.Controllers
             _userService = new UserService(_unitOfWork);
             _solutionServices = new SolutionService(_unitOfWork);
             _fileUploader = new FileUploader();
+            _categoryServices = new CategoryService(_unitOfWork);
         }
 
         // GET: KB
@@ -77,7 +79,7 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetSolutions (string key_search)
+        public ActionResult GetSolutions(string key_search)
         {
             IEnumerable<KnowledgeBaseViewModels> filteredListItems;
             filteredListItems = _solutionServices.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
@@ -86,6 +88,7 @@ namespace TMS.Controllers
                 Subject = m.Subject,
                 CategoryID = m.CategoryID,
                 Content = m.ContentText,
+                Keyword = m.Keyword == null ? "-" : m.Keyword,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
             }).ToArray();
@@ -107,15 +110,19 @@ namespace TMS.Controllers
             if (id.HasValue)
             {
                 IEnumerable<KnowledgeBaseViewModels> filteredListItems;
-                filteredListItems = _solutionServices.GetSolutionsByCategory(id.Value).Select(m => new KnowledgeBaseViewModels
-                {
-                    ID = m.ID,
-                    Subject = m.Subject,
-                    CategoryID = m.CategoryID,
-                    Content = m.ContentText,
-                    CreatedTime = m.CreatedTime,
-                    ModifiedTime = m.ModifiedTime
-                }).ToArray();
+                List<int> childrenCategoriesIdList = _categoryServices.GetChildrenCategoriesIdList(id.Value);
+                filteredListItems = _solutionServices.GetAllSolutions()
+                    .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
+                    .Select(m => new KnowledgeBaseViewModels
+                    {
+                        ID = m.ID,
+                        Subject = m.Subject,
+                        CategoryID = m.CategoryID,
+                        Content = m.ContentText,
+                        Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        CreatedTime = m.CreatedTime,
+                        ModifiedTime = m.ModifiedTime
+                    }).ToArray();
 
                 if (!string.IsNullOrEmpty(key_search))
                 {
@@ -134,6 +141,12 @@ namespace TMS.Controllers
                 error = true,
                 msg = "Cannot find solutions!"
             });
+        }
+
+        [HttpGet]
+        public ActionResult Detail()
+        {
+            return View();
         }
     }
 }

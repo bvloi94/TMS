@@ -4,6 +4,7 @@
     ViewBag.Title = "Solutions";
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
+
 <style>
     #custom-search-input {
         padding: 3px;
@@ -31,7 +32,7 @@
             font-size: 15px;
         }
 
-    .box-primary {
+    .box {
         overflow: hidden;
     }
 
@@ -70,6 +71,10 @@
         border-bottom: solid 1px #b4d2ef;
         padding: 10px;
         overflow-y: auto;
+    }
+
+    .question-row:last-of-type {
+        border-bottom: none;
     }
 
     .question-list {
@@ -146,7 +151,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="box box-primary">
+        <div class="box box-solid">
             <div class="left-menu col-md-3 menu-collapse">
                 <div class="header"><h5>Topic</h5></div>
                 <div id="category-treeview-div">
@@ -286,7 +291,7 @@
                                 + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
                                 + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
                                 + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
-                                + '</div></div>');
+                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
                         }
                     }
                 },
@@ -320,7 +325,7 @@
                                 + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
                                 + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
                                 + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
-                                + '</div></div>');
+                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
                         }
                     }
                 },
@@ -360,7 +365,6 @@
         $("#category-treeview-div").on("after_close.jstree", function () {
             setQuestionListHeight();
         });
-
 
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
             data.instance.toggle_node(data.node);
