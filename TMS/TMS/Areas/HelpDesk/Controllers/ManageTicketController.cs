@@ -20,6 +20,8 @@ using TMS.ViewModels;
 using ModelError = TMS.ViewModels.ModelError;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -1060,6 +1062,66 @@ namespace TMS.Areas.HelpDesk.Controllers
                     message = ConstantUtil.CommonError.UnavailableTicket
                 });
             }
+        }
+
+        [HttpGet]
+        public ActionResult GetOlderTickets(JqueryDatatableParameterViewModel param, string keywords)
+        {
+            IEnumerable<Ticket> olderTickets = _ticketService.GetOlderTickets();
+
+            IQueryable<Ticket> filteredListItems = olderTickets.AsQueryable();
+            if (!string.IsNullOrEmpty(param.search["value"]))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Code != null && (p.Code.ToLower().Contains(param.search["value"].ToLower())
+                    || p.Subject.ToLower().Equals(param.search["value"].ToLower())));
+            }
+
+            if (!string.IsNullOrWhiteSpace(keywords))
+            {
+                keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                keywords = regex.Replace(keywords, " ");
+                string[] keywordArr = keywords.Split(' ');
+                var predicate = PredicateBuilder.False<Ticket>();
+                foreach (string keyword in keywordArr)
+                {
+                    predicate = predicate.Or(p => p.Subject.ToLower().Contains(keyword.ToLower()));
+                }
+                filteredListItems = filteredListItems.Where(predicate);
+            } 
+
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortDirection = param.order[0]["dir"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Code)
+                        : filteredListItems.OrderByDescending(p => p.Code);
+                    break;
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Subject)
+                        : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new Ticket
+            {
+                ID = m.ID,
+                Code = m.Code,
+                Subject = m.Subject,
+                Description = m.Description
+            });
+
+            JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
+            rsModel.draw = param.draw;
+            rsModel.recordsTotal = displayedList.ToList().Count();
+            rsModel.recordsFiltered = filteredListItems.Count();
+            rsModel.data = displayedList;
+            return Json(rsModel, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

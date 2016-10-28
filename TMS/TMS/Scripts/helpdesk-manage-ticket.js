@@ -261,6 +261,7 @@ function openTicketDetailModal(ticketId) {
             $("#reopen-close-btn").attr("data-ticket-id", data.id);
             $("#reopen-resolve-btn").attr("href", "/Ticket/Solve/" + data.id);
             $("#reopen-reassign-btn").attr("data-ticket-id", data.id);
+            $("#refer-older-ticket-btn").attr("data-id", data.id);
 
             if (!data.solution || data.solution == "-") {
                 $('#ticket-solution').text("This ticket is not solved yet.");

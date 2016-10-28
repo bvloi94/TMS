@@ -328,6 +328,7 @@
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="Utils\PredicateBuilder.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
     <Compile Include="Utils\MaxFileSizeAttribute.cs" />
     <Compile Include="Utils\ValidateDateSQLAttribute.cs" />
@@ -366,6 +367,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\css\select2.min.css" />
+    <Content Include="Content\custom-css\ticket-detail.css" />
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />
     <Content Include="Content\custom-js\tms-dropdown.js" />
@@ -441,6 +443,7 @@
     <Content Include="Content\Plugins\datatables\js\dataTables.foundation.min.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.jqueryui.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.jqueryui.min.js" />
+    <Content Include="Content\Plugins\datatables\js\dataTables.mark.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.material.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.material.min.js" />
     <Content Include="Content\Plugins\datatables\js\dataTables.responsive.min.js" />
@@ -458,6 +461,7 @@
     <Content Include="Content\Plugins\jstree\32px.png" />
     <Content Include="Content\Plugins\jstree\style.min.css" />
     <Content Include="Content\Plugins\jstree\throbber.gif" />
+    <Content Include="Content\Plugins\mark\jquery.mark.min.js" />
     <Content Include="Content\skins\skin-black-light.css" />
     <Content Include="Content\skins\skin-black-light.min.css" />
     <Content Include="Content\skins\skin-black.css" />
@@ -562,6 +566,7 @@
     <Content Include="Areas\Admin\Views\ManageSC\PriorityMatrix.cshtml" />
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
