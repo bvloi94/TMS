@@ -38,5 +38,15 @@ namespace TMS.Services
         {
             return _unitOfWork.SolutionRepository.Get(m => m.CategoryID == id);
         }
+
+        public IEnumerable<Solution> SearchSolutions(string searchtxt)
+        {
+            return _unitOfWork.SolutionRepository.Get(s => s.Subject.ToLower().Contains(searchtxt.ToLower()));
+        }
+
+        public Solution GetSolutionById(int id)
+        {
+            return _unitOfWork.SolutionRepository.GetByID(id);
+        }
     }
 }

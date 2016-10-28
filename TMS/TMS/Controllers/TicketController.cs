@@ -664,7 +664,7 @@ namespace TMS.Controllers
             }
             else
             {
-                solutions = _solutionService.GetAll();
+                solutions = _solutionService.GetAllSolutions();
             }
 
             if (solutions == null)
