@@ -14,6 +14,7 @@ namespace TMS.ViewModels
         public string Content { get; set; }
         public int CategoryID { get; set; }
         public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
+        public string Keyword { get; set; }
         public Nullable<DateTime> CreatedTime { get; set; }
         public Nullable<DateTime> ModifiedTime { get; set; }
     }

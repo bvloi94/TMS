@@ -313,6 +313,7 @@
     <Compile Include="Schedulers\CheckToCloseTicketJob.cs" />
     <Compile Include="Schedulers\CheckOverdueTicketJob.cs" />
     <Compile Include="Services\PriorityMatrixService.cs" />
+    <Compile Include="Services\SolutionService.cs" />
     <Compile Include="Services\TicketAttachmentService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ImpactService.cs" />
@@ -343,6 +344,7 @@
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
+    <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
     <Compile Include="ViewModels\TicketSolveViewModel.cs" />
     <Compile Include="ViewModels\ProfileAdminViewModel.cs" />
@@ -404,6 +406,7 @@
     <Content Include="Content\js\jquery.noty.js" />
     <Content Include="Content\js\select2.min.js" />
     <Content Include="Content\js\trunk8.min.js" />
+    <Content Include="Content\knowledgebase\style.css" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.min.js" />
     <Content Include="Content\Plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.css" />
@@ -652,6 +655,8 @@
     <Content Include="Views\KnowledgeBase\CreateKB.cshtml" />
     <Content Include="Views\Ticket\Detail.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
+    <Content Include="Views\KnowledgeBase\Detail.cshtml" />
+    <Content Include="Views\Shared\KBLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -660,6 +665,9 @@
     <Folder Include="Areas\Admin\Views\Department\" />
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
+    <Folder Include="Content\knowledgebase\css\" />
+    <Folder Include="Content\knowledgebase\images\" />
+    <Folder Include="Content\knowledgebase\js\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

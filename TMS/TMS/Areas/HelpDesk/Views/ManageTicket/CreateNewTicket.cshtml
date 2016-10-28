@@ -1,6 +1,8 @@
 ﻿@model TMS.Models.Ticket
 @{
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Ticket Management";
+
 }
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
 
@@ -26,163 +28,129 @@
     <div class="col-xs-12">
         <div class="box box-solid">
             <div class="box-header with-border">
-                <h4 class="box-title">Create New Ticket</h4>
+                <h4 class="box-title">CREATE NEW TICKET</h4>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
                 <form class="form-horizontal" role="form" id="form-new-ticket" method="POST" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label col-md-3">Subject <font color="red">*</font></label>
-                                <div class="col-md-9">
-                                    <input type="text" class="form-control" name="Subject" placeholder="Subject" id="subject-txt" />
+                    <div class="col-md-2 col-xs-1"></div>
+                    <div class="col-md-8 col-xs-10">
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">SUBJECT <font color="red">*</font></label>
                                     <a href="javascript:void(0)" id="refer-older-ticket-link">Refer older tickets</a>
-                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-3">Type</label>
-                                <div class="col-md-9">
-                                    <select class="form-control" name="Type">
-                                        <option value>None</option>
-                                        <option value="1">Request</option>
-                                        <option value="2">Problem</option>
-                                        <option value="3">Change</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-3">Description</label>
-                                <div class="col-md-9">
-                                    <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" rows="5"></textarea>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-3"></label>
-                                <div class="col-md-9">
-                                    <input class="form-control" type="file" id="descriptionFiles" name="descriptionFiles" multiple>
-                                    @*<div class="btn btn-default btn-file">
-                                            <i class="fa fa-paperclip"></i> Attachment
-                                            <input class="form-control" type="file" name="descriptionFiles" id="descriptionFiles" multiple>
-                                        </div>
-                                        <output id="list"></output>*@
-                                </div>
+                            <div class="col-md-12 col-xs-12">
+                                <input type="text" class="form-control" name="Subject" placeholder="Subject" />
                             </div>
                         </div>
-                        <div class="col-md-6" style="margin-left: -30px;">
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Impact</label>
-                                <div class="col-md-8">
-                                    <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
-                                </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">DESCRIPTION</label>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Impact Detail</label>
-                                <div class="col-md-8">
-                                    <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" cols="3"></textarea>
-                                </div>
+                            <div class="col-md-12 col-xs-12">
+                                <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" rows="5"></textarea>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Urgency</label>
-                                <div class="col-md-8">
-                                    <select class="form-control" name="UrgencyId" data-role="ddl-urgency"></select>
-                                </div>
+                            <div class="col-md-12 col-xs-12">
+                                <input class="form-control" type="file" id="descriptionFiles" name="descriptionFiles" multiple>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Priority</label>
-                                <div class="col-md-8">
-                                    <select class="form-control" name="PriorityId" data-role="ddl-priority"></select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Category</label>
-                                <div class="col-md-8">
-                                    <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
-                                </div>
-                            </div>
-
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="control-label col-md-3">Requester <font color="red">*</font></label>
-                                <div class="col-md-7">
-                                    <input type="hidden" id="requesterId" name="RequesterId">
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">REQUESTER <font color="red">*</font></label>
+                                <input type="hidden" id="requesterId" name="RequesterId">
+                                <div class="requester-input-group">
                                     <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="" readonly>
-                                </div>
-                                <div class="col-md-2">
-                                    <a href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico" /></a>
+                                    <a class="input-group-addon" href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico" /></a>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-3">Department</label>
-                                <div class="col-md-9">
-                                    <select class="form-control" name="DepartmentId" data-role="ddl-department"></select>
-                                </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-6 col-xs-6">
+                                <label class="control-label">DEPARTMENT</label>
+                                <select class="form-control" name="DepartmentId" data-role="ddl-department"></select>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-3">Technician</label>
-                                <div class="col-md-9">
-                                    <select class="form-control" name="TechnicianId" data-role="ddl-technician"></select>
-                                </div>
+                            <div class="col-md-6 col-xs-6">
+                                <label class="control-label">TECHNICIAN</label>
+                                <select class="form-control" name="TechnicianId" data-role="ddl-technician"></select>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-3">Solution</label>
-                                <div class="col-md-9">
-                                    <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" cols="3"></textarea>
-                                </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-4 col-xs-4">
+                                <label class="control-label">IMPACT</label>
+                                <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-3"></label>
-                                <div class="col-md-9">
-                                    <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
-                                    @*<div class="btn btn-default btn-file">
-                                            <i class="fa fa-paperclip"></i> Attachment
-                                            <input type="file" name="file" multiple>
-                                        </div>*@
-                                </div>
+                            <div class="col-md-4 col-xs-4">
+                                <label class="control-label">URGENCY</label>
+                                <select class="form-control" name="UrgencyId" data-role="ddl-urgency"></select>
                             </div>
+                            <div class="col-md-4 col-xs-4">
+                                <label class="control-label">PRIORITY</label>
+                                <select class="form-control" name="PriorityId" data-role="ddl-priority"></select>
+                            </div>
+                        </div>
 
+                        <div class="row form-group">
+                            <div class="col-md-8 col-xs-8">
+                                <label class="control-label">IMPACT DETAIL</label>
+                                <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" rows="4"></textarea>
+                            </div>
+                            <div class="col-md-4 col-xs-4">
+                                <label class="control-label">TYPE</label>
+                                <select class="form-control" name="Type">
+                                    <option value>None</option>
+                                    <option value="1">Request</option>
+                                    <option value="2">Problem</option>
+                                    <option value="3">Change</option>
+                                </select>
+                                <label class="control-label">CATEGORY</label>
+                                <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
+
+                            </div>
                         </div>
-                        <div class="col-md-6" style="margin-left: -30px;">
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Schedule Start Date</label>
-                                <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ScheduleStartDate" />
-                                </div>
+                        <div class="row form-group">
+                            <div class="col-md-6 col-xs-6">
+                                <label class="control-label">SCHEDULE START DATE</label>
+                                <input type="text" class="form-control datetimep" name="ScheduleStartDate" />
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Schedule End Date</label>
-                                <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ScheduleEndDate" />
-                                </div>
+                            <div class="col-md-6 col-xs-6">
+                                <label class="control-label">SCHEDULE END DATE</label>
+                                <input type="text" class="form-control datetimep" name="ScheduleEndDate" />
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Actual Start Date</label>
-                                <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ActualStartDate" />
-                                </div>
+                            <div class="col-md-6 col-xs-6">
+                                <label class="control-label">ACTUAL START DATE</label>
+                                <input type="text" class="form-control datetimep" name="ActualStartDate" />
                             </div>
-                            <div class="form-group">
-                                <label class="control-label col-md-4">Actual End Date</label>
-                                <div class="col-md-8">
-                                    <input type="text" class="form-control datetimep" name="ActualEndDate" />
-                                </div>
+                            <div class="col-md-6 col-xs-6">
+                                <label class="control-label">ACTUAL END DATE</label>
+                                <input type="text" class="form-control datetimep" name="ActualEndDate" />
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">SOLUTION</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" rows="5"></textarea>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
+                            </div>
+                        </div>
+                        <div class="row form-group" style="text-align: center;">
+                            <div class="form-error-messages" data-role="group-form-error"></div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group " style="text-align: center;">
+                                <input type="button" value="Save" data-role="btn-submit-new-ticket" class="btn btn-default bg-olive btn-flat" />
+                                <input type="button" value="Cancel" data-role="btn-cancel" class="btn btn-default btn-flat" />
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-2 col-xs-1"></div>
                 </form>
-                <div class="row" style="text-align: center;">
-                    <div class="form-error-messages" data-role="group-form-error"></div>
-                </div>
-                <div class="row">
-                    <div class="form-group " style="text-align: center;">
-                        <input type="button" value="Save" data-role="btn-submit-new-ticket" class="btn btn-default bg-olive btn-flat" />
-                        <input type="button" value="Cancel" data-role="btn-cancel" class="btn btn-default btn-flat" />
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -659,7 +627,8 @@
         $("[data-role='ddl-department']")
             .on("change",
                 function () {
-                    $("[data-role='ddl-technician']").select2("val", "");
+                    loadInitDropdown('ddl-technician', 'Not assigned', "");
+                    //$("[data-role='ddl-technician']").select2("val", "");
                 });
 
         $(document)
@@ -673,6 +642,7 @@
                 loadInitDropdown('ddl-department', 'Choose Department', 0);
                 requesterTable = initRequesterTable($("#requester-table"));
                 initOlderTicketsTable();
+                $(self._select2).parent().find(".select2-container").css('width', '');
             });
 
         $("#refer-older-ticket-link").click(function () {

@@ -4,6 +4,7 @@
     ViewBag.Title = "Solutions";
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
+
 <style>
     #custom-search-input {
         padding: 3px;
@@ -31,14 +32,13 @@
             font-size: 15px;
         }
 
-    .box-primary {
+    .box {
         overflow: hidden;
     }
 
     .left-menu {
         padding: 0;
         background: #188de1;
-        min-height: 70vh;
         height: 100%;
     }
     /*remove list style (circles)*/
@@ -52,9 +52,12 @@
         padding: 4px 12px;
     }
 
+    #category-treeview-div {
+        min-height: 70vh;
+    }
+
     .questions {
         padding: 0;
-        height: 70vh;
         background: #ffffff;
     }
 
@@ -67,6 +70,15 @@
     .question-row {
         border-bottom: solid 1px #b4d2ef;
         padding: 10px;
+        overflow-y: auto;
+    }
+
+    .question-row:last-of-type {
+        border-bottom: none;
+    }
+
+    .question-list {
+        height: 70vh;
         overflow-y: auto;
     }
 
@@ -139,7 +151,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="box box-primary">
+        <div class="box box-solid">
             <div class="left-menu col-md-3 menu-collapse">
                 <div class="header"><h5>Topic</h5></div>
                 <div id="category-treeview-div">
@@ -149,8 +161,8 @@
             <div class="questions col-md-9">
                 <div class="header-content col-md-12">
                     <div class="col-md-6">
-                        <a class="btn btn-default" href="/KnowledgeBase/CreateKB">New solution</a>
-                        <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-primary btn-flat" href="/KnowledgeBase/CreateKB">New solution</a>
+                        <a class="btn btn-default btn-flat" href="#"><i class="fa fa-trash"></i></a>
                     </div>
                     <div class="box-tools pull-right col-md-4" style="">
                         <div class="has-feedback">
@@ -159,7 +171,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="question-list">
+                <div class="question-list col-md-12">
                 </div>
             </div>
         </div>
@@ -170,7 +182,7 @@
     <script>
         $(document).ready(function () {
             showTreeViewModal();
-
+            getAllSolution();
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -215,6 +227,7 @@
                 }
             });
             $('#create-solution-form textarea').wysihtml5();
+
         });
 
         var showTreeViewModal = function () {
@@ -260,7 +273,7 @@
             });
         };
 
-        $(document).load(function () {
+        function getAllSolution () {
             $.ajax({
                 url: "/KnowledgeBase/GetSolutions/",
                 type: "GET",
@@ -270,7 +283,7 @@
                 success: function (data) {
                     $(".question-list").empty();
                     if (data.data.length == 0) {
-                        $(".question-list").append("<p>There is no solution to display. </p>");
+                        $(".question-list").append("<div class='col-sm-12' style='text-align:center'><p>There is no solution to display. </p></div>");
                     } else {
                         for (i = 0; i < data.data.length; i++) {
                             $(".question-list").append(
@@ -278,7 +291,7 @@
                                 + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
                                 + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
                                 + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
-                                + '</div></div>');
+                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
                         }
                     }
                 },
@@ -291,20 +304,20 @@
                     });
                 }
             });
-        });
+        }
 
-        $("#category-treeview-div").on("click", ".category-node", function () {
+        function getSolutionsByActiveNode(id) {
             $.ajax({
                 url: "/KnowledgeBase/GetSolutionsByCategory/",
                 type: "GET",
                 data: {
-                    id: $(this).attr("data-id"),
+                    id: id,
                     key_search: $("#key_search").val()
                 },
                 success: function (data) {
                     $(".question-list").empty();
                     if (data.data.length == 0) {
-                        $(".question-list").append("<p>There is no solution to display. </p>");
+                        $(".question-list").append("<div class='col-sm-12' style='text-align:center'><p>There is no solution to display. </p></div>");
                     } else {
                         for (i = 0; i < data.data.length; i++) {
                             $(".question-list").append(
@@ -312,7 +325,7 @@
                                 + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
                                 + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
                                 + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
-                                + '</div></div>');
+                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
                         }
                     }
                 },
@@ -325,6 +338,32 @@
                     });
                 }
             });
+        }
+
+        function setQuestionListHeight() {
+            var contentHeight = $("#category-treeview-div").height();
+            $(".question-list").css("height", contentHeight);
+        }
+
+        $("#key_search").on("keyup", function () {
+            if ($("#category-treeview-div .category-node").hasClass("jstree-clicked")) {
+                getSolutionsByActiveNode($(".jstree-clicked").attr("data-id"));
+            }
+            else {
+                getAllSolution();
+            }
+        });
+
+        $("#category-treeview-div").on("click", ".category-node", function () {
+            getSolutionsByActiveNode($(this).attr("data-id"));
+        });
+
+        $("#category-treeview-div").on("after_open.jstree", function () {
+            setQuestionListHeight();
+        });
+
+        $("#category-treeview-div").on("after_close.jstree", function () {
+            setQuestionListHeight();
         });
 
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {

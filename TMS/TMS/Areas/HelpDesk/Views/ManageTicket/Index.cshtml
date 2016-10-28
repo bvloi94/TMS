@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<TMS.Models.Ticket>
 @{
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
-    //ViewBag.Title = "Ticket Management";
+    ViewBag.Title = "Ticket Management";
 }
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
 <style>
@@ -358,13 +358,9 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-solid">
-            <div class="box-header with-border">
-                <h4 class="box-title">Ticket Management</h4>
-            </div>
-            <!-- /.box-header -->
             <div class="box-body" style="display: block;">
                 <a class="btn bg-olive btn-flat" style="display: inline-block;" href='@Url.Action("CreateNewTicket", "ManageTicket")'>
-                    + Create New
+                    <i class="fa fa-plus" aria-hidden="true"></i> Create New
                 </a>
                 <a class="btn bg-olive btn-flat margin-left10 disabled" style="display: inline-block;" data-role="btn-merge-ticket">
                     Merge
