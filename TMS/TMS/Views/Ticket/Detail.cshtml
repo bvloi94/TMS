@@ -74,6 +74,16 @@
         color: transparent;
         visibility: hidden;
     }
+
+    #unapproved {
+        text-decoration: underline;
+    }
+
+    .vertical-center {
+        display: inline-block;
+        vertical-align: middle;
+        float: none;
+    }
 </style>
 
 <div class="row">
@@ -135,54 +145,47 @@
                         <div id="approve-ticket">
                             <div class="col-sm-12 row-content" style="text-align: center">
                                 <div class="col-sm-offset-2 col-sm-8" style="padding-left: 15px">
-                                    <i class="text-light-blue">Are you sastified with this solution?  </i>
                                     <input type="hidden" id="ticketId" value="@Model.ID" />
-                                    <div class="radio-button" style="display: inline-block">
-                                        <div class="btn-group">
-                                            <ul class="pagination">
-                                                <li>
-                                                    <input id="yes" type="radio" name="radAnswer" value="Yes" checked="checked" />
-                                                    <a href="#">
-                                                        <label for="yes" class="input-group">Yes</label>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <input id="no" type="radio" name="radAnswer" value="No" />
-                                                    <a href="#">
-                                                        <label for="no" class="input-group">No</label>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                                    <a href="javascript:void{0}" id="unapproved" class="text-light-blue">Click here</a>
+                                    <span class="text-light-blue"> if this solution didn't solve your problem!</span>
                                 </div>
                             </div>
-                            <div id="feedback-form">
+                            <div id="feedback-form" class="hidden">
+                                <div class="col-sm-12 row-content" style="text-align: left">
+                                    <div class="col-sm-offset-2 col-sm-6 vertical-center">
+                                        What's wrong with this solution?
+                                    </div>
+                                    <div class="col-sm-2 vertical-center" style="text-align: right; padding-right: 18px">
+                                        <a href="javascrip:void{0}" id="submitBtn" style="width: 80px" class="btn btn-primary btn-flat">
+                                            <i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;&nbsp;Send
+                                        </a>
+                                    </div>
+                                </div>
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-offset-2 col-sm-8">
                                         @Html.TextAreaFor(m => m.UnapproveReason, new { @class = "form-control", id = "feedback", rows = "6" })
                                     </div>
                                 </div>
-                                <div class="col-sm-12 row-content" style="text-align: center">
-                                    <input type="button" id="submitBtn" value="Submit" class="btn btn-primary btn-flat" />
-                                </div>
                             </div>
                         </div>
                     }
+                    <div class="col-sm-12 row-content" style="text-align: center">
+                        <a href="@(Url.Action("Index", "Ticket"))" class="btn btn-default btn-flat">
+                            <i class="fa fa-arrow-left fa-1x" aria-hidden="true"></i>
+                            Back
+                        </a>
+                    </div>
                 </div>
             </div>
-            <a href="@(Url.Action("Index", "Ticket"))">
-                <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
-                Back to ticket list
-            </a>
         </div>
     </div>
 </div>
 
 @section scripts{
     <script>
+
         $(document).on('click', '#see-more', function (event) {
-            $(this).parent().trunk8('revert').append(' <a id="see-less" href="#">See Less</a>');
+            $(this).parent().trunk8('revert').append('<br/><a id="see-less" href="javascript:void{0}">See Less</a>');
             return false;
         });
 
@@ -193,8 +196,8 @@
 
         $('#ticket-solution, #ticket-description').trunk8({
             tooltip: false,
-            lines: 3,
-            fill: '&hellip; <a id="see-more" href="#">See More</a>'
+            lines: 5,
+            fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
         });
 
         $(document).on('click', '#see-less', function (event) {
@@ -202,48 +205,68 @@
             return false;
         });
 
+        $('#unapproved').on('click', function () {
+            if ($('#unapproved').hasClass('active')) {
+                $('#feedback-form').addClass('hidden');
+                $('#unapproved').removeClass('active');
+            }
+            else {
+                $('#feedback-form').removeClass('hidden');
+                $('#unapproved').addClass('active')
+                $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
+                $('#feedback').focus();
+            }
+        });
+
         $("#submitBtn").on("click", function () {
-            var agree = $('input:radio[name=radAnswer]:checked').val();
             var id = $("#ticketId").val();
             var fb = $("#feedback").val();
-            $.ajax({
-                url: "/Ticket/ApproveTicket/",
-                dataType: "json",
-                type: "POST",
-                data: {
-                    id: id,
-                    feedback: fb,
-                    command: agree
-                },
-                success: function (data) {
-                    if (!data.success) { //
+            if (fb === null || fb.trim() == "") {
+                noty({
+                    text: "Please tell us what's wrong with this solution!",
+                    layout: "topRight",
+                    type: "error",
+                    timeout: 2000
+                });
+            } else {
+                $.ajax({
+                    url: '/Ticket/ApproveTicket/',
+                    type: "POST",
+                    data: {
+                        id: id,
+                        unapprovedreason: fb,
+                    },
+                    success: function (data) {
+                        if (!data.success) { //
+                            noty({
+                                text: data.msg,
+                                layout: "topRight",
+                                type: "error",
+                                timeout: 2000
+                            });
+                        }
+                        else {
+                            noty({
+                                text: data.msg,
+                                layout: "topRight",
+                                type: "success",
+                                timeout: 2000
+                            });
+                        }
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 2000);
+                    },
+                    error: function (data) {
                         noty({
-                            text: data.msg,
-                            layout: "topCenter",
+                            text: "Cannot connect to server! Please try again later!",
                             type: "error",
-                            timeout: 2000
+                            layout: "topRight",
+                            timeout: 2500
                         });
                     }
-                    else {
-                        noty({
-                            text: data.msg,
-                            layout: "topCenter",
-                            type: "success",
-                            timeout: 2000
-                        });
-                        $('#approve-ticket').hide(1000);
-                    }
-                },
-                processData: false,
-                error: function (data) {
-                    noty({
-                        text: "Some error occured! Please try again later!",
-                        type: "error",
-                        layout: "topRight",
-                        timeout: 2500
-                    });
-                }
-            });
+                });
+            }
         });
     </script>
 }

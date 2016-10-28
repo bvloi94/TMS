@@ -1,34 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using TMS.DAL;
 using TMS.Models;
 
 namespace TMS.Services
 {
-    public class SolutionService
+    internal class SolutionService
     {
-        private readonly UnitOfWork _unitOfWork;
+        private UnitOfWork _unitOfWork;
 
         public SolutionService(UnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public IEnumerable<Solution> GetAll()
+        public IEnumerable<Solution> GetAllSolutions()
         {
             return _unitOfWork.SolutionRepository.Get();
         }
 
-        public IEnumerable<Solution> SearchSolutions(string searchtxt)
+        public void AddSolution(Solution solution)
         {
-            return _unitOfWork.SolutionRepository.Get(s => s.Subject.ToLower().Contains(searchtxt.ToLower()));
+            try
+
+            {
+                _unitOfWork.SolutionRepository.Insert(solution);
+                _unitOfWork.Save();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
-        public Solution GetSolutionById(int id)
+        public IEnumerable<Solution> GetSolutionsByCategory(int id)
         {
-            return _unitOfWork.SolutionRepository.GetByID(id);
+            return _unitOfWork.SolutionRepository.Get(m => m.CategoryID == id);
         }
     }
 }

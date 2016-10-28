@@ -1,10 +1,9 @@
-﻿@{
-    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
-}
+﻿@using TMS.Utils
 @{
+    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Solutions";
 }
-
+<link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 <style>
     #custom-search-input {
         padding: 3px;
@@ -34,7 +33,6 @@
 
     .box-primary {
         overflow: hidden;
-        height: 70vh;
     }
 
     .left-menu {
@@ -45,7 +43,7 @@
     }
     /*remove list style (circles)*/
     .menu-collapse {
-        list-style: none;
+        color: white;
     }
     /*header line style and border*/
     .header {
@@ -53,52 +51,6 @@
         background-color: #085c9a;
         padding: 4px 12px;
     }
-
-    /*set border for every line of menu nad remove top border becouse we dont want double border with header border. */
-    .menu-item {
-        border-top: 0;
-        margin: 0;
-        background: #188de1;
-        text-decoration: none;
-        color: #ffffff;
-        display: block;
-        padding: 8px 12px;
-    }
-        /*we dont want text to be underline as regular link*/
-        .menu-item:hover {
-            background: #1283d7;
-            text-decoration: none;
-        }
-    /*remove list style (circles) for submenu*/
-    .menu-list {
-        list-style: none;
-        background: #5aa4d9;
-        display: none;
-        margin: 0;
-        padding: 0;
-    }
-    /*remove border and set only bottom border for submenu*/
-    .menu-sub-item {
-        margin: 0;
-        border: 0;
-    }
-        /*remove bottom border from last element in submenu*/
-        .menu-sub-item:last-child {
-            border-bottom: 0;
-        }
-        /*set padding for submenu to be inline with maimenu*/
-        .menu-sub-item a {
-            color: #ffffff;
-            padding: 5px 10px;
-            display: block;
-            padding-left: 33px;
-            background: #5aa4d9;
-        }
-            /*remove text decoration for links*/
-            .menu-sub-item a:hover {
-                text-decoration: none;
-                background: #4196d3;
-            }
 
     .questions {
         padding: 0;
@@ -111,7 +63,7 @@
         background-color: #b4d2ef;
         padding: 5px 12px 4px 12px;
     }
-    
+
     .question-row {
         border-bottom: solid 1px #b4d2ef;
         padding: 10px;
@@ -126,7 +78,6 @@
     .rightItems {
         text-align: right;
     }
-
 
     .modal-title {
         color: #ffffff;
@@ -148,224 +99,78 @@
     .required {
         color: red;
     }
+
+    .jstree-node {
+        margin-left: 0px !important;
+        padding-left: 12px !important;
+    }
+
+    .jstree-icon {
+        display: none !important;
+    }
+
+    li[aria-level="1"] > .jstree-children {
+        background-color: #5aa4d9;
+        margin-left: -12px !important;
+        padding-left: 12px !important;
+    }
+
+    .jstree-default .jstree-anchor {
+        min-height: 30px;
+        line-height: 30px;
+    }
+
+    .jstree-anchor {
+        width: 150%;
+        margin-left: -50%;
+        padding-left: 50%;
+        white-space: normal !important;
+        height: auto !important;
+    }
+
+    .jstree-clicked {
+        background: #085c9a !important;
+    }
+
+    .jstree-anchor:hover {
+        background: #085c9a;
+    }
 </style>
 
-<div class="row col-md-12">
-    <div class="box box-primary">
-        <div class="left-menu col-md-2">
-            <div class="menu-collapse">
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary">
+            <div class="left-menu col-md-3 menu-collapse">
                 <div class="header"><h5>Topic</h5></div>
-                <a class="menu-item" id="alltopic" href="#">All topics</a>
-                <a class="menu-item" id="general" href="#">General</a>
-                <a class="menu-item" href="#">Hardware</a>
-                <div class="menu-list">
-                    <div class="menu-sub-item"><a href="#">Desktop Hardware</a></div>
-                    <div class="menu-sub-item"><a href="#">Printer</a></div>
-                    <div class="menu-sub-item"><a href="#">Switch</a></div>
-                    <div class="menu-sub-item"><a href="#">Router</a></div>
-                </div>
-                <a class="menu-item" href="#">Network</a>
-                <div class="menu-list">
-                    <div class="menu-sub-item"><a href="#">LAN</a></div>
-                    <div class="menu-sub-item"><a href="#">WAN</a></div>
-                </div>
-                <a class="menu-item" href="#">Software</a>
-                <div class="menu-list">
-                    <div class="menu-sub-item"><a href="#">Web application</a></div>
-                    <div class="menu-sub-item"><a href="#">Window application</a></div>
-                    <div class="menu-sub-item"><a href="#">Mobile application</a></div>
-                </div>
-            </div>
-        </div>
-        <div class="questions col-md-10">
-            <div class="header-content col-md-12">
-                <div class="col-md-6">
-                    <a class="btn btn-default" data-toggle="modal" data-target="#CreateNew">New solution</a>
-                    <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
-                </div>
-                <div class="box-tools pull-right col-md-4">
-                    <div class="has-feedback">
-                        <input type="text" class="form-control input-sm" placeholder="Search solution..." />
-                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="question-list" id="general1">
-                <div class="question-row">
-                    <div class="question-header col-sm-11">
-                        <input type="checkbox" />
-                        <a class="question-title" href="#">
-                            How can I modify my personal information?
-                        </a>
-                    </div>
-                    <div class="col-sm-1">
-                        <a data-toggle="modal" data-target="#EditSolution"><i class="fa fa-pencil"></i>Edit</a>
-                    </div>
-                    <div class="question-detail col-sm-12">
-                        <p>
-                            To modify your personal information in ABC.vn, including your password, please follow these steps: <br />
-                            Login to access your account and dashboard.<br />
-                            Click ‘Settings’ on the toolbar, shown on the left side of the screen.<br />
-                            After making a change, click the ‘Update’ button to save the changes in the system.
-                        </p>
-                        <p><i>Keyword: customize, personal information, profile, setting</i></p>
-                    </div>
-                </div>
-                <div class="question-row">
-                    <div class="question-header col-sm-11">
-                        <input type="checkbox" />
-                        <a class="question-title" href="#">
-                            Can I edit my username?
-                        </a>
-                    </div>
-                    <div class="col-sm-1">
-                        <a href="#"><i class="fa fa-pencil"></i>Edit</a>
-                    </div>
-                    <div class="question-detail col-sm-12">
-                        <p>
-                            The username is the same with your email from the first time. <br />
-                            You can change your email but you cannot change your username. <br />
-                        </p>
-                        <p><i>Keyword: username, email, personal information, profile, setting</i></p>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <div id="category-treeview-div">
 
-        <!-- Create new solution Modal -->
-        <div id="CreateNew" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Create new solution</h4>
+                </div>
+            </div>
+            <div class="questions col-md-9">
+                <div class="header-content col-md-12">
+                    <div class="col-md-6">
+                        <a class="btn btn-default" href="/KnowledgeBase/CreateKB">New solution</a>
+                        <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
                     </div>
-                    <div class="modal-body">
-                        <div class="box box-body">
-                            <form class="form-horizontal" id="create-solution-form">
-                                <div class="form-group">
-                                    <label class="control-label col-md-2"><span class="required">(*)</span>Title</label>
-                                    <div class="col-md-10">
-                                        <input type="text" class="form-control" placeholder="Enter title here" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-2"><span class="required">(*)</span>Description</label>
-                                    <div class="col-md-10">
-                                        <textarea class="form-control" rows="5" placeholder="Place some text here"></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-2">Attach file</label>
-                                    <div class="col-md-10">
-                                        <input type="file" name="files" multiple class="form-control" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-2"><span class="required">(*)</span>Topic</label>
-                                    <div class="col-md-10">
-                                        <select class="form-control">
-                                            <option value="All topic">All topic</option>
-                                            <option value="General">General</option>
-                                            <option value="Hardware">Hardware</option>
-                                            <option value="Network">Network</option>
-                                            <option value="Software">Software</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-2">Keyword</label>
-                                    <div class="col-md-10">
-                                        <input type="text" class="form-control" />
-                                    </div>
-                                </div>
-                            </form>
+                    <div class="box-tools pull-right col-md-4" style="">
+                        <div class="has-feedback">
+                            <input type="text" id="key_search" class="form-control input-sm" placeholder="Search solution..." />
+                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Save Changes</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
                 </div>
-
-            </div>
-
-        </div>
-
-        <!-- Edit solution Modal -->
-        <div id="EditSolution" class="modal fade" role="dialog">
-            <div class="modal-dialog modal-lg">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Edit solution</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="box box-body">
-                            <form class="form-horizontal">
-                                <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Title</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" placeholder="Enter title here" 
-                                               value="How can I modify my personal information?"/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Description</label>
-                                    <div class="col-md-9">
-                                        <textarea class="form-control" rows="6">
-To modify your personal information in ABC.vn, including your password, please follow these steps:
-Login to access your account and dashboard. 
-Click ‘Settings’ on the toolbar, shown on the left side of the screen. 
-After making a change, click the ‘Update’ button to save the changes in the system.
-                                        </textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3">Attach file</label>
-                                    <div class="col-md-9">
-                                        <input type="file" name="files" multiple class="form-control" />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3"><span class="required">(*)</span>Topic</label>
-                                    <div class="col-md-9">
-                                        <select class="form-control">
-                                            <option value="All topic">All topic</option>
-                                            <option value="General" selected="selected">General</option>
-                                            <option value="Hardware">Hardware</option>
-                                            <option value="Network">Network</option>
-                                            <option value="Software">Software</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-md-3">Keyword</label>
-                                    <div class="col-md-9">
-                                        <input type="text" class="form-control" />
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Save Changes</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    </div>
+                <div class="question-list">
                 </div>
-
             </div>
-
         </div>
     </div>
 </div>
 @section scripts{
+    <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
-        jQuery(document).ready(function () {
+        $(document).ready(function () {
+            showTreeViewModal();
+
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -388,7 +193,7 @@ After making a change, click the ‘Update’ button to save the changes in the 
                 }
             });
 
-            $(".question-title").click(function () {
+            $(".question-list").on("click", ".question-title", function () {
 
                 // if submenu is hidden, does not have active class
                 if (!$(this).hasClass("active")) {
@@ -410,6 +215,120 @@ After making a change, click the ‘Update’ button to save the changes in the 
                 }
             });
             $('#create-solution-form textarea').wysihtml5();
+        });
+
+        var showTreeViewModal = function () {
+            $("#category-treeview-div").jstree({
+                "core": {
+                    "check_callback": true,
+                    "themes": {
+                        "stripes": false,
+                        "icons": false,
+                        "dots": false
+                    },
+                    "data": {
+                        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
+                        "type": "GET",
+                        "contentType": "application/json; charset=utf-8",
+                        "dataFilter": function (json) {
+                            var data = $.parseJSON(json);
+                            var nodes = [];
+                            for (i = 0; i < data.data.length; i++) {
+                                var dataItem = data.data[i];
+                                var node = {
+                                    id: dataItem.ID,
+                                    parent: dataItem.ParentId == null ? "#" : dataItem.ParentId,
+                                    text: dataItem.Name,
+                                    state: {
+                                        'opened': false,
+                                        'selected': false
+                                    },
+                                    li_attr: {
+                                        "style": ""
+                                    },
+                                    a_attr: {
+                                        "data-id": dataItem.ID,
+                                        "class" : "category-node"
+                                    }
+                                };
+                                nodes.push(node);
+                            }
+                            return JSON.stringify(nodes);
+                        }
+                    }
+                },
+            });
+        };
+
+        $(document).load(function () {
+            $.ajax({
+                url: "/KnowledgeBase/GetSolutions/",
+                type: "GET",
+                data: {
+                    key_search: $("#key_search").val()
+                },
+                success: function (data) {
+                    $(".question-list").empty();
+                    if (data.data.length == 0) {
+                        $(".question-list").append("<p>There is no solution to display. </p>");
+                    } else {
+                        for (i = 0; i < data.data.length; i++) {
+                            $(".question-list").append(
+                                '<div class="question-row"><div class="question-header col-sm-11"><input type="checkbox" />'
+                                + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
+                                + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
+                                + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
+                                + '</div></div>');
+                        }
+                    }
+                },
+                error: function (data) {
+                    noty({
+                        text: "Cannot connect to server! Please try again later!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2500
+                    });
+                }
+            });
+        });
+
+        $("#category-treeview-div").on("click", ".category-node", function () {
+            $.ajax({
+                url: "/KnowledgeBase/GetSolutionsByCategory/",
+                type: "GET",
+                data: {
+                    id: $(this).attr("data-id"),
+                    key_search: $("#key_search").val()
+                },
+                success: function (data) {
+                    $(".question-list").empty();
+                    if (data.data.length == 0) {
+                        $(".question-list").append("<p>There is no solution to display. </p>");
+                    } else {
+                        for (i = 0; i < data.data.length; i++) {
+                            $(".question-list").append(
+                                '<div class="question-row"><div class="question-header col-sm-11"><input type="checkbox" />'
+                                + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
+                                + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
+                                + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
+                                + '</div></div>');
+                        }
+                    }
+                },
+                error: function (data) {
+                    noty({
+                        text: "Cannot connect to server! Please try again later!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2500
+                    });
+                }
+            });
+        });
+
+        $('#category-treeview-div').on("select_node.jstree", function (e, data) {
+            data.instance.toggle_node(data.node);
         });
     </script>
 }

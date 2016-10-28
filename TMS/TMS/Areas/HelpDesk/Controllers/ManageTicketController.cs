@@ -18,10 +18,12 @@ using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
 using ModelError = TMS.ViewModels.ModelError;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
-    [Utils.Authorize(Roles = "Helpdesk")]
+    [CustomAuthorize(Roles = "Helpdesk")]
     public class ManageTicketController : Controller
     {
 
@@ -180,7 +182,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             ticket.CreatedTime = DateTime.Now;
             ticket.ModifiedTime = DateTime.Now;
-            ticket.Status = (int?)TicketStatusEnum.New;
+            ticket.Status = (int)TicketStatusEnum.New;
             ticket.RequesterID = model.RequesterId;
             ticket.Subject = model.Subject;
             ticket.Description = model.Description;
@@ -197,7 +199,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 ticket.TechnicianID = model.TechnicianId;
                 ticket.AssignedByID = User.Identity.GetUserId();
-                ticket.Status = (int?)TicketStatusEnum.Assigned;
+                ticket.Status = (int)TicketStatusEnum.Assigned;
             }
 
             try
@@ -255,11 +257,8 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             model.Mode = ticket.Mode;
             if (ticket.Type != null) model.Type = (int)ticket.Type;
-            if (ticket.Status != null)
-            {
-                model.StatusId = (int)ticket.Status;
-                model.Status = ((TicketStatusEnum)ticket.Status).ToString();
-            }
+            model.StatusId = ticket.Status;
+            model.Status = ((TicketStatusEnum)ticket.Status).ToString();
             if (ticket.CategoryID != null)
             {
                 model.CategoryId = (int)ticket.CategoryID;
@@ -530,39 +529,122 @@ namespace TMS.Areas.HelpDesk.Controllers
             });
         }
 
+        [HttpPost]
         public ActionResult CancelTicket(int? ticketId)
         {
-            int result = _ticketService.CancelTicket(ticketId);
-            switch (result)
+            if (ticketId.HasValue)
             {
-                case 1: //success
-                    return Json(new
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
                     {
-                        success = true,
-                        msg = "Ticket was cancelled successfully!"
-                    });
-                case 2: //unavailable ticket
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Ticket cannot be cancelled!"
+                        });
+                    }
+                    try
+                    {
+                        int? status = ticket.Status;
+                        _ticketService.CancelTicket(ticket);
+                        if (status == ConstantUtil.TicketStatus.Assigned)
+                        {
+                            AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                            Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(ticket, technician));
+                            thread.Start();
+                        }
+                        return Json(new
+                        {
+                            success = true,
+                            msg = "Ticket was cancelled successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Cancel ticket error", e);
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Some error occured! Please try again later!"
+                        });
+                    }
+                }
+                else
+                {
                     return Json(new
                     {
                         success = false,
-                        msg = "This ticket is unvailable"
+                        msg = "This ticket is unavailable"
                     });
-                case 3: //wrong ticket status
-                    return Json(new
-                    {
-                        success = false,
-                        msg = "This ticket cannot be cancelled!"
-                    });
-                case 4: //error
-                default:
-                    return Json(new
-                    {
-                        success = false,
-                        msg = "Some error occured! Please try again later!"
-                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "This ticket is unavailable"
+                });
             }
         }
 
+        [HttpPost]
+        public ActionResult CloseTicket(int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    if (ticket.Status != ConstantUtil.TicketStatus.Unapproved)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Ticket cannot be closed!"
+                        });
+                    }
+                    try
+                    {
+                        _ticketService.CloseTicket(ticket);
+                        return Json(new
+                        {
+                            success = true,
+                            msg = "Ticket was closed successfully!"
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        log.Error("Close ticket error", e);
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "Some error occured! Please try again later!"
+                        });
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        msg = "This ticket is unavailable"
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "This ticket is unavailable"
+                });
+            }
+        }
+
+        [HttpPost]
         public ActionResult MergeTicket(int[] selectedTickets)
         {
             if (selectedTickets.Length < 2)
@@ -588,43 +670,54 @@ namespace TMS.Areas.HelpDesk.Controllers
                             msg = "Merging tickets must have the same requester!"
                         });
                     }
-                    if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
-                    {
-                        return Json(new
-                        {
-                            success = false,
-                            msg = "There are some tickets which cannot be merged! \nOnly New or Assigned tickets can be merged!"
-                        });
-                    }
                     requesterId = ticket.RequesterID;
                     tickets.Add(ticket);
                 }
             }
             try
             {
-                tickets.Sort((x, y) => DateTime.Compare((DateTime)x.CreatedTime, (DateTime)y.CreatedTime));
+                tickets.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));
                 Ticket newTicket = tickets[0];
+                for (int i = 1; i < tickets.Count; i++)
+                {
+                    Ticket oldTicket = tickets[i];
+                    if (oldTicket.Status != ConstantUtil.TicketStatus.New && oldTicket.Status != ConstantUtil.TicketStatus.Assigned)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = "There are some children tickets which cannot be merged! \nOnly New or Assigned children tickets can be merged!"
+                        });
+                    }
+                }
                 for (int i = 1; i < tickets.Count; i++)
                 {
                     Ticket oldTicket = tickets[i];
                     if (!string.IsNullOrWhiteSpace(newTicket.Description))
                     {
-                        newTicket.Description += "\n" + oldTicket.Description;
+                        newTicket.Description += "\n\n[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
                     }
                     else
                     {
-                        newTicket.Description = oldTicket.Description;
+                        newTicket.Description = "[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
                     }
                     oldTicket.ModifiedTime = DateTime.Now;
-                    oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
+                    int? status = oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
                     _ticketService.UpdateTicket(oldTicket);
+                    if (status == ConstantUtil.TicketStatus.Assigned)
+                    {
+                        AspNetUser technician = _userService.GetUserById(oldTicket.TechnicianID);
+                        Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(oldTicket, technician));
+                        thread.Start();
+                    }
                 }
                 newTicket.ModifiedTime = DateTime.Now;
                 _ticketService.UpdateTicket(newTicket);
 
                 return Json(new
                 {
-                    success = true
+                    success = true,
+                    msg = string.Format("Tickets were merged into ticket #{0}!", newTicket.Code)
                 });
             }
             catch
@@ -724,7 +817,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     s.Technician = "";
                 }
                 s.SolvedDate = item.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-                s.Status = item.Status.HasValue ? ((TicketStatusEnum)item.Status).ToString() : "";
+                s.Status = ((TicketStatusEnum)item.Status).ToString();
                 s.ModifiedTime = item.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
                 tickets.Add(s);
             }
@@ -751,11 +844,9 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
             if (ticket.Type != null) model.Type = (int)ticket.Type;
             model.Mode = ticket.Mode;
-            if (ticket.Status != null)
-            {
-                model.StatusId = (int)ticket.Status;
-                model.Status = ((TicketStatusEnum)ticket.Status).ToString();
-            }
+
+            model.StatusId = ticket.Status;
+            model.Status = ((TicketStatusEnum)ticket.Status).ToString();
             if (ticket.CategoryID != null)
             {
                 model.CategoryId = (int)ticket.CategoryID;
@@ -864,6 +955,119 @@ namespace TMS.Areas.HelpDesk.Controllers
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = requesters;
             return Json(rsModel, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetTicketDetailForReassign(int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                if (ticket != null)
+                {
+                    AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                    if (technician != null)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            technicianId = ticket.TechnicianID,
+                            technician = technician.Fullname,
+                            departmentId = technician.DepartmentID,
+                            department = technician.Department.Name
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            technicianId = "",
+                            technician = "",
+                            departmentId = "",
+                            department = ""
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = "This ticket is unavailable"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult Reassign(string technicianId, int? ticketId)
+        {
+            if (ticketId.HasValue)
+            {
+                AspNetUser technician = _userService.GetActiveUserById(technicianId);
+                if (technician != null)
+                {
+                    Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
+                    if (ticket != null)
+                    {
+                        if (ticket.Status == ConstantUtil.TicketStatus.Unapproved)
+                        {
+                            try
+                            {
+                                ticket.TechnicianID = technicianId;
+                                ticket.Status = ConstantUtil.TicketStatus.Assigned;
+                                ticket.ModifiedTime = DateTime.Now;
+                                _ticketService.UpdateTicket(ticket);
+                                Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenAssignTicket(ticket, technician));
+                                thread.Start();
+                                return Json(new
+                                {
+                                    success = true,
+                                    message = "Ticket was reassigned successfully!"
+                                });
+                            }
+                            catch
+                            {
+                                return Json(new
+                                {
+                                    success = false,
+                                    message = ConstantUtil.CommonError.DBExceptionError
+                                });
+                            }
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = ConstantUtil.CommonError.InvalidTicket
+                            });
+                        }
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.UnavailableTicket
+                        });
+                    }
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.UnavailableTechnician
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.UnavailableTicket
+                });
+            }
         }
 
         protected override void Dispose(bool disposing)

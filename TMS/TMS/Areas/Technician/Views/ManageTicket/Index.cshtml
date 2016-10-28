@@ -421,10 +421,10 @@
                         "render": function (data, type, row) {
                             var solveUrl = '/Ticket/Solve/' + row[6];
                             if (row[4] == 2) {
-                                return "<a href='" + solveUrl + "' class='btn btn-primary' >Solve</a>";
+                                return "<a href='" + solveUrl + "' class='btn btn-primary btn-flat' >Solve</a>";
                             }
                             else {
-                                return "<a class='btn btn-default' disabled>Solve</a>";
+                                return "<a class='btn btn-default btn-flat' disabled>Solve</a>";
                             }
                         },
                         "sortable": false,

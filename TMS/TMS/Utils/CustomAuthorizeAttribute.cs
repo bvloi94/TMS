@@ -7,7 +7,7 @@ using System.Web.Mvc;
 namespace TMS.Utils
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
-    public class AuthorizeAttribute : System.Web.Mvc.AuthorizeAttribute
+    public class CustomAuthorizeAttribute : AuthorizeAttribute
     {
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {

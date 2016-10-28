@@ -143,6 +143,34 @@ function handleFileSelect(evt) {
     reader.readAsDataURL(f);
 }
 
+var notifyFlashMessage = function (options) {
+    options = $.extend({}, options, { timeout: 3000 });
+    if (!options.message) {
+        options.message = getFlashMessageFromCookie();
+        options.status = getFlashMessageStatusFromCookie();
+        deleteFlashMessageCookie();
+    }
+    if (options.message) {
+        if (options.status) {
+            $.notify(options.message, options.status);
+        } else {
+            $.notify(options.message, "success");
+        }
+    }
+};
+
+function getFlashMessageFromCookie() {
+    return $.cookie("FlashMessage");
+}
+
+function getFlashMessageStatusFromCookie() {
+    return $.cookie("FlashMessageStatus");
+}
+
+function deleteFlashMessageCookie() {
+    $.removeCookie('FlashMessage', { path: '/' });
+    $.removeCookie('FlashMessageStatus', { path: '/' });
+}
 
 $(document).ready(function () {
 

@@ -35,14 +35,12 @@ namespace TMS.Services
 
         public AspNetUser GetUserById(string id)
         {
-            try
-            {
-                return _unitOfWork.AspNetUserRepository.GetByID(id);
-            }
-            catch
-            {
-                throw;
-            }
+            return _unitOfWork.AspNetUserRepository.GetByID(id);
+        }
+
+        public AspNetUser GetActiveUserById(string id)
+        {
+            return _unitOfWork.AspNetUserRepository.Get(m => m.Id.Equals(id) && m.IsActive == true).FirstOrDefault();
         }
 
         public bool IsValidEmail(string email)
@@ -100,7 +98,7 @@ namespace TMS.Services
         public IEnumerable<AspNetUser> GetTechnicianByPattern(string query, int? departmentId)
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician"
-                                     && r.DepartmentID==departmentId
+                                     && r.DepartmentID == departmentId
                                      && (query == null || r.Fullname.Contains(query)));
         }
 
@@ -140,5 +138,10 @@ namespace TMS.Services
             return isEnable;
         }
 
+        public IEnumerable<AspNetUser> GetActiveTechnicians()
+        {
+            return _unitOfWork.AspNetUserRepository.Get(m => m.AspNetRoles.FirstOrDefault().Name.ToLower().Equals("technician")
+                && m.IsActive == true);
+        }
     }
 }

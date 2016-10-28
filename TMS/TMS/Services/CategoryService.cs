@@ -27,6 +27,11 @@ namespace TMS.Services
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.Category);
         }
 
+        public IEnumerable<Category> GetAll()
+        {
+            return _unitOfWork.CategoryRepository.Get();
+        }
+
         public IEnumerable<Category> GetSubCategories()
         {
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory);
@@ -37,7 +42,7 @@ namespace TMS.Services
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory
                 && m.ParentID == categoryId);
         }
-
+        
         public IEnumerable<Category> GetItems(int subCategoryId)
         {
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.Item
@@ -98,17 +103,65 @@ namespace TMS.Services
                     return true;
                 }
             }
-            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any();
+            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any() 
+                || _unitOfWork.SolutionRepository.Get(m => m.CategoryID == category.ID).Any();
         }
 
         public void DeleteCategory(Category category)
         {
-            foreach (Category childCategory in GetChildrenCategories(category.ID))
+            foreach (Category childCategory in GetChildrenCategories(category.ID).ToList())
             {
+                if (childCategory.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory)
+                {
+                    foreach (Category item in GetChildrenCategories(childCategory.ID).ToList())
+                    {
+                        _unitOfWork.CategoryRepository.Delete(item);
+                    }
+                }
                 _unitOfWork.CategoryRepository.Delete(childCategory);
             }
             _unitOfWork.CategoryRepository.Delete(category);
             _unitOfWork.Save();
+        }
+
+        public List<int> GetChildrenCategoriesIdList(int categoryId)
+        {
+            List<int> list = new List<int>();
+            IEnumerable<Category> childrenCategories = GetChildrenCategories(categoryId);
+            foreach (Category childCategory in childrenCategories)
+            {
+                list.Add(childCategory.ID);
+                if (childCategory.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory)
+                {
+                    IEnumerable<Category> items = GetChildrenCategories(childCategory.ID);
+                    foreach (Category item in items)
+                    {
+                        list.Add(item.ID);
+                    }
+                }
+            }
+            return list;
+        }
+
+        public string GetCategoryPath(Category category)
+        {
+            if (category == null)
+            {
+                return "-";
+            }
+            else
+            {
+                string path = "";
+                path = category.Name;
+
+                while (category.ParentID != null)
+                {
+                    category = GetCategoryById(category.ParentID.Value);
+                    path = category.Name + " > " + path;
+                }
+
+                return path;
+            }
         }
     }
 }

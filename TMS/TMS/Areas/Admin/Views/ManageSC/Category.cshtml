@@ -4,6 +4,7 @@
     ViewBag.Title = "Manage Category";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
+<link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 <style>
     div.slider {
         display: none;
@@ -26,6 +27,7 @@
                 <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateCategoryModal()"><i class="fa fa-plus"></i> New Category</a>
                 <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateSubCategoryModal()"><i class="fa fa-plus"></i> New Sub Category</a>
                 <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateItemModal()"><i class="fa fa-plus"></i> New Item</a>
+                <a href="javascript:void(0)" class="btn btn-flat btn-default" onclick="showTreeViewModal()">Tree View</a>
                 <table class="table table-bordered dataTable" id="category-table">
                     <thead>
                         <tr>
@@ -175,9 +177,28 @@
     </div>
 </div>
 
+<div class="modal" id="treeview-modal">
+    <div class="modal-dialog" style="width: 400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Category Tree View</h4>
+            </div>
+            <div class="modal-body" style="height: 70vh; overflow-y: scroll">
+                <div id="category-treeview-div">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @Styles.Render("~/Content/datatables")
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
+    <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
         $("#category-table").DataTable({
             processing: true,
@@ -828,6 +849,59 @@
                 }
             });
 
+        };
+
+        var showTreeViewModal = function () {
+            $("#category-treeview-div").jstree({
+                "core": {
+                    "check_callback": true,
+                    "themes": {
+                        "stripes": false,
+                        "icons": false,
+                        "dots": false
+                    },
+                    "data": {
+                        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
+                        "type": "GET",
+                        "contentType": "application/json; charset=utf-8",
+                        //"cache": false,
+                        "dataFilter": function (json) {
+                            var data = $.parseJSON(json);
+                            var nodes = [];
+                            for (i = 0; i < data.data.length; i++) {
+                                var dataItem = data.data[i];
+                                var node = {
+                                    "id": dataItem.ID,
+                                    "parent": dataItem.ParentId == null ? "#" : dataItem.ParentId,
+                                    "text": dataItem.Name,
+                                    "state": {
+                                        'opened': true,
+                                        'selected': false
+                                    }
+                                };
+                                nodes.push(node);
+                            }
+                            return JSON.stringify(nodes);
+                        }
+                    }
+                },
+                //"plugins": ["json_data"],
+                //"json_data": {
+                //    "ajax":
+                //    {
+                //        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
+                //        "type": "GET",
+                //        "data": function (node) {
+                //            console.info("Nodes:", node);
+                //            return {
+                //                "operation": "get_children",
+                //                "id": node.attr ? node.attr("id").replace("node_", "") : 1
+                //            };
+                //        }
+                //    }
+                //}
+            });
+            $("#treeview-modal").modal("show");
         };
     </script>
 }

@@ -23,8 +23,9 @@ namespace TMS.Models
         public int ID { get; set; }
         public string Subject { get; set; }
         public string ContentText { get; set; }
-        public Nullable<int> CategoryID { get; set; }
-        public Nullable<bool> IsDeleted { get; set; }
+        public int CategoryID { get; set; }
+        public string Keyword { get; set; }
+        public string Path { get; set; }
         public Nullable<System.DateTime> CreatedTime { get; set; }
         public Nullable<System.DateTime> ModifiedTime { get; set; }
     
