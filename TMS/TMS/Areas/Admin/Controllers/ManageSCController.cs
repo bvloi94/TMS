@@ -116,7 +116,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             var urgencyList = _urgencyService.GetAll();
             var default_search_key = Request["search[value]"];
-           
+
             IEnumerable<Urgency> filteredListItems;
             if (!string.IsNullOrEmpty(default_search_key))
             {
@@ -166,7 +166,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             var priorityList = _priorityService.GetAll();
             var default_search_key = Request["search[value]"];
-           
+
             IEnumerable<Priority> filteredListItems;
             if (!string.IsNullOrEmpty(default_search_key))
             {
@@ -303,7 +303,7 @@ namespace TMS.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult GetPriorityMatrixTable()
         {
-            ViewBag.priorityList = new SelectList(_priorityService.GetAll(), "ID", "Name"); 
+            ViewBag.priorityList = new SelectList(_priorityService.GetAll(), "ID", "Name");
             ViewBag.impactList = _impactService.GetAll();
             ViewBag.urgencyList = _urgencyService.GetAll();
             return PartialView("_PriorityMatrixTable");
@@ -329,7 +329,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             var name = Request["name"];
             var description = Request["description"];
-            bool isDuplicatedName = _impactService.IsDuplicatedName(null, name);
+            bool isDuplicatedName = _impactService.IsDuplicatedName(null, name.ToLower().Trim());
             if (isDuplicatedName)
             {
                 return Json(new
@@ -342,8 +342,8 @@ namespace TMS.Areas.Admin.Controllers
             else
             {
                 Impact impact = new Impact();
-                impact.Name = name;
-                impact.Description = description;
+                impact.Name = name.Trim();
+                impact.Description = description == null ? "" : description.Trim();
                 try
                 {
                     _impactService.AddImpact(impact);
@@ -397,7 +397,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             if (id.HasValue)
             {
-                bool isDuplicatedName = _impactService.IsDuplicatedName(id, model.Name);
+                bool isDuplicatedName = _impactService.IsDuplicatedName(id, model.Name.ToLower().Trim());
                 if (isDuplicatedName)
                 {
                     return Json(new
@@ -410,9 +410,8 @@ namespace TMS.Areas.Admin.Controllers
                 else
                 {
                     Impact impact = _impactService.GetImpactById(id.Value);
-                    impact.Name = model.Name;
-                    impact.Description = model.Description;
-
+                    impact.Name = model.Name.Trim();
+                    impact.Description = model.Description == null ? "" : model.Description.Trim();
                     _impactService.UpdateImpact(impact);
                     return Json(new
                     {
@@ -427,7 +426,7 @@ namespace TMS.Areas.Admin.Controllers
                 {
                     success = false,
                     error = true,
-                    message = "Cannot update!"
+                    message = "Cannot update impact!"
                 });
             }
         }
@@ -494,7 +493,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             var name = Request["name"];
             var description = Request["description"];
-            bool isDuplicateName = _priorityService.IsDuplicateName(null, name);
+            bool isDuplicateName = _priorityService.IsDuplicateName(null, name.ToLower().Trim());
             if (isDuplicateName)
             {
                 return Json(new
@@ -507,8 +506,8 @@ namespace TMS.Areas.Admin.Controllers
             else
             {
                 Priority priority = new Priority();
-                priority.Name = name;
-                priority.Description = description;
+                priority.Name = name.Trim();
+                priority.Description = description == null ? "" : description.Trim();
                 try
                 {
                     _priorityService.AddPriority(priority);
@@ -528,11 +527,7 @@ namespace TMS.Areas.Admin.Controllers
                     });
 
                 }
-
-
-
             }
-
         }
 
         [HttpGet]
@@ -565,7 +560,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             var name = Request["name"];
             var description = Request["description"];
-            bool isDuplicatedName = _urgencyService.IsDuplicatedName(null, name);
+            bool isDuplicatedName = _urgencyService.IsDuplicatedName(null, name.ToLower().Trim());
             if (isDuplicatedName)
             {
                 return Json(new
@@ -578,8 +573,8 @@ namespace TMS.Areas.Admin.Controllers
             else
             {
                 Urgency urgency = new Urgency();
-                urgency.Name = name;
-                urgency.Description = description;
+                urgency.Name = name.Trim();
+                urgency.Description = description == null ? "" : description.Trim();
                 try
                 {
                     _urgencyService.AddUrgency(urgency);
@@ -632,7 +627,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             if (id.HasValue)
             {
-                bool isDuplicatedName = _urgencyService.IsDuplicatedName(id, model.Name);
+                bool isDuplicatedName = _urgencyService.IsDuplicatedName(id, model.Name.ToLower().Trim());
                 if (isDuplicatedName)
                 {
                     return Json(new
@@ -645,9 +640,8 @@ namespace TMS.Areas.Admin.Controllers
                 else
                 {
                     Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
-                    urgency.Name = model.Name;
-                    urgency.Description = model.Description;
-
+                    urgency.Name = model.Name.Trim();
+                    urgency.Description = model.Description == null ? "" : model.Description.Trim();
                     _urgencyService.UpdateUrgency(urgency);
                     return Json(new
                     {
@@ -672,7 +666,7 @@ namespace TMS.Areas.Admin.Controllers
         {
             if (id.HasValue)
             {
-                bool isDuplicatedName = _priorityService.IsDuplicatedName(id, model.Name);
+                bool isDuplicatedName = _priorityService.IsDuplicatedName(id, model.Name.ToLower().Trim());
                 if (isDuplicatedName)
                 {
                     return Json(new
@@ -685,9 +679,8 @@ namespace TMS.Areas.Admin.Controllers
                 else
                 {
                     Priority priority = _priorityService.GetPriorityByID(id.Value);
-                    priority.Name = model.Name;
-                    priority.Description = model.Description;
-
+                    priority.Name = model.Name.Trim();
+                    priority.Description = model.Description == null ? "" : model.Description.Trim();
                     _priorityService.UpdatePriority(priority);
                     return Json(new
                     {

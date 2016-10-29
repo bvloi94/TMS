@@ -76,5 +76,18 @@ namespace TMS.Services
         {
             return _unitOfWork.SolutionRepository.Get(m => m.CategoryID == id);
         }
+
+        public bool IsduplicatePath(int? id , string path)
+        {
+            if (id == null)
+            {
+                return _unitOfWork.SolutionRepository.Get(m => m.Path == path).Any();
+            }
+            else
+            {
+                return _unitOfWork.SolutionRepository.Get(m =>m.ID != id && m.Path == path).Any();
+            }
+                
+        }
     }
 }

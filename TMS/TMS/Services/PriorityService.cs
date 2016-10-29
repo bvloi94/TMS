@@ -58,11 +58,11 @@ namespace TMS.Services
         {
             if (id == null)
             {
-                return _unitOfWork.ImpactRepository.Get(p => p.Name == name).Any();
+                return _unitOfWork.PriorityRepository.Get(p => p.Name == name).Any();
             }
             else
             {
-                return _unitOfWork.ImpactRepository.Get(p => p.ID != id && p.Name == name).Any();
+                return _unitOfWork.PriorityRepository.Get(p => p.ID != id && p.Name == name).Any();
             }
         }
 
@@ -85,7 +85,7 @@ namespace TMS.Services
             return _unitOfWork.TicketRepository.Get(m => m.PriorityID == priority.ID).Any();
         }
 
-        internal void DeletePriority(Priority priority)
+        public void DeletePriority(Priority priority)
         {
             try
             {

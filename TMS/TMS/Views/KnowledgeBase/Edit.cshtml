@@ -25,10 +25,6 @@
         color: #ff0000;
     }
 
-    .category-option {
-        font-size: 15px;
-        font-weight: bold;
-    }
 </style>
 
 <div class="row">
@@ -38,7 +34,7 @@
             {
                 @Html.AntiForgeryToken()
                 <div class="form-group">
-                    <label class="control-label col-md-2"><span class="required">*</span> Subject</label>
+                    <label class="control-label col-md-2">Subject&nbsp;<span class="required">*</span></label>
                     <div class="col-md-10">
                         @Html.TextBoxFor(m => m.Subject, new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
@@ -47,7 +43,7 @@
                 <div class="form-group" id="description">
                     <label class="control-label col-md-2">Content</label>
                     <div class="col-md-10">
-                        @Html.TextAreaFor(m => m.Content, new { @class = "form-control", id = "content-area", rows = "20" })
+                        @Html.TextAreaFor(m => m.Content, new { @class = "form-control", id = "content-area", rows = "15" })
                     </div>
                 </div>
                 <div class="form-group">
@@ -60,11 +56,26 @@
                         }
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <label class="control-label col-md-2">Topic</label>
+                    <label class="control-label col-md-2">Keyword</label>
                     <div class="col-md-10">
-                        <select id="category-dropdown" class="form-control" name="CategoryID"></select>
+                        @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", id = "keyword" })
+                        @Html.ValidationMessageFor(m => m.Keyword, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Topic&nbsp;<span class="required">*</span></label>
+                    <div class="col-md-10">
+                        <select class="form-control" name="CategoryID" data-role="ddl-category"></select><br />
                         @Html.ValidationMessageFor(m => m.CategoryID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Path&nbsp;<span class="required">*</span></label>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(m => m.Path, new { @class = "form-control", id = "path" })
+                        @Html.ValidationMessageFor(m => m.Path, "", new { @class = "text-danger" })
                     </div>
                 </div>
 
@@ -74,6 +85,8 @@
                         <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "KnowledgeBase"))">Cancel</a>
                     </div>
                 </div>
+
+
             }
         </div>
     </div>
@@ -83,44 +96,28 @@
     <script>
         $(document)
          .ready(function () {
-             loadCategoryDropdown();
              $('#content-area').wysihtml5();
+             initCategoryDropdown({
+                 control: $("[data-role=ddl-category]"),
+                 ignore: function () {
+                     return [];
+                 }
+             });
+             loadInitDropdown('ddl-category', '@(Model.CategoryID == 0 ? "--Chooose Category--" : @Model.Category)', @Model.CategoryID);
+                @if (Model != null) {
+                 if (Model.CategoryID != 0 && Model.Category != null)
+                 {
+                     <text>
+                         loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
+                     </text>
+                 }
+             }
+           
          });
 
-        var loadCategoryDropdown = function () {
-            $.ajax({
-                url: "/Dropdown/LoadCategoryDropDown",
-                type: "GET",
-                dataType: "Json",
-                success: function (data) {
-                    console.log(data);
-                    $("#category-dropdown").append("<option value>--Select Topic--</option>");
-
-                    for (i = 0; i < data.length; i++) {
-                        var row = data[i];
-                        if (row.Level == '@ConstantUtil.CategoryLevel.Category') {
-                            var option = "<option value='" + row.ID + "' class='category-option'>" + row.Name + "</option>";
-                        } else if (row.Level == '@ConstantUtil.CategoryLevel.SubCategory') {
-                            var option = "<option value='" + row.ID + "'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + row.Name + "</option>";
-                        } else {
-                            var option = "<option value='" + row.ID + "'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + row.Name + "</option>";
-                        }
-                        $("#category-dropdown").append(option);
-                    }
-                    @if (Model.CategoryID == 0)
-                    {
-                        <text>
-                    $("#category-dropdown").val($("#category-dropdown").first().val());
-                    </text>
-                    }
-                    else
-                    {
-                        <text>
-                    $("#category-dropdown").val(@Model.CategoryID);
-                    </text>
-                    }
-                }
-            });
-        }
+        $("#subject-txt").keyup(function () {
+            $("#path").val($("#subject-txt").val().trim().toLowerCase().replace(/  /g, ' ').replace(/ /g, '-').replace(/[^\w-]+/g, '').replace(/\--/g, ''));
+        });
+     
     </script>
 }

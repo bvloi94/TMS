@@ -16,10 +16,16 @@ namespace TMS.ViewModels
         public string Subject { get; set; }
         [AllowHtml]
         public string Content { get; set; }
+
+        //public int CategoryID { get; set; }
         [Required(ErrorMessage = "Please select totpic!")]
         public int CategoryID { get; set; }
+        public string Category { get; set; }
         public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
         public Nullable<DateTime> CreatedTime { get; set; }
         public Nullable<DateTime> ModifiedTime { get; set; }
+        [Required(ErrorMessage = "Please input a path!")]
+        public string Path { get; set; }
+        public string Keyword { get; set; }
     }
 }
