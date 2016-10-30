@@ -1,10 +1,29 @@
-﻿@using TMS.Models
-@using TMS.Utils
+﻿@using TMS.Utils
 @model TMS.ViewModels.TicketViewModel
 @{
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Ticket Management";
 }
+<link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
+
+<style>
+    mark {
+        background: orange;
+        color: black;
+        padding: 0;
+    }
+
+    .big-label {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .big-textbox {
+        width: 400px;
+        font-size: 16px;
+    }
+</style>
+
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-solid">
@@ -24,6 +43,7 @@
                             </div>
                             <div class="col-md-12 col-xs-12">
                                 <input type="text" class="form-control" name="Subject" placeholder="Subject" value="@Model.Subject" />
+                                <a href="javascript:void(0)" id="refer-older-ticket-link">Refer older tickets</a>
                             </div>
                         </div>
                         <div class="row form-group">
@@ -228,8 +248,279 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+<div id="older-tickets-modal" class="modal" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Refer older tickets</h4>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center">
+                    <span class="big-label">Keyword:</span> <input type="text" id="refer-older-tickets-search" class="big-textbox" />
+                </div>
+                <table class="table dataTable" id="older-tickets-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Subject</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="detail-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="ticket-subject"></h4>
+            </div>
+            <div class="modal-body detail-modal-body">
+                <div class="ticket-contents" id="collapse-parent">
+                    <div class="box box-solid">
+                        <div class="box-header with-border collapsed" data-toggle="collapse" data-target="#detail-box" data-parent="#collapse-parent">
+                            <h2 class="box-title">
+                                <i class="fa fa-info-circle header-content"></i>DETAIL
+                            </h2>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body collapse" id="detail-box">
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-4 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Type: </b>
+                                    </div>
+                                    <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-type"></span></div>
+                                </div>
+                                <div class="col-sm-4 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Mode: </b>
+                                    </div>
+                                    <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-mode"></span></div>
+                                </div>
+                                <div class="col-sm-4 " style="padding-left: 40px">
+                                    <div class="col-sm-6 labels">
+                                        <b>Status: </b>
+                                    </div>
+                                    <div class="col-sm-6" id="ticket-status"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-4 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Urgency: </b>
+                                    </div>
+                                    <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-urgency"></span></div>
+                                </div>
+                                <div class="col-sm-4 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Priority: </b>
+                                    </div>
+                                    <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-priority"></span></div>
+                                </div>
+                                <div class="col-sm-4 " style="padding-left: 40px">
+                                    <div class="col-sm-6 labels">
+                                        <b>Impact: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-impact"></span></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-12 ">
+                                    <div class="col-sm-2 labels">
+                                        <b>Impact Detail: </b>
+                                    </div>
+                                    <div class="col-sm-10" style="padding-left: 10px"><span id="ticket-impact-detail"></span></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-2 labels">
+                                        <b>Category: </b>
+                                    </div>
+                                    <div class="col-sm-10" style="padding-left: 10px"><span id="ticket-category"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box box-solid">
+                        <div class="box-header with-border collapsed" data-toggle="collapse" data-target="#date-time-box" data-parent="#collapse-parent">
+                            <h2 class="box-title">
+                                <i class="fa fa-clock-o header-content"></i>DATE AND TIME
+                            </h2>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body collapse" id="date-time-box">
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-6">
+                                    <div class="col-sm-6 labels">
+                                        <b>Created date: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-created-date"></span></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="col-sm-6 labels">
+                                        <b>Last modified date: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-modified-date"></span></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-6">
+                                    <div class="col-sm-6 labels">
+                                        <b>Scheduled start time: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-schedule-start"></span></div>
+                                </div>
+                                <div class="col-sm-6 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Schedule end time: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-schedule-end"></span></div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-6 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Actual start time: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-actual-start"></span></div>
+                                </div>
+                                <div class="col-sm-6 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Actual end time: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-actual-end"></span></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-6">
+                                    <div class="col-sm-6 labels">
+                                        <b>Solved date: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-solved-date"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box box-solid">
+                        <div class="box-header with-border" data-toggle="collapse" data-target="#information-box" data-parent="#collapse-parent">
+                            <h2 class="box-title">
+                                <i class="fa fa-file-text header-content"></i>INFORMATION
+                            </h2>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body collapse in" id="information-box">
+                            <div class="col-sm-12 row-content ">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-2 labels">
+                                        <b>Description: </b>
+                                    </div>
+                                    <div class="col-sm-10 pre-wrap" id="ticket-description" style="padding-left: 10px"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content ">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-2 labels">
+                                        <b>Solution: </b>
+                                    </div>
+                                    <div class="col-sm-10 pre-wrap" id="ticket-solution" style="padding-left: 10px"></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content ">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-2 labels">
+                                        <b>Attachment: </b>
+                                    </div>
+                                    <div class="col-sm-10"><span id="ticket-attachment"></span></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content">
+                                <div class="col-sm-4 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Department: </b>
+                                    </div>
+                                    <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-department"></span></div>
+                                </div>
+                                <div class="col-sm-4 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Technician: </b>
+                                    </div>
+                                    <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-technician"></span></div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12 row-content ">
+                                <div class="col-sm-4">
+                                    <div class="col-sm-6 labels">
+                                        <b>Created by: </b>
+                                    </div>
+                                    <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-created-by"></span></div>
+                                </div>
+                                <div class="col-sm-4 ">
+                                    <div class="col-sm-6 labels">
+                                        <b>Assigned by: </b>
+                                    </div>
+                                    <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-assigned-by"></span></div>
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="col-sm-6 labels" style="padding-left: 30px">
+                                        <b>Solved by: </b>
+                                    </div>
+                                    <div class="col-sm-6"><span id="ticket-solved-by"></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-flat btn-primary" data-role="refer-older-ticket" id="refer-older-ticket-btn">Refer</button>
+                <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="older-tickets-confirm-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Are you sure you want to refer this ticket?</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    This ticket's information will be filled to your working ticket's information.<br />
+                    All inputted information can be replaced.
+                </p>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+                <button type="button" class="btn btn-flat btn-primary" id="refer-older-ticket-confirm-btn"><i class="fa fa-check" aria-hidden="true"></i> Yes</button>
+                <button type="button" class="btn btn-flat btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/helpdesk-manage-ticket")
+    <script src="~/Content/Plugins/mark/jquery.mark.min.js"></script>
     <script>
 
         var requesterTable = null;
@@ -403,6 +694,7 @@
                 requesterTable = initRequesterTable($("#requester-table"));
                 initDropdownControl();
                 loadEditData();
+                initOlderTicketsTable();
             });
     </script>
 }

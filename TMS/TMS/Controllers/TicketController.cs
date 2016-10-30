@@ -695,12 +695,12 @@ namespace TMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetSolutionContent(int id)
+        public ActionResult GetSolutionContent(int? id)
         {
             Solution solution = null;
-            if (id != null)
+            if (id.HasValue)
             {
-                solution = _solutionService.GetSolutionById(id);
+                solution = _solutionService.GetSolutionById(id.Value);
             }
 
             if (solution == null || solution.ContentText == null || solution.ContentText.Trim().Length == 0)

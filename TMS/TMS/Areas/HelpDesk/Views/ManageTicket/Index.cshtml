@@ -3,79 +3,8 @@
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Ticket Management";
 }
-
+<link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
 <style>
-    .ticket-contents {
-        padding: 0px;
-    }
-
-    .modal-header {
-        background-color: #3c8dbc;
-    }
-
-    .modal-footer {
-        text-align: center;
-    }
-
-    .detail-modal-body {
-        background-color: #f6f6f6 !important;
-        padding: 15px 15px 1px 15px;
-        height: 420px;
-        overflow-y: auto;
-    }
-
-    .ticket-contents .box {
-        margin-bottom: 15px;
-    }
-
-        .ticket-contents .box .box-header {
-            padding: 5px 10px 5px 10px !important;
-        }
-
-            .ticket-contents .box .box-header:hover {
-                background: #87cefa;
-                color: #fff;
-                cursor: pointer;
-            }
-
-            .ticket-contents .box .box-header:after {
-                font-family: "Glyphicons Halflings";
-                float: right;
-                content: "\e114";
-            }
-
-            .ticket-contents .box .box-header.collapsed:after {
-                content: "\e080";
-            }
-
-        .ticket-contents .box .box-title {
-            font-weight: bold;
-        }
-
-        .ticket-contents .box .box-body {
-            padding: 5px 10px 5px 10px !important;
-        }
-
-    .header-content {
-        margin-right: 10px;
-    }
-
-    .row-content {
-        padding: 3px 0px;
-    }
-
-    input {
-        max-height: 400px;
-    }
-
-    #ticket-description, #ticket-solution {
-        white-space: pre-wrap;
-    }
-
-    .pre-wrap {
-        white-space: pre-wrap;
-    }
-
     .select2-dropdown {
         z-index: 1200;
     }

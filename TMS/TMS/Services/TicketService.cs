@@ -465,5 +465,11 @@ namespace TMS.Services
             return _unitOfWork.TicketRepository.Get(m => m.Status != ConstantUtil.TicketStatus.Cancelled
                 && m.Status != ConstantUtil.TicketStatus.Closed);
         }
+
+        public IEnumerable<Ticket> GetOlderTickets()
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.Status == ConstantUtil.TicketStatus.Solved
+                || m.Status == ConstantUtil.TicketStatus.Closed);
+        }
     }
 }

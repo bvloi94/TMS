@@ -20,6 +20,8 @@ using TMS.ViewModels;
 using ModelError = TMS.ViewModels.ModelError;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -59,21 +61,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
             //return View(tickets.ToList());
             return View();
-        }
-
-        // GET: HelpDesk/ManageTicket/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = db.Tickets.Find(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-            return View(ticket);
         }
 
         public ActionResult CreateNewTicket()
@@ -519,7 +506,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 return Json(new
                 {
                     success = false,
-                    msg = "Some error occured. Please try again later!"
+                    msg = ConstantUtil.CommonError.DBExceptionError
                 });
             }
 
@@ -829,75 +816,77 @@ namespace TMS.Areas.HelpDesk.Controllers
             return Json(rsModel, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
         public ActionResult LoadTicketById(int? id)
         {
-            Ticket ticket = _ticketService.GetTicketByID((int)id);
-            TicketViewModel model = new TicketViewModel();
-            model.Id = ticket.ID;
-            model.Subject = ticket.Subject;
-            model.Description = ticket.Description;
-            model.Solution = ticket.Solution;
-            if (!string.IsNullOrEmpty(ticket.RequesterID))
+            if (id.HasValue)
             {
-                model.RequesterId = ticket.RequesterID;
-                model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
-            }
-            if (ticket.Type != null) model.Type = (int)ticket.Type;
-            model.Mode = ticket.Mode;
-
-            model.StatusId = ticket.Status;
-            model.Status = ((TicketStatusEnum)ticket.Status).ToString();
-            if (ticket.CategoryID != null)
-            {
-                model.CategoryId = (int)ticket.CategoryID;
-                model.Category = _categoryService.GetCategoryById((int)ticket.CategoryID).Name;
-            }
-            if (ticket.UrgencyID != null)
-            {
-                model.UrgencyId = (int)ticket.UrgencyID;
-                model.Urgency = ticket.UrgencyID == null ? "" : _urgencyService.GetUrgencyByID((int)ticket.UrgencyID).Name;
-            }
-            if (ticket.PriorityID != null)
-            {
-                model.PriorityId = (int)ticket.PriorityID;
-                model.Priority = ticket.PriorityID == null
-                    ? ""
-                    : _priorityService.GetPriorityByID((int)ticket.PriorityID).Name;
-            }
-            if (ticket.ImpactID != null)
-            {
-                model.ImpactId = (int)ticket.ImpactID;
-                model.Impact = ticket.ImpactID == null ? "" : _impactService.GetImpactById((int)ticket.ImpactID).Name;
-            }
-            model.ImpactDetail = ticket.ImpactDetail;
-            model.UnapproveReason = ticket.UnapproveReason;
-            model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.CreatedTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
-            model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
-            if (!string.IsNullOrEmpty(ticket.CreatedID))
-            {
-                model.CreatedId = ticket.CreatedID;
-                model.CreatedBy = _userService.GetUserById(ticket.CreatedID).Fullname;
-            }
-            if (!string.IsNullOrEmpty(ticket.TechnicianID))
-            {
-                AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
-                model.TechnicianId = technician.Id;
-                model.Technician = technician.Fullname;
-                if (technician.DepartmentID.HasValue)
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
                 {
-                    model.DepartmentId = (int)technician.DepartmentID;
-                    model.Department = _departmentService.GetDepartmentById((int)technician.DepartmentID).Name;
+                    TicketViewModel model = new TicketViewModel();
+                    model.Subject = ticket.Subject;
+                    model.Description = ticket.Description;
+                    model.Solution = ticket.Solution;
+                    model.RequesterId = ticket.RequesterID;
+                    model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
+                    if (ticket.Type.HasValue)
+                    {
+                        model.Type = ticket.Type.Value;
+                    }
+                    model.Mode = ticket.Mode;
+
+                    if (ticket.CategoryID.HasValue)
+                    {
+                        model.CategoryId = ticket.CategoryID.Value;
+                        model.Category = _categoryService.GetCategoryById(ticket.CategoryID.Value).Name;
+                    }
+                    if (ticket.UrgencyID.HasValue)
+                    {
+                        model.UrgencyId = ticket.UrgencyID.Value;
+                        model.Urgency = _urgencyService.GetUrgencyByID(ticket.UrgencyID.Value).Name;
+                    }
+                    if (ticket.PriorityID.HasValue)
+                    {
+                        model.PriorityId = ticket.PriorityID.Value;
+                        model.Priority = _priorityService.GetPriorityByID(ticket.PriorityID.Value).Name;
+                    }
+                    if (ticket.ImpactID.HasValue)
+                    {
+                        model.ImpactId = ticket.ImpactID.Value;
+                        model.Impact = _impactService.GetImpactById(ticket.ImpactID.Value).Name;
+                    }
+                    model.ImpactDetail = ticket.ImpactDetail;
+                    model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+                    model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+                    model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+                    model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+
+                    if (!string.IsNullOrEmpty(ticket.TechnicianID))
+                    {
+                        AspNetUser technician = _userService.GetActiveUserById(ticket.TechnicianID);
+                        if (technician != null)
+                        {
+                            model.TechnicianId = technician.Id;
+                            model.Technician = technician.Fullname;
+                            if (technician.DepartmentID.HasValue)
+                            {
+                                model.DepartmentId = technician.DepartmentID.Value;
+                                model.Department = _departmentService.GetDepartmentById(technician.DepartmentID.Value).Name;
+                            }
+                        }
+                    }
+                    return Json(new
+                    {
+                        success = true,
+                        data = model,
+                    }, JsonRequestBehavior.AllowGet);
                 }
             }
             return Json(new
             {
-                success = true,
-                data = model,
+                success = false,
+                message = ConstantUtil.CommonError.UnavailableTicket,
             });
         }
 
@@ -1068,6 +1057,66 @@ namespace TMS.Areas.HelpDesk.Controllers
                     message = ConstantUtil.CommonError.UnavailableTicket
                 });
             }
+        }
+
+        [HttpGet]
+        public ActionResult GetOlderTickets(JqueryDatatableParameterViewModel param, string keywords)
+        {
+            IEnumerable<Ticket> olderTickets = _ticketService.GetOlderTickets();
+
+            IQueryable<Ticket> filteredListItems = olderTickets.AsQueryable();
+            if (!string.IsNullOrEmpty(param.search["value"]))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Code != null && (p.Code.ToLower().Contains(param.search["value"].ToLower())
+                    || p.Subject.ToLower().Equals(param.search["value"].ToLower())));
+            }
+
+            if (!string.IsNullOrWhiteSpace(keywords))
+            {
+                keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                keywords = regex.Replace(keywords, " ");
+                string[] keywordArr = keywords.Split(' ');
+                var predicate = PredicateBuilder.False<Ticket>();
+                foreach (string keyword in keywordArr)
+                {
+                    predicate = predicate.Or(p => p.Subject.ToLower().Contains(keyword.ToLower()));
+                }
+                filteredListItems = filteredListItems.Where(predicate);
+            }
+
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortDirection = param.order[0]["dir"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Code)
+                        : filteredListItems.OrderByDescending(p => p.Code);
+                    break;
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Subject)
+                        : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length).OrderBy(m => m.Subject).Select(m => new Ticket
+            {
+                ID = m.ID,
+                Code = m.Code,
+                Subject = m.Subject,
+                Description = m.Description
+            });
+
+            JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
+            rsModel.draw = param.draw;
+            rsModel.recordsTotal = displayedList.ToList().Count();
+            rsModel.recordsFiltered = filteredListItems.Count();
+            rsModel.data = displayedList;
+            return Json(rsModel, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
