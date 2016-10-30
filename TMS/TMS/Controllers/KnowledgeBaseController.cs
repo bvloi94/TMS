@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -143,10 +144,94 @@ namespace TMS.Controllers
             });
         }
 
-        [HttpGet]
-        public ActionResult Detail()
+        public IEnumerable<Solution> LoadRelatedArticle(int id)
         {
-            return View();
+            Solution mainSolution = _solutionServices.GetSolutionById(id);
+            List<int> childrenCategoriesIdList = _categoryServices.GetChildrenCategoriesIdList(id);
+            IEnumerable<Solution> relatedSolution = _solutionServices.GetAllSolutions()
+                .Where(m => (mainSolution.Category.CategoryLevel > 1 ? (m.Category.ParentID == mainSolution.Category.ParentID || m.CategoryID == id) : 
+                        (m.CategoryID == id) || (childrenCategoriesIdList.Contains(m.CategoryID))) && m.ID != id)
+                .Select(m => new Solution
+                {
+                    ID = m.ID,
+                    Subject = m.Subject,
+                    Category = m.Category,
+                    ContentText = m.ContentText,
+                    Keyword = m.Keyword == null ? "-" : m.Keyword,
+                    CreatedTime = m.CreatedTime,
+                    ModifiedTime = m.ModifiedTime
+                }).ToList().Take(5);
+            return relatedSolution;
+        }
+
+        [HttpGet]
+        public ActionResult Detail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Solution solution = _solutionServices.GetSolutionById(id.Value);
+                if (solution != null)
+                {
+                    KnowledgeBaseViewModels model = new KnowledgeBaseViewModels();
+                    model.ID = solution.ID;
+                    model.Subject = solution.Subject;
+                    model.Content = solution.ContentText;
+                    model.CategoryPath = _categoryServices.GetCategoryPath(solution.Category);
+                    if (solution.CreatedTime != null && solution.ModifiedTime != null)
+                    {
+                        model.CreatedTime = solution.CreatedTime;
+                        model.ModifiedTime = solution.ModifiedTime;
+                    }
+                    model.Keyword = solution.Keyword == null ? "-" : solution.Keyword;
+                    ViewBag.relatedSolution = LoadRelatedArticle(id.Value);
+                    ViewBag.categories = _categoryServices.GetAll().Where(m => m.CategoryLevel == 1);
+                    ViewBag.subcategories = _categoryServices.GetAll().Where(m => m.CategoryLevel == 2);
+                    ViewBag.items = _categoryServices.GetAll().Where(m => m.CategoryLevel == 3);
+
+                    AspNetRole userRole = null;
+                    if (User.Identity.GetUserId() != null)
+                    {
+                        userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                    }
+
+                    switch (userRole.Name)
+                    {
+                        case "Requester":
+                            ViewBag.ItemLink1 = "/Index";
+                            ViewBag.Item1 = "Home";
+                            ViewBag.ItemLink2 = "/Ticket/Index";
+                            ViewBag.Item2 = "Ticket";
+                            ViewBag.Profile = "#";
+                            break;
+                        case "Admin":
+                            ViewBag.ItemLink1 = "/Admin/ManageUser/Admin";
+                            ViewBag.Item1 = "Users";
+                            ViewBag.ItemLink2 = "/Admin/ManageSC/Impact";
+                            ViewBag.Item2 = "System configuration";
+                            ViewBag.Profile = "#";
+                            break;
+                        case "Technician":
+                            ViewBag.ItemLink1 = "#";
+                            ViewBag.Item1 = "Home";
+                            ViewBag.ItemLink2 = "/Technician/ManageTicket";
+                            ViewBag.Item2 = "Ticket";
+                            ViewBag.Profile = "#";
+                            break;
+                        case "Helpdesk":
+                            ViewBag.ItemLink1 = "/HelpDesk/ManageTicket";
+                            ViewBag.Item1 = "Knowledge base";
+                            ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
+                            ViewBag.Item2 = "Ticket";
+                            ViewBag.Profile = "#";
+                            break;
+                        default: break;
+                    }
+
+                    return View(model);
+                }
+                return HttpNotFound();
+            }
+            return HttpNotFound();
         }
     }
 }

@@ -232,7 +232,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Services\SolutionService.cs" />
     <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="DAL\GenericRepository.cs" />
     <Compile Include="DAL\UnitOfWork.cs" />
@@ -662,7 +661,6 @@
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
-    <Folder Include="Content\knowledgebase\js\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

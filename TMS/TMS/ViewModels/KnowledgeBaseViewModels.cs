@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace TMS.ViewModels
 {
@@ -11,8 +12,10 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Subject is not empty!")]
         public int? ID { get; set; }
         public string Subject { get; set; }
+        [AllowHtml]
         public string Content { get; set; }
         public int CategoryID { get; set; }
+        public string CategoryPath { get; set; }
         public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
         public string Keyword { get; set; }
         public Nullable<DateTime> CreatedTime { get; set; }
