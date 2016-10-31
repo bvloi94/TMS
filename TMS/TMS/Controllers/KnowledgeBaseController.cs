@@ -309,7 +309,7 @@ namespace TMS.Controllers
             {
                 ID = m.ID,
                 Subject = m.Subject,
-                CategoryPath = _categoryServices.GetCategoryPath(m.Category),
+                CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
                 Keyword = m.Keyword == null ? "-" : m.Keyword,
                 CreatedTime = m.CreatedTime,
@@ -340,7 +340,7 @@ namespace TMS.Controllers
                     {
                         ID = m.ID,
                         Subject = m.Subject,
-                        CategoryPath = _categoryServices.GetCategoryPath(m.Category),
+                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
                         Content = m.ContentText,
                         Keyword = m.Keyword == null ? "-" : m.Keyword,
                         CreatedTime = m.CreatedTime,
@@ -369,7 +369,7 @@ namespace TMS.Controllers
         public IEnumerable<Solution> LoadRelatedArticle(int id)
         {
             Solution mainSolution = _solutionServices.GetSolutionById(id);
-            List<int> childrenCategoriesIdList = _categoryServices.GetChildrenCategoriesIdList(id);
+            List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id);
             IEnumerable<Solution> relatedSolution = _solutionServices.GetAllSolutions()
                 .Where(m => (mainSolution.Category.CategoryLevel > 1 ? (m.Category.ParentID == mainSolution.Category.ParentID || m.CategoryID == id) : 
                         (m.CategoryID == id) || (childrenCategoriesIdList.Contains(m.CategoryID))) && m.ID != id)
@@ -398,7 +398,7 @@ namespace TMS.Controllers
                     model.ID = solution.ID;
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
-                    model.CategoryPath = _categoryServices.GetCategoryPath(solution.Category);
+                    model.CategoryPath = _categoryService.GetCategoryPath(solution.Category);
                     if (solution.CreatedTime != null && solution.ModifiedTime != null)
                     {
                         model.CreatedTime = solution.CreatedTime;
