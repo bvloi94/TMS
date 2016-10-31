@@ -129,5 +129,14 @@ namespace TMS.Utils
             public const string UnavailableTechnician = "This technician is not available!";
             public const string InvalidTicket = "This ticket is invalid!";
         }
+
+        public class TicketCodeTemplate
+        {
+            public const int Length = 7;
+            public const string FirstLetter = "T";
+            public const string CharacterTemplate = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            public const string NumberTemplate = "0123456789";
+        }
+
     }
 }
