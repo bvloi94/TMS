@@ -1,31 +1,30 @@
-﻿@model TMS.ViewModels.TechnicianRegisterViewModel
+﻿@model TMS.ViewModels.ManagerRegisterViewModel
 @{
-    ViewBag.Title = "Manage Technicians";
+    ViewBag.Title = "Manage Managers";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 @Styles.Render("~/Content/admin_css")
-@using (Html.BeginForm("CreateTechnician", "ManageUser", FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
+@using (Html.BeginForm("EditManager", "ManageUser", new { id = ViewBag.id }, FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
 {
-    <div class="row" style="overflow: hidden">
+    <div class="row">
         <div class="col-xs-8">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                    <h4 class="box-title">EDIT TECHNICIAN</h4>
+                    <h4 class="box-title">EDIT MANAGER</h4>
                 </div>
                 <div class="box-body">
                     @Html.AntiForgeryToken()
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Email&nbsp;<span style="color: red">*</span></label>
+                        <label class="col-sm-3 control-label">Username</label>
                         <div class="col-sm-9">
-                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", id = "email-txt" })
-                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                            <input type="text" class="form-control" disabled="disabled" value="@ViewBag.username" />
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Username&nbsp;<span style="color: red">*</span></label>
+                        <label class="col-sm-3 control-label">Email&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-9">
-                            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", id = "username-txt" })
-                            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="form-group">
@@ -45,7 +44,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Birthday</label>
                         <div class="col-sm-9">
-                            @Html.TextBoxFor(m => m.Birthday, new { @class = "form-control datetime" })
+                            @Html.TextBoxFor(m => m.Birthday, "{0:dd/MM/yyyy}", new { @class = "form-control datetime" })
                             @Html.ValidationMessageFor(m => m.Birthday, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -66,18 +65,13 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Department&nbsp;<span style="color: red">*</span></label>
-                        <div class="col-sm-9">
-                            @Html.DropDownListFor(m => m.DepartmentID, (SelectList) ViewBag.departmentList, "--Choose department--", new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.DepartmentID, "", new { @class = "text-danger" })                        
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-offset-3 col-sm-9">
+                        <div class="col-xs-offset-3 col-xs-9">
                             <input type="submit" class="btn btn-success" value="Save" />
-                            @Html.ActionLink("Cancel", "Technician", null, new { @class = "btn btn-default" })
+                            <a href="javascript:void(0)" class="btn btn-info" id="resend-btn">Resend Account Email</a>
+                            @Html.ActionLink("Cancel", "Manager", null, new { @class = "btn btn-default" })
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -86,8 +80,8 @@
                 <div class="box-body" style="text-align: center">
                     <span class="lead"><strong>Avatar</strong></span>
                     <br />
-                    <img src="~/Uploads/Avatar/avatar_male.png" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
-                    @Html.TextBoxFor(m => m.Avatar, new { type = "file", accept = "image/gif, image/jpeg, image/png", onchange = "readURL(this);" })
+                    <img src="@ViewBag.AvatarURL" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
+                    <input type="file" id="Avatar" name="Avatar" accept="image/gif, image/jpeg, image/png" onchange="readURL(this);" />
                     @Html.ValidationMessageFor(m => m.Avatar, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -95,11 +89,28 @@
     </div>
 }
 
-@section scripts {
+@section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script>
-        $("#email-txt").keyup(function () {
-            $("#username-txt").val($("#email-txt").val());
+        $("#resend-btn").click(function () {
+            $.ajax({
+                url: "/Admin/ManageUser/ResendEmail",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    id: '@ViewBag.id'
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $.notify(data.message, "success");
+                    } else {
+                        $.notify(data.message, "error");
+                    }
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
         });
     </script>
 }

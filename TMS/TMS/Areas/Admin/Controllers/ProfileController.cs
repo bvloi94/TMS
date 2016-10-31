@@ -100,5 +100,17 @@ namespace TMS.Areas.Admin.Controllers
             ViewBag.AvatarURL = admin.AvatarURL;
             return View("UpdateProfile", model);
         }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser admin = _userService.GetUserById(id);
+            if (admin != null)
+            {
+                ViewBag.LayoutName = admin.Fullname;
+                ViewBag.LayoutAvatarURL = admin.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
+        }
     }
 }

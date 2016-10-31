@@ -14,7 +14,7 @@ namespace TMS.Utils
     public class EmailUtil
     {
         static ILog log = LogManager.GetLogger(typeof(EmailUtil));
-        public static void SendToUserWhenCreate(string username, string password, string fullname, string email)
+        public static async void SendToUserWhenCreate(string username, string password, string fullname, string email)
         {
             ILog log = LogManager.GetLogger(typeof(EmailUtil));
             string emailSubject = "[TMS] Account Info";
@@ -24,7 +24,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$password", password);
             try
             {
-                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
             }
             catch
             {
@@ -32,7 +32,7 @@ namespace TMS.Utils
             }
         }
 
-        public static bool ResendToUserWhenCreate(string username, string password, string fullname, string email)
+        public static async Task<bool> ResendToUserWhenCreate(string username, string password, string fullname, string email)
         {
             string emailSubject = "[TMS] Account Info";
             string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CreateRequesterEmailTemplate.txt"));
@@ -41,17 +41,19 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$password", password);
             try
             {
-                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                //Task task = new Task(() => SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage));
+                //task.RunSynchronously();
+                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
                 log.Warn(string.Format("Resend email to {0} unsuccessfully!", username));
                 return false;
             }
         }
 
-        public static void SendToTechnicianWhenCancelTicket(Ticket ticket, AspNetUser technician)
+        public static async void SendToTechnicianWhenCancelTicket(Ticket ticket, AspNetUser technician)
         {
             string emailSubject = "[TMS] Cancel Ticket Notification";
             string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CancelTicketTechnicianTemplate.txt"));
@@ -61,7 +63,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
             try
             {
-                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
             }
             catch
             {
@@ -69,7 +71,7 @@ namespace TMS.Utils
             }
         }
 
-        public static void SendToTechnicianWhenAssignTicket(Ticket ticket, AspNetUser technician)
+        public static async void SendToTechnicianWhenAssignTicket(Ticket ticket, AspNetUser technician)
         {
             string emailSubject = "[TMS] Assign Ticket Notification";
             string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/AssignTicketTechnicianTemplate.txt"));
@@ -81,7 +83,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$scheduleEndDate", (ticket.ScheduleEndDate == null) ? "-" : ticket.ScheduleEndDate.ToString());
             try
             {
-                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
             }
             catch
             {
@@ -89,7 +91,7 @@ namespace TMS.Utils
             }
         }
 
-        public static void SendToHelpdesksWhenTicketIsOverdue(Ticket ticket, IEnumerable<AspNetUser> helpdesks)
+        public static async void SendToHelpdesksWhenTicketIsOverdue(Ticket ticket, IEnumerable<AspNetUser> helpdesks)
         {
             string emailSubject = "[TMS] Overdue Ticket Notification";
             string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/OverdueTicketHelpdeskTemplate.txt"));
@@ -100,7 +102,7 @@ namespace TMS.Utils
                 emailMessage = emailMessage.Replace("$delayDay", ((int)(DateTime.Now - ticket.ScheduleEndDate).Value.TotalDays).ToString());
                 try
                 {
-                    SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                    await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
                 }
                 catch
                 {
@@ -109,7 +111,7 @@ namespace TMS.Utils
             }
         }
 
-        public static void SendToRequesterWhenCloseTicket(Ticket ticket, AspNetUser requester)
+        public static async void SendToRequesterWhenCloseTicket(Ticket ticket, AspNetUser requester)
         {
             string emailSubject = "[TMS] Closed Ticket Notification";
             string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CloseTicketRequesterTemplate.txt"));
@@ -119,7 +121,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
             try
             {
-                SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
             }
             catch
             {
@@ -127,7 +129,7 @@ namespace TMS.Utils
             }
         }
 
-        private static async void SendEmail(string toEmailAddress, string emailSubject, string emailMessage)
+        private static async Task SendEmail(string toEmailAddress, string emailSubject, string emailMessage)
         {
             try
             {

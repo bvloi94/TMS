@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
@@ -322,6 +322,7 @@
     <Compile Include="Schedulers\JobManager.cs" />
     <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
+    <Compile Include="Utils\AsyncHelpers.cs" />
     <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Services\UserRoleService.cs" />
     <Compile Include="Utils\CustomAuthorizeAttribute.cs" />
@@ -363,17 +364,20 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="404.html" />
     <Content Include="Content\AdminLTE.css" />
     <Content Include="Content\AdminLTE.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\css\graph.css" />
     <Content Include="Content\css\select2.min.css" />
+    <Content Include="Content\custom-css\admin.css" />
     <Content Include="Content\custom-css\ticket-detail.css" />
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />
     <Content Include="Content\custom-js\tms-dropdown.js" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\img\impact_urgency.jpg" />
+    <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\add-requester-icon.ico" />
     <Content Include="Content\img\avatar.png" />
     <Content Include="Content\img\avatar04.png" />
@@ -402,7 +406,9 @@
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\chart.min.js" />
+    <Content Include="Content\js\html2canvas.js" />
     <Content Include="Content\js\jquery.noty.js" />
+    <Content Include="Content\js\printThis.js" />
     <Content Include="Content\js\select2.min.js" />
     <Content Include="Content\js\trunk8.min.js" />
     <Content Include="Content\knowledgebase\style.css" />
@@ -566,9 +572,11 @@
     <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\PriorityMatrix.cshtml" />
-    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\CreateManager.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\EditManager.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

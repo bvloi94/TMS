@@ -107,6 +107,11 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin");
         }
 
+        public IEnumerable<AspNetUser> GetManagers()
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower().Equals(ConstantUtil.UserRoleString.Manager.ToLower()));
+        }
+
         public bool IsActive(string id)
         {
             return _unitOfWork.AspNetUserRepository.Get(m => m.Id == id && m.IsActive == true).Count() > 0;
