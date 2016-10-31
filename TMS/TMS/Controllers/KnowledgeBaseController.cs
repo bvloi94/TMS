@@ -332,7 +332,7 @@ namespace TMS.Controllers
             if (id.HasValue)
             {
                 IEnumerable<KnowledgeBaseViewModels> filteredListItems;
-                List<int> childrenCategoriesIdList = _categoryServices.GetChildrenCategoriesIdList(id.Value);
+                List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
                 filteredListItems = _solutionServices.GetAllSolutions()
                     .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
                     .Select(m => new KnowledgeBaseViewModels

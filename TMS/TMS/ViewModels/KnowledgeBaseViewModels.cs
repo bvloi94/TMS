@@ -27,6 +27,5 @@ namespace TMS.ViewModels
         public Nullable<DateTime> ModifiedTime { get; set; }
         [Required(ErrorMessage = "Please input a path!")]
         public string Path { get; set; }
-        public string Keyword { get; set; }
     }
 }
