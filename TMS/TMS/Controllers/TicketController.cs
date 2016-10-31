@@ -22,6 +22,8 @@ namespace TMS.Controllers
         public DepartmentService _departmentService { get; set; }
         public TicketAttachmentService _ticketAttachmentService { get; set; }
         public CategoryService _categoryService { get; set; }
+        public SolutionService _solutionService { get; set; }
+
 
         public TicketController()
         {
@@ -30,6 +32,8 @@ namespace TMS.Controllers
             _departmentService = new DepartmentService(unitOfWork);
             _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
             _categoryService = new CategoryService(unitOfWork);
+            _solutionService = new SolutionService(unitOfWork);
+
         }
 
         // GET: Tickets
@@ -589,6 +593,7 @@ namespace TMS.Controllers
             });
         }
 
+
         [HttpPost]
         public ActionResult ApproveTicket(int? id, string unapprovedReason)
         {
@@ -646,6 +651,69 @@ namespace TMS.Controllers
             {
                 success = false,
                 msg = ConstantUtil.CommonError.UnavailableTicket
+            });
+        }
+
+        [HttpPost]
+        public ActionResult SearchSolution(string searchtxt)
+        {
+            IEnumerable<Solution> solutions;
+            if (!string.IsNullOrEmpty(searchtxt))
+            {
+                solutions = _solutionService.SearchSolutions(searchtxt);
+            }
+            else
+            {
+                solutions = _solutionService.GetAllSolutions();
+            }
+
+            if (solutions == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = true,
+                    msg = "No result!"
+                });
+            }
+            List<Solution> result = solutions.ToList();
+            List<SolutionViewModel> data = new List<SolutionViewModel>();
+            foreach (var item in result)
+            {
+                SolutionViewModel model = new SolutionViewModel();
+                model.Id = item.ID;
+                model.Subject = item.Subject;
+                model.ContentText = item.ContentText;
+                data.Add(model);
+            }
+            return Json(new
+            {
+                success = true,
+                data = data,
+                msg = "Search finished!"
+            });
+        }
+
+        [HttpPost]
+        public ActionResult GetSolutionContent(int? id)
+        {
+            Solution solution = null;
+            if (id.HasValue)
+            {
+                solution = _solutionService.GetSolutionById(id.Value);
+            }
+
+            if (solution == null || solution.ContentText == null || solution.ContentText.Trim().Length == 0)
+            {
+                return Json(new
+                {
+                    success = false,
+                });
+            }
+            return Json(new
+            {
+                success = true,
+                data = solution.ContentText.Trim(),
             });
         }
 

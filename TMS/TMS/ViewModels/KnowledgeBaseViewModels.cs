@@ -22,6 +22,7 @@ namespace TMS.ViewModels
         public int CategoryID { get; set; }
         public string Category { get; set; }
         public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
+        public string Keyword { get; set; }
         public Nullable<DateTime> CreatedTime { get; set; }
         public Nullable<DateTime> ModifiedTime { get; set; }
         [Required(ErrorMessage = "Please input a path!")]

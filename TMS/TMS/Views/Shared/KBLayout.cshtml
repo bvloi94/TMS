@@ -1,0 +1,92 @@
+﻿<!doctype html>
+<html lang="en-US">
+<head>
+    <!-- META TAGS -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base</title>
+
+    <!-- Style Sheet-->
+    <link rel='stylesheet' id='bootstrap-css-css' href='~/Content/knowledgebase/css/bootstrap5152.css?ver=1.0' type='text/css' media='all' />
+    <link rel='stylesheet' id='responsive-css-css' href='~/Content/knowledgebase/css/responsive5152.css?ver=1.0' type='text/css' media='all' />
+    <link rel='stylesheet' id='main-css-css' href='~/Content/knowledgebase/css/main5152.css?ver=1.0' type='text/css' media='all' />
+    <link rel='stylesheet' id='blue-skin-css' href='~/Content/knowledgebase/css/blue-skin5152.css?ver=1.0' type='text/css' media='all' />
+    <link rel='stylesheet' id='custom-css-css' href='~/Content/knowledgebase/css/custom5152.html?ver=1.0' type='text/css' media='all' />
+
+</head>
+<body>
+    <!-- Start of Header -->
+    <div class="header-wrapper">
+        <header>
+            <div class="container">
+
+                <div class="logo-container">
+                    <!-- Website Logo -->
+                    <a href="Index">
+                        <span style="font-size: 30px; "><b>TMS</b></span>
+                    </a>
+                    <span style="color: white">Knowledge Base</span>
+                </div>
+
+                <!-- Start of Main Navigation -->
+                <nav class="main-nav">
+                    <div class="menu-top-menu-container">
+                        <ul id="menu-top-menu" class="clearfix">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="articles-list.html">Articles List</a></li>
+                            <li><a href="contact.html">Contact</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <!-- End of Main Navigation -->
+            </div>
+        </header>
+    </div>
+    <!-- End of Header -->
+    <!-- Start of Search Wrapper -->
+    <div class="search-area-wrapper">
+        <div class="search-area container">
+            <h3 class="search-header">Have a Question?</h3>
+            <p class="search-tag-line">If you have any question you can ask below or enter what you are looking for!</p>
+            <form id="search-form" class="search-form clearfix" method="get" action="#" autocomplete="off">
+                <input class="search-term required" type="text" id="s" name="s" placeholder="Type your search terms here" />
+                <input class="search-btn" type="submit" value="Search" />
+                <div id="search-error-container"></div>
+            </form>
+        </div>
+    </div>
+    <!-- End of Search Wrapper -->
+    <!-- Start of Page Container -->
+    <div class="page-container">
+        <div class="container">
+            <div class="row">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <!-- End of Page Container -->
+    <!-- Start of Footer -->
+    <footer id="footer-wrapper" style="bottom: 0; position: absolute; margin: 0 auto;">
+        <div id="footer-bottom-wrapper">
+            <div id="footer-bottom" class="container">
+                <div class="row">
+                    <div class="span6">
+                        <p class="copyright">
+                            Copyright © 2016. All Rights Reserved by Group 4.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End of Footer Bottom -->
+    </footer>
+    <!-- End of Footer -->
+    <a href="#top" id="scroll-top"></a>
+    <!-- script -->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/app")
+</body>
+</html>
+
+

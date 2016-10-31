@@ -1,4 +1,16 @@
-﻿.technician-dropdown .technician-name {
+﻿@media screen {
+    .select2 {
+        width: 100% !important;
+    }
+}
+
+.select2-container--default .select2-selection--single {
+    border-radius: 0;
+    box-shadow: none;
+    border-color: #d2d6de;
+}
+
+.technician-dropdown .technician-name {
     font-weight: bold;
 }
 
@@ -17,11 +29,13 @@
     height: 5px;
     font-weight: normal;
 }
+
 .category-dropdown .category-3 {
     margin-left: 45px;
     height: 5px;
     font-weight: normal;
 }
+
 .category-dropdown .category-4 {
     margin-left: 55px;
     height: 5px;
@@ -33,5 +47,5 @@
 }
 
 .select2-container--default .select2-selection--single {
-        height: 34px;
+    height: 34px;
 }

@@ -73,11 +73,22 @@
     clear: both;
 }
 
-.userslookup {
+.requester-input-group {
+    float: none;
+    position: relative; 
+    display: table;
+    border-collapse: separate;
+}
+
+.requester-input-group .input-group-addon {
+    padding: 0px 5px !important;
+    background: none;
+    border: none;
+}
+
+.requester-input-group .userslookup {
     width: 25px;
     height: 25px;
-    margin-top: 5px;
-    margin-left: -15px;
 }
 
 .alignCenter {
@@ -85,7 +96,7 @@
 }
 
 .attachment-div {
-    margin-right: 15px;
+    margin-right: 5px;
 }
 
 .attachments {

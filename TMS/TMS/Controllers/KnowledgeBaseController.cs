@@ -310,6 +310,7 @@ namespace TMS.Controllers
                 Subject = m.Subject,
                 CategoryID = m.CategoryID,
                 Content = m.ContentText,
+                Keyword = m.Keyword == null ? "-" : m.Keyword,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
             }).ToArray();
@@ -331,15 +332,19 @@ namespace TMS.Controllers
             if (id.HasValue)
             {
                 IEnumerable<KnowledgeBaseViewModels> filteredListItems;
-                filteredListItems = _solutionServices.GetSolutionsByCategory(id.Value).Select(m => new KnowledgeBaseViewModels
-                {
-                    ID = m.ID,
-                    Subject = m.Subject,
-                    CategoryID = m.CategoryID,
-                    Content = m.ContentText,
-                    CreatedTime = m.CreatedTime,
-                    ModifiedTime = m.ModifiedTime
-                }).ToArray();
+                List<int> childrenCategoriesIdList = _categoryServices.GetChildrenCategoriesIdList(id.Value);
+                filteredListItems = _solutionServices.GetAllSolutions()
+                    .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
+                    .Select(m => new KnowledgeBaseViewModels
+                    {
+                        ID = m.ID,
+                        Subject = m.Subject,
+                        CategoryID = m.CategoryID,
+                        Content = m.ContentText,
+                        Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        CreatedTime = m.CreatedTime,
+                        ModifiedTime = m.ModifiedTime
+                    }).ToArray();
 
                 if (!string.IsNullOrEmpty(key_search))
                 {
@@ -358,6 +363,12 @@ namespace TMS.Controllers
                 error = true,
                 msg = "Cannot find solutions!"
             });
+        }
+
+        [HttpGet]
+        public ActionResult Detail()
+        {
+            return View();
         }
     }
 }

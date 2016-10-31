@@ -261,6 +261,7 @@ function openTicketDetailModal(ticketId) {
             $("#reopen-close-btn").attr("data-ticket-id", data.id);
             $("#reopen-resolve-btn").attr("href", "/Ticket/Solve/" + data.id);
             $("#reopen-reassign-btn").attr("data-ticket-id", data.id);
+            $("#refer-older-ticket-btn").attr("data-id", data.id);
 
             if (!data.solution || data.solution == "-") {
                 $('#ticket-solution').text("This ticket is not solved yet.");
@@ -605,3 +606,148 @@ $(document)
                 });
             });
         });
+
+$("#refer-older-ticket-link").click(function () {
+    var keywords = $("[name='Subject']").val();
+    $("#refer-older-tickets-search").val(keywords);
+    $("#older-tickets-table").dataTable().api().ajax.reload();
+    $("#older-tickets-modal").modal("show");
+});
+
+$("#refer-older-tickets-search").on("keyup", function () {
+    $("#older-tickets-table").dataTable().api().ajax.reload();
+});
+
+var initOlderTicketsTable = function () {
+    $("#older-tickets-table").dataTable({
+        processing: true,
+        serverSide: true,
+        paging: true,
+        sort: true,
+        filter: false,
+        lengthMenu: [5],
+        order: [[0, 'asc']],
+        lengthChange: false,
+        drawCallback: function () {
+            var options = {
+                accuracy: "complementary"
+            };
+            var keywords = $("#refer-older-tickets-search").val().replace(/[^a-z0-9\s]/gi, '');
+            $(".subject-link").mark(keywords, options);
+            $("#older-tickets-table .description-text").trunk8({
+                lines: 3,
+                tooltip: false
+            });
+        },
+        ajax: {
+            url: "/HelpDesk/ManageTicket/GetOlderTickets",
+            data: function (d) {
+                d.keywords = $("#refer-older-tickets-search").val()
+            }
+        },
+        autoWidth: false,
+        columnDefs: [
+            {
+                "targets": 0,
+                "width": "15%",
+                "render": function (data, type, row) {
+                    return row.Code;
+                }
+            },
+            {
+                "targets": 1,
+                "width": "30%",
+                "render": function (data, type, row) {
+                    return '<a href="javascript:void(0)" onclick="openTicketDetailModal(\'' + row.ID + '\')" class="subject-link">' + row.Subject + '</a>';
+                }
+            },
+            {
+                "targets": 2,
+                "sortable": false,
+                "width": "45%",
+                "render": function (data, type, row) {
+                    return (row.Description == "") ? "-" : '<span class="description-text">' + row.Description + '</span>';
+                }
+            },
+            {
+                "targets": 3,
+                "width": "10%",
+                "sortable": false,
+                "render": function (data, type, row) {
+                    return '<button type="button" class="btn btn-flat btn-primary" data-role="refer-older-ticket"'
+                        + ' data-id="' + row.ID + '">Refer</button>';
+                }
+            }
+        ]
+    });
+}
+
+$(".modal").on("click", "[data-role='refer-older-ticket']", function () {
+    var ticketId = $(this).attr("data-id");
+    $("#refer-older-ticket-confirm-btn").attr("data-id", ticketId);
+    $("#older-tickets-confirm-modal").modal("show");
+});
+
+$("#refer-older-ticket-confirm-btn").on("click", function () {
+    var ticketId = $(this).attr("data-id");
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/LoadTicketById",
+        type: "GET",
+        dataType: "json",
+        data: {
+            id: ticketId
+        },
+        success: function (data) {
+            if (data.success) {
+                var ticket = data.data;
+                $("[name='Subject']").val(ticket.Subject);
+                $("[name='Description']").val(ticket.Description);
+                if (ticket.Type != 0) {
+                    $("[name='Type']").val(ticket.Type);
+                }
+                $("[name='ImpactDetail']").val(ticket.ImpactDetail);
+                $("[name='ScheduleStartDate']").val(ticket.ScheduleStartDate);
+                $("[name='ScheduleEndDate']").val(ticket.ScheduleEndDate);
+                $("[name='ActualStartDate']").val(ticket.ActualStartDate);
+                $("[name='ActualEndDate']").val(ticket.ActualEndDate);
+                $("[name='Solution']").val(ticket.Solution);
+
+                if (ticket.UrgencyId != 0) {
+                    loadInitDropdown('ddl-urgency', ticket.Urgency, ticket.UrgencyId);
+                }
+                if (ticket.PriorityId != 0) {
+                    loadInitDropdown('ddl-priority', ticket.Priority, ticket.PriorityId);
+                }
+                if (ticket.ImpactId != 0) {
+                    loadInitDropdown('ddl-impact', ticket.Impact, ticket.ImpactId);
+                }
+                if (ticket.CategoryId != 0) {
+                    loadInitDropdown('ddl-category', ticket.Category, ticket.CategoryId);
+                }
+                if (ticket.DepartmentId != 0) {
+                    loadInitDropdown('ddl-department', ticket.Department, ticket.DepartmentId);
+                }
+                if (ticket.TechnicianId != null) {
+                    loadInitDropdown('ddl-technician', ticket.Technician, ticket.TechnicianId);
+                }
+
+                $(".modal").modal("hide");
+            } else {
+                noty({
+                    text: data.message,
+                    type: "error",
+                    layout: "topRight",
+                    timeout: 2000
+                });
+            }
+        },
+        error: function () {
+            noty({
+                text: "Cannot connect to server!",
+                type: "error",
+                layout: "topRight",
+                timeout: 2000
+            });
+        }
+    });
+});

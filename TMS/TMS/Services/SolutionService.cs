@@ -6,7 +6,7 @@ using TMS.Models;
 
 namespace TMS.Services
 {
-    internal class SolutionService
+    public class SolutionService
     {
         private UnitOfWork _unitOfWork;
 
@@ -89,6 +89,16 @@ namespace TMS.Services
                 return _unitOfWork.SolutionRepository.Get(m =>m.ID != id && m.Path.ToLower().Equals(path.ToLower())).Any();
             }
                 
+        }
+
+        public IEnumerable<Solution> SearchSolutions(string searchtxt)
+        {
+            return _unitOfWork.SolutionRepository.Get(s => s.Subject.ToLower().Contains(searchtxt.ToLower()));
+        }
+
+        public Solution GetSolutionById(int id)
+        {
+            return _unitOfWork.SolutionRepository.GetByID(id);
         }
     }
 }

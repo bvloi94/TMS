@@ -48,20 +48,27 @@ namespace TMS.Services
 
         public void saveFile(int id, IEnumerable<HttpPostedFileBase> uploadFiles, bool type)
         {
-            string containFolder = "Attachments";
-            TicketAttachment files = null;
-            List<HttpPostedFileBase> upFiles = uploadFiles.ToList();
-            FileUploader _fileUploadService = new FileUploader();
-            for (int i = 0; i < upFiles.Count; i++)
+            try
             {
-                string filePath = _fileUploadService.UploadFile(upFiles[i], containFolder);
-                files = new TicketAttachment();
-                files.TicketID = id;
-                files.Path = filePath;
-                files.Filename = upFiles[i].FileName;
-                files.Type = type;
-                _unitOfWork.TicketAttachmentRepository.Insert(files);
-                _unitOfWork.Save();
+                string containFolder = "Attachments";
+                TicketAttachment files = null;
+                List<HttpPostedFileBase> upFiles = uploadFiles.ToList();
+                FileUploader _fileUploadService = new FileUploader();
+                for (int i = 0; i < upFiles.Count; i++)
+                {
+                    string filePath = _fileUploadService.UploadFile(upFiles[i], containFolder);
+                    files = new TicketAttachment();
+                    files.TicketID = id;
+                    files.Path = filePath;
+                    files.Filename = upFiles[i].FileName;
+                    files.Type = type;
+                    _unitOfWork.TicketAttachmentRepository.Insert(files);
+                    _unitOfWork.Save();
+                }
+            }
+            catch
+            {
+                throw;
             }
 
         }
