@@ -1,17 +1,14 @@
 ﻿@{
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
-    //ViewBag.Title = "Ticket Management";
+    ViewBag.Title = "Report";
 }
 <style type="text/css">
-    /*@@media print {
-        body * {
-          display: none;
-        }
 
-        body .printable {
-          display: block;
-        }
-      }*/
+
+
+    .table > thead > tr > th {
+        white-space: nowrap;
+    }
 </style>
 <link rel="stylesheet" href="~/Content/css/graph.css" />
 
@@ -31,8 +28,8 @@
                 <div class="form-horizontal">
                     <!--Dropdown type-->
                     <div class="form-group">
-                        <label class="col-sm-5 control-label">Type:</label>
-                        <div class="col-sm-7">
+                        <label class="col-sm-4 control-label">Type:</label>
+                        <div class="col-sm-8">
                             <select class="form-control" id="dropdownType">
                                 <option value="0" selected="selected">All tickets</option>
                                 <option value="1">All requests</option>
@@ -46,8 +43,8 @@
                     </div>
                     <!--Dropdown By-->
                     <div class="form-group">
-                        <label class="col-sm-5 control-label">By:</label>
-                        <div class="col-sm-7">
+                        <label class="col-sm-4 control-label">By:</label>
+                        <div class="col-sm-8">
                             <select class="form-control" id="dropdownBy">
                                 <option value="0">Mode</option>
                                 <option value="1">Category</option>
@@ -61,22 +58,22 @@
                     </div>
                     <!--Date From-->
                     <div class="form-group">
-                        <label class="col-sm-5 control-label">Date From:</label>
-                        <div class="col-sm-7">
+                        <label class="col-sm-4 control-label">Date From:</label>
+                        <div class="col-sm-8">
                             <input type="text" class="form-control datetime" placeholder="DD/MM/YYYY" id="date-from-txt" value="@DateTime.Now.AddMonths(-1).ToShortDateString()">
                         </div>
                     </div>
                     <!--Date to-->
                     <div class="form-group">
-                        <label class="col-sm-5 control-label">Date To:</label>
-                        <div class="col-sm-7">
+                        <label class="col-sm-4 control-label">Date To:</label>
+                        <div class="col-sm-8">
                             <input type="datetime" class="form-control datetime" placeholder="DD/MM/YYYY" id="date-to-txt" value="@DateTime.Now.ToShortDateString()">
                         </div>
                     </div>
                     <!--Button Generate Report-->
                     <div class="form-group">
                         <div class="col-sm-offset-4">
-                            <button onclick="exportReport()">Export Report</button>
+                            <button onclick="exportReport()" class="btn btn-primary btn-flat">Export Report</button>
                         </div>
                     </div>
                 </div>
@@ -97,24 +94,26 @@
                         <th>Created Time</th>
                         <th>Schedule End Date</th>
 
-                        <th>Actual End Date</th>
-                        <th>Type</th>
-                        <th>Mode</th>
-                        <th>Catagory</th>
+                            <th>Actual End Date</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Mode</th>
 
-                        <th>Impact</th>
-                        <th>Urgency</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Department</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+                            <th>Catagory</th>
+                            <th>Impact</th>
+                            <th>Urgency</th>
+                            <th>Priority</th>
+
+                            <th>Department</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
         </div>
-        <!-- /.box-body -->
+        <!-- /.box -->
     </div>
-    <!-- /.box -->
 </div>
 <div class="modal" id="loading-modal">
     <img src="~/Content/img/ajax-loader.gif" />
@@ -123,14 +122,12 @@
 @section Scripts {
     @Scripts.Render("~/bundles/chart")
     <script src="~/Content/js/html2canvas.js"></script>
-    <script src="~/Content/js/printThis.js"></script>
     <script>
         var defaultColors = [
             "#FF6384", "#36A2EB", "#FFCE56", "#f0f8ff", "#a4c639", "#8db600", "#ff9966", "#007fff", "#fae7b5",
             "#000000",
             "#318ce7", "#ace5ee", "#8a2be2", "#1dacd6", "#ffc1cc", "#536872", "#006b3c"
         ];
-        var generatereport = $("#draw-graph");
 
         function ProcessGraph() {
             $.ajax({
@@ -149,12 +146,18 @@
         }
 
         function drawChart(chartLabels, chartData) {
+            var numberOfData = 0;
+            for (i = 0; i < chartData.length; i++) {
+                numberOfData += chartData[i];
+            }
+
             if (chartLabels == null) {
                 $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
                 $.notify("No lables to draw chart", "success");
-            } else if (chartData == null) {
-                $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
-                $.notify("No data to draw chart", "success");
+                return;
+            } else if (numberOfData == 0) {
+                $('#pieChart').replaceWith('<div id="pieChart"><center><h2>No data</h2></center></div>');
+                return;
             }
             var colors = [];
             for (var i = 0; i < chartLabels.length; i++) {
@@ -202,7 +205,7 @@
                     url: "/HelpDesk/Report/GetTickets",
                     type: "POST",
                     data: function (d) {
-                        d.date_from_select = $("#date-from-txt").val(),
+                            d.date_from_select = $("#date-from-txt").val(),
                             d.date_to_select = $("#date-to-txt").val(),
                             d.type = $("#dropdownType").val(),
                             d.by = $("#dropdownBy").val()
@@ -258,15 +261,15 @@
                         "render": function (data, type, row) {
                             return row[6];
                         },
-                        // Mode
+                        // Status
                         "targets": 6,
-                        "visible": false
+                        "visible": true
                     },
                     {
                         "render": function (data, type, row) {
                             return row[7];
                         },
-                        // Category
+                        // Mode
                         "targets": 7,
                         "visible": false
                     },
@@ -274,7 +277,7 @@
                         "render": function (data, type, row) {
                             return row[8];
                         },
-                        // impact
+                        // Category
                         "targets": 8,
                         "visible": false
                     },
@@ -282,7 +285,7 @@
                         "render": function (data, type, row) {
                             return row[9];
                         },
-                        // Urgency
+                        // impact
                         "targets": 9,
                         "visible": false
                     },
@@ -290,7 +293,7 @@
                         "render": function (data, type, row) {
                             return row[10];
                         },
-                        // Priority
+                        // Urgency
                         "targets": 10,
                         "visible": false
                     },
@@ -298,9 +301,9 @@
                         "render": function (data, type, row) {
                             return row[11];
                         },
-                        // Status
+                        //  Priority
                         "targets": 11,
-                        "visible": true
+                        "visible": false
                     },
                     {
                         "render": function (data, type, row) {
@@ -313,8 +316,6 @@
                 ]
             });
 
-
-
         var reloadDataTable = function () {
             var oTable = $("#ticket-table-report").dataTable();
             oTable.api().ajax.reload();
@@ -325,9 +326,7 @@
         });
 
         var resetVisibleColumns = function () {
-            var column = $("#ticket-table-report").dataTable().api().column("6");
-            column.visible(false);
-            column = $("#ticket-table-report").dataTable().api().column("7");
+            var column = $("#ticket-table-report").dataTable().api().column("7");
             column.visible(false);
             column = $("#ticket-table-report").dataTable().api().column("8");
             column.visible(false);
@@ -346,28 +345,27 @@
             var byValue = $(this).val();
             resetVisibleColumns();
             switch (byValue) {
-
                 case "0": // Mode
-                    var column = $("#ticket-table-report").dataTable().api().column("6");
-                    column.visible(true);
-                    break;
-                case "1": // Category
                     var column = $("#ticket-table-report").dataTable().api().column("7");
                     column.visible(true);
                     break;
-
-                case "2": //impact
+                case "1": // Category
                     var column = $("#ticket-table-report").dataTable().api().column("8");
                     column.visible(true);
                     break;
 
-                case "3": //Urgency
+                case "2": //impact
                     var column = $("#ticket-table-report").dataTable().api().column("9");
                     column.visible(true);
                     break;
 
-                case "4": // Priority
+                case "3": //Urgency
                     var column = $("#ticket-table-report").dataTable().api().column("10");
+                    column.visible(true);
+                    break;
+
+                case "4": // Priority
+                    var column = $("#ticket-table-report").dataTable().api().column("11");
                     column.visible(true);
                     break;
 
@@ -375,26 +373,18 @@
                     var column = $("#ticket-table-report").dataTable().api().column("12");
                     column.visible(true);
                     break;
-                case "6": // Status
-                    var column = $("#ticket-table-report").dataTable().api().column("11");
-                    column.visible(true);
-                    break;
             }
-
-
         });
 
         $("#date-from-txt").on("change",
                 function () {
                     ProcessGraph();
-                    ticketTableReport.fnDraw();
                     reloadDataTable();
                 });
 
         $("#date-to-txt").on("change",
                 function () {
                     ProcessGraph();
-                    ticketTableReport.fnDraw();
                     reloadDataTable();
                 });
 
