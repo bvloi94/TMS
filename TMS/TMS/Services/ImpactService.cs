@@ -25,11 +25,11 @@ namespace TMS.Services
         {
             if (id == null)
             {
-                return _unitOfWork.ImpactRepository.Get(p => p.Name == name).Any();
+                return _unitOfWork.ImpactRepository.Get(p => p.Name.ToLower().Equals(name.ToLower())).Any();
             }
             else
             {
-                return _unitOfWork.ImpactRepository.Get(p => p.ID != id && p.Name == name).Any();
+                return _unitOfWork.ImpactRepository.Get(p => p.ID != id && p.Name.ToLower().Equals(name.ToLower())).Any();
             }
         }
 
@@ -51,7 +51,7 @@ namespace TMS.Services
             return _unitOfWork.ImpactRepository.GetByID(id);
         }
 
-        internal void UpdateImpact(Impact impact)
+        public void UpdateImpact(Impact impact)
         {
             try
             {
@@ -70,12 +70,15 @@ namespace TMS.Services
         {
             try
             {
+                foreach (PriorityMatrixItem priorityMatrixItem in impact.PriorityMatrixItems.ToList())
+                {
+                    _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
+                }
                 _unitOfWork.ImpactRepository.Delete(impact);
                 _unitOfWork.Save();
             }
             catch (Exception)
             {
-                
                 throw;
             }
         }

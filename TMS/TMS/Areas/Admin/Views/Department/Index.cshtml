@@ -1,24 +1,21 @@
-﻿@{
-    ViewBag.Title = "Urgency";
+﻿@model TMS.Models.Department
+@{
+    ViewBag.Title = "Department";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
+
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
             <div class="box-body">
-                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Urgency</button>
-                <table class="table dataTable" id="urgency-table" dt-options="dtOptions">
+                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Department</button>
+                <table class="table dataTable" id="department-table">
                     <thead>
-                    <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Description
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -38,7 +35,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Urgency</h4>
+                <h4 class="modal-title">Department</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
@@ -58,7 +55,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="create-btn" onclick="createUrgency()">Save</button>
+                <button type="button" class="btn btn-success" id="create-btn" onclick="createDepartment()">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -86,26 +83,20 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
 
 @Styles.Render("~/Content/datatables")
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
-        $(document).ready(function () {
-            reloadDataTable();
-        });
-
-        $("#urgency-table")
+        $("#department-table")
             .DataTable({
                 processing: true,
                 serverSide: true,
-                lengthChange: false,
-                filter: false,
-                paging: true,
+                paging: false,
                 sort: false,
+                filter: false,
                 ajax: {
-                    url: "/Admin/ManageSC/GetUrgency"
+                    url: "/Admin/Department/GetDepartment"
                 },
                 "columnDefs": [
                     {
@@ -123,15 +114,22 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getUrgencyDetail(\'' + row[0] + '\')"><i class = "fa fa-pencil"></i></a>&nbsp;&nbsp;' +
-                                '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
+                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getDepartmentDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                                   '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                         },
                         "targets": 2
                     }
                 ]
             });
+
+        var showCreateModal = function () {
+            clearModal();
+            $("#myModal").modal('show');
+            $('#create-btn').attr('onclick', 'createDepartment()');
+        }
+
         var reloadDataTable = function () {
-            var oTable = $("#urgency-table").dataTable();
+            var oTable = $("#department-table").dataTable();
             oTable._fnPageChange(0);
             oTable._fnAjaxUpdate();
         };
@@ -142,13 +140,7 @@
             $(".text-danger").hide();
         }
 
-        var showCreateModal = function () {
-            clearModal();
-            $("#myModal").modal('show');
-            $('#create-btn').attr('onclick', 'createUrgency()');
-        };
-
-        var createUrgency = function () {
+        var createDepartment = function () {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required!");
@@ -158,14 +150,14 @@
                 $("#name-validation-message").show();
             } else {
                 $.ajax({
-                    url: "/Admin/ManageSC/CreateUrgency",
-                    dataType: "json",
+                    url: "/Admin/Department/CreateDepartment",
                     type: "POST",
+                    dataTpye: "JSON",
                     data: {
                         name: $("#name-txt").val(),
                         description: $("#description-txt").val()
                     },
-                    success: function (data) {
+                    success: function(data) {
                         if (data.success) {
                             $.notify(data.message, "success");
                             $("#myModal").modal("hide");
@@ -179,17 +171,17 @@
                             }
                         }
                     },
-                    error: function () {
+                    error: function() {
                         $.notify("Cannot connect to server!", "error");
                     }
                 });
             }
-        };
+        }
 
-        var getUrgencyDetail = function (id) {
+        var getDepartmentDetail = function (id) {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetUrgencyDetail",
+                url: "/Admin/Department/GetDepartmentDetail",
                 dataType: "json",
                 type: "GET",
                 data: {
@@ -200,7 +192,7 @@
                         $("#myModal").modal("show");
                         $("#name-txt").val(data.name);
                         $("#description-txt").val(data.description);
-                        $("#create-btn").attr("onclick", "editUrgency('" + id + "')");
+                        $("#create-btn").attr("onclick", "editDepartment('" + id + "')");
                     } else {
                         if (data.error) {
                             $.notify(data.message, "error");
@@ -211,9 +203,9 @@
                     $.notify("Cannot connect to server!", "error");
                 }
             });
-        };
+        }
 
-        var editUrgency = function (id) {
+        var editDepartment = function (id) {
             //jquery
             var name = $("#name-txt").val();
             if (name.trim() === "") {
@@ -226,7 +218,7 @@
                 //ajax syntax
                 $.ajax(
                 {
-                    url: "/Admin/ManageSC/EditUrgency",
+                    url: "/Admin/Department/EditDepartment",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -253,39 +245,35 @@
                     }
                 });
             }
-
         };
 
         var showDeleteModal = function (id) {
-            $("#yes-btn").attr("onclick", "deleteUrgency('" + id + "')");
+            $("#yes-btn").attr("onclick", "deleteDepartment('" + id + "')");
             $("#delete-modal").modal("show");
         };
 
-        var deleteUrgency = function (id) {
+        var deleteDepartment = function (id) {
             $.ajax({
-                url: "/Admin/ManageSC/DeleteUrgency",
+                url: "/Admin/Department/DeleteDepartment",
                 dataType: "json",
-                type: "post",
-                data: {
-                    id: id
-                },
+                type: "POST",
+                data: { id: id },
                 success: function (data) {
                     if (data.success) {
-                        $("#delete-modal").modal("hide");
                         $.notify(data.message, "success");
+                        $("#delete-modal").modal("hide");
                         reloadDataTable();
                     } else if (!data.success) {
-                        $("#delete-modal").modal("hide");
                         $.notify(data.message, "error");
+                        $("#delete-modal").modal("hide");
                     }
                 },
                 error: function () {
                     $.notify(data.message, "error");
                 }
             });
-        }
 
+        };
 
     </script>
 }
-

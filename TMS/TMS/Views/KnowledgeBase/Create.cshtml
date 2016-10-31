@@ -1,0 +1,119 @@
+﻿@model TMS.ViewModels.KnowledgeBaseViewModels
+@{
+    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Create knowledge Base";
+}
+<link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css"/>
+<style>
+    h4, h5 {
+        color: #345aaa;
+        font-weight: bold;
+    }
+
+    .inputform {
+        padding: 20px;
+    }
+
+    input, textarea, select {
+        max-width: 674px;
+    }
+
+    .required {
+        color: #ff0000;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-solid">
+            @using (Html.BeginForm("Create", "KnowledgeBase", FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label class="control-label col-md-2">Subject<span class="required">*</span></label>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", id = "subject-txt" })
+                        @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Content</label>
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(m => m.Content, new { @class = "form-control", id = "content-area", rows = "15" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Attach file</label>
+                    <div class="col-md-10">
+                        <input type="file" name="SolutionAttachments" multiple class="form-control" placeholder="Drop file here" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Keyword</label>
+                    <div class="col-md-10" style="max-width: 704px;">
+                        @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", id = "keyword" })
+                        @Html.ValidationMessageFor(m => m.Keyword, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Topic&nbsp;<span class="required">*</span></label>
+                    <div class="col-md-10">
+                        <select class="form-control" name="CategoryID" data-role="ddl-category" id="category-select"></select><br />
+                        @Html.ValidationMessageFor(m => m.CategoryID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Path&nbsp;<span class="required">*</span></label>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(m => m.Path, new { @class = "form-control", id = "path" })
+                        @Html.ValidationMessageFor(m => m.Path, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" id="saveBtn" value="Save" class="btn btn-primary btn-flat" />
+                        <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "KnowledgeBase"))">Cancel</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
+    <script>
+        $(document)
+            .ready(function () {
+                $('#content-area').wysihtml5();
+                $("#keyword").tagit();
+                initCategoryDropdown({
+                    control: $("[data-role=ddl-category]"),
+                    ignore: function () {
+                        return [];
+                    },
+                });
+                loadInitDropdown('ddl-category', "--Choose Topic--", "");
+                @if (Model != null) {
+                    if (Model.CategoryID != 0 && Model.Category != null)
+                    {
+                        <text>
+                            loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
+                        </text>
+                    }
+                }
+            });
+
+        $("#subject-txt")
+            .keyup(function () {
+                $("#path")
+                    .val($("#subject-txt").val().trim()
+                        .toLowerCase()
+                        .replace(/  /g, ' ')
+                        .replace(/ /g, '-')
+                        .replace(/[^\w-]+/g, '')
+                        .replace(/\--/g, ''));
+            });
+
+    </script>
+}

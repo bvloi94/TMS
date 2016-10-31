@@ -145,7 +145,7 @@
             <div class="questions col-md-9">
                 <div class="header-content col-md-12">
                     <div class="col-md-6">
-                        <a class="btn btn-primary btn-flat" href="/KnowledgeBase/CreateKB">
+                        <a class="btn btn-primary btn-flat" href="/KnowledgeBase/Create">
                             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
                         </a>
                         <a class="btn btn-default btn-flat" href="#"><i class="fa fa-trash"></i></a>
@@ -167,6 +167,7 @@
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
         $(document).ready(function () {
+            notifyFlashMessage();
             showTreeViewModal();
             getAllSolution();
             $(".menu-item").click(function () {
