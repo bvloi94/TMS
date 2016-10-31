@@ -36,6 +36,10 @@
         border: none !important;
         box-shadow: none !important;
     }
+
+    .link-color {
+        color: #3393d8;
+    }
 </style>
 
 <div class="col-lg-12">
@@ -44,9 +48,10 @@
             <h1 class="post-title"><a href="#">@Html.DisplayFor(m => m.Subject)</a></h1>
             <div class="post-meta clearfix">
                 <span class="date">@Html.DisplayFor(m => m.CreatedTime)</span>
-                <span class="category"><a href="#">@Html.DisplayFor(m => m.CategoryPath)</a></span>
+                <span class="category"><a class="link-color" href="#">@Html.DisplayFor(m => m.CategoryPath)</a></span>
             </div>
-            <p class="pre-wrap">@Html.DisplayFor(m => m.Content)</p>
+            <p class="pre-wrap">@Html.Raw(Model.Content)</p>
+            <p><i>Keyword: @Html.DisplayFor(m => m.Keyword)</i></p>
         </article>
     </div>
     <aside class="span4 page-sidebar">
@@ -56,8 +61,8 @@
                 @foreach (Solution solution in relatedSolution)
                 {
                     <li class="article-entry standard">
-                        <h4><a href="single.html">@solution.Subject</a></h4>
-                        <span class="article-meta">@solution.CreatedTime in <a href="#">@solution.Category.Name</a></span>
+                        <h4><a class="link-color" href="single.html">@solution.Subject</a></h4>
+                        <span class="article-meta">@solution.CreatedTime in <a class="link-color" href="#">@solution.Category.Name</a></span>
                     </li>
                 }
             </ul>
@@ -75,6 +80,8 @@
         $(document).ready(function () {
             showTreeViewModal();
         });
+
+
 
         var showTreeViewModal = function () {
             $("#category-treeview-div").jstree({

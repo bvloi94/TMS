@@ -87,7 +87,7 @@ namespace TMS.Controllers
             {
                 ID = m.ID,
                 Subject = m.Subject,
-                CategoryID = m.CategoryID,
+                CategoryPath = _categoryServices.GetCategoryPath(m.Category),
                 Content = m.ContentText,
                 Keyword = m.Keyword == null ? "-" : m.Keyword,
                 CreatedTime = m.CreatedTime,
@@ -118,7 +118,7 @@ namespace TMS.Controllers
                     {
                         ID = m.ID,
                         Subject = m.Subject,
-                        CategoryID = m.CategoryID,
+                        CategoryPath = _categoryServices.GetCategoryPath(m.Category),
                         Content = m.ContentText,
                         Keyword = m.Keyword == null ? "-" : m.Keyword,
                         CreatedTime = m.CreatedTime,
@@ -184,9 +184,6 @@ namespace TMS.Controllers
                     }
                     model.Keyword = solution.Keyword == null ? "-" : solution.Keyword;
                     ViewBag.relatedSolution = LoadRelatedArticle(id.Value);
-                    ViewBag.categories = _categoryServices.GetAll().Where(m => m.CategoryLevel == 1);
-                    ViewBag.subcategories = _categoryServices.GetAll().Where(m => m.CategoryLevel == 2);
-                    ViewBag.items = _categoryServices.GetAll().Where(m => m.CategoryLevel == 3);
 
                     AspNetRole userRole = null;
                     if (User.Identity.GetUserId() != null)
@@ -197,13 +194,15 @@ namespace TMS.Controllers
                     switch (userRole.Name)
                     {
                         case "Requester":
-                            ViewBag.ItemLink1 = "/Index";
-                            ViewBag.Item1 = "Home";
+                            ViewBag.Home = "/Index";
+                            ViewBag.ItemLink1 = "/FAQ/Index";
+                            ViewBag.Item1 = "FAQ";
                             ViewBag.ItemLink2 = "/Ticket/Index";
                             ViewBag.Item2 = "Ticket";
                             ViewBag.Profile = "#";
                             break;
                         case "Admin":
+                            ViewBag.Home = "#";
                             ViewBag.ItemLink1 = "/Admin/ManageUser/Admin";
                             ViewBag.Item1 = "Users";
                             ViewBag.ItemLink2 = "/Admin/ManageSC/Impact";
@@ -211,6 +210,7 @@ namespace TMS.Controllers
                             ViewBag.Profile = "#";
                             break;
                         case "Technician":
+                            ViewBag.Home = "#";
                             ViewBag.ItemLink1 = "#";
                             ViewBag.Item1 = "Home";
                             ViewBag.ItemLink2 = "/Technician/ManageTicket";
@@ -218,7 +218,8 @@ namespace TMS.Controllers
                             ViewBag.Profile = "#";
                             break;
                         case "Helpdesk":
-                            ViewBag.ItemLink1 = "/HelpDesk/ManageTicket";
+                            ViewBag.Home = "#";
+                            ViewBag.ItemLink1 = "/KnowledgeBase";
                             ViewBag.Item1 = "Knowledge base";
                             ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
                             ViewBag.Item2 = "Ticket";
@@ -233,5 +234,6 @@ namespace TMS.Controllers
             }
             return HttpNotFound();
         }
+        
     }
 }

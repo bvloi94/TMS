@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
@@ -403,6 +403,7 @@
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\jquery.noty.js" />
+    <Content Include="Content\js\jquery.truncate.js" />
     <Content Include="Content\js\select2.min.js" />
     <Content Include="Content\js\trunk8.min.js" />
     <Content Include="Content\knowledgebase\style.css" />

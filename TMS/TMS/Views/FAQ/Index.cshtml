@@ -1,85 +1,146 @@
-﻿@{
-    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
-}
+﻿@model TMS.ViewModels.KnowledgeBaseViewModels
 @{
-    ViewBag.Title = "Frequently Asked Questions";
+    Layout = "~/Views/Shared/KBLayout.cshtml";
+    var relatedSolution = ViewBag.relatedSolution;
 }
+@using TMS.Models;
+<link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 
 <style>
-    .menu, menu-bar {
-        color: #ffffff;
+    .category-item li {
+        background: none;
     }
 
-    .menu-bar {
-        background-color: #1e6aa1;
-        min-height: 400px;
+    .subcategory-item {
+        padding-left: 20px;
     }
 
-    .questions {
-        color: #373737;
-        background-color: #ffffff;
-        min-height: 400px;
+    .widget ul li {
+        border-bottom: none;
     }
 
+    .jstree-anchor {
+        border: none;
+    }
 
+    .jstree-default .jstree-clicked {
+        color: #0094ff;
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .jstree-anchor:hover {
+        color: #0094ff;
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .link-color {
+        color: #3393d8;
+    }
 </style>
 
-<div class="row">
-    <div class="col-xs-12">
-        <div class="box box-primary">
-            <div class="col-sm-2 menu-bar">
-                <h4 class="menu"><b>Topic</b></h4>
-                <div class="menu form-group-lg" data-toggle="collapse" data-target="#general">
-                    <h5><b>General</b></h5>
-                </div>
-                <div class="menu form-group-lg" data-toggle="collapse" data-target="#hardware">
-                    <h5><b>Hardware</b></h5>
-                </div>
-                <div id="hardware" class="collapse">
-                    <div class="menu" data-toggle="collapse" data-target="#printer">Printers</div>
-                    <div class="menu" data-toggle="collapse" data-target="#camera">Camera</div>
-                    <div class="menu" data-toggle="collapse" data-target="#desktop">Desktop</div>
-                </div>
-                <div class="menu" data-toggle="collapse" data-target="#software">
-                    <h5><b>Software</b></h5>
-                </div>
-                <div id="software" class="collapse">
-                    <div class="menu" data-toggle="collapse" data-target="#printer">Web application</div>
-                    <div class="menu" data-toggle="collapse" data-target="#camera">Windows application</div>
-                    <div class="menu" data-toggle="collapse" data-target="#desktop">Mobile application</div>
-                </div>
-                <div class="menu" data-toggle="collapse" data-target="#service">
-                    <h5><b>Service</b></h5>
-                </div>
-            </div>
-            <div class="col-sm-10 questions">
-                <div id="general" class="collapse">
-                    <h4>1. How can I modify my personal information?</h4>
-                    <p>
-                        To modify your personal information in ABC.vn, including your password, please follow these steps:<br />
-                        Login to access your account and dashboard.<br />
-                        Click ‘Settings’ on the toolbar, shown on the left side of the screen.<br />
-                        After making a change, click the ‘Update’ button to save the changes in the system.
-                    </p>
-
-                    <h4>2. Can I send a lot of tickets at a time?</h4>
-                    <p>Yes. Hope they're not spam or your account will be banned.</p>
-                </div>
-                <div id="printer" class="collapse">
-                    <h4>1. My printer is not connected?</h4>
-                    <p>
-                        I would recommend powering down your computer,  disconnect the power cord from the printer and the power outlet, and remove the power from your router for 60 seconds. <br />
-                        After 60 seconds, plug the router back in.  Once the router has begun broadcasting, plug the printer back in. Ensure you plug the printer directly to a wall outlet. Make sure to bypass any sort of surge protector or power bar.<br />
-                        After the printer is on, re-run the wireless setup.<br />
-                        I'd also suggest this document:<br />
-                        Wireless printing center Troubleshooting Issues<br />
-                        Contact HP Worldwide.
-                    </p>
-
-                    <h4>2. How do I cancel printing on a Mac?</h4>
-                    <p>Open the  Apple menu and go to “System Preferences” and choose Printers. Select the active printer and choose “Open Print Queue” button. Select and cancel the print job(s) as desired, canceling them and removing them from the printing queue.</p>
-                </div>
-            </div>
-        </div>
+<div class="col-lg-12">
+    <div class="span8 page-content" id="all-articles">
     </div>
+    <aside class="span4 page-sidebar">
+        <section class="widget">
+            <h3 class="title">Categories</h3>
+            <div id="category-treeview-div">
+            </div>
+        </section>
+    </aside>
 </div>
+@section scripts {
+    <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            showTreeViewModal();
+            loadFAQ();
+        });
+
+        var loadFAQ = function () {
+            $.ajax({
+                url: "/FAQ/GetFAQ",
+                type: "GET",
+                success: function (data) {
+                    if (data.data.length == 0) {
+                        $(".question-list").append("<div class='col-sm-12' style='text-align:center'><p>There is no solution to display. </p></div>");
+                    } else {
+                        for (i = 0; i < data.data.length; i++) {
+                            var content = data.data[i].Content;
+                            content = $.truncate(content, {
+                                length: 350,
+                            });
+                            $('#all-articles').append(
+                                '<article class="type-post format-standard hentry clearfix">'
+                                + '<h1 class="post-title"><a href="/KnowledgeBase/Detail/' + data.data[i].Name + '">' + data.data[i].Subject + '</a></h1>'
+                                + '<div class="post-meta clearfix">'
+                                + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
+                                + '<span class="category"><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
+                                + '<p class="longContent">' + content + '...<a class="link-color" href="/KnowledgeBase/Detail/' + data.data[i].ID + '"> Continue reading</a></p>'
+                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></article>');
+
+                            
+                        }
+                    }
+                }
+            });
+        }
+
+
+        var loadSolutionByCategory = function (id) {
+
+        }
+
+        var showTreeViewModal = function () {
+            $("#category-treeview-div").jstree({
+                "core": {
+                    "check_callback": true,
+                    "themes": {
+                        "stripes": false,
+                        "icons": false,
+                        "dots": false
+                    },
+                    "data": {
+                        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
+                        "type": "GET",
+                        "contentType": "application/json; charset=utf-8",
+                        "dataFilter": function (json) {
+                            var data = $.parseJSON(json);
+                            var nodes = [];
+                            for (i = 0; i < data.data.length; i++) {
+                                var dataItem = data.data[i];
+                                var node = {
+                                    id: dataItem.ID,
+                                    parent: dataItem.ParentId == null ? "#" : dataItem.ParentId,
+                                    text: dataItem.Name,
+                                    state: {
+                                        'opened': false,
+                                        'selected': false
+                                    },
+                                    li_attr: {
+                                        "style": ""
+                                    },
+                                    a_attr: {
+                                        "data-id": dataItem.ID,
+                                        "href": "/FAQ/Index/" + dataItem.Name,
+                                        "class": "category-node"
+                                    }
+                                };
+                                nodes.push(node);
+                            }
+                            return JSON.stringify(nodes);
+                        }
+                    }
+                },
+            });
+        };
+
+        $('#category-treeview-div').on("select_node.jstree", function (e, data) {
+            window.location.href = data.node.a_attr.href;
+        });
+    </script>
+}
