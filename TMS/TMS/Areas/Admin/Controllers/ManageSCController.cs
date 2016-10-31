@@ -329,41 +329,54 @@ namespace TMS.Areas.Admin.Controllers
         {
             var name = Request["name"];
             var description = Request["description"];
-            bool isDuplicatedName = _impactService.IsDuplicatedName(null, name.ToLower().Trim());
-            if (isDuplicatedName)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = string.Format("'{0}' has already been used.", name)
+                    message = "Please input name"
                 });
             }
             else
             {
-                Impact impact = new Impact();
-                impact.Name = name.Trim();
-                impact.Description = description == null ? "" : description.Trim();
-                try
-                {
-                    _impactService.AddImpact(impact);
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Create impact successfully!"
-                    });
-                }
-                catch
+                name = name.Trim();
+                bool isDuplicatedName = _impactService.IsDuplicatedName(null, name);
+                if (isDuplicatedName)
                 {
                     return Json(new
                     {
                         success = false,
-                        error = true,
-                        message = "Some errors occured. Please try again later!"
+                        error = false,
+                        message = string.Format("'{0}' has already been used.", name)
                     });
                 }
+                else
+                {
+                    Impact impact = new Impact();
+                    impact.Name = name;
+                    impact.Description = description;
+                    try
+                    {
+                        _impactService.AddImpact(impact);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Create impact successfully!"
+                        });
+                    }
+                    catch
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
 
+                }
             }
+
         }
 
         [HttpGet]
@@ -395,29 +408,56 @@ namespace TMS.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult EditImpact(int? id, ImpactViewModel model)
         {
+
             if (id.HasValue)
             {
-                bool isDuplicatedName = _impactService.IsDuplicatedName(id, model.Name.ToLower().Trim());
-                if (isDuplicatedName)
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
-                        message = string.Format("'{0}' has already been used.", model.Name)
+                        message = "Please input name"
                     });
                 }
                 else
                 {
-                    Impact impact = _impactService.GetImpactById(id.Value);
-                    impact.Name = model.Name.Trim();
-                    impact.Description = model.Description == null ? "" : model.Description.Trim();
-                    _impactService.UpdateImpact(impact);
-                    return Json(new
+                    var name = model.Name.Trim();
+                    bool isDuplicatedName = _impactService.IsDuplicatedName(id, name);
+                    if (isDuplicatedName)
                     {
-                        success = true,
-                        message = "Update impact successfully!"
-                    });
+                        return Json(new
+                        {
+                            success = false,
+                            error = false,
+                            message = string.Format("'{0}' has already been used.", name)
+                        });
+                    }
+                    else
+                    {
+                        Impact impact = _impactService.GetImpactById(id.Value);
+                        impact.Name = name;
+                        impact.Description = model.Description;
+                        try
+                        {
+                            _impactService.UpdateImpact(impact);
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Update impact successfully!"
+                            });
+                        }
+                        catch (Exception)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                error = true,
+                                message = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+
+
+                    }
                 }
             }
             else
@@ -476,13 +516,13 @@ namespace TMS.Areas.Admin.Controllers
                     });
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Json(new
                 {
                     success = false,
                     error = true,
-                    message = "Some error occured! Please try again later!"
+                    message = ConstantUtil.CommonError.DBExceptionError
                 });
             }
 
@@ -493,40 +533,53 @@ namespace TMS.Areas.Admin.Controllers
         {
             var name = Request["name"];
             var description = Request["description"];
-            bool isDuplicateName = _priorityService.IsDuplicateName(null, name.ToLower().Trim());
-            if (isDuplicateName)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = string.Format("'{0}' has already been used. ", name)
+                    message = "Please input name"
                 });
             }
             else
             {
-                Priority priority = new Priority();
-                priority.Name = name.Trim();
-                priority.Description = description == null ? "" : description.Trim();
-                try
-                {
-                    _priorityService.AddPriority(priority);
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Create priority sucessfull!"
-                    });
-                }
-                catch (Exception)
+                name = name.Trim();
+                bool isDuplicateName = _priorityService.IsDuplicateName(null, name);
+                if (isDuplicateName)
                 {
                     return Json(new
                     {
                         success = false,
-                        error = true,
-                        message = "Some errors occured. Please try again later!"
+                        error = false,
+                        message = string.Format("'{0}' has already been used. ", name)
                     });
-
                 }
+                else
+                {
+                    Priority priority = new Priority();
+                    priority.Name = name;
+                    priority.Description = description;
+                    try
+                    {
+                        _priorityService.AddPriority(priority);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Create priority sucessfull!"
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+
+                    }
+                }
+
             }
         }
 
@@ -560,40 +613,51 @@ namespace TMS.Areas.Admin.Controllers
         {
             var name = Request["name"];
             var description = Request["description"];
-            bool isDuplicatedName = _urgencyService.IsDuplicatedName(null, name.ToLower().Trim());
-            if (isDuplicatedName)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = string.Format("'{0}' has already been used.", name)
+                    message = "Please input name."
                 });
             }
             else
             {
-                Urgency urgency = new Urgency();
-                urgency.Name = name.Trim();
-                urgency.Description = description == null ? "" : description.Trim();
-                try
-                {
-                    _urgencyService.AddUrgency(urgency);
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Create urgency successfully!"
-                    });
-                }
-                catch
+                name = name.Trim();
+                bool isDuplicatedName = _urgencyService.IsDuplicatedName(null, name);
+                if (isDuplicatedName)
                 {
                     return Json(new
                     {
                         success = false,
-                        error = true,
-                        message = "Some errors occured. Please try again later!"
+                        error = false,
+                        message = string.Format("'{0}' has already been used.", name)
                     });
                 }
-
+                else
+                {
+                    Urgency urgency = new Urgency();
+                    urgency.Name = name;
+                    urgency.Description = description;
+                    try
+                    {
+                        _urgencyService.AddUrgency(urgency);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Create urgency successfully!"
+                        });
+                    }
+                    catch
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            error = true,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
+                }
             }
         }
 
@@ -627,28 +691,53 @@ namespace TMS.Areas.Admin.Controllers
         {
             if (id.HasValue)
             {
-                bool isDuplicatedName = _urgencyService.IsDuplicatedName(id, model.Name.ToLower().Trim());
-                if (isDuplicatedName)
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
-                        message = String.Format("'{0}' has already been used.", model.Name)
+                        message = "Please input name."
                     });
                 }
                 else
                 {
-                    Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
-                    urgency.Name = model.Name.Trim();
-                    urgency.Description = model.Description == null ? "" : model.Description.Trim();
-                    _urgencyService.UpdateUrgency(urgency);
-                    return Json(new
+                    var name = model.Name.Trim();
+                    bool isDuplicatedName = _urgencyService.IsDuplicatedName(id, name);
+                    if (isDuplicatedName)
                     {
-                        success = true,
-                        message = "Update urgency successfully!"
-                    });
+                        return Json(new
+                        {
+                            success = false,
+                            error = false,
+                            message = String.Format("'{0}' has already been used.", name)
+                        });
+                    }
+                    else
+                    {
+                        Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
+                        urgency.Name = name;
+                        urgency.Description = model.Description;
+                        try
+                        {
+                            _urgencyService.UpdateUrgency(urgency);
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Update urgency successfully!"
+                            });
+                        }
+                        catch (Exception)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                error = true,
+                                message = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+                    }
                 }
+
             }
             else
             {
@@ -666,28 +755,54 @@ namespace TMS.Areas.Admin.Controllers
         {
             if (id.HasValue)
             {
-                bool isDuplicatedName = _priorityService.IsDuplicatedName(id, model.Name.ToLower().Trim());
-                if (isDuplicatedName)
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
-                        message = string.Format("'{0}' has already been used.", model.Name)
+                        message = "Please input name."
                     });
                 }
                 else
                 {
-                    Priority priority = _priorityService.GetPriorityByID(id.Value);
-                    priority.Name = model.Name.Trim();
-                    priority.Description = model.Description == null ? "" : model.Description.Trim();
-                    _priorityService.UpdatePriority(priority);
-                    return Json(new
+                    var name = model.Name.Trim();
+                    bool isDuplicatedName = _priorityService.IsDuplicateName(id, name);
+                    if (isDuplicatedName)
                     {
-                        success = true,
-                        message = "Update priority successfully!"
-                    });
+                        return Json(new
+                        {
+                            success = false,
+                            error = false,
+                            message = string.Format("'{0}' has already been used.", name)
+                        });
+                    }
+                    else
+                    {
+                        Priority priority = _priorityService.GetPriorityByID(id.Value);
+                        priority.Name = name;
+                        priority.Description = model.Description;
+                        try
+                        {
+                            _priorityService.UpdatePriority(priority);
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Update priority successfully!"
+                            });
+                        }
+                        catch (Exception)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                error = true,
+                                message = ConstantUtil.CommonError.DBExceptionError
+                            });
+
+                        }
+                    }
                 }
+
             }
             else
             {
@@ -748,7 +863,7 @@ namespace TMS.Areas.Admin.Controllers
                     {
                         success = false,
                         error = true,
-                        message = "Some error occured! Please try again later!"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
 
@@ -780,7 +895,6 @@ namespace TMS.Areas.Admin.Controllers
             }
             else
             {
-
                 if (_urgencyService.IsInUse(urgency))
                 {
                     return Json(new
@@ -804,11 +918,9 @@ namespace TMS.Areas.Admin.Controllers
                     {
                         success = false,
                         error = true,
-                        message = "Some error occured! Please try again later!"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
-
-
             }
         }
 
@@ -847,7 +959,7 @@ namespace TMS.Areas.Admin.Controllers
                     {
                         success = false,
                         error = true,
-                        message = "Some errors occured. Please try again later!"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }
@@ -889,7 +1001,7 @@ namespace TMS.Areas.Admin.Controllers
                     {
                         success = false,
                         error = true,
-                        message = "Some errors occured. Please try again later!"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }
@@ -931,7 +1043,7 @@ namespace TMS.Areas.Admin.Controllers
                     {
                         success = false,
                         error = true,
-                        message = "Some errors occured. Please try again later!"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }
@@ -1057,7 +1169,7 @@ namespace TMS.Areas.Admin.Controllers
                         {
                             success = false,
                             error = true,
-                            message = "Some errors occured. Please try again later!"
+                            message = ConstantUtil.CommonError.DBExceptionError
                         });
                     }
                 }
@@ -1110,7 +1222,7 @@ namespace TMS.Areas.Admin.Controllers
                         {
                             success = false,
                             error = true,
-                            message = "Some errors occured. Please try again later!"
+                            message = ConstantUtil.CommonError.DBExceptionError
                         });
                     }
                 }
@@ -1163,7 +1275,7 @@ namespace TMS.Areas.Admin.Controllers
                         {
                             success = false,
                             error = true,
-                            message = "Some errors occured. Please try again later!"
+                            message = ConstantUtil.CommonError.DBExceptionError
                         });
                     }
                 }
@@ -1227,7 +1339,7 @@ namespace TMS.Areas.Admin.Controllers
                     {
                         success = false,
                         error = true,
-                        message = "Some error occured! Please try again later!"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }
@@ -1253,7 +1365,7 @@ namespace TMS.Areas.Admin.Controllers
                     return Json(new
                     {
                         success = false,
-                        message = "Some error occured! Please try again later!"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }

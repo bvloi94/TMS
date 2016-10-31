@@ -83,15 +83,15 @@ namespace TMS.Services
             }
         }
 
-        public bool IsDuplicatName(int? id, string name)
+        public bool IsDuplicateName(int? id, string name)
         {
             if (id == null)
             {
-                return _unitOfWork.DepartmentRepository.Get(m => m.Name == name).Any();
+                return _unitOfWork.DepartmentRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).Any();
             }
             else
             {
-                return _unitOfWork.DepartmentRepository.Get(m => m.ID != id && m.Name == name).Any();
+                return _unitOfWork.DepartmentRepository.Get(m => m.ID != id && m.Name.ToLower().Equals(name.ToLower())).Any();
             }
         }
 

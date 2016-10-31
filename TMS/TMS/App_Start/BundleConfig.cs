@@ -44,6 +44,7 @@ namespace TMS
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/AdminLTE.min.css",
+                      "~/Content/Plugins/jquery.ui/jquery-ui.min.css",
                       "~/Content/skins/_all-skins.min.css",
                       "~/Content/bootstrap.css.map",
                       "~/Content/font-awesome.min.css",

@@ -54,7 +54,7 @@ namespace TMS.Controllers
                     KnowledgeBaseViewModels model = new KnowledgeBaseViewModels();
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
-                    model.Keyword = solution.Keyword;
+                    model.Keyword = solution.Keyword.Replace("\"", "");
                     model.CategoryID = solution.CategoryID;
                     model.Category = _categoryService.GetCategoryById(solution.CategoryID).Name;
                     model.Path = solution.Path;
@@ -81,25 +81,40 @@ namespace TMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(KnowledgeBaseViewModels model)
         {
+            if (string.IsNullOrWhiteSpace(model.Subject))
+            {
+                ModelState.AddModelError("Subject", "Please input subject.");
+            }
+            else
+            {
+                var subject = model.Subject.Trim();
+                bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(null, subject);
+                if (isDuplicateSubject)
+                {
+                    ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", subject));
+                }
+            }
 
-            bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(null, (model.Subject == null ? null : model.Subject.Trim()));
-            if (isDuplicateSubject)
+            if (string.IsNullOrWhiteSpace(model.Path))
             {
-                ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", model.Subject));
+                ModelState.AddModelError("Path", "Please input path.");
             }
-            bool isDuplicatePath = _solutionServices.IsduplicatePath(null, model.Path);
-            if (isDuplicatePath)
+            else
             {
-                ModelState.AddModelError("Path", string.Format("'{0}' have been used!", model.Path));
-            }
-            if (model.Path != null)
-            {
+                var path = model.Path.Trim();
+                bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
+                if (isDuplicatePath)
+                {
+                    ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
+                }
+
                 Match match = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
                 if (!match.Success)
                 {
                     ModelState.AddModelError("Path", "Path can not contain special characters! ");
                 }
             }
+
             if (model.Keyword != null)
             {
                 Match match = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-, ]*$", RegexOptions.IgnoreCase);
@@ -112,7 +127,7 @@ namespace TMS.Controllers
             {
                 ModelState.AddModelError("CategoryID", "Please select topic! ");
             }
-            Solution solution = new Solution();
+
             if (model.CategoryID != 0)
             {
                 Category category = _categoryService.GetCategoryById(model.CategoryID);
@@ -123,6 +138,7 @@ namespace TMS.Controllers
             }
             if (ModelState.IsValid)
             {
+                Solution solution = new Solution();
                 solution.Subject = model.Subject.Trim().ToLower();
                 solution.ContentText = model.Content;
                 solution.CategoryID = model.CategoryID;
@@ -139,15 +155,19 @@ namespace TMS.Controllers
                     }
                 }
                 string keyword = "";
-                string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
-                keywordArr = keywordArr.Where(p => p != "").ToArray();
+
                 if (!string.IsNullOrEmpty(model.Keyword))
                 {
+                    string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
                     string delimeter = "";
                     foreach (string keywordItem in keywordArr)
                     {
-                        keyword += delimeter + '"' + keywordItem.Trim() + '"';
-                        delimeter = ",";
+                        if (!string.IsNullOrWhiteSpace(keywordItem))
+                        {
+                            string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
+                            keyword += delimeter + '"' + keywordItemTmp + '"';
+                            delimeter = ",";
+                        }
                     }
                 }
 
@@ -197,10 +217,10 @@ namespace TMS.Controllers
                 }
                 if (model.Keyword != null)
                 {
-                    Match match = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-,]*$", RegexOptions.IgnoreCase);
+                    Match match = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-, ]*$", RegexOptions.IgnoreCase);
                     if (!match.Success)
                     {
-                        ModelState.AddModelError("Keyword", "Keyword only contain characters a-z and separated by commas! ");
+                        ModelState.AddModelError("Keyword", "Keyword only contain characters 'a-z', '0-9' and separated by commas! ");
                     }
                 }
 
@@ -225,8 +245,12 @@ namespace TMS.Controllers
                         string delimeter = "";
                         foreach (string keywordItem in keywordArr)
                         {
-                            keyword += delimeter + '"' + keywordItem.Trim() + '"';
-                            delimeter = ",";
+                            if (!string.IsNullOrWhiteSpace(keywordItem))
+                            {
+                                string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
+                                keyword += delimeter + '"' + keywordItemTmp + '"';
+                                delimeter = ",";
+                            }
                         }
                         solution.Keyword = keyword;
                         solution.CategoryID = model.CategoryID;

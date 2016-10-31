@@ -3,7 +3,7 @@
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Create knowledge Base";
 }
-
+<link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css"/>
 <style>
     h4, h5 {
         color: #345aaa;
@@ -50,7 +50,7 @@
                 </div>
                 <div class="form-group">
                     <label class="control-label col-md-2">Keyword</label>
-                    <div class="col-md-10">
+                    <div class="col-md-10" style="max-width: 704px;">
                         @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", id = "keyword" })
                         @Html.ValidationMessageFor(m => m.Keyword, "", new { @class = "text-danger" })
                     </div>
@@ -81,10 +81,12 @@
     </div>
 </div>
 @section scripts{
+    <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
     <script>
         $(document)
             .ready(function () {
                 $('#content-area').wysihtml5();
+                $("#keyword").tagit();
                 initCategoryDropdown({
                     control: $("[data-role=ddl-category]"),
                     ignore: function () {
@@ -112,8 +114,6 @@
                         .replace(/[^\w-]+/g, '')
                         .replace(/\--/g, ''));
             });
-
-
 
     </script>
 }

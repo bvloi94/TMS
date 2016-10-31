@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
+using TMS.Utils;
 using TMS.ViewModels;
 
 namespace TMS.Areas.Admin.Controllers
@@ -83,39 +84,48 @@ namespace TMS.Areas.Admin.Controllers
         {
             var name = Request["name"];
             var description = Request["description"];
-            bool isDuplicateName = _departmentService.IsDuplicatName(null, name.ToLower().Trim());
-            if (isDuplicateName)
+            if (string.IsNullOrWhiteSpace(name))
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = string.Format("'{0}' has already been used.", name)
+                    message = "Please input name."
                 });
             }
             else
             {
-                Department department = new Department();
-                department.Name = name.Trim();
-                department.Description = description == null ? "" : description.Trim();
-                try
+                name = name.Trim();
+                bool isDuplicateName = _departmentService.IsDuplicateName(null, name);
+                if (isDuplicateName)
                 {
-                    _departmentService.AddDepartment(department);
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Create department succesfully!"
-                    });
-                }
-                catch (Exception)
-                {
-
                     return Json(new
                     {
                         success = false,
-                        error = true,
-                        message = "Some errors occured. Please try again later!"
+                        message = string.Format("'{0}' has already been used.", name)
                     });
+                }
+                else
+                {
+                    Department department = new Department();
+                    department.Name = name;
+                    department.Description = description;
+                    try
+                    {
+                        _departmentService.AddDepartment(department);
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Create department succesfully!"
+                        });
+                    }
+                    catch (Exception)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
                 }
             }
         }
@@ -150,27 +160,51 @@ namespace TMS.Areas.Admin.Controllers
         {
             if (id.HasValue)
             {
-                bool isDuplicatedName = _departmentService.IsDuplicatName(id, model.Name.ToLower().Trim());
-                if (isDuplicatedName)
+                if (string.IsNullOrWhiteSpace(model.Name))
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
-                        message = String.Format("'{0}' has already been used.", model.Name)
+                        message = "Please input name."
                     });
                 }
                 else
                 {
-                    Department department = _departmentService.GetDepartmentById(id.Value);
-                    department.Name = model.Name.Trim();
-                    department.Description = model.Description == null ? "" : model.Description.Trim();
-                    _departmentService.EditDepartment(department);
-                    return Json(new
+                    var name = model.Name.Trim();
+                    bool isDuplicatedName = _departmentService.IsDuplicateName(id, name);
+                    if (isDuplicatedName)
                     {
-                        success = true,
-                        message = "Update department successfully!"
-                    });
+                        return Json(new
+                        {
+                            success = false,
+                            error = false,
+                            message = String.Format("'{0}' has already been used.", name)
+                        });
+                    }
+                    else
+                    {
+                        Department department = _departmentService.GetDepartmentById(id.Value);
+                        department.Name = name;
+                        department.Description = model.Description;
+                        try
+                        {
+                            _departmentService.EditDepartment(department);
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Update department successfully!"
+                            });
+                        }
+                        catch (Exception)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+
+                    }
                 }
             }
             else
@@ -183,7 +217,6 @@ namespace TMS.Areas.Admin.Controllers
                 });
             }
         }
-
 
         [HttpPost]
         public ActionResult DeleteDepartment(int? id)
@@ -232,7 +265,7 @@ namespace TMS.Areas.Admin.Controllers
                     {
                         success = false,
                         error = true,
-                        message = "Some error occured! Please try again later!"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
 

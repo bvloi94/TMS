@@ -39,11 +39,11 @@ namespace TMS.Services
         {
             if (id == null)
             {
-                return _unitOfWork.SolutionRepository.Get(m => m.Subject == subject).Any();
+                return _unitOfWork.SolutionRepository.Get(m => m.Subject.ToLower().Equals(subject.ToLower())).Any();
             }
             else
             {
-                return _unitOfWork.SolutionRepository.Get(m => m.ID != id && m.Subject == subject).Any();
+                return _unitOfWork.SolutionRepository.Get(m => m.ID != id && m.Subject.ToLower().Equals(subject.ToLower())).Any();
             }
 
         }
@@ -67,11 +67,12 @@ namespace TMS.Services
                 _unitOfWork.SolutionRepository.Update(solution);
                 _unitOfWork.Save();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw;
             }
         }
+
         public IEnumerable<Solution> GetSolutionsByCategory(int id)
         {
             return _unitOfWork.SolutionRepository.Get(m => m.CategoryID == id);
@@ -81,11 +82,11 @@ namespace TMS.Services
         {
             if (id == null)
             {
-                return _unitOfWork.SolutionRepository.Get(m => m.Path == path).Any();
+                return _unitOfWork.SolutionRepository.Get(m => m.Path.ToLower().Equals(path.ToLower())).Any();
             }
             else
             {
-                return _unitOfWork.SolutionRepository.Get(m =>m.ID != id && m.Path == path).Any();
+                return _unitOfWork.SolutionRepository.Get(m =>m.ID != id && m.Path.ToLower().Equals(path.ToLower())).Any();
             }
                 
         }
