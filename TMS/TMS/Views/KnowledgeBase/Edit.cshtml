@@ -1,6 +1,5 @@
 ﻿@using TMS.Models
-@using TMS.Utils
-@model TMS.ViewModels.KnowledgeBaseViewModels
+@model TMS.ViewModels.KnowledgeBaseViewModel
 @{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Edit knowledge Base";
@@ -36,7 +35,7 @@
                 <div class="form-group">
                     <label class="control-label col-md-2">Subject&nbsp;<span class="required">*</span></label>
                     <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control" })
+                        @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", id = "subject-txt" })
                         @Html.ValidationMessageFor(m => m.Subject, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -118,8 +117,17 @@
          });
 
         $("#subject-txt").keyup(function () {
-            $("#path").val($("#subject-txt").val().trim().toLowerCase().replace(/  /g, ' ').replace(/ /g, '-').replace(/[^\w-]+/g, '').replace(/\--/g, ''));
+            getPath();
         });
+
+        var getPath = function () {
+            $("#path")
+                    .val($("#subject-txt").val().trim()
+                        .toLowerCase()
+                        .replace(/  /g, ' ')
+                        .replace(/ /g, '-')
+                        .replace(/[^\w-]+/g, '')
+                        .replace(/\--/g, ''));
      
     </script>
 }

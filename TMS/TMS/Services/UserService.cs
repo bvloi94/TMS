@@ -25,7 +25,7 @@ namespace TMS.Services
         public void AddUser(AspNetUser user)
         {
             _unitOfWork.AspNetUserRepository.Insert(user);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
 
         public AspNetUser GetUserByUsername(string username)
@@ -54,16 +54,8 @@ namespace TMS.Services
 
         public void EditUser(AspNetUser user)
         {
-            try
-            {
-                _unitOfWork.AspNetUserRepository.Update(user);
-                _unitOfWork.Save();
-            }
-            catch (Exception)
-            {
-                
-                throw;
-            }
+            _unitOfWork.AspNetUserRepository.Update(user);
+            _unitOfWork.Commit();
         }
 
         public void RemoveUser(string id)
@@ -73,7 +65,7 @@ namespace TMS.Services
             _unitOfWork.AspNetUserRepository.Update(user);
             try
             {
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -145,7 +137,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.AspNetUserRepository.Update(user);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {

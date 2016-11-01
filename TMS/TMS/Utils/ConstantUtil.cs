@@ -135,9 +135,26 @@ namespace TMS.Utils
 
         public class TimeOption
         {
-            public const int ThisWeek = 1;
-            public const int ThisMonth = 2;
-            public const int ThisYear = 3;
+            public const int Today = 1;
+            public const int FourDaysAgo = 2;
+            public const int ThisWeek = 3;
+            public const int ThisMonth = 4;
+            public const int ThisYear = 5;
         }
+
+        public class TicketCodeTemplate
+        {
+            public const int Length = 8;
+            public const string FirstLetter = "TK";
+            public const string CharacterTemplate = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            public const string NumberTemplate = "0123456789";
+        }
+
+        public class Attachment
+        {
+            public const int NameLength = 25;
+            public const string NameReplace = "....";
+        }
+
     }
 }

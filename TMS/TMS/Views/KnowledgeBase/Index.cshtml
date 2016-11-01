@@ -147,8 +147,9 @@
 					<a class="btn btn-primary btn-flat" href="/KnowledgeBase/Create">
                             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
                         </a>
-					<a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showRecentTicketFrequencyModal();">Recent ticket frequency</a>
-                    <a class="btn btn-default btn-flat" href="#"><i class="fa fa-trash"></i></a>                    </div>
+                        <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showSimilarTicketFrequencyModal();">Similar ticket frequency</a>
+                        <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
+                    </div>
                     <div class="box-tools pull-right col-md-4">
                         <div class="has-feedback">
                             <input type="text" id="key_search" class="form-control input-sm" placeholder="Search solution..." />
@@ -163,17 +164,26 @@
     </div>
 </div>
 
-<div id="recent-ticket-frequency-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+<div id="similar-ticket-frequency-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Recent Ticket Frequency</h4>
+                <h4 class="modal-title">Similar Ticket Frequency</h4>
             </div>
             <div class="modal-body">
-                <table class="table dataTable" id="recent-ticket-frequency-table">
+                <div class="pull-right">
+                    <select id="similar-ticket-time-option-select">
+                        <option value="1">Today</option>
+                        <option value="2">4 Days ago</option>
+                        <option value="3" selected>This Week</option>
+                        <option value="4">This Month</option>
+                        <option value="5">This Year</option>
+                    </select>
+                </div>
+                <table class="table dataTable" id="similar-ticket-frequency-table">
                     <thead>
                         <tr>
                             <th>Subject</th>
@@ -194,11 +204,13 @@
 @section scripts{
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
+        var sum = 0;
+
         $(document).ready(function () {
             notifyFlashMessage();
             showTreeViewModal();
             getAllSolution();
-            initRecentTicketFrequencyTable();
+            initSimilarTicketFrequencyTable();
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -400,9 +412,8 @@
             data.instance.toggle_node(data.node);
         });
 
-        var initRecentTicketFrequencyTable = function () {
-            var sum = 0;
-            $("#recent-ticket-frequency-table").dataTable({
+        var initSimilarTicketFrequencyTable = function () {
+            $("#similar-ticket-frequency-table").dataTable({
                 processing: true,
                 serverSide: true,
                 paging: true,
@@ -411,14 +422,11 @@
                 lengthMenu: [5],
                 order: [[1, 'desc']],
                 lengthChange: false,
-                drawCallback: function () {
-
-                },
-                initComplete: function (settings, json) {
-                    sum = json.totalTicket
-                },
                 ajax: {
-                    url: "/KnowledgeBase/GetRecentTicketFrequency"
+                    url: "/KnowledgeBase/GetSimilarTicketFrequency",
+                    data: function (d) {
+                        d.timeOption = $("#similar-ticket-time-option-select").val()
+                    }
                 },
                 autoWidth: false,
                 columnDefs: [
@@ -447,16 +455,24 @@
                         "sortable": false,
                         "width": "10%",
                         "render": function (data, type, row) {
-                            return "Action";
+                            return '<a href="/KnowledgeBase/Create?Subject=' + row.Subject + '" class="btn btn-flat btn-primary">Create Solution</a>';
                         }
                     }
                 ]
             });
         }
 
-        var showRecentTicketFrequencyModal = function () {
-            $("#recent-ticket-frequency-table").dataTable().api().ajax.reload();
-            $("#recent-ticket-frequency-modal").modal("show");
+        $('#similar-ticket-frequency-table').on('xhr.dt', function (e, settings, json, xhr) {
+            sum = json.totalTicket;
+        });
+
+        $("#similar-ticket-time-option-select").on("change", function () {
+            $("#similar-ticket-frequency-table").dataTable().api().ajax.reload();
+        });
+
+        var showSimilarTicketFrequencyModal = function () {
+            $("#similar-ticket-frequency-table").dataTable().api().ajax.reload();
+            $("#similar-ticket-frequency-modal").modal("show");
         }
     </script>
 }

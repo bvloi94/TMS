@@ -68,7 +68,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.CategoryRepository.Insert(category);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -81,7 +81,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.CategoryRepository.Update(category);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -121,7 +121,7 @@ namespace TMS.Services
                 _unitOfWork.CategoryRepository.Delete(childCategory);
             }
             _unitOfWork.CategoryRepository.Delete(category);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
 
         public List<int> GetChildrenCategoriesIdList(int categoryId)

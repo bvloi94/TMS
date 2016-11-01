@@ -123,3 +123,7 @@
     font-weight: bold;
     color: #fff;
 }
+
+.draggable {
+    cursor: move;
+}

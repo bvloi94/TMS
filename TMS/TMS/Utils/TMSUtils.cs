@@ -59,5 +59,28 @@ namespace TMS.Utils
             }
         }
 
+        public static string GetMinimizedAttachmentName(string fileName)
+        {
+            if (fileName.Length > ConstantUtil.Attachment.NameLength)
+            {
+                string ext = fileName.Split('.').Last();
+                return fileName.Substring(0, ConstantUtil.Attachment.NameLength - ConstantUtil.Attachment.NameReplace.Length - ext.Length) + ConstantUtil.Attachment.NameReplace + ext;
+            }
+            return fileName;
+        }
+
+        public static List<string> GetFieldsOfClass(object pObject)
+        {
+            List<string> propertyList = new List<string>();
+            if (pObject != null)
+            {
+                foreach (var prop in pObject.GetType().GetFields())
+                {
+                    propertyList.Add(prop.Name);
+                }
+            }
+            return propertyList;
+        }
+
     }
 }

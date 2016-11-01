@@ -18,7 +18,7 @@ namespace TMS.Services
 
         public IEnumerable<Department> GetAll()
         {
-            return _unitOfWork.DepartmentRepository.Get(a => (bool) a.IsActive);
+            return _unitOfWork.DepartmentRepository.Get(a => (bool)a.IsActive);
         }
 
         public IEnumerable<Department> GetAllDepartment()
@@ -28,17 +28,8 @@ namespace TMS.Services
 
         public void AddDepartment(Department dep)
         {
-            try
-            {
-                _unitOfWork.DepartmentRepository.Insert(dep);
-                _unitOfWork.Save();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        
+            _unitOfWork.DepartmentRepository.Insert(dep);
+            _unitOfWork.Commit();
         }
 
         public Department GetDepartmentById(int id)
@@ -48,17 +39,8 @@ namespace TMS.Services
 
         public void EditDepartment(Department department)
         {
-            try
-            {
-                _unitOfWork.DepartmentRepository.Update(department);
-                _unitOfWork.Save();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
+            _unitOfWork.DepartmentRepository.Update(department);
+            _unitOfWork.Commit();
         }
 
         public void RemoveDepartment(string id)
@@ -66,21 +48,13 @@ namespace TMS.Services
             Department dep = _unitOfWork.DepartmentRepository.GetByID(id);
             dep.IsActive = false;
             _unitOfWork.DepartmentRepository.Update(dep);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
 
         public void DeleteDepartment(Department department)
         {
-            try
-            {
-                _unitOfWork.DepartmentRepository.Delete(department);
-                _unitOfWork.Save();
-            }
-            catch (Exception)
-            {
-                
-                throw;
-            }
+            _unitOfWork.DepartmentRepository.Delete(department);
+            _unitOfWork.Commit();
         }
 
         public bool IsDuplicateName(int? id, string name)

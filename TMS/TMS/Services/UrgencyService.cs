@@ -38,7 +38,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.UrgencyRepository.Insert(urgency);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -56,7 +56,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.UrgencyRepository.Update(urgency);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch (Exception)
             {
@@ -80,7 +80,7 @@ namespace TMS.Services
                     _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
                 }
                 _unitOfWork.UrgencyRepository.Delete(urgency);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch (Exception)
             {

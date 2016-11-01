@@ -330,7 +330,9 @@
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="Utils\LevenshteinDistance.cs" />
     <Compile Include="Utils\PredicateBuilder.cs" />
+    <Compile Include="Utils\SentenceUtil.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
     <Compile Include="Utils\MaxFileSizeAttribute.cs" />
     <Compile Include="Utils\ValidateDateSQLAttribute.cs" />
@@ -547,10 +549,6 @@
     <Content Include="Areas\Technician\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\Shared\_Layout.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Create.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Delete.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Areas\Admin\Views\ManageUser\HelpDesk.cshtml" />
@@ -583,6 +581,7 @@
     <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
     <Content Include="Areas\Admin\Views\Department\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BussinessRules\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateManager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditManager.cshtml" />

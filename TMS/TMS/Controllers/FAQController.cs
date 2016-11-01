@@ -44,13 +44,13 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult GetFAQ(int? id)
         {
-            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
+            IEnumerable<KnowledgeBaseViewModel> filteredListItems;
             if (id.HasValue)
             {
                 List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
                 filteredListItems = _solutionService.GetAllSolutions()
                     .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
-                    .Select(m => new KnowledgeBaseViewModels
+                    .Select(m => new KnowledgeBaseViewModel
                     {
                         ID = m.ID,
                         Subject = m.Subject,
@@ -66,7 +66,7 @@ namespace TMS.Controllers
             }
             else
             {
-                filteredListItems = _solutionService.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
+                filteredListItems = _solutionService.GetAllSolutions().Select(m => new KnowledgeBaseViewModel
                 {
                     ID = m.ID,
                     Subject = m.Subject,
@@ -97,7 +97,7 @@ namespace TMS.Controllers
                 Solution solution = _solutionService.GetSolutionByPath(path);
                 if (solution != null)
                 {
-                    KnowledgeBaseViewModels model = new KnowledgeBaseViewModels();
+                    KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
                     model.ID = solution.ID;
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
