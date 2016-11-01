@@ -4,6 +4,18 @@ var closeTicketId = null;
 var reassignTicketId = null;
 var selectedTickets = [];
 
+$(window).on('resize', function () {
+    $('.ticket-subject').trunk8({
+        lines: 2,
+        tooltip: false
+    });
+    //$('#ticket-description #ticket-solution').trunk8({
+    //    lines: 3,
+    //    tooltip: false,
+    //    fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
+    //});
+});
+
 function initTicketTable() {
     ticketTable = $("#ticket-table").DataTable({
         serverSide: true,
@@ -13,9 +25,6 @@ function initTicketTable() {
         lengthMenu: [7],
         order: [[6, 'des']],
         lengthChange: false,
-        fnDrawCallback: function () {
-            checkSelectedCheckbox();
-        },
         ajax: {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
             "type": "POST",
@@ -23,6 +32,13 @@ function initTicketTable() {
                 d.status_filter = $("#status-dropdown").val();
                 d.search_text = $("#search-txt").val();
             }
+        },
+        drawCallback: function () {
+            checkSelectedCheckbox();
+            $('.ticket-subject').trunk8({
+                lines: 2,
+                tooltip: false
+            });
         },
         columnDefs: [
         {
@@ -38,6 +54,7 @@ function initTicketTable() {
                      //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
                      return $("<a/>",
                      {
+                         "class": "ticket-subject",
                          "href": "javascript:openTicketDetailModal(" + row.Id + ")",
                          "html": row.Subject
                      })[0].outerHTML;
@@ -235,6 +252,16 @@ function initDropdownControl() {
     });
 }
 
+//$(document).on('click', '#see-more', function (event) {
+//    $(this).parent().trunk8('revert').append('<br/><a id="see-less" href="javascript:void{0}">See Less</a>');
+//    return false;
+//});
+
+//$(document).on('click', '#see-less', function (event) {
+//    $(this).parent().trunk8();
+//    return false;
+//});
+
 function openTicketDetailModal(ticketId) {
     $.ajax({
         url: '/Ticket/GetTicketDetail',
@@ -270,10 +297,13 @@ function openTicketDetailModal(ticketId) {
                 $('#ticket-solution').text(data.solution);
             }
 
+            
+
+            $('#ticket-attachments').empty();
             if (!data.attachments || data.attachments == "") {
-                $('#ticket-attachment').text("-");
+                $('#ticket-attachments').append("No attachments.");
             } else {
-                $('#ticket-attachment').text(data.attachments);
+                $('#ticket-attachments').append(data.attachments);
             }
 
 
@@ -315,13 +345,22 @@ function openTicketDetailModal(ticketId) {
 
             $('#ticket-solveUser').text(data.solveUser);
 
+            
+
             $('#detail-modal').modal("show");
+            $('#ticket-solution, #ticket-description').trunk8({
+                tooltip: false,
+                lines: 3,
+                fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
+            });
         },
         failure: function (data) {
             alert(data.d);
         }
     });
 }
+
+
 
 $(document)
         .ready(function () {

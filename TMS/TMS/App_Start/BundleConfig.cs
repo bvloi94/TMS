@@ -33,6 +33,7 @@ namespace TMS
                 "~/Content/js/jquery.noty.packaged.js",
                 "~/Scripts/notify.min.js",
                 "~/Content/js/select2.min.js",
+                "~/Content/js/jquery.truncate.js",
                 "~/Content/js/trunk8.min.js",
                 "~/Content/custom-js/tms-dropdown.js",
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",

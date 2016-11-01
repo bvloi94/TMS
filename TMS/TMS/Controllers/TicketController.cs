@@ -281,9 +281,11 @@ namespace TMS.Controllers
             string attachmentStr = "";
             if (ticketAttachments.Count() > 0)
             {
+                string fileName;
                 foreach (var attachFile in ticketAttachments)
                 {
-                    attachmentStr += attachFile.Filename + " ";
+                    fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
+                    attachmentStr += "<a download=\'" + fileName + "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path + "\' target=\'_blank\' >" + fileName + "</a>";
                 }
             }
 
@@ -388,8 +390,7 @@ namespace TMS.Controllers
             else if (userRole.Id == ConstantUtil.UserRole.HelpDesk.ToString())
             {
                 ViewBag.Role = "HelpDesk";
-                if (ticket.Status != ConstantUtil.TicketStatus.Assigned &&
-                    ticket.Status != ConstantUtil.TicketStatus.New &&
+                if (ticket.Status != ConstantUtil.TicketStatus.New &&
                     ticket.Status != ConstantUtil.TicketStatus.Unapproved)
                 {
                     return RedirectToAction("Index", "ManageTicket", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.

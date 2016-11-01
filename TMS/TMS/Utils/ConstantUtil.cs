@@ -141,5 +141,20 @@ namespace TMS.Utils
             public const int ThisMonth = 4;
             public const int ThisYear = 5;
         }
+
+        public class TicketCodeTemplate
+        {
+            public const int Length = 8;
+            public const string FirstLetter = "TK";
+            public const string CharacterTemplate = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            public const string NumberTemplate = "0123456789";
+        }
+
+        public class Attachment
+        {
+            public const int NameLength = 25;
+            public const string NameReplace = "....";
+        }
+
     }
 }

@@ -215,7 +215,7 @@
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\BussinessRulesController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
@@ -339,6 +339,7 @@
     <Compile Include="Utils\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
@@ -415,6 +416,7 @@
     <Content Include="Content\js\html2canvas.js" />
     <Content Include="Content\js\jquery.noty.js" />
     <Content Include="Content\js\printThis.js" />
+    <Content Include="Content\js\jquery.truncate.js" />
     <Content Include="Content\js\select2.min.js" />
     <Content Include="Content\js\trunk8.min.js" />
     <Content Include="Content\knowledgebase\style.css" />
@@ -547,10 +549,6 @@
     <Content Include="Areas\Technician\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\Shared\_Layout.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Create.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Delete.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Areas\Admin\Views\ManageUser\HelpDesk.cshtml" />
@@ -583,6 +581,7 @@
     <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
     <Content Include="Areas\Admin\Views\Department\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BussinessRules\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateManager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditManager.cshtml" />
@@ -673,7 +672,7 @@
     <Content Include="Views\Ticket\Detail.cshtml" />
     <Content Include="Views\KnowledgeBase\Edit.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
-    <Content Include="Views\KnowledgeBase\Detail.cshtml" />
+    <Content Include="Views\FAQ\Detail.cshtml" />
     <Content Include="Views\Shared\KBLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -684,7 +683,7 @@
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
-    <Folder Include="Content\knowledgebase\js\" />
+    <Folder Include="Content\Plugins\jquery.ui\images\" />
     <Folder Include="Content\Plugins\jquery.ui\images\" />
   </ItemGroup>
   <ItemGroup>

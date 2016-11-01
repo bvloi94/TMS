@@ -49,7 +49,7 @@ namespace TMS.Services
                     };
                     _unitOfWork.PriorityMatrixItemRepository.Insert(entity);
                 }
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {

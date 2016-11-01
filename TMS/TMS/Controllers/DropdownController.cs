@@ -180,5 +180,20 @@ namespace TMS.Controllers
             }
         }
 
+        public ActionResult LoadCriteriaDropdown(string query)
+        {
+            List<string> criteriaProperties = TMSUtils.GetFieldsOfClass(new ConstantUtil.CriteriaOfBusinessRuleCondition());
+            if (query != null)
+            {
+                List<string> result = new List<string>();
+                foreach (var criteria in criteriaProperties)
+                {
+                    if (criteria.Contains(query)) result.Add(criteria);
+                }
+                return Json(result, JsonRequestBehavior.AllowGet);
+            }
+            return Json(criteriaProperties, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

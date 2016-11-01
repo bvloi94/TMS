@@ -20,6 +20,7 @@ namespace TMS.ViewModels
         //public int CategoryID { get; set; }
         [Required(ErrorMessage = "Please select totpic!")]
         public int CategoryID { get; set; }
+        public string CategoryPath { get; set; }
         public string Category { get; set; }
         public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
         public string Keyword { get; set; }

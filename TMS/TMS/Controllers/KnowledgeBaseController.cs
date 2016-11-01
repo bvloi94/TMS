@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -339,7 +340,7 @@ namespace TMS.Controllers
             {
                 ID = m.ID,
                 Subject = m.Subject,
-                CategoryID = m.CategoryID,
+                CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
                 Keyword = m.Keyword == null ? "-" : m.Keyword,
                 CreatedTime = m.CreatedTime,
@@ -360,6 +361,7 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult GetSolutionsByCategory(int? id, string key_search)
         {
+            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
             if (id.HasValue)
             {
                 IEnumerable<KnowledgeBaseViewModel> filteredListItems;
@@ -371,6 +373,7 @@ namespace TMS.Controllers
                         ID = m.ID,
                         Subject = m.Subject,
                         CategoryID = m.CategoryID,
+                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
                         Content = m.ContentText,
                         Keyword = m.Keyword == null ? "-" : m.Keyword,
                         CreatedTime = m.CreatedTime,
@@ -387,19 +390,32 @@ namespace TMS.Controllers
                     data = filteredListItems
                 }, JsonRequestBehavior.AllowGet);
             }
-
-            return Json(new
+            else
             {
-                success = false,
-                error = true,
-                msg = "Cannot find solutions!"
-            });
-        }
+                filteredListItems = _solutionServices.GetAllSolutions()
+                    .Where(m => m.CategoryID == id.Value)
+                    .Select(m => new KnowledgeBaseViewModels
+                    {
+                        ID = m.ID,
+                        Subject = m.Subject,
+                        CategoryID = m.CategoryID,
+                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                        Content = m.ContentText,
+                        Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        CreatedTime = m.CreatedTime,
+                        ModifiedTime = m.ModifiedTime
+                    }).ToArray();
 
-        [HttpGet]
-        public ActionResult Detail()
-        {
-            return View();
+                if (!string.IsNullOrEmpty(key_search))
+                {
+                    filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                }
+
+                return Json(new
+                {
+                    data = filteredListItems
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpGet]
