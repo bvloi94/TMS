@@ -4,14 +4,14 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
-using TMS.Models;
-using TMS.Services;
-using TMS.ViewModels;
 using TMS.DAL;
-using System.IO;
+using TMS.Services;
 using TMS.Utils;
+using TMS.Models;
+using TMS.ViewModels;
+using System.IO;
 
-namespace TMS.Areas.Admin.Controllers
+namespace TMS.Areas.HelpDesk.Controllers
 {
     public class ProfileController : Controller
     {
@@ -24,81 +24,69 @@ namespace TMS.Areas.Admin.Controllers
             _userService = new UserService(_unitOfWork);
         }
 
-        // GET: Admin/Profile
-        [CustomAuthorize(Roles = "Admin")]
+        // GET: HelpDesk/Profile
+        [CustomAuthorize(Roles = "Helpdesk")]
         [HttpGet]
         public ActionResult Index()
         {
             string userId = User.Identity.GetUserId();
             AspNetUser user = _userService.GetUserById(userId);
-            ProfileAdminViewModel model = new ProfileAdminViewModel();
+            ProfileHelpdeskViewModel model = new ProfileHelpdeskViewModel();
             model.FullName = user.Fullname;
             model.Address = user.Address;
             model.DayOfBirth = user.Birthday;
             model.Gender = user.Gender;
             model.Phone = user.PhoneNumber;
-            model.Email = user.Email;
 
             ViewBag.Username = user.UserName;
             ViewBag.AvatarURL = user.AvatarURL;
             return View(model);
         }
 
-        //GET: /Admin/Profile/UpdateProfile
-        [CustomAuthorize(Roles = "Admin")]
         [HttpGet]
         public ActionResult UpdateProfile()
         {
             string userId = User.Identity.GetUserId();
             AspNetUser user = _userService.GetUserById(userId);
-            ProfileAdminViewModel model = new ProfileAdminViewModel();
+            ProfileHelpdeskViewModel model = new ProfileHelpdeskViewModel();
             model.FullName = user.Fullname;
+            model.Phone = user.PhoneNumber;
             model.Address = user.Address;
             model.DayOfBirth = user.Birthday;
             model.Gender = user.Gender;
-            model.Phone = user.PhoneNumber;
-            model.Email = user.Email;
 
             ViewBag.Username = user.UserName;
             ViewBag.AvatarURL = user.AvatarURL;
             return View(model);
         }
 
-        // POST: Admin/Profile/UpdateProfile
-        [CustomAuthorize(Roles = "Admin")]
-        [ValidateAntiForgeryToken]
         [HttpPost]
-        public ActionResult EditProfie(ProfileAdminViewModel model)
+        [ValidateAntiForgeryToken]
+        public ActionResult EditProfie(ProfileHelpdeskViewModel model)
         {
             string userId = User.Identity.GetUserId();
-            if (_userService.IsDuplicatedEmail(userId, model.Email))
-            {
-                ModelState.AddModelError("Email", String.Format("Email '{0}' is already taken.", model.Email));
-            }
-
-            AspNetUser admin = _userService.GetUserById(userId);
+            AspNetUser helpDesk = _userService.GetUserById(userId);
             if (ModelState.IsValid)
             {
-                admin.Fullname = model.FullName;
-                admin.Email = model.Email;
-                admin.Birthday = model.DayOfBirth;
-                admin.Address = model.Address;
-                admin.PhoneNumber = model.Phone;
-                admin.Gender = model.Gender;
-                // handle avatar
+                helpDesk.Fullname = model.FullName;
+                helpDesk.Birthday = model.DayOfBirth;
+                helpDesk.Address = model.Address;
+                helpDesk.PhoneNumber = model.Phone;
+                helpDesk.Gender = model.Gender;
                 // handle avatar
                 if (model.Avatar != null)
                 {
-                    string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), admin.Id);
+                    string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), helpDesk.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    admin.AvatarURL = "/Uploads/Avatar/"+ fileName;
+                    helpDesk.AvatarURL = "/Uploads/Avatar/"+ fileName;
                 }
-               _userService.EditUser(admin);
+                _userService.EditUser(helpDesk);
                 return RedirectToAction("Index");
             }
-            ViewBag.username = admin.UserName;
-            ViewBag.AvatarURL = admin.AvatarURL;
+
+            ViewBag.username = helpDesk.UserName;
+            ViewBag.AvatarURL = helpDesk.AvatarURL;
             return View("UpdateProfile", model);
         }
     }

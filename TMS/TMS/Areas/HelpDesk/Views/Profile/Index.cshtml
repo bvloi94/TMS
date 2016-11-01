@@ -1,0 +1,114 @@
+﻿@using Microsoft.Ajax.Utilities
+@model TMS.ViewModels.ProfileHelpdeskViewModel
+@{
+    ViewBag.Title = "View Profile";
+    Layout = "~/Areas/Helpdesk/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .profileInfo label {
+        text-align: right;
+    }
+</style>
+
+<div class="form-horizontal">
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="box box-primary">
+                <div class="box-body large-text-container profileInfo">
+                    <br />
+                    <!--Username-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Username</label>
+                        <div class="col-sm-7">
+                            @ViewBag.Username
+                        </div>
+                    </div>
+                   
+                    <!--Fullname-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Fullname</label>
+                        <div class="col-sm-7">
+                            @Model.FullName
+                        </div>
+                    </div>
+                    <!--Birthday-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3 ">Birthday</label>
+                        <div class="col-sm-7">
+                            @if (Model.DayOfBirth.HasValue)
+                            {
+                                @Model.DayOfBirth.Value.ToString("dd/MM/yyyy")
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--Adrress-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Address</label>
+                        <div class="col-sm-7">
+                            @if (!Model.Address.IsNullOrWhiteSpace())
+                            {
+                                @Model.Address
+                            }
+                            else
+                            { <span>-</span>}
+                        </div>
+                    </div>
+                    <!--Phone-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Phone</label>
+                        <div class="col-sm-7">
+                            @if (!Model.Phone.IsNullOrWhiteSpace())
+                            {
+                                <span>@Model.Phone</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--Gender-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3 ">Gender</label>
+                        <div class="col-sm-7">
+                            @if (Model.Gender.HasValue)
+                            {
+                                if (Model.Gender.Value)
+                                {
+                                    <p>Male</p>
+                                }
+                                else
+                                {
+                                    <p>Female</p>
+                                }
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--Btn Update profile-->
+                    <div class="form-group">
+                        <div class="col-xs-offset-4 col-xs-8">
+                            @Html.ActionLink("Update Profile", "UpdateProfile", null, new { @class = "btn btn-success" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="box box-primary">
+                <div class="box-body" style="text-align: center">
+                    <span class="lead"><strong>Avatar</strong></span>
+                    <br />
+                    <img src="@ViewBag.AvatarURL" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
