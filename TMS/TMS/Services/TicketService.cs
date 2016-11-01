@@ -374,26 +374,30 @@ namespace TMS.Services
             return isSatisfied;
         }
 
-        public IEnumerable<RecentTicketViewModel> GetRecentTickets(int timeOption)
+        public IEnumerable<Ticket> GetRecentTickets(int timeOption)
         {
             IEnumerable<Ticket> tickets = _unitOfWork.TicketRepository.Get();
             IEnumerable<Ticket> recentTickets = tickets;
             switch (timeOption)
             {
+                case ConstantUtil.TimeOption.Today:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.Date);
+                    break;
+                case ConstantUtil.TimeOption.FourDaysAgo:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.AddDays(-4).Date);
+                    break;
                 case ConstantUtil.TimeOption.ThisWeek:
-                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date > DateTime.Now.AddDays(-7).Date);
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.Date.AddDays(-(int)DateTime.Now.DayOfWeek).Date
+                        && m.CreatedTime.Date <= DateTime.Now.Date);
                     break;
                 case ConstantUtil.TimeOption.ThisMonth:
-                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date > DateTime.Now.AddMonths(-1).Date);
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Year == DateTime.Now.Year && m.CreatedTime.Month == DateTime.Now.Month);
                     break;
                 case ConstantUtil.TimeOption.ThisYear:
-                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date > DateTime.Now.AddYears(-1).Date);
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Year == DateTime.Now.Year);
                     break;
             }
-            return recentTickets.GroupBy(m => m.Subject).Select(m => new RecentTicketViewModel {
-                Subject = m.Key,
-                Count = m.Select(l => l.Subject).Count()
-            });
+            return recentTickets;
         }
 
         public void AddTicket(Ticket ticket)
@@ -493,6 +497,54 @@ namespace TMS.Services
         {
             return _unitOfWork.TicketRepository.Get(m => m.Status == ConstantUtil.TicketStatus.Solved
                 || m.Status == ConstantUtil.TicketStatus.Closed);
+        }
+
+        public IEnumerable<RecentTicketViewModel> GetSimilarTickets(IEnumerable<Ticket> tickets)
+        {
+            tickets = tickets.OrderByDescending(m => m.Subject.Length);
+            List<RecentTicketViewModel> result = new List<RecentTicketViewModel>();
+            List<Ticket> temp = tickets.ToList();
+            List<Ticket> ignore = new List<Ticket>();
+            foreach (Ticket compareTicket in temp)
+            {
+                int count = 1;
+                if (ignore.Where(m => m.ID == compareTicket.ID).Any())
+                {
+                    continue;
+                }
+                ignore.Add(compareTicket);
+                int percent = 0;
+                foreach (Ticket remainingTicket in temp)
+                {
+                    if (ignore.Where(m => m.ID == remainingTicket.ID).Any())
+                    {
+                        continue;
+                    }
+                    //int editDistance = LevenshteinDistance.DamerauLevenshteinCompute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
+                    //if (compareTicket.Subject.Length >= remainingTicket.Subject.Length)
+                    //{
+                    //    percent = Convert.ToInt32(((float) (compareTicket.Subject.Length - editDistance) / compareTicket.Subject.Length) * 100);
+                    //}
+                    //else
+                    //{
+                    //    percent = Convert.ToInt32(((float) (remainingTicket.Subject.Length - editDistance) / remainingTicket.Subject.Length) * 100);
+                    //}
+                    percent = SentenceUtil.Compute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
+                    if (percent >= 70)
+                    {
+                        count++;
+                        ignore.Add(remainingTicket);
+                    }
+                }
+                RecentTicketViewModel similarTicket = new RecentTicketViewModel
+                {
+                    Subject = compareTicket.Subject,
+                    Count = count
+                };
+                result.Add(similarTicket);
+            }
+
+            return result;
         }
     }
 }

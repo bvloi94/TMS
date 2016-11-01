@@ -8,7 +8,7 @@ using TMS.Models;
 
 namespace TMS.ViewModels
 {
-    public class KnowledgeBaseViewModels
+    public class KnowledgeBaseViewModel
     {
         public int? ID { get; set; }
         [Required(ErrorMessage = "Please input a subject!")]

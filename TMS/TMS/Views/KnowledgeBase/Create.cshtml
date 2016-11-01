@@ -1,4 +1,4 @@
-﻿@model TMS.ViewModels.KnowledgeBaseViewModels
+﻿@model TMS.ViewModels.KnowledgeBaseViewModel
 @{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Create knowledge Base";
@@ -87,6 +87,7 @@
             .ready(function () {
                 $('#content-area').wysihtml5();
                 $("#keyword").tagit();
+                getPath();
                 initCategoryDropdown({
                     control: $("[data-role=ddl-category]"),
                     ignore: function () {
@@ -106,14 +107,17 @@
 
         $("#subject-txt")
             .keyup(function () {
-                $("#path")
+                getPath();
+            });
+
+        var getPath = function () {
+            $("#path")
                     .val($("#subject-txt").val().trim()
                         .toLowerCase()
                         .replace(/  /g, ' ')
                         .replace(/ /g, '-')
                         .replace(/[^\w-]+/g, '')
                         .replace(/\--/g, ''));
-            });
-
+        }
     </script>
 }

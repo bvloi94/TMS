@@ -330,7 +330,9 @@
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="Utils\LevenshteinDistance.cs" />
     <Compile Include="Utils\PredicateBuilder.cs" />
+    <Compile Include="Utils\SentenceUtil.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
     <Compile Include="Utils\MaxFileSizeAttribute.cs" />
     <Compile Include="Utils\ValidateDateSQLAttribute.cs" />

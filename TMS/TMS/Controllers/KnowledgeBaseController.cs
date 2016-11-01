@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -38,9 +36,11 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult Create()
+        [ActionName("Create")]
+        public ActionResult CreateGet(KnowledgeBaseViewModel model)
         {
-            return View();
+            ModelState.Clear();
+            return View(model);
         }
 
         [HttpGet]
@@ -51,7 +51,7 @@ namespace TMS.Controllers
                 Solution solution = _solutionServices.GetSolutionById(id.Value);
                 if (solution != null)
                 {
-                    KnowledgeBaseViewModels model = new KnowledgeBaseViewModels();
+                    KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
                     model.Keyword = solution.Keyword.Replace("\"", "");
@@ -79,7 +79,7 @@ namespace TMS.Controllers
         //   [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(KnowledgeBaseViewModels model)
+        public ActionResult Create(KnowledgeBaseViewModel model)
         {
             // validate subject
             if (string.IsNullOrWhiteSpace(model.Subject))
@@ -202,7 +202,7 @@ namespace TMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int? id, KnowledgeBaseViewModels model)
+        public ActionResult Edit(int? id, KnowledgeBaseViewModel model)
         {
             if (id.HasValue)
             {
@@ -225,7 +225,7 @@ namespace TMS.Controllers
                 {
                     var path = model.Path.Trim();
 
-                    bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
+                    bool isDuplicatePath = _solutionServices.IsduplicatePath(id.Value, path);
                     if (isDuplicatePath)
                     {
                         ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
@@ -334,8 +334,8 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult GetSolutions(string key_search)
         {
-            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
-            filteredListItems = _solutionServices.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
+            IEnumerable<KnowledgeBaseViewModel> filteredListItems;
+            filteredListItems = _solutionServices.GetAllSolutions().Select(m => new KnowledgeBaseViewModel
             {
                 ID = m.ID,
                 Subject = m.Subject,
@@ -362,11 +362,11 @@ namespace TMS.Controllers
         {
             if (id.HasValue)
             {
-                IEnumerable<KnowledgeBaseViewModels> filteredListItems;
+                IEnumerable<KnowledgeBaseViewModel> filteredListItems;
                 List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
                 filteredListItems = _solutionServices.GetAllSolutions()
                     .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
-                    .Select(m => new KnowledgeBaseViewModels
+                    .Select(m => new KnowledgeBaseViewModel
                     {
                         ID = m.ID,
                         Subject = m.Subject,
@@ -403,13 +403,14 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetRecentTicketFrequency(JqueryDatatableParameterViewModel param, int? timeOption)
+        public ActionResult GetSimilarTicketFrequency(JqueryDatatableParameterViewModel param, int? timeOption)
         {
             if (!timeOption.HasValue)
             {
                 timeOption = ConstantUtil.TimeOption.ThisWeek;
             }
-            IEnumerable<RecentTicketViewModel> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
+
+            IEnumerable<RecentTicketViewModel> recentTickets = _ticketService.GetSimilarTickets(_ticketService.GetRecentTickets(timeOption.Value));
 
             IEnumerable<RecentTicketViewModel> filteredListItems = recentTickets;
             if (!string.IsNullOrEmpty(param.search["value"]))

@@ -135,9 +135,11 @@ namespace TMS.Utils
 
         public class TimeOption
         {
-            public const int ThisWeek = 1;
-            public const int ThisMonth = 2;
-            public const int ThisYear = 3;
+            public const int Today = 1;
+            public const int FourDaysAgo = 2;
+            public const int ThisWeek = 3;
+            public const int ThisMonth = 4;
+            public const int ThisYear = 5;
         }
     }
 }
