@@ -22,15 +22,15 @@ namespace TMS.Services
             return _unitOfWork.PriorityRepository.Get();
         }
 
-        public bool IsDuplicateName(Int32? id, string name)
+        public bool IsDuplicateName(int? id, string name)
         {
             if (id == null)
             {
-                return _unitOfWork.PriorityRepository.Get(p => p.Name == name).Any();
+                return _unitOfWork.PriorityRepository.Get(p => p.Name.ToLower().Equals(name.ToLower())).Any();
             }
             else
             {
-                return _unitOfWork.PriorityRepository.Get(p => p.ID != id && p.Name == name).Any();
+                return _unitOfWork.PriorityRepository.Get(p => p.ID != id && p.Name.ToLower().Equals(name.ToLower())).Any();
             }
         }
 
@@ -43,27 +43,15 @@ namespace TMS.Services
             }
             catch (Exception)
             {
-                
+
                 throw;
             }
-           
+
         }
 
         public Priority GetPriorityByID(int id)
         {
             return _unitOfWork.PriorityRepository.GetByID(id);
-        }
-
-        public bool IsDuplicatedName(int? id, string name)
-        {
-            if (id == null)
-            {
-                return _unitOfWork.ImpactRepository.Get(p => p.Name == name).Any();
-            }
-            else
-            {
-                return _unitOfWork.ImpactRepository.Get(p => p.ID != id && p.Name == name).Any();
-            }
         }
 
         public void UpdatePriority(Priority priority)
@@ -75,7 +63,7 @@ namespace TMS.Services
             }
             catch (Exception)
             {
-                
+
                 throw;
             }
         }
@@ -85,7 +73,7 @@ namespace TMS.Services
             return _unitOfWork.TicketRepository.Get(m => m.PriorityID == priority.ID).Any();
         }
 
-        internal void DeletePriority(Priority priority)
+        public void DeletePriority(Priority priority)
         {
            _unitOfWork.PriorityRepository.Delete(priority);
            _unitOfWork.Commit();

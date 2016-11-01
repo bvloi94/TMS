@@ -1,0 +1,279 @@
+﻿@model TMS.Models.Department
+@{
+    ViewBag.Title = "Department";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <div class="box-body">
+                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Department</button>
+                <table class="table dataTable" id="department-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Department</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" placeholder="Name" id="name-txt">
+                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Description</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" rows="3" placeholder="Description" id="description-txt"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="create-btn" onclick="createDepartment()">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal" id="delete-modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Are you sure?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="yes-btn">Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@Styles.Render("~/Content/datatables")
+@section scripts{
+    @Scripts.Render("~/bundles/datatables")
+    <script>
+        $("#department-table")
+            .DataTable({
+                processing: true,
+                serverSide: true,
+                paging: false,
+                sort: false,
+                filter: false,
+                ajax: {
+                    url: "/Admin/Department/GetDepartment"
+                },
+                "columnDefs": [
+                    {
+                        "render": function (data, type, row) {
+                            return row[1];
+                        },
+                        "targets": 0,
+                        "type": "date"
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row[2];
+                        },
+                        "targets": 1
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getDepartmentDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                                   '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
+                        },
+                        "targets": 2
+                    }
+                ]
+            });
+
+        var showCreateModal = function () {
+            clearModal();
+            $("#myModal").modal('show');
+            $('#create-btn').attr('onclick', 'createDepartment()');
+        }
+
+        var reloadDataTable = function () {
+            var oTable = $("#department-table").dataTable();
+            oTable._fnPageChange(0);
+            oTable._fnAjaxUpdate();
+        };
+
+        var clearModal = function () {
+            $("#myModal").find("input").val("");
+            $("#myModal").find("textarea").val("");
+            $(".text-danger").hide();
+        }
+
+        var createDepartment = function () {
+            var name = $("#name-txt").val();
+            if (name.trim() === "") {
+                $("#name-validation-message").html("Name is required!");
+                $("#name-validation-message").show();
+            } else if (name.trim().length < 4) {
+                $("#name-validation-message").html("Name must be longer than 4 characters!");
+                $("#name-validation-message").show();
+            } else {
+                $.ajax({
+                    url: "/Admin/Department/CreateDepartment",
+                    type: "POST",
+                    dataTpye: "JSON",
+                    data: {
+                        name: $("#name-txt").val(),
+                        description: $("#description-txt").val()
+                    },
+                    success: function(data) {
+                        if (data.success) {
+                            $.notify(data.message, "success");
+                            $("#myModal").modal("hide");
+                            reloadDataTable();
+                        } else {
+                            if (data.error) {
+                                $.notify(data.message, "error");
+                            } else {
+                                $("#name-validation-message").html(data.message);
+                                $("#name-validation-message").show();
+                            }
+                        }
+                    },
+                    error: function() {
+                        $.notify("Cannot connect to server!", "error");
+                    }
+                });
+            }
+        }
+
+        var getDepartmentDetail = function (id) {
+            clearModal();
+            $.ajax({
+                url: "/Admin/Department/GetDepartmentDetail",
+                dataType: "json",
+                type: "GET",
+                data: {
+                    id: id
+                },
+                success: function (data) {
+                    if (data.success) {
+                        $("#myModal").modal("show");
+                        $("#name-txt").val(data.name);
+                        $("#description-txt").val(data.description);
+                        $("#create-btn").attr("onclick", "editDepartment('" + id + "')");
+                    } else {
+                        if (data.error) {
+                            $.notify(data.message, "error");
+                        }
+                    }
+                },
+                error: function () {
+                    $.notify("Cannot connect to server!", "error");
+                }
+            });
+        }
+
+        var editDepartment = function (id) {
+            //jquery
+            var name = $("#name-txt").val();
+            if (name.trim() === "") {
+                $("#name-validation-message").html("Name is required");
+                $("#name-validation-message").show();
+            } else if (name.trim().length < 4) {
+                $("#name-validation-message").html("Name must be longer than 4 characters! ");
+                $("#name-validation-message").show();
+            } else {
+                //ajax syntax
+                $.ajax(
+                {
+                    url: "/Admin/Department/EditDepartment",
+                    dataType: "json",
+                    type: "POST",
+                    data: {
+                        id: id,
+                        name: $("#name-txt").val(),
+                        description: $("#description-txt").val()
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            $.notify(data.message, "success");
+                            $("#myModal").modal("hide");
+                            reloadDataTable();
+                        } else {
+                            if (data.error) {
+                                $.notify(data.message, "error");
+                            } else if (!data.error) {
+                                $("#name-validation-message").html(data.message);
+                                $("#name-validation-message").show();
+                            }
+                        }
+                    },
+                    error: function () {
+                        $.notify("Cannot connect to server!", "error");
+                    }
+                });
+            }
+        };
+
+        var showDeleteModal = function (id) {
+            $("#yes-btn").attr("onclick", "deleteDepartment('" + id + "')");
+            $("#delete-modal").modal("show");
+        };
+
+        var deleteDepartment = function (id) {
+            $.ajax({
+                url: "/Admin/Department/DeleteDepartment",
+                dataType: "json",
+                type: "POST",
+                data: { id: id },
+                success: function (data) {
+                    if (data.success) {
+                        $.notify(data.message, "success");
+                        $("#delete-modal").modal("hide");
+                        reloadDataTable();
+                    } else if (!data.success) {
+                        $.notify(data.message, "error");
+                        $("#delete-modal").modal("hide");
+                    }
+                },
+                error: function () {
+                    $.notify(data.message, "error");
+                }
+            });
+
+        };
+
+    </script>
+}

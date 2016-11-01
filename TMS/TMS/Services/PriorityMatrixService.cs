@@ -19,7 +19,9 @@ namespace TMS.Services
 
         public PriorityMatrixItem GetPriorityMatrixItemByImpactAndUrgency(int impactId, int urgencyId)
         {
-            return _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactId && m.UrgencyID == urgencyId).FirstOrDefault();
+            return
+                _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactId && m.UrgencyID == urgencyId)
+                    .FirstOrDefault();
         }
 
         public IEnumerable<PriorityMatrixItem> GetPriorityMatrixItems()

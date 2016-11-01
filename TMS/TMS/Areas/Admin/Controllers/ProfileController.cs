@@ -86,19 +86,32 @@ namespace TMS.Areas.Admin.Controllers
                 admin.PhoneNumber = model.Phone;
                 admin.Gender = model.Gender;
                 // handle avatar
+                // handle avatar
                 if (model.Avatar != null)
                 {
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), admin.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    admin.AvatarURL = fileName;
+                    admin.AvatarURL = "/Uploads/Avatar/"+ fileName;
                 }
-                _userService.EditUser(admin);
+               _userService.EditUser(admin);
                 return RedirectToAction("Index");
             }
             ViewBag.username = admin.UserName;
             ViewBag.AvatarURL = admin.AvatarURL;
             return View("UpdateProfile", model);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser admin = _userService.GetUserById(id);
+            if (admin != null)
+            {
+                ViewBag.LayoutName = admin.Fullname;
+                ViewBag.LayoutAvatarURL = admin.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }

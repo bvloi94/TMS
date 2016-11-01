@@ -46,7 +46,10 @@ namespace TMS.Services
         public bool IsValidEmail(string email)
         {
             return _unitOfWork.AspNetUserRepository.Get(m => m.Email.Equals(email.ToLower()) && m.IsActive == true
-                        && m.AspNetRoles.FirstOrDefault().Name.ToLower().Equals("requester")).Any();
+                                                             &&
+                                                             m.AspNetRoles.FirstOrDefault()
+                                                                 .Name.ToLower()
+                                                                 .Equals("requester")).Any();
         }
 
         public void EditUser(AspNetUser user)
@@ -105,6 +108,11 @@ namespace TMS.Services
         public IEnumerable<AspNetUser> GetAdmins()
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin");
+        }
+
+        public IEnumerable<AspNetUser> GetManagers()
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower().Equals(ConstantUtil.UserRoleString.Manager.ToLower()));
         }
 
         public bool IsActive(string id)

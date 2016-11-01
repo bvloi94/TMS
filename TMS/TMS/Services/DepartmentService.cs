@@ -21,6 +21,11 @@ namespace TMS.Services
             return _unitOfWork.DepartmentRepository.Get(a => (bool) a.IsActive);
         }
 
+        public IEnumerable<Department> GetAllDepartment()
+        {
+            return _unitOfWork.DepartmentRepository.Get();
+        }
+
         public void AddDepartment(Department dep)
         {
             _unitOfWork.DepartmentRepository.Insert(dep);
@@ -32,7 +37,7 @@ namespace TMS.Services
             return _unitOfWork.DepartmentRepository.GetByID(id);
         }
 
-        public void EditDepartment(Department dep)
+        public void EditDepartment(Department department)
         {
             _unitOfWork.DepartmentRepository.Update(dep);
             _unitOfWork.Commit();
@@ -44,6 +49,37 @@ namespace TMS.Services
             dep.IsActive = false;
             _unitOfWork.DepartmentRepository.Update(dep);
             _unitOfWork.Commit();
+        }
+
+        public void DeleteDepartment(Department department)
+        {
+            try
+            {
+                _unitOfWork.DepartmentRepository.Delete(department);
+                _unitOfWork.Save();
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
+        }
+
+        public bool IsDuplicateName(int? id, string name)
+        {
+            if (id == null)
+            {
+                return _unitOfWork.DepartmentRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).Any();
+            }
+            else
+            {
+                return _unitOfWork.DepartmentRepository.Get(m => m.ID != id && m.Name.ToLower().Equals(name.ToLower())).Any();
+            }
+        }
+
+        public bool IsInUse(Department department)
+        {
+            return _unitOfWork.AspNetUserRepository.Get(m => m.DepartmentID == department.ID).Any();
         }
     }
 }

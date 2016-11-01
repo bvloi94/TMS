@@ -152,19 +152,20 @@
                         </a>
                     </li>
                     <li id="menu-report" class="treeview">
-                        <a href="@Url.Action("Create","ManageTicket")">
+                        <a href="@Url.Action("Index", "Report")">
                             <i class="fa fa-pie-chart"></i>
                             <span>REPORT</span>
                         </a>
                     </li>
                 </ul>
+            </section>
             <!-- /.sidebar -->
         </aside>
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
             <!-- Content Header (Page header) -->
             <section class="content-header">
-                <div class="box box-solid bg-blue big-title">
+                <div class="box box-solid big-blue-title">
                     <div class="box-header">
                         <h3>@ViewBag.Title</h3>
                     </div>
@@ -185,7 +186,7 @@
             reserved.
         </footer>
     </div>
-<!-- ./wrapper -->
+    <!-- ./wrapper -->
     @RenderSection("InitModal", false)
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")

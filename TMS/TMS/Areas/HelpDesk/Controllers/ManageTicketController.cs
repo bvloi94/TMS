@@ -1095,7 +1095,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.start).Take(param.length).OrderBy(m => m.Subject).Select(m => new Ticket
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new Ticket
             {
                 ID = m.ID,
                 Code = m.Code,

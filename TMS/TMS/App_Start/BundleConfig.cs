@@ -33,6 +33,7 @@ namespace TMS
                 "~/Content/js/jquery.noty.packaged.js",
                 "~/Scripts/notify.min.js",
                 "~/Content/js/select2.min.js",
+                "~/Content/js/jquery.truncate.js",
                 "~/Content/js/trunk8.min.js",
                 "~/Content/custom-js/tms-dropdown.js",
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
@@ -44,6 +45,7 @@ namespace TMS
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/AdminLTE.min.css",
+                      "~/Content/Plugins/jquery.ui/jquery-ui.min.css",
                       "~/Content/skins/_all-skins.min.css",
                       "~/Content/bootstrap.css.map",
                       "~/Content/font-awesome.min.css",
@@ -68,6 +70,8 @@ namespace TMS
             // Login CSS
             bundles.Add(new StyleBundle("~/Content/login_css").Include(
                       "~/Content/login.css"));
+            bundles.Add(new StyleBundle("~/Content/admin_css").Include(
+                      "~/Content/custom-css/admin.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/helpdesk-manage-ticket").Include(
                "~/Scripts/helpdesk-manage-ticket.js"));

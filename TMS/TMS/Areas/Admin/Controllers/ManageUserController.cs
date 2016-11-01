@@ -97,6 +97,11 @@ namespace TMS.Areas.Admin.Controllers
             return View();
         }
 
+        public ActionResult Manager()
+        {
+            return View();
+        }
+
         // GET: Admin/ManageUser/GetRequesters
         [HttpGet]
         public ActionResult GetRequesters(jQueryDataTableParamModel param)
@@ -430,6 +435,81 @@ namespace TMS.Areas.Admin.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult GetManagers(jQueryDataTableParamModel param)
+        {
+            var managers = _userService.GetManagers();
+            var default_search_key = Request["search[value]"];
+            var availability_select = Request["availability_select"];
+            var search_text = Request["search_text"];
+            IEnumerable<AspNetUser> filteredListItems = managers;
+
+            if (!string.IsNullOrEmpty(default_search_key))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Fullname.ToLower().Contains(default_search_key.ToLower()));
+            }
+            // Search by custom
+            if (!string.IsNullOrEmpty(availability_select))
+            {
+                switch (availability_select)
+                {
+                    case "0":
+                        filteredListItems = filteredListItems.Where(p => p.IsActive == false);
+                        break;
+                    case "1":
+                        filteredListItems = filteredListItems.Where(p => p.IsActive == true);
+                        break;
+                    case "2":
+                    default:
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(search_text))
+            {
+                filteredListItems = filteredListItems.Where(p => p.UserName.ToLower().Contains(search_text.ToLower())
+                    || p.Fullname.ToLower().Contains(search_text.ToLower()));
+            }
+
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortDirection = Request["order[0][dir]"];
+            //var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            //var sortDirection = Request["sSortDir_0"]; // asc or desc
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.UserName)
+                        : filteredListItems.OrderByDescending(p => p.UserName);
+                    break;
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Fullname)
+                        : filteredListItems.OrderByDescending(p => p.Fullname);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var result = displayedList.Select(p => new IConvertible[]{
+                p.Id,
+                p.UserName,
+                p.Fullname,
+                p.Email,
+                (p.Birthday == null) ? "-" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
+                p.IsActive
+            }.ToArray());
+
+            return Json(new
+            {
+                param.sEcho,
+                recordsTotal = result.Count(),
+                recordsFiltered = filteredListItems.Count(),
+                data = result
+            }, JsonRequestBehavior.AllowGet);
+        }
+
         // GET: Admin/ManageUser/CreateRequester
         public ActionResult CreateRequester()
         {
@@ -452,6 +532,13 @@ namespace TMS.Areas.Admin.Controllers
         // GET: Admin/ManageUser/CreateAdmin
         [HttpGet]
         public ActionResult CreateAdmin()
+        {
+            return View();
+        }
+
+        // GET: Admin/ManageUser/CreateManager
+        [HttpGet]
+        public ActionResult CreateManager()
         {
             return View();
         }
@@ -804,6 +891,85 @@ namespace TMS.Areas.Admin.Controllers
             return View(model);
         }
 
+        // POST: Admin/ManageUser/CreateManager
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CreateManager(ManagerRegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
+                //string generatedPassword = GeneralUtil.GeneratePassword();
+                string generatedPassword = "123456";
+                var result = await UserManager.CreateAsync(user, generatedPassword);
+                if (result.Succeeded)
+                {
+                    AspNetUser manager = _userService.GetUserById(user.Id);
+                    manager.Fullname = model.Fullname;
+                    manager.PhoneNumber = model.PhoneNumber;
+                    manager.Birthday = model.Birthday;
+                    manager.Address = model.Address;
+                    manager.Gender = model.Gender;
+                    manager.IsActive = true;
+                    // handle avatar
+                    if (model.Avatar != null)
+                    {
+                        string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), user.Id);
+                        string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
+                        model.Avatar.SaveAs(filePath);
+                        manager.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    }
+                    else
+                    {
+                        manager.AvatarURL = "/Uploads/Avatar/avatar_male.png";
+                        if (manager.Gender != null)
+                        {
+                            if (manager.Gender == false)
+                            {
+                                manager.AvatarURL = "/Uploads/Avatar/avatar_female.png";
+                            }
+                        }
+                    }
+                    try
+                    {
+                        _userService.EditUser(manager);
+
+                        ApplicationDbContext context = new ApplicationDbContext();
+
+                        var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+                        if (!roleManager.RoleExists(ConstantUtil.UserRoleString.Manager))
+                        {
+                            var role = new IdentityRole();
+                            role.Name = ConstantUtil.UserRoleString.Manager;
+                            roleManager.Create(role);
+                        }
+                        UserManager.AddToRole(user.Id, ConstantUtil.UserRoleString.Manager);
+                        // Send email asynchronously
+                        Thread thread = new Thread(() => EmailUtil.SendToUserWhenCreate(model.Username, generatedPassword, model.Fullname, model.Email));
+                        thread.Start();
+
+                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                        // Send an email with this link
+                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                        // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Manager account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                        return RedirectToAction("Manager", "ManageUser");
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Create Manager account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                        return RedirectToAction("Manager", "ManageUser");
+                    }
+                }
+                AddErrors(result);
+            }
+
+            return View(model);
+        }
+
         // GET: Admin/ManageUser/EditRequester/{id}
         public ActionResult EditRequester(string id)
         {
@@ -829,9 +995,7 @@ namespace TMS.Areas.Admin.Controllers
             }
             else
             {
-                Response.Cookies.Add(new HttpCookie("FlashMessage", "This requester is not available!") { Path = "/" });
-                Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
-                return RedirectToAction("Requester", "ManageUser");
+                return HttpNotFound();
             }
         }
 
@@ -856,9 +1020,7 @@ namespace TMS.Areas.Admin.Controllers
             }
             else
             {
-                Response.Cookies.Add(new HttpCookie("FlashMessage", "This help desk is not available!") { Path = "/" });
-                Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
-                return RedirectToAction("HelpDesk", "ManageUser");
+                return HttpNotFound();
             }
         }
 
@@ -885,9 +1047,7 @@ namespace TMS.Areas.Admin.Controllers
             }
             else
             {
-                Response.Cookies.Add(new HttpCookie("FlashMessage", "This technician is not available!") { Path = "/" });
-                Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
-                return RedirectToAction("Technician", "ManageUser");
+                return HttpNotFound();
             }
         }
 
@@ -908,14 +1068,36 @@ namespace TMS.Areas.Admin.Controllers
                 ViewBag.id = id;
                 ViewBag.username = admin.UserName;
                 ViewBag.AvatarURL = admin.AvatarURL;
-                ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
                 return View(model);
             }
             else
             {
-                Response.Cookies.Add(new HttpCookie("FlashMessage", "This technician is not available!") { Path = "/" });
-                Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
-                return RedirectToAction("Admin", "ManageUser");
+                return HttpNotFound();
+            }
+        }
+
+        // GET: Admin/ManageUser/EditManager/{id}
+        public ActionResult EditManager(string id)
+        {
+            AspNetUser manager = _userService.GetUserById(id);
+            if (manager != null)
+            {
+                ManagerRegisterViewModel model = new ManagerRegisterViewModel();
+                model.Fullname = manager.Fullname;
+                model.PhoneNumber = manager.PhoneNumber;
+                model.Email = manager.Email;
+                model.Birthday = manager.Birthday;
+                model.Address = manager.Address;
+                model.Gender = manager.Gender;
+
+                ViewBag.id = id;
+                ViewBag.username = manager.UserName;
+                ViewBag.AvatarURL = manager.AvatarURL;
+                return View(model);
+            }
+            else
+            {
+                return HttpNotFound();
             }
         }
 
@@ -932,43 +1114,50 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             AspNetUser requester = _userService.GetUserById(id);
-            if (ModelState.IsValid)
+            if (requester != null)
             {
-                requester.Fullname = model.Fullname;
-                requester.PhoneNumber = model.PhoneNumber;
-                requester.Email = model.Email;
-                requester.Birthday = model.Birthday;
-                requester.Address = model.Address;
-                requester.Gender = model.Gender;
-                requester.DepartmentName = model.DepartmentName;
-                requester.JobTitle = model.JobTitle;
-                requester.CompanyName = model.CompanyName;
-                requester.CompanyAddress = model.CompanyAddress;
-                // handle avatar
-                if (model.Avatar != null)
+                if (ModelState.IsValid)
                 {
-                    string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), requester.Id);
-                    string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
-                    model.Avatar.SaveAs(filePath);
-                    requester.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    requester.Fullname = model.Fullname;
+                    requester.PhoneNumber = model.PhoneNumber;
+                    requester.Email = model.Email;
+                    requester.Birthday = model.Birthday;
+                    requester.Address = model.Address;
+                    requester.Gender = model.Gender;
+                    requester.DepartmentName = model.DepartmentName;
+                    requester.JobTitle = model.JobTitle;
+                    requester.CompanyName = model.CompanyName;
+                    requester.CompanyAddress = model.CompanyAddress;
+                    // handle avatar
+                    if (model.Avatar != null)
+                    {
+                        string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), requester.Id);
+                        string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
+                        model.Avatar.SaveAs(filePath);
+                        requester.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    }
+                    try
+                    {
+                        _userService.EditUser(requester);
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Requester account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Requester account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                    }
+                    return RedirectToAction("Requester");
                 }
-                try
-                {
-                    _userService.EditUser(requester);
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Requester account successfully!") { Path = "/" });
-                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
-                }
-                catch
-                {
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Requester account unsuccessfully!") { Path = "/" });
-                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
-                }
-                return RedirectToAction("Requester");
+                ViewBag.id = id;
+                ViewBag.username = requester.UserName;
+                ViewBag.AvatarURL = requester.AvatarURL;
+                return View(model);
             }
-            ViewBag.id = id;
-            ViewBag.username = requester.UserName;
-            ViewBag.AvatarURL = requester.AvatarURL;
-            return View(model);
+            else
+            {
+                return HttpNotFound();
+            }
         }
 
         // POST: Admin/ManageUser/EditHelpDesk/{id}
@@ -984,39 +1173,46 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             AspNetUser helpdesk = _userService.GetUserById(id);
-            if (ModelState.IsValid)
+            if (helpdesk != null)
             {
-                helpdesk.Fullname = model.Fullname;
-                helpdesk.PhoneNumber = model.PhoneNumber;
-                helpdesk.Email = model.Email;
-                helpdesk.Birthday = model.Birthday;
-                helpdesk.Address = model.Address;
-                helpdesk.Gender = model.Gender;
-                // handle avatar
-                if (model.Avatar != null)
+                if (ModelState.IsValid)
                 {
-                    string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), helpdesk.Id);
-                    string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
-                    model.Avatar.SaveAs(filePath);
-                    helpdesk.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    helpdesk.Fullname = model.Fullname;
+                    helpdesk.PhoneNumber = model.PhoneNumber;
+                    helpdesk.Email = model.Email;
+                    helpdesk.Birthday = model.Birthday;
+                    helpdesk.Address = model.Address;
+                    helpdesk.Gender = model.Gender;
+                    // handle avatar
+                    if (model.Avatar != null)
+                    {
+                        string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), helpdesk.Id);
+                        string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
+                        model.Avatar.SaveAs(filePath);
+                        helpdesk.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    }
+                    try
+                    {
+                        _userService.EditUser(helpdesk);
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Help Desk account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Help Desk account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                    }
+                    return RedirectToAction("HelpDesk");
                 }
-                try
-                {
-                    _userService.EditUser(helpdesk);
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Help Desk account successfully!") { Path = "/" });
-                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
-                }
-                catch
-                {
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Help Desk account unsuccessfully!") { Path = "/" });
-                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
-                }
-                return RedirectToAction("HelpDesk");
+                ViewBag.id = id;
+                ViewBag.username = helpdesk.UserName;
+                ViewBag.AvatarURL = helpdesk.AvatarURL;
+                return View(model);
             }
-            ViewBag.id = id;
-            ViewBag.username = helpdesk.UserName;
-            ViewBag.AvatarURL = helpdesk.AvatarURL;
-            return View(model);
+            else
+            {
+                return HttpNotFound();
+            }
         }
 
         // POST: Admin/ManageUser/EditTechnician/{id}
@@ -1032,41 +1228,48 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             AspNetUser technician = _userService.GetUserById(id);
-            if (ModelState.IsValid)
+            if (technician != null)
             {
-                technician.Fullname = model.Fullname;
-                technician.PhoneNumber = model.PhoneNumber;
-                technician.Email = model.Email;
-                technician.Birthday = model.Birthday;
-                technician.Address = model.Address;
-                technician.Gender = model.Gender;
-                technician.DepartmentID = model.DepartmentID;
-                // handle avatar
-                if (model.Avatar != null)
+                if (ModelState.IsValid)
                 {
-                    string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), technician.Id);
-                    string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
-                    model.Avatar.SaveAs(filePath);
-                    technician.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    technician.Fullname = model.Fullname;
+                    technician.PhoneNumber = model.PhoneNumber;
+                    technician.Email = model.Email;
+                    technician.Birthday = model.Birthday;
+                    technician.Address = model.Address;
+                    technician.Gender = model.Gender;
+                    technician.DepartmentID = model.DepartmentID;
+                    // handle avatar
+                    if (model.Avatar != null)
+                    {
+                        string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), technician.Id);
+                        string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
+                        model.Avatar.SaveAs(filePath);
+                        technician.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    }
+                    try
+                    {
+                        _userService.EditUser(technician);
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Technician account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Technician account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                    }
+                    return RedirectToAction("Technician");
                 }
-                try
-                {
-                    _userService.EditUser(technician);
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Technician account successfully!") { Path = "/" });
-                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
-                }
-                catch
-                {
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Technician account unsuccessfully!") { Path = "/" });
-                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
-                }
-                return RedirectToAction("Technician");
+                ViewBag.id = id;
+                ViewBag.username = technician.UserName;
+                ViewBag.AvatarURL = technician.AvatarURL;
+                ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
+                return View(model);
             }
-            ViewBag.id = id;
-            ViewBag.username = technician.UserName;
-            ViewBag.AvatarURL = technician.AvatarURL;
-            ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
-            return View(model);
+            else
+            {
+                return HttpNotFound();
+            }
         }
 
         // POST: Admin/ManageUser/EditAdmin/{id}
@@ -1082,39 +1285,101 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             AspNetUser admin = _userService.GetUserById(id);
-            if (ModelState.IsValid)
+            if (admin != null)
             {
-                admin.Fullname = model.Fullname;
-                admin.PhoneNumber = model.PhoneNumber;
-                admin.Email = model.Email;
-                admin.Birthday = model.Birthday;
-                admin.Address = model.Address;
-                admin.Gender = model.Gender;
-                // handle avatar
-                if (model.Avatar != null)
+                if (ModelState.IsValid)
                 {
-                    string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), admin.Id);
-                    string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
-                    model.Avatar.SaveAs(filePath);
-                    admin.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    admin.Fullname = model.Fullname;
+                    admin.PhoneNumber = model.PhoneNumber;
+                    admin.Email = model.Email;
+                    admin.Birthday = model.Birthday;
+                    admin.Address = model.Address;
+                    admin.Gender = model.Gender;
+                    // handle avatar
+                    if (model.Avatar != null)
+                    {
+                        string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), admin.Id);
+                        string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
+                        model.Avatar.SaveAs(filePath);
+                        admin.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    }
+                    try
+                    {
+                        _userService.EditUser(admin);
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Admin account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Admin account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                    }
+                    return RedirectToAction("Admin");
                 }
-                try
-                {
-                    _userService.EditUser(admin);
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Admin account successfully!") { Path = "/" });
-                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
-                }
-                catch
-                {
-                    Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Admin account unsuccessfully!") { Path = "/" });
-                    Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
-                }
-                return RedirectToAction("Admin");
+                ViewBag.id = id;
+                ViewBag.username = admin.UserName;
+                ViewBag.AvatarURL = admin.AvatarURL;
+                return View(model);
             }
-            ViewBag.id = id;
-            ViewBag.username = admin.UserName;
-            ViewBag.AvatarURL = admin.AvatarURL;
-            return View(model);
+            else
+            {
+                return HttpNotFound();
+            }
+        }
+
+        // POST: Admin/ManageUser/EditManager/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditManager(ManagerRegisterViewModel model, string id)
+        {
+            ModelState.Remove("UserName");
+            ModelState.Remove("Password");
+            if (_userService.IsDuplicatedEmail(id, model.Email))
+            {
+                ModelState.AddModelError("Email", String.Format("Email '{0}' is already taken.", model.Email));
+            }
+
+            AspNetUser manager = _userService.GetUserById(id);
+            if (manager != null)
+            {
+                if (ModelState.IsValid)
+                {
+                    manager.Fullname = model.Fullname;
+                    manager.PhoneNumber = model.PhoneNumber;
+                    manager.Email = model.Email;
+                    manager.Birthday = model.Birthday;
+                    manager.Address = model.Address;
+                    manager.Gender = model.Gender;
+                    // handle avatar
+                    if (model.Avatar != null)
+                    {
+                        string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), manager.Id);
+                        string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
+                        model.Avatar.SaveAs(filePath);
+                        manager.AvatarURL = "/Uploads/Avatar/" + fileName;
+                    }
+                    try
+                    {
+                        _userService.EditUser(manager);
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Manager account successfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
+                    }
+                    catch
+                    {
+                        Response.Cookies.Add(new HttpCookie("FlashMessage", "Edit Manager account unsuccessfully!") { Path = "/" });
+                        Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
+                    }
+                    return RedirectToAction("Manager");
+                }
+                ViewBag.id = id;
+                ViewBag.username = manager.UserName;
+                ViewBag.AvatarURL = manager.AvatarURL;
+                return View(model);
+            }
+            else
+            {
+                return HttpNotFound();
+            }
         }
 
         [HttpPost]
@@ -1146,7 +1411,7 @@ namespace TMS.Areas.Admin.Controllers
                     return Json(new
                     {
                         success = false,
-                        message = "This user is unavailable!"
+                        message = ConstantUtil.CommonError.UnavailableUser
                     });
                 }
             }
@@ -1161,7 +1426,7 @@ namespace TMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult ResendEmail(string id)
+        public async Task<ActionResult> ResendEmail(string id)
         {
             AspNetUser user = _userService.GetUserById(id);
             if (user == null)
@@ -1169,12 +1434,12 @@ namespace TMS.Areas.Admin.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "User is not found"
+                    message = ConstantUtil.CommonError.UnavailableUser
                 });
             }
             string generatedPassword = GeneralUtil.GeneratePassword();
             // Send email asynchronously
-            bool sendEmailResult = EmailUtil.ResendToUserWhenCreate(user.UserName, generatedPassword, user.Fullname, user.Email);
+            bool sendEmailResult = await EmailUtil.ResendToUserWhenCreate(user.UserName, generatedPassword, user.Fullname, user.Email);
             if (sendEmailResult)
             {
                 return Json(new
@@ -1208,5 +1473,16 @@ namespace TMS.Areas.Admin.Controllers
             }
         }
 
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser admin = _userService.GetUserById(id);
+            if (admin != null)
+            {
+                ViewBag.LayoutName = admin.Fullname;
+                ViewBag.LayoutAvatarURL = admin.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
+        }
     }
 }

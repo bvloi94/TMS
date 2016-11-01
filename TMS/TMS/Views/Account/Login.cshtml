@@ -7,6 +7,11 @@
 <head>
     <title>Login Page</title>
     @Styles.Render("~/Content/login_css")
+    <style>
+        #forget-password-form {
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <div class="login-page">
@@ -40,16 +45,54 @@
                         </div>
                     </div>
                 </div>
-                <p class="message">Forget password? <a href="#">Click here</a></p>
+                <p class="message">Forget password? <a href="javascript:void(0)">Click here</a></p>
             }
+            <form id="forget-password-form" class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-md-10">
+                        <input type="text" id="forget-email" class="form-control" placeholder="Email"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Submit" class="btn btn-default" id="forget-password-btn" />
+                    </div>
+                </div>
+                <p class="message"><a href="javascript:void(0)">Back</a></p>
+            </form>
         </div>
     </div>
 </body>
 
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/notify.min.js"></script>
 <script>
     $('.message a').click(function () {
         $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
+    });
+
+    $("#forget-password-form").on("submit", function (e) {
+        e.preventDefault();
+        var email = $("#forget-email").val();
+        $.ajax({
+            url: "/Account/ResendForgetPassword",
+            type: "GET",
+            dataType: "json",
+            data: {
+                email: email
+            },
+            success: function (data) {
+                if (data.success) {
+                    $.notify(data.message, "success");
+                    $('form').animate({ height: "toggle", opacity: "toggle" }, "slow");
+                } else {
+                    $.notify(data.message, "error");
+                }
+            },
+            error: function () {
+                $.notify("Cannot connect to server", "error");
+            }
+        });
     });
 </script>

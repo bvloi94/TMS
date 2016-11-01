@@ -8,6 +8,7 @@ using TMS.Class;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Utils;
+using TMS.ViewModels;
 
 namespace TMS.Services
 {
@@ -371,6 +372,28 @@ namespace TMS.Services
                     break;
             }
             return isSatisfied;
+        }
+
+        public IEnumerable<RecentTicketViewModel> GetRecentTickets(int timeOption)
+        {
+            IEnumerable<Ticket> tickets = _unitOfWork.TicketRepository.Get();
+            IEnumerable<Ticket> recentTickets = tickets;
+            switch (timeOption)
+            {
+                case ConstantUtil.TimeOption.ThisWeek:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date > DateTime.Now.AddDays(-7).Date);
+                    break;
+                case ConstantUtil.TimeOption.ThisMonth:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date > DateTime.Now.AddMonths(-1).Date);
+                    break;
+                case ConstantUtil.TimeOption.ThisYear:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date > DateTime.Now.AddYears(-1).Date);
+                    break;
+            }
+            return recentTickets.GroupBy(m => m.Subject).Select(m => new RecentTicketViewModel {
+                Subject = m.Key,
+                Count = m.Select(l => l.Subject).Count()
+            });
         }
 
         public void AddTicket(Ticket ticket)

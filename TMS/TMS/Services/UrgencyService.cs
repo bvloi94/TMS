@@ -20,15 +20,16 @@ namespace TMS.Services
         {
             return _unitOfWork.UrgencyRepository.Get();
         }
+
         public bool IsDuplicatedName(int? id, string name)
         {
             if (id == null)
             {
-                return _unitOfWork.UrgencyRepository.Get(p => p.Name == name).Any();
+                return _unitOfWork.UrgencyRepository.Get(p => p.Name.ToLower().Equals(name.ToLower())).Any();
             }
             else
             {
-                return _unitOfWork.UrgencyRepository.Get(p => p.ID != id && p.Name == name).Any();
+                return _unitOfWork.UrgencyRepository.Get(p => p.ID != id && p.Name.ToLower().Equals(name.ToLower())).Any();
             }
         }
 
@@ -74,6 +75,10 @@ namespace TMS.Services
         {
             try
             {
+                foreach (PriorityMatrixItem priorityMatrixItem in urgency.PriorityMatrixItems.ToList())
+                {
+                    _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
+                }
                 _unitOfWork.UrgencyRepository.Delete(urgency);
                 _unitOfWork.Commit();
             }

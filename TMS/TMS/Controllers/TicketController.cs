@@ -390,8 +390,7 @@ namespace TMS.Controllers
             else if (userRole.Id == ConstantUtil.UserRole.HelpDesk.ToString())
             {
                 ViewBag.Role = "HelpDesk";
-                if (ticket.Status != ConstantUtil.TicketStatus.Assigned &&
-                    ticket.Status != ConstantUtil.TicketStatus.New &&
+                if (ticket.Status != ConstantUtil.TicketStatus.New &&
                     ticket.Status != ConstantUtil.TicketStatus.Unapproved)
                 {
                     return RedirectToAction("Index", "ManageTicket", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.
