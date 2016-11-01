@@ -361,7 +361,6 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult GetSolutionsByCategory(int? id, string key_search)
         {
-            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
             if (id.HasValue)
             {
                 IEnumerable<KnowledgeBaseViewModel> filteredListItems;
@@ -392,9 +391,9 @@ namespace TMS.Controllers
             }
             else
             {
-                filteredListItems = _solutionServices.GetAllSolutions()
+                IEnumerable<KnowledgeBaseViewModel> filteredListItems = _solutionServices.GetAllSolutions()
                     .Where(m => m.CategoryID == id.Value)
-                    .Select(m => new KnowledgeBaseViewModels
+                    .Select(m => new KnowledgeBaseViewModel
                     {
                         ID = m.ID,
                         Subject = m.Subject,

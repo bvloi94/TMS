@@ -215,7 +215,7 @@
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\HelpDesk\Controllers\BussinessRulesController.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
@@ -339,7 +339,6 @@
     <Compile Include="Utils\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
-    <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
@@ -683,7 +682,6 @@
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
-    <Folder Include="Content\Plugins\jquery.ui\images\" />
     <Folder Include="Content\Plugins\jquery.ui\images\" />
   </ItemGroup>
   <ItemGroup>
