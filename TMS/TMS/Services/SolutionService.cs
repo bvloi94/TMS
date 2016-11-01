@@ -100,5 +100,10 @@ namespace TMS.Services
         {
             return _unitOfWork.SolutionRepository.GetByID(id);
         }
+
+        public Solution GetSolutionByPath(string path)
+        {
+            return _unitOfWork.SolutionRepository.Get(m => m.Path.Equals(path)).FirstOrDefault();
+        }
     }
 }

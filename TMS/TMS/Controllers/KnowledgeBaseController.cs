@@ -82,6 +82,7 @@ namespace TMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(KnowledgeBaseViewModels model)
         {
+            // validate subject
             if (string.IsNullOrWhiteSpace(model.Subject))
             {
                 ModelState.AddModelError("Subject", "Please input subject.");
@@ -103,10 +104,16 @@ namespace TMS.Controllers
             else
             {
                 var path = model.Path.Trim();
+
                 bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
                 if (isDuplicatePath)
                 {
                     ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
+                }
+
+                if (path.StartsWith("-") || path.EndsWith("-"))
+                {
+                    ModelState.AddModelError("Path", "Invalid path! (example: how-to-use-tms)");
                 }
 
                 Match match = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
@@ -155,10 +162,11 @@ namespace TMS.Controllers
                         solution.SolutionAttachments.Add(attachment);
                     }
                 }
-                string keyword = "";
 
-                if (!string.IsNullOrEmpty(model.Keyword))
+
+                if (!string.IsNullOrWhiteSpace(model.Keyword))
                 {
+                    string keyword = "";
                     string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
                     string delimeter = "";
                     foreach (string keywordItem in keywordArr)
@@ -170,9 +178,10 @@ namespace TMS.Controllers
                             delimeter = ",";
                         }
                     }
+                    solution.Keyword = keyword;
                 }
 
-                solution.Keyword = keyword == null ? "" : keyword.Trim().ToLower();
+
                 solution.Path = model.Path.Trim().ToLower();
                 solution.CreatedTime = DateTime.Now;
                 try
@@ -198,18 +207,36 @@ namespace TMS.Controllers
         {
             if (id.HasValue)
             {
-                bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(id, (model.Subject == null ? null : model.Subject.Trim()));
-                if (isDuplicateSubject)
+                // validate subject
+                if (string.IsNullOrWhiteSpace(model.Subject))
                 {
-                    ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", model.Subject));
+                    ModelState.AddModelError("Subject", "Please input subject.");
                 }
-                bool isDuplicatePath = _solutionServices.IsduplicatePath(id, model.Path);
-                if (isDuplicatePath)
+                else
                 {
-                    ModelState.AddModelError("Path", string.Format("'{0}' have been used!", model.Path));
+                    var subject = model.Subject.Trim();
+                    bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(id.Value, subject);
+                    if (isDuplicateSubject)
+                    {
+                        ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", subject));
+                    }
                 }
+
                 if (model.Path != null)
                 {
+                    var path = model.Path.Trim();
+
+                    bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
+                    if (isDuplicatePath)
+                    {
+                        ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
+                    }
+
+                    if (path.StartsWith("-") || path.EndsWith("-"))
+                    {
+                        ModelState.AddModelError("Path", "Invalid path! (example: how-to-use-tms)");
+                    }
+
                     Match match = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
                     if (!match.Success)
                     {
@@ -241,19 +268,23 @@ namespace TMS.Controllers
 
                         solution.Subject = model.Subject.Trim().ToLower();
                         solution.ContentText = model.Content;
-                        string keyword = "";
-                        string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
-                        string delimeter = "";
-                        foreach (string keywordItem in keywordArr)
+
+                        if (!string.IsNullOrWhiteSpace(model.Keyword))
                         {
-                            if (!string.IsNullOrWhiteSpace(keywordItem))
+                            string keyword = "";
+                            string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
+                            string delimeter = "";
+                            foreach (string keywordItem in keywordArr)
                             {
-                                string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
-                                keyword += delimeter + '"' + keywordItemTmp + '"';
-                                delimeter = ",";
+                                if (!string.IsNullOrWhiteSpace(keywordItem))
+                                {
+                                    string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
+                                    keyword += delimeter + '"' + keywordItemTmp + '"';
+                                    delimeter = ",";
+                                }
                             }
+                            solution.Keyword = keyword;
                         }
-                        solution.Keyword = keyword;
                         solution.CategoryID = model.CategoryID;
                         solution.Path = model.Path.Trim().ToLower();
                         solution.ModifiedTime = DateTime.Now;
@@ -384,6 +415,80 @@ namespace TMS.Controllers
                     data = filteredListItems
                 }, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        [HttpGet]
+        public ActionResult GetRecentTicketFrequency(JqueryDatatableParameterViewModel param, int? timeOption)
+        {
+            if (!timeOption.HasValue)
+            {
+                timeOption = ConstantUtil.TimeOption.ThisWeek;
+            }
+            IEnumerable<RecentTicketViewModel> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
+
+            IEnumerable<RecentTicketViewModel> filteredListItems = recentTickets;
+            if (!string.IsNullOrEmpty(param.search["value"]))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Subject != null && (p.Subject.ToLower().Contains(param.search["value"].ToLower())));
+            }
+
+            //if (!string.IsNullOrWhiteSpace(keywords))
+            //{
+            //    keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+            //    Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+            //    keywords = regex.Replace(keywords, " ");
+            //    string[] keywordArr = keywords.Split(' ');
+            //    var predicate = PredicateBuilder.False<Ticket>();
+            //    foreach (string keyword in keywordArr)
+            //    {
+            //        predicate = predicate.Or(p => p.Subject.ToLower().Contains(keyword.ToLower()));
+            //    }
+            //    filteredListItems = filteredListItems.Where(predicate);
+            //}
+
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortDirection = param.order[0]["dir"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Subject)
+                        : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Count)
+                        : filteredListItems.OrderByDescending(p => p.Count);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new RecentTicketViewModel
+            {
+                Subject = m.Subject,
+                Count = m.Count
+            });
+
+            //JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
+            //rsModel.draw = param.draw;
+            //rsModel.recordsTotal = displayedList.ToList().Count();
+            //rsModel.recordsFiltered = filteredListItems.Count();
+            //rsModel.data = displayedList;
+            var totalTicket = 0;
+            foreach (RecentTicketViewModel ticket in recentTickets)
+            {
+                totalTicket += ticket.Count;
+            }
+
+            return Json(new
+            {
+                draw = param.draw,
+                recordsTotal = displayedList.ToList().Count(),
+                recordsFiltered = filteredListItems.Count(),
+                data = displayedList,
+                totalTicket = totalTicket
+            }, JsonRequestBehavior.AllowGet);
         }
     }
 }

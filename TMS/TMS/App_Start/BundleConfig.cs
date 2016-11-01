@@ -70,6 +70,8 @@ namespace TMS
             // Login CSS
             bundles.Add(new StyleBundle("~/Content/login_css").Include(
                       "~/Content/login.css"));
+            bundles.Add(new StyleBundle("~/Content/admin_css").Include(
+                      "~/Content/custom-css/admin.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/helpdesk-manage-ticket").Include(
                "~/Scripts/helpdesk-manage-ticket.js"));

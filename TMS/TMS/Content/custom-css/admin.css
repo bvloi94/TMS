@@ -1,0 +1,4 @@
+﻿.form-control {
+    width: unset !important;
+    min-width: 300px;
+}

@@ -80,17 +80,14 @@
                         <!-- User Account: style can be found in dropdown.less -->
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <img src="~/Content/img/user2-160x160.jpg" class="user-image" alt="User Image">
-                                <span class="hidden-xs">Requester</span>
+                                <img src="@ViewBag.LayoutAvatarURL" class="user-image" alt="User Image">
+                                <span class="hidden-xs">@ViewBag.LayoutName</span>
                             </a>
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
-                                    <img src="~/Content/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-                                    <p>
-                                        Requester
-                                        <small>FPT Software</small>
-                                    </p>
+                                    <img src="@ViewBag.LayoutAvatarURL" class="img-circle" alt="User Image">
+                                    <p>@ViewBag.LayoutName</p>
                                 </li>
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
@@ -122,15 +119,13 @@
                 <!-- Sidebar user panel -->
                 <div class="user-panel">
                     <div class="pull-left image">
-                        <img src="~/Content/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                        <img src="@ViewBag.LayoutAvatarURL" class="img-circle" alt="User Image" style="height: 45px;">
                     </div>
                     <div class="pull-left info">
-                        <p>Requester</p>
-                        <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+                        <p>@ViewBag.LayoutName</p>
+                        <i class="fa fa-circle text-success"></i> Online
                     </div>
                 </div>
-                <br />
-                <br />
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
@@ -143,6 +138,7 @@
                             <li @Html.Raw((actionName == "Requester" || actionName == "CreateRequester" || actionName == "EditRequester") ? "class='active'" : "")><a href="/Admin/ManageUser/Requester"><i class="fa fa-circle-o"></i>Requester</a></li>
                             <li @Html.Raw((actionName == "HelpDesk" || actionName == "CreateHelpDesk" || actionName == "EditHelpDesk") ? "class='active'" : "")><a href="/Admin/ManageUser/HelpDesk"><i class="fa fa-circle-o"></i>Help Desk</a></li>
                             <li @Html.Raw((actionName == "Technician" || actionName == "CreateTechnician" || actionName == "EditTechnician") ? "class='active'" : "")><a href="/Admin/ManageUser/Technician"><i class="fa fa-circle-o"></i>Technician</a></li>
+                            <li @Html.Raw((actionName == "Manager" || actionName == "CreateManager" || actionName == "EditManager") ? "class='active'" : "")><a href="/Admin/ManageUser/Manager"><i class="fa fa-circle-o"></i>Manager</a></li>
                             <li @Html.Raw((actionName == "Admin" || actionName == "CreateAdmin" || actionName == "EditAdmin") ? "class='active'" : "")><a href="/Admin/ManageUser/Admin"><i class="fa fa-circle-o"></i>Admin</a></li>
                         </ul>
                     </li>
@@ -201,7 +197,7 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
-    @Scripts.Render("~/bundles/jqueryval")
+    @*@Scripts.Render("~/bundles/jqueryval")*@
     @RenderSection("scripts", required: false)
     <script>
         $(document).ready(function () {
@@ -210,10 +206,10 @@
                 format: 'd/m/Y'
             });
             notifyFlashMessage();
-            $.validator.addMethod("date", function (value, element) {
-                Globalize.culture("en-GB");
-                return this.optional(element) || Globalize.parseDate(value) !== null;
-            });
+            //$.validator.addMethod("date", function (value, element) {
+            //    Globalize.culture("en-GB");
+            //    return this.optional(element) || Globalize.parseDate(value) !== null;
+            //});
         });
     </script>
 </body>

@@ -1,37 +1,15 @@
-﻿@using Microsoft.Ajax.Utilities
-@{
+﻿@{
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Report";
 }
-
-<style>
-    .graph {
-        width: 300px;
-    }
-
-    #doughnut-legend {
-        margin-top: 20px;
-    }
-
-    #doughnut-legend li {
-        display: inline-block;
-        font-size: 20px;
-        margin-right: 20px;
-    }
-
-    #doughnut-legend li span {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        margin-right: 5px;
-    }
-
+<style type="text/css">
     .table > thead > tr > th {
         white-space: nowrap;
     }
 </style>
+<link rel="stylesheet" href="~/Content/css/graph.css" />
 
-<div class="row">
+<div class="row" id="graph-condition-div">
     <div class="col-xs-8">
         <div class="box box-primary">
             <div class="box-body" id="draw-graph">
@@ -90,8 +68,10 @@
                         </div>
                     </div>
                     <!--Button Generate Report-->
-                    <div class="col-sm-offset-4">
-                        <button id="btnExport" class="btn btn-primary btn-flat">Export Report</button>
+                    <div class="form-group">
+                        <div class="col-sm-offset-4">
+                            <button onclick="exportReport()" class="btn btn-primary btn-flat">Export Report</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -99,7 +79,7 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row" id="data-div">
     <div class="col-xs-12">
         <div class="box box-primary">
             <!-- /.box-header -->
@@ -133,8 +113,13 @@
         <!-- /.box -->
     </div>
 </div>
+<div class="modal" id="loading-modal">
+    <img src="~/Content/img/ajax-loader.gif" />
+</div>
+
 @section Scripts {
     @Scripts.Render("~/bundles/chart")
+    <script src="~/Content/js/html2canvas.js"></script>
     <script>
         var defaultColors = [
             "#FF6384", "#36A2EB", "#FFCE56", "#f0f8ff", "#a4c639", "#8db600", "#ff9966", "#007fff", "#fae7b5",
@@ -218,10 +203,10 @@
                     url: "/HelpDesk/Report/GetTickets",
                     type: "POST",
                     data: function (d) {
-                            d.date_from_select = $("#date-from-txt").val(),
-                            d.date_to_select = $("#date-to-txt").val(),
-                            d.type = $("#dropdownType").val(),
-                            d.by = $("#dropdownBy").val()
+                        d.date_from_select = $("#date-from-txt").val(),
+                        d.date_to_select = $("#date-to-txt").val(),
+                        d.type = $("#dropdownType").val(),
+                        d.by = $("#dropdownBy").val()
                     }
                 }),
                 drawCallback: function (settings) {
@@ -404,5 +389,40 @@
         $(document).ready(function () {
             ProcessGraph();
         });
+
+        var exportReport = function () {
+            var graph_condition_div = document.getElementById("graph-condition-div");
+            var data_div = document.getElementById("data-div");
+            $("#loading-modal").modal('show');
+            html2canvas(graph_condition_div, {
+                onrendered: function (graph_condition_canvas) {
+                    html2canvas(data_div, {
+                        onrendered: function (data_canvas) {
+                            var graph_condition_img = new Image;
+
+                            graph_condition_img.id = 'graph-condition-img';    /// give an id so we can remove it in next step
+                            graph_condition_img.src = graph_condition_canvas.toDataURL("image/png");
+                            graph_condition_img.className = 'canvas-image'
+
+                            var data_img = new Image;
+
+                            data_img.id = 'data-img';    /// give an id so we can remove it in next step
+                            data_img.src = data_canvas.toDataURL("image/png");
+                            data_img.className = 'canvas-image'
+
+                            var hide = $('<style>').html('body *:not(.canvas-image) { display: none !important; }').appendTo(document.head);
+                            document.body.appendChild(graph_condition_img);
+                            document.body.appendChild(data_img);
+
+                            window.print();
+                            $('#graph-condition-img').remove();
+                            $('#data-img').remove();
+                            $("#loading-modal").modal('hide');
+                            hide.remove();
+                        }
+                    });
+                }
+            });
+        }
     </script>
 }

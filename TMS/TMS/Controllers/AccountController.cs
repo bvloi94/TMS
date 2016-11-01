@@ -10,6 +10,7 @@ using TMS.DAL;
 using TMS.Services;
 using TMS.ViewModels;
 using System.Web.Security;
+using TMS.Utils;
 
 namespace TMS.Controllers
 {
@@ -488,6 +489,42 @@ namespace TMS.Controllers
         public ActionResult ExternalLoginFailure()
         {
             return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResendForgetPassword(string email)
+        {
+            AspNetUser user = _userService.GetUserByEmail(email);
+            if (user != null)
+            {
+                string password = GeneralUtil.GeneratePassword();
+                bool sendMailResult = await EmailUtil.ResendToUserWhenCreate(user.UserName, password, user.Fullname, user.Email);
+                if (sendMailResult)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = string.Format("Account info has been sent to {0}", user.Email)
+                    }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Cannot send account info"
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Invalid email"
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         protected override void Dispose(bool disposing)

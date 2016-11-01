@@ -1,13 +1,17 @@
 ﻿@model TMS.ViewModels.AdminRegisterViewModel
 @{
-    ViewBag.Title = "Create Admin";
+    ViewBag.Title = "Manage Admins";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
+@Styles.Render("~/Content/admin_css")
 @using (Html.BeginForm("CreateAdmin", "ManageUser", FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
 {
     <div class="row" style="overflow: hidden">
         <div class="col-xs-8">
             <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h4 class="box-title">CREATE ADMIN</h4>
+                </div>
                 <div class="box-body">
                     @Html.AntiForgeryToken()
                     <div class="form-group">
