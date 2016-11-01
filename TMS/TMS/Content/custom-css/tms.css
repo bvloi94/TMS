@@ -4,7 +4,7 @@
     display: table;
 }
 
-    .big-title > .box-header > *{
+    .big-title > .box-header > * {
         text-transform: uppercase;
         font-weight: bold;
         display: table-cell;
@@ -75,21 +75,21 @@
 
 .requester-input-group {
     float: none;
-    position: relative; 
+    position: relative;
     display: table;
     border-collapse: separate;
 }
 
-.requester-input-group .input-group-addon {
-    padding: 0px 5px !important;
-    background: none;
-    border: none;
-}
+    .requester-input-group .input-group-addon {
+        padding: 0px 5px !important;
+        background: none;
+        border: none;
+    }
 
-.requester-input-group .userslookup {
-    width: 25px;
-    height: 25px;
-}
+    .requester-input-group .userslookup {
+        width: 25px;
+        height: 25px;
+    }
 
 .alignCenter {
     text-align: center;
@@ -108,4 +108,8 @@
     margin-left: -15px;
     font-weight: bold;
     color: #fff;
+}
+
+.draggable {
+    cursor: move;
 }

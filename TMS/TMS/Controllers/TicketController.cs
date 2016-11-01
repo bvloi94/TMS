@@ -281,9 +281,11 @@ namespace TMS.Controllers
             string attachmentStr = "";
             if (ticketAttachments.Count() > 0)
             {
+                string fileName;
                 foreach (var attachFile in ticketAttachments)
                 {
-                    attachmentStr += attachFile.Filename + " ";
+                    fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
+                    attachmentStr += "<a download=\'" + fileName + "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path + "\' target=\'_blank\' >" + fileName + "</a>";
                 }
             }
 

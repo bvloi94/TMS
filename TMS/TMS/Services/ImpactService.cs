@@ -38,7 +38,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.ImpactRepository.Insert(impact);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -56,7 +56,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.ImpactRepository.Update(impact);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch (Exception)
             {
@@ -71,7 +71,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.ImpactRepository.Delete(impact);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch (Exception)
             {

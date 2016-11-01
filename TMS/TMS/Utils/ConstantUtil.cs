@@ -132,10 +132,16 @@ namespace TMS.Utils
 
         public class TicketCodeTemplate
         {
-            public const int Length = 7;
-            public const string FirstLetter = "T";
+            public const int Length = 8;
+            public const string FirstLetter = "TK";
             public const string CharacterTemplate = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
             public const string NumberTemplate = "0123456789";
+        }
+
+        public class Attachment
+        {
+            public const int NameLength = 25;
+            public const string NameReplace = "....";
         }
 
     }

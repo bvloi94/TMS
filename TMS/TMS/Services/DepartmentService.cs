@@ -24,7 +24,7 @@ namespace TMS.Services
         public void AddDepartment(Department dep)
         {
             _unitOfWork.DepartmentRepository.Insert(dep);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
 
         public Department GetDepartmentById(int id)
@@ -35,7 +35,7 @@ namespace TMS.Services
         public void EditDepartment(Department dep)
         {
             _unitOfWork.DepartmentRepository.Update(dep);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
 
         public void RemoveDepartment(string id)
@@ -43,7 +43,7 @@ namespace TMS.Services
             Department dep = _unitOfWork.DepartmentRepository.GetByID(id);
             dep.IsActive = false;
             _unitOfWork.DepartmentRepository.Update(dep);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
     }
 }

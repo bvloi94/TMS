@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
+using log4net;
 using TMS.DAL;
 using TMS.Models;
+using TMS.Schedulers;
 using TMS.Utils;
 
 
@@ -11,6 +14,9 @@ namespace TMS.Services
 {
     public class TicketAttachmentService
     {
+
+        private ILog log = LogManager.GetLogger(typeof(JobManager));
+
         private readonly UnitOfWork _unitOfWork;
 
         public TicketAttachmentService(UnitOfWork unitOfWork)
@@ -30,18 +36,20 @@ namespace TMS.Services
 
         public void DeleteAttachment(TicketAttachment attachment)
         {
+
+            _unitOfWork.TicketAttachmentRepository.Delete(attachment);
+            _unitOfWork.Commit();
             try
             {
-                _unitOfWork.TicketAttachmentRepository.Delete(attachment);
-                _unitOfWork.Save();
+                File.Delete(Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + attachment.Path));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                log.Error("Delete Attachment Failed", ex);
             }
         }
 
-        public IEnumerable<TicketAttachment> GetAttachmentByTicketID (int id)
+        public IEnumerable<TicketAttachment> GetAttachmentByTicketID(int id)
         {
             return _unitOfWork.TicketAttachmentRepository.Get(m => m.TicketID == id);
         }
@@ -63,12 +71,12 @@ namespace TMS.Services
                     files.Filename = upFiles[i].FileName;
                     files.Type = type;
                     _unitOfWork.TicketAttachmentRepository.Insert(files);
-                    _unitOfWork.Save();
+                    _unitOfWork.Commit();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                throw;
+                log.Error("Save Attachment Failed", ex);
             }
 
         }

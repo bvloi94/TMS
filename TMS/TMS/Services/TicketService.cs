@@ -381,7 +381,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.TicketRepository.Insert(ticket);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -402,7 +402,7 @@ namespace TMS.Services
         public bool UpdateTicket(Ticket ticket)
         {
             _unitOfWork.TicketRepository.Update(ticket);
-            return _unitOfWork.Save() > 0;
+            return _unitOfWork.Commit();
         }
 
         public void CancelTicket(Ticket ticket)
@@ -412,7 +412,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.TicketRepository.Update(ticket);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -424,7 +424,7 @@ namespace TMS.Services
         {
             ticket.Status = ConstantUtil.TicketStatus.Solved; //Solved
             _unitOfWork.TicketRepository.Update(ticket);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
 
         public IEnumerable<Ticket> GetTechnicianTickets(string id)
@@ -465,7 +465,7 @@ namespace TMS.Services
             Random rnd = new Random();
             int size;
             int num;
-            string code = "";
+            string code="";
             while (duplicated)
             {
                 size = ConstantUtil.TicketCodeTemplate.Length;
@@ -487,7 +487,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.TicketRepository.Update(ticket);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {

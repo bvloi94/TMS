@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
@@ -214,6 +214,7 @@
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\BussinessRulesController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
@@ -335,6 +336,7 @@
     <Compile Include="Utils\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
@@ -533,10 +535,6 @@
     <Content Include="Areas\Technician\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\Shared\_Layout.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Create.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Delete.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Areas\Admin\Views\ManageUser\HelpDesk.cshtml" />
@@ -569,6 +567,7 @@
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BussinessRules\Index.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

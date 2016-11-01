@@ -25,7 +25,7 @@ namespace TMS.Services
 
             {
                 _unitOfWork.SolutionRepository.Insert(solution);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch (Exception)
             {
