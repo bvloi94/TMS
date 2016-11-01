@@ -40,64 +40,41 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetFAQ()
+        public ActionResult GetFAQ(int? id)
         {
             IEnumerable<KnowledgeBaseViewModels> filteredListItems;
-            filteredListItems = _solutionService.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
+            if (id.HasValue)
             {
-                ID = m.ID,
-                Subject = m.Subject,
-                CategoryID = m.CategoryID,
-                CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                Content = m.ContentText,
-                Keyword = m.Keyword == null ? "-" : m.Keyword,
-                CreatedTime = m.CreatedTime,
-                ModifiedTime = m.ModifiedTime
-            }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
+                List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
+                filteredListItems = _solutionService.GetAllSolutions()
+                    .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
+                    .Select(m => new KnowledgeBaseViewModels
+                {
+                    ID = m.ID,
+                    Subject = m.Subject,
+                    CategoryID = m.CategoryID,
+                    CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                    Content = m.ContentText,
+                    Keyword = m.Keyword == null ? "-" : m.Keyword,
+                    CreatedTime = m.CreatedTime,
+                    ModifiedTime = m.ModifiedTime
+                }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
+            }
+            else
+            {
+                filteredListItems = _solutionService.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
+                {
+                    ID = m.ID,
+                    Subject = m.Subject,
+                    CategoryID = m.CategoryID,
+                    CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                    Content = m.ContentText,
+                    Keyword = m.Keyword == null ? "-" : m.Keyword,
+                    CreatedTime = m.CreatedTime,
+                    ModifiedTime = m.ModifiedTime
+                }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
+            }
 
-            return Json(new
-            {
-                data = filteredListItems
-            }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public ActionResult GetQuestionsByCategory(string name)
-        {
-            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
-            filteredListItems = _solutionService.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
-            {
-                ID = m.ID,
-                Subject = m.Subject,
-                CategoryID = m.CategoryID,
-                CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                Content = m.ContentText,
-                Keyword = m.Keyword == null ? "-" : m.Keyword,
-                CreatedTime = m.CreatedTime,
-                ModifiedTime = m.ModifiedTime
-            }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
-
-            return Json(new
-            {
-                data = filteredListItems
-            }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
-        public ActionResult GetSolutionsByCategory()
-        {
-            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
-            filteredListItems = _solutionService.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
-            {
-                ID = m.ID,
-                Subject = m.Subject,
-                CategoryID = m.CategoryID,
-                CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                Content = m.ContentText,
-                Keyword = m.Keyword == null ? "-" : m.Keyword,
-                CreatedTime = m.CreatedTime,
-                ModifiedTime = m.ModifiedTime
-            }).OrderByDescending(m => m.ModifiedTime).ToArray();
 
             return Json(new
             {

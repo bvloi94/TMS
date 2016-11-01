@@ -330,9 +330,9 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult GetSolutionsByCategory(int? id, string key_search)
         {
+            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
             if (id.HasValue)
             {
-                IEnumerable<KnowledgeBaseViewModels> filteredListItems;
                 List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
                 filteredListItems = _solutionServices.GetAllSolutions()
                     .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
@@ -340,6 +340,7 @@ namespace TMS.Controllers
                     {
                         ID = m.ID,
                         Subject = m.Subject,
+                        CategoryID = m.CategoryID,
                         CategoryPath = _categoryService.GetCategoryPath(m.Category),
                         Content = m.ContentText,
                         Keyword = m.Keyword == null ? "-" : m.Keyword,
@@ -357,13 +358,32 @@ namespace TMS.Controllers
                     data = filteredListItems
                 }, JsonRequestBehavior.AllowGet);
             }
-
-            return Json(new
+            else
             {
-                success = false,
-                error = true,
-                msg = "Cannot find solutions!"
-            });
+                filteredListItems = _solutionServices.GetAllSolutions()
+                    .Where(m => m.CategoryID == id.Value)
+                    .Select(m => new KnowledgeBaseViewModels
+                    {
+                        ID = m.ID,
+                        Subject = m.Subject,
+                        CategoryID = m.CategoryID,
+                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                        Content = m.ContentText,
+                        Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        CreatedTime = m.CreatedTime,
+                        ModifiedTime = m.ModifiedTime
+                    }).ToArray();
+
+                if (!string.IsNullOrEmpty(key_search))
+                {
+                    filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                }
+
+                return Json(new
+                {
+                    data = filteredListItems
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         public IEnumerable<Solution> LoadRelatedArticle(int id)
@@ -378,6 +398,7 @@ namespace TMS.Controllers
                     ID = m.ID,
                     Subject = m.Subject,
                     Category = m.Category,
+                    CategoryID = m.CategoryID,
                     ContentText = m.ContentText,
                     Keyword = m.Keyword == null ? "-" : m.Keyword,
                     CreatedTime = m.CreatedTime,
@@ -398,6 +419,7 @@ namespace TMS.Controllers
                     model.ID = solution.ID;
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
+                    model.CategoryID = solution.CategoryID;
                     model.CategoryPath = _categoryService.GetCategoryPath(solution.Category);
                     if (solution.CreatedTime != null && solution.ModifiedTime != null)
                     {

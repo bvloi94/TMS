@@ -37,18 +37,18 @@
         box-shadow: none !important;
     }
 
-    .link-color {
+    .link-color, .category-link {
         color: #3393d8;
     }
 </style>
 
 <div class="col-lg-12">
     <div class="span8 page-content">
-        <article class="type-post format-standard hentry clearfix">
+        <article class="type-post format-standard hentry clearfix" id="all-articles">
             <h1 class="post-title"><a href="#">@Html.DisplayFor(m => m.Subject)</a></h1>
             <div class="post-meta clearfix">
                 <span class="date">@Html.DisplayFor(m => m.CreatedTime)</span>
-                <span class="category"><a class="link-color" href="#">@Html.DisplayFor(m => m.CategoryPath)</a></span>
+                <span class="category"><a class="category-link" id="@Model.CategoryID" href="#">@Html.DisplayFor(m => m.CategoryPath)</a></span>
             </div>
             <p class="pre-wrap">@Html.Raw(Model.Content)</p>
             <p><i>Keyword: @Html.DisplayFor(m => m.Keyword)</i></p>
@@ -62,7 +62,7 @@
                 {
                     <li class="article-entry standard">
                         <h4><a class="link-color" href="single.html">@solution.Subject</a></h4>
-                        <span class="article-meta">@solution.CreatedTime in <a class="link-color" href="#">@solution.Category.Name</a></span>
+                        <span class="article-meta">@solution.CreatedTime in <a class="category-link" id="@solution.CategoryID" href="#">@solution.Category.Name</a></span>
                     </li>
                 }
             </ul>
@@ -81,7 +81,39 @@
             showTreeViewModal();
         });
 
+        $('.category-link').on("click", function () {
+            loadSolution($(this).attr("id"));
+        });
 
+        function loadSolution(id) {
+            $.ajax({
+                url: "/KnowledgeBase/GetSolutionsByCategory/",
+                type: "GET",
+                data: { id: id },
+                success: function (data) {
+                    $('#all-articles').empty();
+                    if (data.data.length == 0) {
+                        $("#all-articles").append("<p style='text-align: center'><i>There is no solution to display.</i></p>");
+                    } else {
+                        for (i = 0; i < data.data.length; i++) {
+                            var content = data.data[i].Content;
+                            content = $.truncate(content, {
+                                length: 350,
+                            });
+                            var id = data.data[i].ID
+                            $('#all-articles').append(
+                                '<article class="type-post format-standard hentry clearfix">'
+                                + '<h1 class="post-title"><a href="/KnowledgeBase/Detail/' + id + '">' + data.data[i].Subject + '</a></h1>'
+                                + '<div class="post-meta clearfix">'
+                                + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
+                                + '<span class="category" id=' + data.data[i].CategoryID + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
+                                + '<p class="longContent">' + content + '<a class="link-color" href="/KnowledgeBase/Detail/' + id + '"> Continue reading</a></p>'
+                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></article>');
+                        }
+                    }
+                }
+            });
+        }
 
         var showTreeViewModal = function () {
             $("#category-treeview-div").jstree({
@@ -127,7 +159,8 @@
         };
 
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
-            data.instance.toggle_node(data.node);
+            //data.instance.toggle_node(data.node);
+            loadSolution(data.node.id);
         });
     </script>
 }
