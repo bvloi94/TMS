@@ -132,5 +132,12 @@ namespace TMS.Utils
             public const string UnavailableUser = "This user is not available!";
             public const string InvalidTicket = "This ticket is invalid!";
         }
+
+        public class TimeOption
+        {
+            public const int ThisWeek = 1;
+            public const int ThisMonth = 2;
+            public const int ThisYear = 3;
+        }
     }
 }

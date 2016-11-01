@@ -1,6 +1,5 @@
-﻿@using TMS.Utils
-@{
-    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+﻿@{
+    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
     ViewBag.Title = "Solutions";
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
@@ -73,9 +72,9 @@
         overflow-y: auto;
     }
 
-    .question-row:last-of-type {
-        border-bottom: none;
-    }
+        .question-row:last-of-type {
+            border-bottom: none;
+        }
 
     .question-list {
         height: 70vh;
@@ -100,9 +99,9 @@
         background-color: #1074bd;
     }
 
-    .modal-body {
+    /*.modal-body {
         background-color: #e6e6e6;
-    }
+    }*/
 
     input, select, textarea {
         max-width: 674px;
@@ -162,9 +161,10 @@
                 <div class="header-content col-md-12">
                     <div class="col-md-6">
                         <a class="btn btn-default" href="/KnowledgeBase/Create">New solution</a>
+                        <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showRecentTicketFrequencyModal();">Recent ticket frequency</a>
                         <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
                     </div>
-                    <div class="box-tools pull-right col-md-4" style="">
+                    <div class="box-tools pull-right col-md-4">
                         <div class="has-feedback">
                             <input type="text" id="key_search" class="form-control input-sm" placeholder="Search solution..." />
                             <span class="glyphicon glyphicon-search form-control-feedback"></span>
@@ -177,6 +177,35 @@
         </div>
     </div>
 </div>
+
+<div id="recent-ticket-frequency-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Recent Ticket Frequency</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table dataTable" id="recent-ticket-frequency-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Frequency</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts{
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
@@ -184,6 +213,7 @@
             notifyFlashMessage();
             showTreeViewModal();
             getAllSolution();
+            initRecentTicketFrequencyTable();
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -262,7 +292,7 @@
                                     },
                                     a_attr: {
                                         "data-id": dataItem.ID,
-                                        "class" : "category-node"
+                                        "class": "category-node"
                                     }
                                 };
                                 nodes.push(node);
@@ -274,7 +304,7 @@
             });
         };
 
-        function getAllSolution () {
+        function getAllSolution() {
             $.ajax({
                 url: "/KnowledgeBase/GetSolutions/",
                 type: "GET",
@@ -370,6 +400,65 @@
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
             data.instance.toggle_node(data.node);
         });
+
+        var initRecentTicketFrequencyTable = function () {
+            var sum = 0;
+            $("#recent-ticket-frequency-table").dataTable({
+                processing: true,
+                serverSide: true,
+                paging: true,
+                sort: true,
+                filter: false,
+                lengthMenu: [5],
+                order: [[1, 'desc']],
+                lengthChange: false,
+                drawCallback: function () {
+
+                },
+                initComplete: function (settings, json) {
+                    sum = json.totalTicket
+                },
+                ajax: {
+                    url: "/KnowledgeBase/GetRecentTicketFrequency"
+                },
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        "targets": 0,
+                        "width": "50%",
+                        "render": function (data, type, row) {
+                            return row.Subject;
+                        }
+                    },
+                    {
+                        "targets": 1,
+                        "width": "40%",
+                        "render": function (data, type, row) {
+                            var percent = parseInt(row.Count / sum * 100);
+                            return '<div class="clearfix">'
+                                + '<small class="pull-right">' + row.Count + '/' + sum + '</small>'
+                                + '</div>'
+                                + '<div class="progress xs">'
+                                + '<div class="progress-bar progress-bar-blue" style="width: ' + percent + '%;"></div>'
+                                + '</div>';
+                        }
+                    },
+                    {
+                        "targets": 2,
+                        "sortable": false,
+                        "width": "10%",
+                        "render": function (data, type, row) {
+                            return "Action";
+                        }
+                    }
+                ]
+            });
+        }
+
+        var showRecentTicketFrequencyModal = function () {
+            $("#recent-ticket-frequency-table").dataTable().api().ajax.reload();
+            $("#recent-ticket-frequency-modal").modal("show");
+        }
     </script>
 }
 

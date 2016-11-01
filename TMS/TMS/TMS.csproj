@@ -323,7 +323,6 @@
     <Compile Include="Schedulers\JobManager.cs" />
     <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
-    <Compile Include="Utils\AsyncHelpers.cs" />
     <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Services\UserRoleService.cs" />
     <Compile Include="Utils\CustomAuthorizeAttribute.cs" />
@@ -344,6 +343,7 @@
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
+    <Compile Include="ViewModels\RecentTicketViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
@@ -662,7 +662,6 @@
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
     <Content Include="Views\Error\Error500.cshtml" />
-    <Content Include="Views\KnowledgeBase\Index_bk.cshtml" />
     <Content Include="Views\Ticket\Solve.cshtml" />
     <Content Include="Views\KnowledgeBase\Create.cshtml" />
     <Content Include="Views\Ticket\Detail.cshtml" />
@@ -677,10 +676,10 @@
     <Folder Include="Areas\Admin\Views\Default\" />
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
-    <Folder Include="Content\Plugins\jquery.ui\images\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
     <Folder Include="Content\knowledgebase\js\" />
+    <Folder Include="Content\Plugins\jquery.ui\images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

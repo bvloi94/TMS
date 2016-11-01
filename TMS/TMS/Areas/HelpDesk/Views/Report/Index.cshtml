@@ -3,9 +3,6 @@
     ViewBag.Title = "Report";
 }
 <style type="text/css">
-
-
-
     .table > thead > tr > th {
         white-space: nowrap;
     }
@@ -82,17 +79,18 @@
     </div>
 </div>
 
-<div class="col-xs-12" id="data-div">
-    <div class="box box-primary">
-        <!-- /.box-header -->
-        <div class="box-body">
-            <table class="table table-bordered table-hover" id="ticket-table-report">
-                <thead>
-                    <tr>
-                        <th>Code</th>
-                        <th>Subject</th>
-                        <th>Created Time</th>
-                        <th>Schedule End Date</th>
+<div class="row" id="data-div">
+    <div class="col-xs-12">
+        <div class="box box-primary">
+            <!-- /.box-header -->
+            <div class="box-body">
+                <table class="table table-bordered table-hover" id="ticket-table-report">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Subject</th>
+                            <th>Created Time</th>
+                            <th>Schedule End Date</th>
 
                             <th>Actual End Date</th>
                             <th>Type</th>
@@ -205,10 +203,10 @@
                     url: "/HelpDesk/Report/GetTickets",
                     type: "POST",
                     data: function (d) {
-                            d.date_from_select = $("#date-from-txt").val(),
-                            d.date_to_select = $("#date-to-txt").val(),
-                            d.type = $("#dropdownType").val(),
-                            d.by = $("#dropdownBy").val()
+                        d.date_from_select = $("#date-from-txt").val(),
+                        d.date_to_select = $("#date-to-txt").val(),
+                        d.type = $("#dropdownType").val(),
+                        d.by = $("#dropdownBy").val()
                     }
                 }),
                 drawCallback: function (settings) {
