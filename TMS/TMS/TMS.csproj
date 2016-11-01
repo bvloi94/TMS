@@ -661,7 +661,7 @@
     <Content Include="Views\Ticket\Detail.cshtml" />
     <Content Include="Views\KnowledgeBase\Edit.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
-    <Content Include="Views\KnowledgeBase\Detail.cshtml" />
+    <Content Include="Views\FAQ\Detail.cshtml" />
     <Content Include="Views\Shared\KBLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -670,9 +670,9 @@
     <Folder Include="Areas\Admin\Views\Default\" />
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Technician\Models\" />
-    <Folder Include="Content\Plugins\jquery.ui\images\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
+    <Folder Include="Content\Plugins\jquery.ui\images\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
