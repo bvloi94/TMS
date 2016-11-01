@@ -215,6 +215,7 @@
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
@@ -344,6 +345,7 @@
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
     <Compile Include="ViewModels\RecentTicketViewModel.cs" />
+    <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
@@ -582,6 +584,8 @@
     <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateManager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditManager.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\Profile\UpdateProfile.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

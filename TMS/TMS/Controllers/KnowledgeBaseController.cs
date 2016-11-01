@@ -81,6 +81,7 @@ namespace TMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(KnowledgeBaseViewModels model)
         {
+            // validate subject
             if (string.IsNullOrWhiteSpace(model.Subject))
             {
                 ModelState.AddModelError("Subject", "Please input subject.");
@@ -102,10 +103,16 @@ namespace TMS.Controllers
             else
             {
                 var path = model.Path.Trim();
+
                 bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
                 if (isDuplicatePath)
                 {
                     ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
+                }
+
+                if (path.StartsWith("-") || path.EndsWith("-"))
+                {
+                    ModelState.AddModelError("Path", "Invalid path! (example: how-to-use-tms)");
                 }
 
                 Match match = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
@@ -199,18 +206,36 @@ namespace TMS.Controllers
         {
             if (id.HasValue)
             {
-                bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(id, (model.Subject == null ? null : model.Subject.Trim()));
-                if (isDuplicateSubject)
+                // validate subject
+                if (string.IsNullOrWhiteSpace(model.Subject))
                 {
-                    ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", model.Subject));
+                    ModelState.AddModelError("Subject", "Please input subject.");
                 }
-                bool isDuplicatePath = _solutionServices.IsduplicatePath(id, model.Path);
-                if (isDuplicatePath)
+                else
                 {
-                    ModelState.AddModelError("Path", string.Format("'{0}' have been used!", model.Path));
+                    var subject = model.Subject.Trim();
+                    bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(id.Value, subject);
+                    if (isDuplicateSubject)
+                    {
+                        ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", subject));
+                    }
                 }
+
                 if (model.Path != null)
                 {
+                    var path = model.Path.Trim();
+
+                    bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
+                    if (isDuplicatePath)
+                    {
+                        ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
+                    }
+
+                    if (path.StartsWith("-") || path.EndsWith("-"))
+                    {
+                        ModelState.AddModelError("Path", "Invalid path! (example: how-to-use-tms)");
+                    }
+
                     Match match = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
                     if (!match.Success)
                     {

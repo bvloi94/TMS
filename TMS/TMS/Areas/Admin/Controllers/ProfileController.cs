@@ -86,14 +86,15 @@ namespace TMS.Areas.Admin.Controllers
                 admin.PhoneNumber = model.Phone;
                 admin.Gender = model.Gender;
                 // handle avatar
+                // handle avatar
                 if (model.Avatar != null)
                 {
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), admin.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    admin.AvatarURL = fileName;
+                    admin.AvatarURL = "/Uploads/Avatar/"+ fileName;
                 }
-                _userService.EditUser(admin);
+               _userService.EditUser(admin);
                 return RedirectToAction("Index");
             }
             ViewBag.username = admin.UserName;
