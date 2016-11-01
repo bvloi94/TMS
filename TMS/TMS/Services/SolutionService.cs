@@ -22,17 +22,8 @@ namespace TMS.Services
 
         public void AddSolution(Solution solution)
         {
-            try
-
-            {
-                _unitOfWork.SolutionRepository.Insert(solution);
-                _unitOfWork.Commit();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            _unitOfWork.SolutionRepository.Insert(solution);
+            _unitOfWork.Commit();
         }
 
         public bool IsDuplicateSubject(int? id, string subject)

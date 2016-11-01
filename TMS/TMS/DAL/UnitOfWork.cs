@@ -277,7 +277,16 @@ namespace TMS.DAL
 
         public bool Commit()
         {
-            return DataContext.SaveChanges() > 0;
+            try
+            {
+                DataContext.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                log.Error("Commit error", ex);
+                return false;
+            }
         }
 
         /// <summary>
@@ -299,31 +308,6 @@ namespace TMS.DAL
                 return false;
             }
         }
-
-        //public int Save()
-        //{
-        //    try
-        //    {
-        //        return _context.SaveChanges();
-        //    }
-        //    catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
-        //    {
-        //        Exception raise = dbEx;
-        //        foreach (var validationErrors in dbEx.EntityValidationErrors)
-        //        {
-        //            foreach (var validationError in validationErrors.ValidationErrors)
-        //            {
-        //                string message = string.Format("{0}:{1}",
-        //                    validationErrors.Entry.Entity.ToString(),
-        //                    validationError.ErrorMessage);
-        //                // raise a new exception nesting
-        //                // the current instance as InnerException
-        //                raise = new InvalidOperationException(message, raise);
-        //            }
-        //        }
-        //        throw raise;
-        //    }
-        //}
 
         private bool disposed = false;
 
