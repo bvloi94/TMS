@@ -62,15 +62,8 @@ namespace TMS.Services
 
         public void EditSolution(Solution solution)
         {
-            try
-            {
-                _unitOfWork.SolutionRepository.Update(solution);
-                _unitOfWork.Save();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            _unitOfWork.SolutionRepository.Update(solution);
+            _unitOfWork.Commit();
         }
 
         public IEnumerable<Solution> GetSolutionsByCategory(int id)
@@ -78,7 +71,7 @@ namespace TMS.Services
             return _unitOfWork.SolutionRepository.Get(m => m.CategoryID == id);
         }
 
-        public bool IsduplicatePath(int? id , string path)
+        public bool IsduplicatePath(int? id, string path)
         {
             if (id == null)
             {
@@ -86,9 +79,9 @@ namespace TMS.Services
             }
             else
             {
-                return _unitOfWork.SolutionRepository.Get(m =>m.ID != id && m.Path.ToLower().Equals(path.ToLower())).Any();
+                return _unitOfWork.SolutionRepository.Get(m => m.ID != id && m.Path.ToLower().Equals(path.ToLower())).Any();
             }
-                
+
         }
 
         public IEnumerable<Solution> SearchSolutions(string searchtxt)
