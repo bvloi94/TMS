@@ -146,7 +146,7 @@ namespace TMS.Controllers
             if (ModelState.IsValid)
             {
                 Solution solution = new Solution();
-                solution.Subject = model.Subject.Trim().ToLower();
+                solution.Subject = model.Subject.Trim();
                 solution.ContentText = model.Content;
                 solution.CategoryID = model.CategoryID;
 
@@ -181,6 +181,7 @@ namespace TMS.Controllers
                 solution.Keyword = keyword == null ? "" : keyword.Trim().ToLower();
                 solution.Path = model.Path.Trim().ToLower();
                 solution.CreatedTime = DateTime.Now;
+                solution.ModifiedTime = DateTime.Now;
                 try
                 {
                     _solutionServices.AddSolution(solution);
@@ -223,7 +224,7 @@ namespace TMS.Controllers
                 {
                     var path = model.Path.Trim();
 
-                    bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
+                    bool isDuplicatePath = _solutionServices.IsduplicatePath(id, path);
                     if (isDuplicatePath)
                     {
                         ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
@@ -262,8 +263,7 @@ namespace TMS.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-
-                        solution.Subject = model.Subject.Trim().ToLower();
+                        solution.Subject = model.Subject.Trim();
                         solution.ContentText = model.Content;
                         string keyword = "";
                         string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
