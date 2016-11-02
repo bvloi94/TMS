@@ -152,7 +152,7 @@ namespace TMS.Utils
 
         public class Attachment
         {
-            public const int NameLength = 25;
+            public const int NameLength = 30;
             public const string NameReplace = "....";
         }
 

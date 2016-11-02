@@ -103,5 +103,14 @@ namespace TMS.Services
         {
             return _unitOfWork.SolutionRepository.Get(m => m.Path.Equals(path)).FirstOrDefault();
         }
+
+        public void DeleteSolution(List<Solution> solution)
+        {
+            for (int i = 0; i < solution.Count(); i++)
+            {
+                _unitOfWork.SolutionRepository.Delete(solution.ElementAt(i));
+            }
+            _unitOfWork.Commit();
+        }
     }
 }

@@ -1,0 +1,392 @@
+﻿@model TMS.Models.BusinessRule
+@{
+    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "BUSINESS RULE";
+}
+<link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
+
+<style>
+    .select2-container--default .select2-selection--single, .select2-selection .select2-selection--single {
+        padding: 0px 0px !important;
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 24px !important;
+        }
+
+    .select2-container--default .select2-selection--single {
+        height: 24px !important;
+        border: none;
+        background: none;
+    }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            top: -4px;
+        }
+
+    .criteriaeditordiv .anchorcss span, .criteriaeditordiv .anchorcss select, .criteriaeditordiv .anchorcss a {
+        float: left;
+        display: block;
+        margin-left: 5px;
+        margin-right: 5px;
+        line-height: 18px;
+        padding-left: 5px;
+        text-align: right;
+    }
+
+    label {
+        font-weight: normal !important;
+    }
+
+    input[type="checkbox"] {
+        margin: 4px 15px 0;
+    }
+
+    fieldset {
+        border: 1px solid #D1D1D1;
+        padding: 10px;
+        margin: 1px 15px;
+        background-color: #fff;
+    }
+
+    .rulefieldset legend {
+        width: auto;
+        background-color: #FFF;
+        border: 0 solid #D1D1D1;
+        color: #333;
+        text-align: left;
+        line-height: 25px;
+        padding: 3px;
+        text-decoration: none;
+        margin-bottom: 0px;
+        font-size: 14px;
+    }
+
+        .rulefieldset legend label {
+            font-size: 14px;
+            color: #333;
+        }
+
+    .general-form-heading {
+        color: #303030;
+        font-size: 17px;
+        border-bottom: 1px solid #F1F0F5;
+        font-weight: normal;
+    }
+
+    .general-form-sec-heading {
+        font-size: 14px;
+        font-weight: normal;
+        color: #666;
+        background-color: rgba(60, 141, 188, 0.2);
+        padding-left: 5px;
+        border-bottom: 1px dotted #E1E1E1;
+        line-height: 30px;
+    }
+
+    .small-btn {
+        padding: 2px 12px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h4 class="box-title">New Business Rule</h4>
+            </div>
+            <div class="box-body" style="padding: 15px;">
+                <form class="form-horizontal" role="form" id="form-business-rules" method="POST" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div class="row bottom-space">
+                        <div class="col-md-6" style="border-right: dotted #aaa 1px;">
+                            <div class="row bottom-space">
+                                <div class="col-md-4">
+                                    <label class="control-label">Rule Name <font color="red">*</font></label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" class="form-control" name="Name" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="control-label">Description</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <textarea class="form-control" name="Description" rows="4"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row bottom-space">
+                                <div class="col-md-5">
+                                    <label class="control-label">Execute when a request is</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <select name="whenToExec" id="whenToExec" style="width: 250px; margin-top: 5px;">
+                                        <option value="1">Created</option>
+                                        <option value="2">Edited</option>
+                                        <option value="3">Created and Edited</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row bottom-space">
+                                <input type="checkbox" name="isDeactive" value="on" id="isDeactive">
+                                <label for="isDeactive">Disable Business Rule</label>
+                            </div>
+                            <div class="row bottom-space">
+                                <input type="checkbox" name="continueToNextBR" value="on" id="continueToNextBR">
+                                <label for="continueToNextBR">Turn on cascade execution</label>
+                            </div>
+                            <div class="row bottom-space">
+                                <input type="checkbox" name="overrideWOValues" value="on" id="overrideWOValues">
+                                <label for="continueToNextBR">Override request values with Business Rule values</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row left-space">
+                        <h2 class="general-form-heading">Business Rules</h2>
+                    </div>
+                    <div class="row left-space">
+                        <h4 class="general-form-sec-heading">When a new request arrives : </h4>
+                    </div>
+                    <div class="row left-space">
+                        <fieldset id="rulecriteria_fs" class="rulefieldset">
+                            <legend>
+                                <label><input type="checkbox" checked="" name="enableRule">Match the below rules</label>
+                            </legend>
+                            <div id="criteriaeditordiv">
+                                <!-- in this example the tree is populated from inline HTML -->
+                                <ul>
+                                    <li>
+                                        <a class="anchorcss">
+                                            <span name="CriteriaId" data-role="ddl-criteria"></span>
+                                            <span name="ConditionId" data-role="ddl-criteria"></span>
+                                            <span class="add-criteria" onclick="generateNewNode()"><i class="fa fa-plus" style="color: #aaa;"></i></span>
+                                            <span class="add-criteria" onclick="removeNode()"><i class="fa fa-minus" style="color: #aaa;"></i></span>
+
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="row left-space">
+                        <h4 class="general-form-sec-heading">Perform these actions : </h4>
+                    </div>
+                    <div class="row left-space">
+                        <div class="col-md-4">
+                            <select name="selectAction" id="selectAction" style="width: 250px;" onchange="onSelectBRActionChange()">
+                                <option value="0" selected="">Choose Action ----------</option>
+                                <option value="1">Assign to Technician</option>
+                                <option value="2">Place in Group</option>
+                                <option value="3">Move to Category</option>
+                                <option value="4">Move to Sub Category</option>
+                                <option value="5">Move to Item</option>
+                                <option value="6">Set Priority as</option>
+                                <option value="7">Set Level as</option>
+                                <option value="8">Change Status to</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">into</div>
+                        <div class="col-md-5"><input style="width:100%" /></div>
+                        <div class="col-md-2"><a class="btn btn-default small-btn">Choose</a><a class="btn btn-default small-btn" style="margin-left: 5px;">Add</a></div>
+                    </div>
+                    <div class="row left-space">
+                        <h4 class="general-form-sec-heading">Action set : </h4>
+                    </div>
+                    <div class="row left-space">
+                        <h4 class="general-form-sec-heading">Notifications : </h4>
+                    </div>
+                    <div class="row bottom-space left-space">
+                        <div class="col-md-6" style="border-right: dotted #aaa 1px; ">
+                            <div class="row bottom-space">
+                                <input type="checkbox" name="notifyByEmail" value="on" id="notifyByEmail" class="pull-left">
+                                <label for="notifyByEmail" class="pull-left">Email</label>
+                                <a href="#" class="pull-right left-space"><i class="fa fa-edit"></i>Edit Email template</a>
+                            </div>
+                            <div class="row bottom-space left-space">
+                                Email the following technicians when the Business rule is executed
+                            </div>
+                            <div class="row left-space">
+                                <select name="technicianId" data-role="ddl-technician"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row bottom-space">
+                                <input type="checkbox" name="notifyBySMS" value="on" id="notifyBySMS">
+                                <label for="notifyBySMS">SMS</label>
+                            </div>
+                            <div class="row bottom-space left-space">
+                                SMS the following technicians when the Business rule is executed
+                            </div>
+                            <div class="row left-space">
+                                <input style="width:100%" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row alignCenter">
+                        <a class="btn btn-flat bg-olive">Save</a>
+                        <a class="btn btn-flat bg-olive">Cancel</a>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-xs-12">
+                            <div id="status"></div>
+                            @*<div id="criteriaeditordiv">
+                                    <!-- in this example the tree is populated from inline HTML -->
+                                    <ul>
+                                        <li>
+                                            <a class="anchorcss">
+                                                <select name="CriteriaId" data-role="ddl-criteria"></select>
+                                                <span class="add-criteria" onclick="generateNewNode()"><i class="fa fa-plus"></i></span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>*@
+                        </div>
+                        @*<div class="col-md-12 col-xs-12">
+                                <div id="tree" name="tree"></div>
+                                <input type="button" id="add" value="add" />
+                            </div>*@
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
+    <script>
+
+        //var position = 'inside';
+        //var parent = $('#jstree').jstree();
+        //var newNode = { state: "open", data: {} };
+
+        //$('#jstreedemo').jstree("create_node", parent, position, newNode, false, false);
+
+        //// 7 bind to events triggered on the tree
+        //$('#jstree').on("changed.jstree", function (e, data) {
+        //    console.log(data.selected);
+        //});
+        //// 8 interact with the tree - either way is OK
+        //$('button').on('click', function () {
+        //    $('#jstree').jstree(true).select_node('child_node_1');
+        //    $('#jstree').jstree('select_node', 'child_node_1');
+        //    $.jstree.reference('#jstree').select_node('child_node_1');
+        //});
+
+        function initDropdownControl() {
+            initCriteriaDropdown({
+                control: $("[data-role=ddl-criteria]"),
+                ignore: function () {
+                    return [];
+                }
+            });
+
+            initTechnicianDropdown({
+                control: $("[data-role=ddl-technician]"),
+                ignore: function () {
+                    return [];
+                }
+            });
+
+        }
+
+        var tree = $('#criteriaeditordiv').jstree({
+            "core": {
+                "animation": 0,
+                "check_callback": true,
+                "themes": {
+                    "icons": false,
+                    "stripes": true
+                }
+            },
+            "plugins": [
+                "dnd", "wholerow"
+            ]
+        });
+
+        //$(".add-criteria")
+        //    .on("click",
+        //        function() {
+
+        //        });
+
+
+
+        function generateNewNode() {
+
+            var selectedId = '#' + tree.jstree('get_selected')[0];
+            var copied = tree.jstree().copy_node(selectedId, '#', false, function () {
+                initDropdownControl();
+            });
+
+            //var parent = tree.jstree();
+            //var node = tree.jstree('get_selected');
+            //var newNode = { state: "open", data: "New nooooode!" };
+
+            //tree.jstree("create_node", tree, 'inside', newNode, false, false);
+            //tree.jstree("create_node", -1, false, "abc", function () { alert("added"); }, true);
+            //tree.jstree("copy_node", -1, false, "abc", function () { alert("added"); }, true);
+
+            //var node = tree.jstree('get_selected');
+            //var id = tree.jstree('create_node','#', node, 'last');
+            //if (tree.is_closed(parent)) {
+            //            tree.open_node(parent);
+            //        }
+            //        tree.deselect_all(true);
+            //        tree.select_node(id);
+        };
+
+        tree
+            .on('copy_node.jstree',
+                function (e, data) {
+                    $('#status').html('copying, old parent: ' + data.old_parent + ', new parent: ' + data.parent);
+                })
+            .on('cut.jstree',
+                function (e, data) {
+                    //
+                })
+            .on('paste.jstree',
+                function (e, data) {
+                    $('#status')
+                        .html('pasting, old parent: ' + data.node.original.parent + ', new parent: ' + data.parent);
+                })
+            .on('move_node.jstree',
+                function (e, data) {
+                    $('#status')
+                        .html('moving, old parent: ' + data.node.original.parent + ', new parent: ' + data.parent);
+                    initDropdownControl();
+                });
+
+        $(document).bind("dnd_start.vakata", function (e, data) {
+
+        }).bind("dnd_move.vakata", function (e, data) {
+
+        }).bind("dnd_stop.vakata", function (e, data) {
+            initDropdownControl();
+        });
+
+        $(document)
+            .ready(function () {
+                setActiveTicketMenu();
+                initDropdownControl();
+                $("#tree").jstree({
+                    'core': {
+                        'data': [
+                          {
+                              "text": "Root node", "children": [
+                                { "text": "Child node 1" },
+                                { "text": "Child node 2" }
+                              ]
+                          }
+                        ]
+                    }
+                });
+
+                $("#tree").jstree("create", $("#child1\\.id"), "inside", { "data": "child2" },
+                                  function () { alert("added"); }, true);
+            });
+    </script>
+}

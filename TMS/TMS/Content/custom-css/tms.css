@@ -31,6 +31,10 @@
     text-align: center;
 }
 
+.label-violet {
+    background-color: #605ca8 !important;
+}
+
 
 @media screen and (min-width: 768px) {
     .modal:before {
@@ -107,6 +111,15 @@
 
 .alignCenter {
     text-align: center;
+}
+
+.bottom-space {
+    margin-bottom: 15px;
+}
+
+.left-space {
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .attachment-div {

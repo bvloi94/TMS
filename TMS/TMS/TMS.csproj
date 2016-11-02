@@ -215,7 +215,7 @@
     <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\BusinessRuleController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
@@ -324,6 +324,7 @@
     <Compile Include="Schedulers\JobManager.cs" />
     <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
+    <Compile Include="Services\BusinessRuleService.cs" />
     <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Services\UserRoleService.cs" />
     <Compile Include="Utils\CustomAuthorizeAttribute.cs" />
@@ -339,6 +340,8 @@
     <Compile Include="Utils\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\BusinessRuleViewModel.cs" />
+    <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
@@ -410,7 +413,6 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
-    <Content Include="Content\js\jPages.min.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\html2canvas.js" />
@@ -581,12 +583,13 @@
     <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
     <Content Include="Areas\Admin\Views\Department\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\BussinessRules\Index.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BusinessRule\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateManager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditManager.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Profile\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Profile\UpdateProfile.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

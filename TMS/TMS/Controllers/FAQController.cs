@@ -42,7 +42,7 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetFAQ(int? id)
+        public ActionResult GetFAQ(int? id, string key_search)
         {
             IEnumerable<KnowledgeBaseViewModel> filteredListItems;
             if (id.HasValue)
@@ -81,6 +81,11 @@ namespace TMS.Controllers
                 }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
             }
 
+            if (!string.IsNullOrWhiteSpace(key_search))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower())
+                        || p.Keyword.ToLower().Contains(key_search.ToLower()));
+            }
 
             return Json(new
             {
@@ -167,7 +172,7 @@ namespace TMS.Controllers
             Solution mainSolution = _solutionService.GetSolutionById(id);
             List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(mainSolution.CategoryID);
             IEnumerable<Solution> relatedSolution = _solutionService.GetAllSolutions()
-                .Where(m => (m.CategoryID == mainSolution.CategoryID || (childrenCategoriesIdList.Contains(m.CategoryID)) && m.ID != id))
+                .Where(m => m.ID != id && (m.CategoryID == mainSolution.CategoryID || childrenCategoriesIdList.Contains(m.CategoryID)))
                 .Select(m => new Solution
                 {
                     ID = m.ID,

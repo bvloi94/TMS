@@ -39,6 +39,7 @@ namespace TMS
                 "~/Content/custom-js/tms-dropdown.js",
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
                 "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js",
+                "~/Content/Plugins/tagit/tag-it.min.js",
                 "~/Scripts/globalize.js",
                 "~/Scripts/cldr.js",
                 "~/Scripts/jquery.cookie.js"));
@@ -56,7 +57,8 @@ namespace TMS
                       "~/Content/custom-css/tms-dropdown.css",
                       "~/Content/Plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css",
                       "~/Content/Plugins/datetimepicker/jquery.datetimepicker.css",
-                      "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.css"));
+                      "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.css",
+                      "~/Content/Plugins/tagit/jquery.tagit.css"));
             // Datatable
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
                 "~/Content/Plugins/datatables/js/jquery.dataTables.min.js",
