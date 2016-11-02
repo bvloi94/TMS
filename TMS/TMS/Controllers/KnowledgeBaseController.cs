@@ -498,5 +498,34 @@ namespace TMS.Controllers
                 totalTicket = totalTicket
             }, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public ActionResult GetCategoryTreeViewData()
+        {
+            IEnumerable<CategoryViewModel> list = _categoryService.GetAll().Select(m => new CategoryViewModel
+            {
+                ID = m.ID,
+                Name = m.Name,
+                ParentId = m.ParentID,
+                Level = m.CategoryLevel
+            }).ToArray();
+            return Json(new
+            {
+                data = list
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser user = _userService.GetUserById(id);
+            if (user != null)
+            {
+                ViewBag.LayoutName = user.Fullname;
+                ViewBag.LayoutAvatarURL = user.AvatarURL;
+                ViewBag.LayoutRole = user.AspNetRoles.FirstOrDefault().Name;
+            }
+            base.OnActionExecuting(filterContext);
+        }
     }
 }

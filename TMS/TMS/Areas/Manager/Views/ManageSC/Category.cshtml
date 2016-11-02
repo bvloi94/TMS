@@ -2,7 +2,7 @@
 @model TMS.Models.Category
 @{
     ViewBag.Title = "Manage Category";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/Manager/Views/Shared/_Layout.cshtml";
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 <style>
@@ -22,16 +22,18 @@
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="box box-primary large-text-container">
+        <div class="box box-primary">
             <div class="box-body">
-                <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateCategoryModal()"><i class="fa fa-plus"></i> New Category</a>
-                <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateSubCategoryModal()"><i class="fa fa-plus"></i> New Sub Category</a>
-                <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateItemModal()"><i class="fa fa-plus"></i> New Item</a>
-                <a href="javascript:void(0)" class="btn btn-flat btn-default" onclick="showTreeViewModal()">Tree View</a>
+                <div class="pull-left" style="margin-bottom: 20px;">
+                    <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateCategoryModal()"><i class="fa fa-plus"></i> New Category</a>
+                    <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateSubCategoryModal()"><i class="fa fa-plus"></i> New Sub Category</a>
+                    <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showCreateItemModal()"><i class="fa fa-plus"></i> New Item</a>
+                    <a href="javascript:void(0)" class="btn btn-flat btn-default" onclick="showTreeViewModal()">Tree View</a>
+                </div>
                 <table class="table table-bordered dataTable" id="category-table">
                     <thead>
                         <tr>
-                            <th style="width: 35px"></th>
+                            <th></th>
                             <th>Name</th>
                             <th>Description</th>
                             <th>Action</th>
@@ -205,13 +207,14 @@
             serverSide: true,
             paging: true,
             sort: true,
-            lengthMenu: [8],
+            lengthMenu: [10],
             lengthChange: false,
+            filter: false,
             language: {
                 infoFiltered: ""
             },
             ajax: {
-                url: "/Admin/ManageSC/GetCategoriesDataTable"
+                url: "/Manager/ManageSC/GetCategoriesDataTable"
             },
             order: [[1, 'asc']],
             columnDefs: [
@@ -270,7 +273,7 @@
                 if (categories.length > 0) {
                     if (level == '@ConstantUtil.CategoryLevel.Category') {
                         var content = "<div class='slider'>";
-                        content += "<h3 style='margin: 10px 0px'>Sub Categories</h3>";
+                        content += "<h4 style='margin: 10px 0px'>Sub Categories</h4>";
                         content += "<table class='table table-bordered dataTable cell-border'>";
                         content += "<thead>";
                         content += "<tr>";
@@ -332,7 +335,7 @@
                         tr.next().css("background-color", "#f7f7f7");
                     } else if (level == '@ConstantUtil.CategoryLevel.SubCategory') {
                         var content = "<div class='slider'>";
-                        content += "<h3 style='margin: 10px 0px'>Items</h3>";
+                        content += "<h4 style='margin: 10px 0px'>Items</h4>";
                         content += "<table class='table table-bordered dataTable'>";
                         content += "<thead>";
                         content += "<tr>";
@@ -385,11 +388,11 @@
                     }
                 } else {
                     if (level == '@ConstantUtil.CategoryLevel.Category') {
-                        var content = "<div class='slider'><h3>No sub category available</h3></div>";
+                        var content = "<div class='slider'><h4>No sub category available</h4></div>";
                         row.child(content).show();
                         tr.next().css("background-color", "#f7f7f7");
                     } else if (level == '@ConstantUtil.CategoryLevel.SubCategory') {
-                        var content = "<div class='slider'><h3>No item available</h3></div>";
+                        var content = "<div class='slider'><h4>No item available</h4></div>";
                         row.child(content).show();
                         tr.next().css("background-color", "#f0f0f0");
                     }
@@ -419,7 +422,7 @@
         var showCreateSubCategoryModal = function () {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetCategories",
+                url: "/Manager/ManageSC/GetCategories",
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
@@ -441,7 +444,7 @@
         var showCreateItemModal = function () {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetSubCategories",
+                url: "/Manager/ManageSC/GetSubCategories",
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
@@ -471,7 +474,7 @@
             }
             if (valid) {
                 $.ajax({
-                    url: "/Admin/ManageSC/CreateCategory",
+                    url: "/Manager/ManageSC/CreateCategory",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -517,7 +520,7 @@
 
             if (valid) {
                 $.ajax({
-                    url: "/Admin/ManageSC/CreateSubCategory",
+                    url: "/Manager/ManageSC/CreateSubCategory",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -564,7 +567,7 @@
 
             if (valid) {
                 $.ajax({
-                    url: "/Admin/ManageSC/CreateItem",
+                    url: "/Manager/ManageSC/CreateItem",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -596,7 +599,7 @@
         var showEditCategoryModal = function (id) {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetCategoryDetail",
+                url: "/Manager/ManageSC/GetCategoryDetail",
                 dataType: "json",
                 type: "GET",
                 data: {
@@ -623,7 +626,7 @@
         var showEditSubCategoryModal = function (id) {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetSubCategoryDetail",
+                url: "/Manager/ManageSC/GetSubCategoryDetail",
                 dataType: "json",
                 type: "GET",
                 data: {
@@ -655,7 +658,7 @@
         var showEditItemModal = function (id) {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetItemDetail",
+                url: "/Manager/ManageSC/GetItemDetail",
                 dataType: "json",
                 type: "GET",
                 data: {
@@ -695,7 +698,7 @@
             }
             if (valid) {
                 $.ajax({
-                    url: "/Admin/ManageSC/EditCategory",
+                    url: "/Manager/ManageSC/EditCategory",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -742,7 +745,7 @@
 
             if (valid) {
                 $.ajax({
-                    url: "/Admin/ManageSC/EditSubCategory",
+                    url: "/Manager/ManageSC/EditSubCategory",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -790,7 +793,7 @@
 
             if (valid) {
                 $.ajax({
-                    url: "/Admin/ManageSC/EditItem",
+                    url: "/Manager/ManageSC/EditItem",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -827,7 +830,7 @@
 
         var deleteCategory = function (id) {
             $.ajax({
-                url: "/Admin/ManageSC/DeleteCategory",
+                url: "/Manager/ManageSC/DeleteCategory",
                 dataType: "json",
                 type: "POST",
                 data: {
@@ -861,7 +864,7 @@
                         "dots": false
                     },
                     "data": {
-                        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
+                        "url": "/Manager/ManageSC/GetCategoryTreeViewData",
                         "type": "GET",
                         "contentType": "application/json; charset=utf-8",
                         //"cache": false,
@@ -884,22 +887,7 @@
                             return JSON.stringify(nodes);
                         }
                     }
-                },
-                //"plugins": ["json_data"],
-                //"json_data": {
-                //    "ajax":
-                //    {
-                //        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
-                //        "type": "GET",
-                //        "data": function (node) {
-                //            console.info("Nodes:", node);
-                //            return {
-                //                "operation": "get_children",
-                //                "id": node.attr ? node.attr("id").replace("node_", "") : 1
-                //            };
-                //        }
-                //    }
-                //}
+                }
             });
             $("#treeview-modal").modal("show");
         };

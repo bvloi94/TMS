@@ -5,7 +5,6 @@
 
 }
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
-
 <style>
     mark {
         background: orange;
@@ -463,17 +462,11 @@
     </div>
 </div>
 
-@*@section InitScript
-{
-    @Scripts.Render("~/bundles/helpdesk-manage-ticket")
-}*@
-
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/helpdesk-manage-ticket")
     <script src="~/Content/Plugins/mark/jquery.mark.min.js"></script>
     <script>
-
         var requesterTable = null;
 
         $("[data-role=btn-cancel]")

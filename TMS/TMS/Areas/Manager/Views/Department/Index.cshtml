@@ -1,21 +1,21 @@
-﻿@model TMS.Models.Impact
+﻿@model TMS.Models.Department
 @{
-    ViewBag.Title = "Impact";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Department";
+    Layout = "~/Areas/Manager/Views/Shared/_Layout.cshtml";
 }
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
             <div class="box-body">
-                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Impact</button>
-                <table class="table dataTable" id="impact-table">
+                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Department</button>
+                <table class="table dataTable" id="department-table">
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Action</th>
-                    </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -35,7 +35,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Impact</h4>
+                <h4 class="modal-title">Department</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
@@ -55,7 +55,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="create-btn" onclick="createImpact()">Save</button>
+                <button type="button" class="btn btn-success" id="create-btn" onclick="createDepartment()">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -77,19 +77,18 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="yes-btn">Yes</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-            </div> 
+            </div>
         </div>
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
 
 @Styles.Render("~/Content/datatables")
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
-        $("#impact-table")
+        $("#department-table")
             .DataTable({
                 processing: true,
                 serverSide: true,
@@ -97,7 +96,7 @@
                 sort: false,
                 filter: false,
                 ajax: {
-                    url: "/Admin/ManageSC/GetImpacts"
+                    url: "/Manager/Department/GetDepartment"
                 },
                 "columnDefs": [
                     {
@@ -115,7 +114,7 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getImpactDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getDepartmentDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
                                    '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                         },
                         "targets": 2
@@ -123,8 +122,14 @@
                 ]
             });
 
+        var showCreateModal = function () {
+            clearModal();
+            $("#myModal").modal('show');
+            $('#create-btn').attr('onclick', 'createDepartment()');
+        }
+
         var reloadDataTable = function () {
-            var oTable = $("#impact-table").dataTable();
+            var oTable = $("#department-table").dataTable();
             oTable._fnPageChange(0);
             oTable._fnAjaxUpdate();
         };
@@ -135,13 +140,7 @@
             $(".text-danger").hide();
         }
 
-        var showCreateModal = function () {
-            clearModal();
-            $("#myModal").modal('show');
-            $('#create-btn').attr('onclick', 'createImpact()');
-        };
-
-        var createImpact = function () {
+        var createDepartment = function () {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required!");
@@ -151,14 +150,14 @@
                 $("#name-validation-message").show();
             } else {
                 $.ajax({
-                    url: "/Admin/ManageSC/CreateImpact",
-                    dataType: "json",
+                    url: "/Manager/Department/CreateDepartment",
                     type: "POST",
+                    dataTpye: "JSON",
                     data: {
                         name: $("#name-txt").val(),
                         description: $("#description-txt").val()
                     },
-                    success: function (data) {
+                    success: function(data) {
                         if (data.success) {
                             $.notify(data.message, "success");
                             $("#myModal").modal("hide");
@@ -172,17 +171,17 @@
                             }
                         }
                     },
-                    error: function () {
+                    error: function() {
                         $.notify("Cannot connect to server!", "error");
                     }
                 });
             }
-        };
+        }
 
-        var getImpactDetail = function (id) {
+        var getDepartmentDetail = function (id) {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetImpactDetail",
+                url: "/Manager/Department/GetDepartmentDetail",
                 dataType: "json",
                 type: "GET",
                 data: {
@@ -193,7 +192,7 @@
                         $("#myModal").modal("show");
                         $("#name-txt").val(data.name);
                         $("#description-txt").val(data.description);
-                        $("#create-btn").attr("onclick", "editImpact('" + id + "')");
+                        $("#create-btn").attr("onclick", "editDepartment('" + id + "')");
                     } else {
                         if (data.error) {
                             $.notify(data.message, "error");
@@ -204,9 +203,9 @@
                     $.notify("Cannot connect to server!", "error");
                 }
             });
-        };
+        }
 
-        var editImpact = function (id) {
+        var editDepartment = function (id) {
             //jquery
             var name = $("#name-txt").val();
             if (name.trim() === "") {
@@ -219,7 +218,7 @@
                 //ajax syntax
                 $.ajax(
                 {
-                    url: "/Admin/ManageSC/EditImpact",
+                    url: "/Manager/Department/EditDepartment",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -249,13 +248,13 @@
         };
 
         var showDeleteModal = function (id) {
-            $("#yes-btn").attr("onclick", "deleteImpact('" + id + "')");
+            $("#yes-btn").attr("onclick", "deleteDepartment('" + id + "')");
             $("#delete-modal").modal("show");
         };
 
-        var deleteImpact = function (id) {
+        var deleteDepartment = function (id) {
             $.ajax({
-                url: "/Admin/ManageSC/DeleteImpact",
+                url: "/Manager/Department/DeleteDepartment",
                 dataType: "json",
                 type: "POST",
                 data: { id: id },
@@ -275,5 +274,6 @@
             });
 
         };
+
     </script>
 }

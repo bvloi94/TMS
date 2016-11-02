@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -8,21 +9,23 @@ using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
 
-namespace TMS.Areas.Admin.Controllers
+namespace TMS.Areas.Manager.Controllers
 {
+    [CustomAuthorize(Roles = "Manager")]
     public class DepartmentController : Controller
     {
         private UnitOfWork _unitOfWork;
+        private UserService _userService;
         private DepartmentService _departmentService;
 
         public DepartmentController()
         {
             _unitOfWork = new UnitOfWork();
+            _userService = new UserService(_unitOfWork);
             _departmentService = new DepartmentService(_unitOfWork);
-
         }
 
-        // GET: Admin/Department
+        // GET: Manager/Department
         public ActionResult Index()
         {
             return View();
@@ -271,6 +274,18 @@ namespace TMS.Areas.Admin.Controllers
 
 
             }
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser manager = _userService.GetUserById(id);
+            if (manager != null)
+            {
+                ViewBag.LayoutName = manager.Fullname;
+                ViewBag.LayoutAvatarURL = manager.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }

@@ -182,5 +182,21 @@ namespace TMS.Controllers
                 }).ToList().Take(5);
             return relatedSolution;
         }
+
+        [HttpGet]
+        public ActionResult GetCategoryTreeViewData()
+        {
+            IEnumerable<CategoryViewModel> list = _categoryService.GetAll().Select(m => new CategoryViewModel
+            {
+                ID = m.ID,
+                Name = m.Name,
+                ParentId = m.ParentID,
+                Level = m.CategoryLevel
+            }).ToArray();
+            return Json(new
+            {
+                data = list
+            }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace TMS.Enumerator
         Assigned = 2,
         Solved = 3,
         Unapproved = 4,
-        Canceled = 5,
+        Cancelled = 5,
         Closed = 6,
     }
 }

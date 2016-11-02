@@ -1,22 +1,17 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
-//using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using LumiSoft.Net.IMAP.Client;
-using Microsoft.Ajax.Utilities;
 using TMS.DAL;
 using TMS.Enumerator;
 using TMS.Models;
 using TMS.Services;
 using TMS.Utils;
-using TMS.ViewModels;
-using static TMS.Utils.ConstantUtil;
-using Switch = System.Diagnostics.Switch;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
+    [CustomAuthorize(Roles = "Helpdesk")]
     public class ReportController : Controller
     {
         private TicketService _ticketService { get; set; }
@@ -46,7 +41,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         // Helpdesk/report
         [HttpPost]
-        public ActionResult Gettickets(int by, int type, DateTime? date_from_select, DateTime? date_to_select, jQueryDataTableParamModel param)
+        public ActionResult GetTickets(int by, int type, DateTime? date_from_select, DateTime? date_to_select, jQueryDataTableParamModel param)
         {
 
             IEnumerable<Ticket> ticketsList = _ticketService.GetAll().OrderBy(m => m.CreatedTime);
@@ -66,38 +61,41 @@ namespace TMS.Areas.HelpDesk.Controllers
             switch (type)
             {
                 // All Request 
-                case TicketTypeValue.Request:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
+                case ConstantUtil.TicketTypeValue.Request:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
                     break;
                 // All Problems
-                case TicketTypeValue.Problem:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Problem);
+                case ConstantUtil.TicketTypeValue.Problem:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
                     break;
                 // All Request
-                case TicketTypeValue.Change:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Change);
+                case ConstantUtil.TicketTypeValue.Change:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
                     break;
                 // All pending requests
-                case TicketTypeValue.PendingRequest:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
-                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                case ConstantUtil.TicketTypeValue.PendingRequest:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
+                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
                     break;
                 // All pending problems
-                case TicketTypeValue.PendingProblem:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Problem);
-                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                case ConstantUtil.TicketTypeValue.PendingProblem:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
+                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
                     break;
                 // All pending changes
-                case TicketTypeValue.PendingChange:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Change);
-                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                case ConstantUtil.TicketTypeValue.PendingChange:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
+                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
                     break;
                     // Default All tickets
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
             var result = filteredListItems.Select(p => new IConvertible[]
-                 {
+            {
                 p.Code,
                 p.Subject,
                 (p.CreatedTime == null) ? "" : ((DateTime) p.CreatedTime).ToString("dd/MM/yyyy HH:mm"),
@@ -111,7 +109,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 p.UrgencyID == null ? "-" : _urgencyService.GetUrgencyByID((int)p.UrgencyID).Name,
                 p.PriorityID == null ? "-" : _priorityService.GetPriorityByID((int) p.PriorityID).Name,
                 p.TechnicianID == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name
-                   });
+            });
 
 
             return Json(new
@@ -142,32 +140,34 @@ namespace TMS.Areas.HelpDesk.Controllers
             switch (type)
             {
                 // All Request 
-                case 1:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
+                case ConstantUtil.TicketTypeValue.Request:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
                     break;
                 // All Problems
-                case 2:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Problem);
+                case ConstantUtil.TicketTypeValue.Problem:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
                     break;
                 // All Request
-                case 3:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
+                case ConstantUtil.TicketTypeValue.Change:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
                     break;
                 // All pending requests
-                case 4:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Request);
-                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
-
+                case ConstantUtil.TicketTypeValue.PendingRequest:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
+                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
                     break;
                 // All pending problems
-                case 5:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Problem);
-                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                case ConstantUtil.TicketTypeValue.PendingProblem:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
+                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
                     break;
                 // All pending changes
-                case 6:
-                    filteredListItems = filteredListItems.Where(p => p.Type == TicketType.Change);
-                    filteredListItems = filteredListItems.Where(p => p.Status != TicketStatus.Cancelled && p.Status != TicketStatus.Cancelled);
+                case ConstantUtil.TicketTypeValue.PendingChange:
+                    filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
+                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
                     break;
                     // Default All tickets
             }
@@ -181,7 +181,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 case 0:
                     foreach (TicketModeEnum mode in System.Enum.GetValues(typeof(TicketModeEnum)))
                     {
-
                         labels.Add(mode.ToString());
                         var ticketModes = filteredListItems.Where(p => p.Mode == (int)mode);
                         data.Add(ticketModes.Count());
@@ -191,8 +190,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                         label = labels,
                         data = data
                     });
-
-
                 //Category
                 case 1:
                     {
@@ -205,7 +202,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             labels.Add(category.Name);
                             data.Add(filteredListItems.Where(m => m.CategoryID != null && (m.CategoryID == category.ID || childrenCategoriesIdList.Contains(m.CategoryID.Value))).Count());
                         }
-                        
+
                         return Json(new
                         {
                             label = labels,
@@ -217,7 +214,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 // Impact
                 case 2:
                     {
-                        //_impacServie.
                         IEnumerable<Impact> impacts = _impactService.GetAll();
                         //duyet list 
                         IEnumerable<Ticket> impactInTicketList = null;
@@ -274,7 +270,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                         {
                             label = labels,
                             data = data
-
                         });
 
                     }
@@ -324,6 +319,17 @@ namespace TMS.Areas.HelpDesk.Controllers
             return null;
         }
 
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser admin = _userService.GetUserById(id);
+            if (admin != null)
+            {
+                ViewBag.LayoutName = admin.Fullname;
+                ViewBag.LayoutAvatarURL = admin.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
+        }
     }
 
 }

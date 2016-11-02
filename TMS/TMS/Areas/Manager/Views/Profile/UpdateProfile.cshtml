@@ -1,10 +1,10 @@
-﻿@model TMS.ViewModels.ProfileHelpdeskViewModel
+﻿@model TMS.ViewModels.ProfileManagerViewModel
 @{
     ViewBag.Title = "Edit Profile";
-    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/Manager/Views/Shared/_Layout.cshtml";
 }
 
-@using (Html.BeginForm("EditProfie", "Profile", FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Admin", enctype = "multipart/form-data" }))
+@using (Html.BeginForm("EditProfie", "Profile", FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Manager", enctype = "multipart/form-data" }))
 {
     <div class="row">
         <div class="col-xs-8">
@@ -18,7 +18,14 @@
                             <input type="text" class="form-control" disabled="disabled" value="@ViewBag.Username" />
                         </div>
                     </div>
-                    
+                    <!--Email-->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Email&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-9">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
                     <!--Fullname-->
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Fullname&nbsp;<span style="color: red">*</span></label>
@@ -31,7 +38,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label">Birthday</label>
                         <div class="col-sm-9">
-                            @Html.TextBoxFor(m => m.DayOfBirth, "{0:dd/MM/yyyy}", new { @class = "form-control" })
+                            @Html.TextBoxFor(m => m.DayOfBirth, "{0:dd/MM/yyyy}", new { @class = "form-control datetime" })
                             @Html.ValidationMessageFor(m => m.DayOfBirth, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -84,3 +91,4 @@
         </div>
     </div>
 }
+
