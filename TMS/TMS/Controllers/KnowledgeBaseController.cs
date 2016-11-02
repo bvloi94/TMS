@@ -147,7 +147,7 @@ namespace TMS.Controllers
             if (ModelState.IsValid)
             {
                 Solution solution = new Solution();
-                solution.Subject = model.Subject.Trim().ToLower();
+                solution.Subject = model.Subject.Trim();
                 solution.ContentText = model.Content;
                 solution.CategoryID = model.CategoryID;
 
@@ -184,6 +184,7 @@ namespace TMS.Controllers
 
                 solution.Path = model.Path.Trim().ToLower();
                 solution.CreatedTime = DateTime.Now;
+                solution.ModifiedTime = DateTime.Now;
                 try
                 {
                     _solutionServices.AddSolution(solution);
@@ -265,8 +266,7 @@ namespace TMS.Controllers
                 {
                     if (ModelState.IsValid)
                     {
-
-                        solution.Subject = model.Subject.Trim().ToLower();
+                        solution.Subject = model.Subject.Trim();
                         solution.ContentText = model.Content;
 
                         if (!string.IsNullOrWhiteSpace(model.Keyword))
