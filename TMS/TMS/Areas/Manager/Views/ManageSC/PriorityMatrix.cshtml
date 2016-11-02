@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "Priority Matrix";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/Manager/Views/Shared/_Layout.cshtml";
 }
 <style>
     table th {
@@ -11,7 +11,7 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
-            <div class="box-header">
+            <div class="box-header alignCenter">
                 <h3>Priority Matrix</h3>
             </div>
             <div class="box-body">
@@ -29,7 +29,7 @@
     <script>
         var initPriorityMatrixTable = function () {
             $.ajax({
-                url: "/Admin/ManageSC/GetPriorityMatrixTable",
+                url: "/Manager/ManageSC/GetPriorityMatrixTable",
                 type: "GET",
                 dataType: "html",
                 beforeSend: function() {
@@ -47,7 +47,7 @@
 
         var checkPriority = function () {
             $.ajax({
-                url: "/Admin/ManageSC/GetPriorityMatrixItems",
+                url: "/Manager/ManageSC/GetPriorityMatrixItems",
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
@@ -76,7 +76,7 @@
 
         $("#priority-matrix-div").on("change", ".priority-matrix-item-select", function () {
             $.ajax({
-                url: "/Admin/ManageSC/ChangePriorityMatrixItem",
+                url: "/Manager/ManageSC/ChangePriorityMatrixItem",
                 type: "POST",
                 dataType: "json",
                 data: {

@@ -14,13 +14,16 @@
         padding: 20px;
     }
 
-    input, textarea, select {
-        max-width: 674px;
+    input, textarea, select, .select2 {
+        max-width: 674px !important;
     }
+    .select2 {
+        width: 674px !important;}
 
     .required {
         color: #ff0000;
     }
+
 </style>
 
 <div class="row">
@@ -87,7 +90,6 @@
             .ready(function () {
                 $('#content-area').wysihtml5();
                 $("#keyword").tagit();
-                getPath();
                 initCategoryDropdown({
                     control: $("[data-role=ddl-category]"),
                     ignore: function () {
@@ -98,9 +100,7 @@
                 @if (Model != null) {
                     if (Model.CategoryID != 0 && Model.Category != null)
                     {
-                        <text>
-                loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
-                </text>
+                        <text>loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');</text>
                     }
                 }
             });

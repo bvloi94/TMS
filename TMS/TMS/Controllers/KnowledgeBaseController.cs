@@ -47,15 +47,18 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult Edit(int? id)
         {
+            // id != null.
             if (id.HasValue)
             {
+                // Get solution by ID.
                 Solution solution = _solutionServices.GetSolutionById(id.Value);
+                // solution != null.
                 if (solution != null)
                 {
                     KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
-                    model.Keyword = solution.Keyword.Replace("\"", "");
+                    model.Keyword = string.IsNullOrWhiteSpace(solution.Keyword)  ? "" : solution.Keyword.Replace("\"", "");
                     model.CategoryID = solution.CategoryID;
                     model.Category = _categoryService.GetCategoryById(solution.CategoryID).Name;
                     model.Path = solution.Path;
@@ -82,68 +85,79 @@ namespace TMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(KnowledgeBaseViewModel model)
         {
-            // validate subject
+            // Validate subject is null or empty.
             if (string.IsNullOrWhiteSpace(model.Subject))
             {
                 ModelState.AddModelError("Subject", "Please input subject.");
             }
+            // Subject != null or "".
             else
             {
                 var subject = model.Subject.Trim();
+                // Check duplicate subject.
                 bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(null, subject);
+                // Subject is duplicate.
                 if (isDuplicateSubject)
                 {
                     ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", subject));
                 }
             }
-
+            // Check path is null or spacebar
             if (string.IsNullOrWhiteSpace(model.Path))
             {
                 ModelState.AddModelError("Path", "Please input path.");
             }
+            // path != null
             else
             {
                 var path = model.Path.Trim();
-
+                // Check duplicate path.
                 bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
+                // Path is duplicate. 
                 if (isDuplicatePath)
                 {
                     ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
                 }
-
+                // Path can not allow "-" in begin or end string.
                 if (path.StartsWith("-") || path.EndsWith("-"))
                 {
                     ModelState.AddModelError("Path", "Invalid path! (example: how-to-use-tms)");
                 }
-
-                Match match = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
-                if (!match.Success)
+                // Path follow format a-z, 0-9 and separated by "-".
+                Match pathFormat = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
+                // False format path
+                if (!pathFormat.Success)
                 {
-                    ModelState.AddModelError("Path", "Path can not contain special characters! ");
+                    ModelState.AddModelError("Path", "Path can not contain special characters and spaces! ");
                 }
             }
-
+            // Keyword != null
             if (model.Keyword != null)
             {
-                Match match = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-, ]*$", RegexOptions.IgnoreCase);
-                if (!match.Success)
+                //  Keyword follow format a-z, 0-9 and separated by comas (",").
+                Match keywordIsMatchFormat = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-, ]*$", RegexOptions.IgnoreCase);
+                // Keyword is not match format.
+                if (!keywordIsMatchFormat.Success)
                 {
                     ModelState.AddModelError("Keyword", "Keyword only contain characters 'a-z', '0-9' and separated by commas! ");
                 }
             }
+            // CategoryID == 0 (default) User is not choose category.
             if (model.CategoryID == 0)
             {
                 ModelState.AddModelError("CategoryID", "Please select topic! ");
             }
-
+            // CategoryID != 0  user have selected category.
             if (model.CategoryID != 0)
             {
                 Category category = _categoryService.GetCategoryById(model.CategoryID);
+                // category != null
                 if (category != null)
                 {
                     model.Category = category.Name;
                 }
             }
+            // ModelState is valid.
             if (ModelState.IsValid)
             {
                 Solution solution = new Solution();
@@ -162,8 +176,7 @@ namespace TMS.Controllers
                         solution.SolutionAttachments.Add(attachment);
                     }
                 }
-
-
+                // Keyword is null or whitespace
                 if (!string.IsNullOrWhiteSpace(model.Keyword))
                 {
                     string keyword = "";
@@ -180,19 +193,20 @@ namespace TMS.Controllers
                     }
                     solution.Keyword = keyword;
                 }
-
-
                 solution.Path = model.Path.Trim().ToLower();
                 solution.CreatedTime = DateTime.Now;
                 solution.ModifiedTime = DateTime.Now;
-                try
+                // Create Solution
+                bool createSolutionResult = _solutionServices.AddSolution(solution);
+                // Create Solution success.
+                if (createSolutionResult)
                 {
-                    _solutionServices.AddSolution(solution);
                     Response.Cookies.Add(new HttpCookie("FlashMessage", "Create solution successfully!") { Path = "/" });
                     Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
                     return RedirectToAction("Index");
                 }
-                catch
+                // Create Solution fail.
+                else
                 {
                     Response.Cookies.Add(new HttpCookie("FlashMessage", "Create solution unsuccessfully!") { Path = "/" });
                     Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
@@ -208,67 +222,84 @@ namespace TMS.Controllers
         {
             if (id.HasValue)
             {
-                // validate subject
+                // Validate subject is null or empty.
                 if (string.IsNullOrWhiteSpace(model.Subject))
                 {
                     ModelState.AddModelError("Subject", "Please input subject.");
                 }
+                // Subject != null or "".
                 else
                 {
                     var subject = model.Subject.Trim();
+                    // Check duplicate subject.
                     bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(id.Value, subject);
+                    //   // Subject is duplicate.
                     if (isDuplicateSubject)
                     {
                         ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", subject));
                     }
                 }
-
-                if (model.Path != null)
+                // Check path is null or spacebar.
+                if (string.IsNullOrWhiteSpace(model.Path))
+                {
+                    ModelState.AddModelError("Path", "Please input path.");
+                }
+                // path != null
+                else
                 {
                     var path = model.Path.Trim();
-
+                    // check duplicate path.
                     bool isDuplicatePath = _solutionServices.IsduplicatePath(id.Value, path);
+                    // path is duplicate.
                     if (isDuplicatePath)
                     {
                         ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
                     }
-
+                    // Path can not allow "-" in begin or end string.
                     if (path.StartsWith("-") || path.EndsWith("-"))
                     {
                         ModelState.AddModelError("Path", "Invalid path! (example: how-to-use-tms)");
                     }
-
-                    Match match = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
-                    if (!match.Success)
+                    // Path follow format a-z, 0-9 and separated by "-".
+                    Match pathFormat = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
+                    // False format path.
+                    if (!pathFormat.Success)
                     {
-                        ModelState.AddModelError("Path", "Path can not contain special characters! ");
+                        ModelState.AddModelError("Path", "Path can not contain special characters and spaces! ");
                     }
                 }
+                // Keyword != null.
                 if (model.Keyword != null)
                 {
-                    Match match = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-, ]*$", RegexOptions.IgnoreCase);
-                    if (!match.Success)
+                    // Keyword follow format a-z, 0-9 and separated by comas (",").
+                    Match keywordIsMatchFormat = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-, ]*$", RegexOptions.IgnoreCase);
+                    // Keyword is not match format.
+                    if (!keywordIsMatchFormat.Success)
                     {
                         ModelState.AddModelError("Keyword", "Keyword only contain characters 'a-z', '0-9' and separated by commas! ");
                     }
                 }
-
-                Solution solution = _solutionServices.GetSolutionById(id.Value);
+                // CategoryID == 0 (default) User is not choose category
                 if (model.CategoryID != 0)
                 {
                     Category category = _categoryService.GetCategoryById(model.CategoryID);
+                    // category != null
                     if (category != null)
                     {
                         model.Category = category.Name;
                     }
                 }
+                // Get solution by id.
+                Solution solution = _solutionServices.GetSolutionById(id.Value);
+                // Solution != null.
                 if (solution != null)
                 {
+                    // ModelState is valid.
                     if (ModelState.IsValid)
                     {
                         solution.Subject = model.Subject.Trim();
                         solution.ContentText = model.Content;
-
+                        // Keyword is null or whitespace
                         if (!string.IsNullOrWhiteSpace(model.Keyword))
                         {
                             string keyword = "";
@@ -300,21 +331,22 @@ namespace TMS.Controllers
                                 solution.SolutionAttachments.Add(attachment);
                             }
                         }
-
-                        try
+                        // Edit solution.
+                        bool editResult = _solutionServices.EditSolution(solution);
+                        // Eit success.
+                        if (editResult)
                         {
-                            _solutionServices.EditSolution(solution);
                             Response.Cookies.Add(new HttpCookie("FlashMessage", "Update solution successfully!") { Path = "/" });
                             Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "success") { Path = "/" });
                             return RedirectToAction("Index");
                         }
-                        catch
+                        // Edit fail.
+                        else
                         {
                             Response.Cookies.Add(new HttpCookie("FlashMessage", "Update solution unsuccessfully!") { Path = "/" });
                             Response.Cookies.Add(new HttpCookie("FlashMessageStatus", "error") { Path = "/" });
                             return RedirectToAction("Index");
                         }
-
                     }
                 }
                 else
@@ -519,6 +551,35 @@ namespace TMS.Controllers
                 data = displayedList,
                 totalTicket = totalTicket
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetCategoryTreeViewData()
+        {
+            IEnumerable<CategoryViewModel> list = _categoryService.GetAll().Select(m => new CategoryViewModel
+            {
+                ID = m.ID,
+                Name = m.Name,
+                ParentId = m.ParentID,
+                Level = m.CategoryLevel
+            }).ToArray();
+            return Json(new
+            {
+                data = list
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser user = _userService.GetUserById(id);
+            if (user != null)
+            {
+                ViewBag.LayoutName = user.Fullname;
+                ViewBag.LayoutAvatarURL = user.AvatarURL;
+                ViewBag.LayoutRole = user.AspNetRoles.FirstOrDefault().Name;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }

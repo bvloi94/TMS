@@ -211,12 +211,14 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-    <Compile Include="Areas\Admin\Controllers\DepartmentController.cs" />
-    <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
+    <Compile Include="Areas\Manager\Controllers\DepartmentController.cs" />
+    <Compile Include="Areas\Manager\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\BusinessRuleController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
+    <Compile Include="Areas\Manager\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
@@ -345,10 +347,11 @@
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
-    <Compile Include="ViewModels\KnowledgeBaseViewModels.cs" />
+    <Compile Include="ViewModels\KnowledgeBaseViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
+    <Compile Include="ViewModels\ProfileManagerViewModel.cs" />
     <Compile Include="ViewModels\RecentTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
@@ -544,9 +547,9 @@
     <Content Include="Areas\Admin\Views\ManageUser\Requester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateRequester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditRequester.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\Priority.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\Impact.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\Urgency.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Priority.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Impact.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Urgency.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Technician\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\web.config" />
@@ -575,13 +578,13 @@
     <Content Include="Models\TMSModel.edmx.diagram">
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Admin\Views\ManageSC\Category.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Category.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\CreateNewTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\PriorityMatrix.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
-    <Content Include="Areas\Admin\Views\Department\Index.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\PriorityMatrix.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\_PriorityMatrixTable.cshtml" />
+    <Content Include="Areas\Manager\Views\Department\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
@@ -589,6 +592,10 @@
     <Content Include="Areas\Admin\Views\ManageUser\EditManager.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Profile\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Profile\UpdateProfile.cshtml" />
+    <Content Include="Areas\Manager\Views\web.config" />
+    <Content Include="Areas\Manager\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Manager\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\Manager\Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
@@ -681,8 +688,8 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\Default\" />
     <Folder Include="Areas\HelpDesk\Models\" />
+    <Folder Include="Areas\Manager\Models\" />
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
@@ -713,7 +720,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>58339</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

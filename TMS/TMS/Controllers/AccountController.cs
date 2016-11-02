@@ -91,20 +91,24 @@ namespace TMS.Controllers
                     bool isActive = _userService.IsActive(user.Id);
                     if (isActive)
                     {
-                        string role = user.AspNetRoles.FirstOrDefault().Name.ToLower();
-                        switch (role)
+                        if (string.IsNullOrWhiteSpace(returnUrl))
                         {
-                            case "admin":
-                                return RedirectToAction("Requester", "ManageUser", new { area = "Admin" });
-                            case "technician":
-                                return RedirectToAction("Index", "ManageTicket", new { area = "Technician" });
-                            case "helpdesk":
-                                return RedirectToAction("Index", "ManageTicket", new { area = "HelpDesk" });
-                            case "requester":
-                                return RedirectToAction("Index", "Home");
-                            default:
-                                return RedirectToLocal(returnUrl);
+                            string role = user.AspNetRoles.FirstOrDefault().Name.ToLower();
+                            switch (role)
+                            {
+                                case "admin":
+                                    return RedirectToAction("Requester", "ManageUser", new { area = "Admin" });
+                                case "technician":
+                                    return RedirectToAction("Index", "ManageTicket", new { area = "Technician" });
+                                case "helpdesk":
+                                    return RedirectToAction("Index", "ManageTicket", new { area = "HelpDesk" });
+                                case "requester":
+                                    return RedirectToAction("Index", "Home");
+                                case "manager":
+                                    return RedirectToAction("Index", "Department", new { area = "Manager" });
+                            }
                         }
+                        return RedirectToLocal(returnUrl);
                     }
                     else
                     {

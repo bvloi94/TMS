@@ -2,19 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
-using TMS.Utils;
-using TMS.ViewModels;
 
 namespace TMS.Areas.Technician.Controllers
 {
     public class ManageTicketController : Controller
     {
-
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
         public DepartmentService _departmentService { get; set; }
@@ -133,6 +129,18 @@ namespace TMS.Areas.Technician.Controllers
                 iTotalDisplayRecords = filteredListItems.Count(),
                 aaData = result
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser technician = _userService.GetUserById(id);
+            if (technician != null)
+            {
+                ViewBag.LayoutName = technician.Fullname;
+                ViewBag.LayoutAvatarURL = technician.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }

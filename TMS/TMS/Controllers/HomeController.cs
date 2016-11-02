@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using Microsoft.AspNet.Identity;
 using System.Web.Mvc;
-using System.Web.Security;
+using TMS.DAL;
 using TMS.Models;
+using TMS.Services;
 
 namespace TMS.Controllers
 {
     public class HomeController : Controller
     {
+        UnitOfWork unitOfWork = new UnitOfWork();
+        public UserService _userService { get; set; }
+
+        public HomeController()
+        {
+            _userService = new UserService(unitOfWork);
+        }
 
         public ActionResult Index()
         {
@@ -29,6 +34,18 @@ namespace TMS.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser requester = _userService.GetUserById(id);
+            if (requester != null)
+            {
+                ViewBag.LayoutName = requester.Fullname;
+                ViewBag.LayoutAvatarURL = requester.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }
