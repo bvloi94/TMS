@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using log4net;
 using TMS.Models;
+using TMS.Schedulers;
 
 namespace TMS.DAL
 {
     public class UnitOfWork : IDisposable
     {
+        private ILog log = LogManager.GetLogger(typeof(JobManager));
 
         private TMSEntities _context = new TMSEntities();
+        private DbContextTransaction _contextTransaction;
         private GenericRepository<Category> _categoryRepository;
         private GenericRepository<AspNetRole> _aspNetRoleRepository;
         private GenericRepository<AspNetUser> _aspNetUserRepository;
@@ -260,30 +265,47 @@ namespace TMS.DAL
             }
         }
 
+        public void BeginTransaction()
+        {
+            _contextTransaction = _context.Database.BeginTransaction();
+        }
 
+        protected TMSEntities DataContext
+        {
+            get { return _context ?? (_context = new TMSEntities()); }
+        }
 
-        public int Save()
+        public bool Commit()
         {
             try
             {
-               return _context.SaveChanges();
+                DataContext.SaveChanges();
+                return true;
             }
-            catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
+            catch (Exception ex)
             {
-                Exception raise = dbEx;
-                foreach (var validationErrors in dbEx.EntityValidationErrors)
-                {
-                    foreach (var validationError in validationErrors.ValidationErrors)
-                    {
-                        string message = string.Format("{0}:{1}",
-                            validationErrors.Entry.Entity.ToString(),
-                            validationError.ErrorMessage);
-                        // raise a new exception nesting
-                        // the current instance as InnerException
-                        raise = new InvalidOperationException(message, raise);
-                    }
-                }
-                throw raise;
+                log.Error("Commit error", ex);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Try to execute all changings of database which create in this unit of work
+        /// </summary>
+        /// <returns>true if execute successfull</returns>
+        public bool CommitTransaction()
+        {
+            try
+            {
+                var rs = DataContext.SaveChanges();
+                _contextTransaction.Commit();
+                return rs > 0;
+            }
+            catch (Exception ex)
+            {
+                _contextTransaction.Rollback();
+                log.Error("Commit transaction error", ex);
+                return false;
             }
         }
 

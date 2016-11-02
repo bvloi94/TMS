@@ -8,7 +8,7 @@ using TMS.Models;
 
 namespace TMS.ViewModels
 {
-    public class KnowledgeBaseViewModels
+    public class KnowledgeBaseViewModel
     {
         public int? ID { get; set; }
         [Required(ErrorMessage = "Please input a subject!")]
@@ -20,6 +20,7 @@ namespace TMS.ViewModels
         //public int CategoryID { get; set; }
         [Required(ErrorMessage = "Please select totpic!")]
         public int CategoryID { get; set; }
+        public string CategoryPath { get; set; }
         public string Category { get; set; }
         public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
         public string Keyword { get; set; }

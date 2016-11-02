@@ -245,7 +245,7 @@ function initDepartmentDropdown(param) {
             },
             cache: true
         },
-        placeholder: "--Select Department--",
+        placeholder: "-- Select Department --",
         minimumResultsForSearch: Infinity,
         escapeMarkup: function (markup) {
             return markup;
@@ -312,7 +312,7 @@ function initTechnicianDropdown(param) {
             },
             cache: true
         },
-        placeholder: "--Select Technician--",
+        placeholder: "-- Select Technician --",
         escapeMarkup: function (markup) {
             return markup;
         }, // let our custom formatter work
@@ -321,5 +321,62 @@ function initTechnicianDropdown(param) {
         templateSelection: function (data) {
             return data.text;
         } // omitted for brevity, see the source of this page
+    });
+}
+
+function initCriteriaDropdown(param) {
+    var formatt = function (repo) {
+        var markup = "";
+        if (repo.allowAll) {
+            markup = "<div class='criteria-dropdown'>" +
+                "<label class='criteria-name'>All</label>" +
+                "</div>";
+
+        } else {
+            markup = "<div class='criteria-dropdown'>" +
+                "<label class='criteria-name'>" + repo + "</label>" +
+                "</div>";
+        }
+        return markup;
+    }
+    param.control.select2({
+        ajax: {
+            url: "/dropdown/LoadCriteriaDropdown",
+            dataType: "json",
+            data: function (params) {
+                var ajaxData = {
+                    query: params.term
+                };
+                return ajaxData;
+            },
+            processResults: function (data) {
+                var result = {
+                    results: []
+                };
+                if (param.allowAll) {
+                    result.results.push({
+                        allowAll: true,
+                        id: "",
+                        text: "All"
+                    });
+                }
+                for (var i = 0; i < data.length; i++) {
+                    data[i].id = data[i];
+                    data[i].text = data[i];
+                    result.results.push(data[i]);
+                }
+                return result;
+            },
+            cache: true
+        },
+        placeholder: "-- Select Criteria --",
+        escapeMarkup: function (markup) {
+            return markup;
+        }, 
+        minimumInputLength: 0,
+        templateResult: formatt, 
+        templateSelection: function(data) {
+            return data.text;
+        }
     });
 }

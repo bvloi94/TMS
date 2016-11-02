@@ -25,7 +25,7 @@ namespace TMS.Services
         public void AddUser(AspNetUser user)
         {
             _unitOfWork.AspNetUserRepository.Insert(user);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
 
         public AspNetUser GetUserByUsername(string username)
@@ -54,16 +54,8 @@ namespace TMS.Services
 
         public void EditUser(AspNetUser user)
         {
-            try
-            {
-                _unitOfWork.AspNetUserRepository.Update(user);
-                _unitOfWork.Save();
-            }
-            catch (Exception)
-            {
-                
-                throw;
-            }
+            _unitOfWork.AspNetUserRepository.Update(user);
+            _unitOfWork.Commit();
         }
 
         public void RemoveUser(string id)
@@ -73,7 +65,7 @@ namespace TMS.Services
             _unitOfWork.AspNetUserRepository.Update(user);
             try
             {
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -118,6 +110,11 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin");
         }
 
+        public IEnumerable<AspNetUser> GetManagers()
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower().Equals(ConstantUtil.UserRoleString.Manager.ToLower()));
+        }
+
         public bool IsActive(string id)
         {
             return _unitOfWork.AspNetUserRepository.Get(m => m.Id == id && m.IsActive == true).Count() > 0;
@@ -140,7 +137,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.AspNetUserRepository.Update(user);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {

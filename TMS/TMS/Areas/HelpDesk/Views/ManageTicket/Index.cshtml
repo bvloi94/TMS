@@ -12,6 +12,11 @@
     .select2-container {
         width: 100% !important;
     }
+
+    #ticket-attachments a {
+        margin: 2px 2px 2px 0px;
+        display: inline-block;
+    }
 </style>
 
 @section SidebarMenu {
@@ -266,7 +271,7 @@
                                         <div class="col-sm-2 labels">
                                             <b>Description: </b>
                                         </div>
-                                        <div class="col-sm-10 pre-wrap" id="ticket-description" style="padding-left: 10px"></div>
+                                        <div class="col-sm-10" style="padding-left: 10px"><span class="pre-wrap" id="ticket-description"></span></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content ">
@@ -274,7 +279,7 @@
                                         <div class="col-sm-2 labels">
                                             <b>Solution: </b>
                                         </div>
-                                        <div class="col-sm-10 pre-wrap" id="ticket-solution" style="padding-left: 10px"></div>
+                                        <div class="col-sm-10" style="padding-left: 10px"><span class="pre-wrap" id="ticket-solution"></span></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content ">
@@ -282,7 +287,7 @@
                                         <div class="col-sm-2 labels">
                                             <b>Attachment: </b>
                                         </div>
-                                        <div class="col-sm-10"><span id="ticket-attachment"></span></div>
+                                        <div class="col-sm-10" id="ticket-attachments"></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content">
@@ -324,23 +329,44 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <a class="btn btn-primary btn-flat" data-role="modal-btn-solve">Solve</a>
+                    <div class="btn-group dropup" id="action-div">
+                        <button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a id="action-edit-btn">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket
+                                </a>
+                            </li>
+                            <li>
+                                <a id="action-solve-btn">
+                                    <i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket
+                                </a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0)" data-role="btn-show-cancel-modal" id="action-cancel-btn">
+                                    <i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="btn-group dropup" id="reopen-div">
                         <button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Reopen <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="javascript:void(0)" data-role="btn-show-close-modal" id="reopen-close-btn">
+                                <a href="javascript:void(0)" onclick="showCloseModal(this)" id="reopen-close-btn">
                                     <i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript:void(0)" data-role="btn-show-reassign-modal" id="reopen-reassign-btn">
+                                <a href="javascript:void(0)" onclick="showReassignModal(this)" id="reopen-reassign-btn">
                                     <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Reassign
                                 </a>
                             </li>
-                            <li><a href="#" id="reopen-resolve-btn"><i class="fa fa-commenting" aria-hidden="true"></i> Re-solve Ticket</a></li>
+                            <li><a id="reopen-resolve-btn"><i class="fa fa-commenting" aria-hidden="true"></i> Re-solve Ticket</a></li>
                         </ul>
                     </div>
                     <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>

@@ -7,11 +7,11 @@
     <title>Knowledge Base</title>
 
     <!-- Style Sheet-->
+    <link rel='stylesheet' id='style-css' href='~/Content/knowledgebase/style.css' type='text/css' media='all' />
     <link rel='stylesheet' id='bootstrap-css-css' href='~/Content/knowledgebase/css/bootstrap5152.css?ver=1.0' type='text/css' media='all' />
     <link rel='stylesheet' id='responsive-css-css' href='~/Content/knowledgebase/css/responsive5152.css?ver=1.0' type='text/css' media='all' />
     <link rel='stylesheet' id='main-css-css' href='~/Content/knowledgebase/css/main5152.css?ver=1.0' type='text/css' media='all' />
     <link rel='stylesheet' id='blue-skin-css' href='~/Content/knowledgebase/css/blue-skin5152.css?ver=1.0' type='text/css' media='all' />
-    <link rel='stylesheet' id='custom-css-css' href='~/Content/knowledgebase/css/custom5152.html?ver=1.0' type='text/css' media='all' />
 
 </head>
 <body>
@@ -22,7 +22,7 @@
 
                 <div class="logo-container">
                     <!-- Website Logo -->
-                    <a href="Index">
+                    <a href="@ViewBag.Home">
                         <span style="font-size: 30px; "><b>TMS</b></span>
                     </a>
                     <span style="color: white">Knowledge Base</span>
@@ -32,9 +32,9 @@
                 <nav class="main-nav">
                     <div class="menu-top-menu-container">
                         <ul id="menu-top-menu" class="clearfix">
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="articles-list.html">Articles List</a></li>
-                            <li><a href="contact.html">Contact</a></li>
+                            <li><a href="@ViewBag.ItemLink1">@ViewBag.Item1</a></li>
+                            <li><a href="@ViewBag.ItemLink2">@ViewBag.Item2</a></li>
+                            <li><a href="@ViewBag.Profile">Profile</a></li>
                         </ul>
                     </div>
                 </nav>
@@ -49,7 +49,7 @@
             <h3 class="search-header">Have a Question?</h3>
             <p class="search-tag-line">If you have any question you can ask below or enter what you are looking for!</p>
             <form id="search-form" class="search-form clearfix" method="get" action="#" autocomplete="off">
-                <input class="search-term required" type="text" id="s" name="s" placeholder="Type your search terms here" />
+                <input class="search-term required" type="text" id="search-solution" placeholder="Type your search terms here" />
                 <input class="search-btn" type="submit" value="Search" />
                 <div id="search-error-container"></div>
             </form>
@@ -66,7 +66,7 @@
     </div>
     <!-- End of Page Container -->
     <!-- Start of Footer -->
-    <footer id="footer-wrapper" style="bottom: 0; position: absolute; margin: 0 auto;">
+    <footer id="footer-wrapper" style="bottom: 0; margin: 0 auto;">
         <div id="footer-bottom-wrapper">
             <div id="footer-bottom" class="container">
                 <div class="row">
@@ -86,7 +86,12 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
+    @RenderSection("scripts", required: false)
 </body>
 </html>
-
+@section scripts {
+    <script>
+        
+    </script>
+}
 

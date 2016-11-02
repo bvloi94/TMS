@@ -4,6 +4,18 @@ var closeTicketId = null;
 var reassignTicketId = null;
 var selectedTickets = [];
 
+$(window).on('resize', function () {
+    $('.ticket-subject').trunk8({
+        lines: 2,
+        tooltip: false
+    });
+    //$('#ticket-description #ticket-solution').trunk8({
+    //    lines: 3,
+    //    tooltip: false,
+    //    fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
+    //});
+});
+
 function initTicketTable() {
     ticketTable = $("#ticket-table").DataTable({
         serverSide: true,
@@ -13,9 +25,6 @@ function initTicketTable() {
         lengthMenu: [7],
         order: [[6, 'des']],
         lengthChange: false,
-        fnDrawCallback: function () {
-            checkSelectedCheckbox();
-        },
         ajax: {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
             "type": "POST",
@@ -23,6 +32,13 @@ function initTicketTable() {
                 d.status_filter = $("#status-dropdown").val();
                 d.search_text = $("#search-txt").val();
             }
+        },
+        drawCallback: function () {
+            checkSelectedCheckbox();
+            $('.ticket-subject').trunk8({
+                lines: 2,
+                tooltip: false
+            });
         },
         columnDefs: [
         {
@@ -38,6 +54,7 @@ function initTicketTable() {
                      //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
                      return $("<a/>",
                      {
+                         "class": "ticket-subject",
                          "href": "javascript:openTicketDetailModal(" + row.Id + ")",
                          "html": row.Subject
                      })[0].outerHTML;
@@ -79,96 +96,161 @@ function initTicketTable() {
                 "targets": [7],
                 "sortable": false,
                 "render": function (data, type, row) {
-                    //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
-                    var ediBtn;
+                    var reopen = '';
+                    var action = '<div class="btn-group">'
+                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
+                        + 'Action <span class="caret"></span>'
+                        + '</button>'
+                        + '<ul class="dropdown-menu">'
+                        + '<li>'
+                        + '<a href="/HelpDesk/ManageTicket/EditTicket/' + row.Id + '">'
+                        + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
+                        + '</a>'
+                        + '</li>';
                     switch (row.Status) {
-                        case "Closed":
-                        case "Canceled":
-                        case "Solved":
-                            ediBtn = $("<a/>",
-                            {
-                                "class": "btn btn-sm btn-default",
-                                "data-role": "btn-edit-ticket",
-                                "disabled": "disabled",
-                                "html": $("<i/>",
-                                {
-                                    "class": "fa fa-pencil"
-                                }),
-                                "data-id": row.Id
-                            });
-                            break;
                         case "New":
+                            action += '<li>'
+                       + '<a href="/Ticket/Solve/' + row.Id + '">'
+                       + '<i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket'
+                       + '</a>'
+                       + '</li>'
+                       + '<li>'
+                       + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" id="action-cancel-btn" data-ticket-id="' + row.Id + '">'
+                       + '<i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket'
+                       + '</a>'
+                       + '</li>';
+                            break;
                         case "Assigned":
+                            action += '<li>'
+                       + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" data-ticket-id="' + row.Id + '">'
+                       + '<i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket'
+                       + '</a>'
+                       + '</li>';
+                            break;
+                        case "Solved":
+                            break;
                         case "Unapproved":
-                            ediBtn = $("<a/>",
-                            {
-                                "class": "btn btn-sm btn-default",
-                                "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
-                                "data-role": "btn-edit-ticket",
-                                "html": $("<i/>",
-                                {
-                                    "class": "fa fa-pencil"
-                                }),
-                                "data-id": row.Id
-                            });
+                            reopen += '<div class="btn-group" style="margin-left: 10px;">'
+                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
+                        + 'Reopen <span class="caret"></span>'
+                        + '</button>'
+                        + '<ul class="dropdown-menu">'
+                        + '<li>'
+                        + '<a href="javascript:void(0)" onclick="showCloseModal(this)" data-ticket-id="' + row.Id + '">'
+                        + '<i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket'
+                        + '</a>'
+                        + '</li>'
+                        + '<li>'
+                        + '<a href="javascript:void(0)" onclick="showReassignModal(this)" data-ticket-id="' + row.Id + '">'
+                        + '<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Reassign'
+                        + '</a>'
+                        + '</li>'
+                        + '<li>'
+                        + '<a href="/Ticket/Solve/' + row.Id + '">'
+                        + '<i class="fa fa-commenting" aria-hidden="true"></i> Re-solve Ticket'
+                        + '</a>'
+                        + '</li>'
+                        + '</ul>'
+                        + '</div>';
+                            break;
+                        case "Closed":
+                            break;
+                        case "Canceled":
                             break;
                     }
+                    action += '</ul>'
+                        + '</div>';
 
-                    var solveBtn;
-                    switch (row.Status) {
-                        case "Solved":
-                        case "Closed":
-                        case "Canceled":
-                            solveBtn = $("<a/>",
-                            {
-                                "class": "btn btn-sm btn-default margin-left10",
-                                //"data-role": "btn-show-solve-modal",
-                                "disabled": "disabled",
-                                "html": "Solve",
-                                "data-id": row.Id
-                            });
-                            break;
-                        case "New":
-                        case "Assigned":
-                        case "Unapproved":
-                            solveBtn = $("<a/>",
-                            {
-                                "class": "btn btn-sm btn-default margin-left10",
-                                "href": "/Ticket/Solve/" + row.Id,
-                                "html": "Solve",
-                                "data-id": row.Id
-                            });
-                            break;
-                    }
+                    return action + reopen;
+                    //var editBtn;
+                    //switch (row.Status) {
+                    //    case "Closed":
+                    //    case "Canceled":
+                    //    case "Solved":
+                    //        editBtn = $("<a/>",
+                    //        {
+                    //            "class": "btn btn-flat btn-default",
+                    //            "data-role": "btn-edit-ticket",
+                    //            "disabled": "disabled",
+                    //            "html": $("<i/>",
+                    //            {
+                    //                "class": "fa fa-pencil"
+                    //            }),
+                    //            "data-id": row.Id
+                    //        });
+                    //        break;
+                    //    case "New":
+                    //    case "Assigned":
+                    //    case "Unapproved":
+                    //        editBtn = $("<a/>",
+                    //        {
+                    //            "class": "btn btn-sm btn-default",
+                    //            "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
+                    //            "data-role": "btn-edit-ticket",
+                    //            "html": $("<i/>",
+                    //            {
+                    //                "class": "fa fa-pencil"
+                    //            }),
+                    //            "data-id": row.Id
+                    //        });
+                    //        break;
+                    //}
 
-                    var cancelBtn;
-                    switch (row.Status) {
-                        case "Solved":
-                        case "Closed":
-                        case "Canceled":
-                        case "Unapproved":
-                            cancelBtn = $("<a/>",
-                            {
-                                "class": "btn btn-sm btn-default margin-left10",
-                                "data-role": "btn-show-cancel-modal",
-                                "html": "Cancel",
-                                "disabled": "disabled",
-                                "data-ticket-id": row.Id
-                            });
-                            break;
-                        case "New":
-                        case "Assigned":
-                            cancelBtn = $("<a/>",
-                            {
-                                "class": "btn btn-sm btn-default margin-left10",
-                                "data-role": "btn-show-cancel-modal",
-                                "html": "Cancel",
-                                "data-ticket-id": row.Id
-                            });
-                            break;
-                    }
+                    //var solveBtn;
+                    //switch (row.Status) {
+                    //    case "Solved":
+                    //    case "Closed":
+                    //    case "Canceled":
+                    //        solveBtn = $("<a/>",
+                    //        {
+                    //            "class": "btn btn-sm btn-default margin-left10",
+                    //            //"data-role": "btn-show-solve-modal",
+                    //            "disabled": "disabled",
+                    //            "html": "Solve",
+                    //            "data-id": row.Id
+                    //        });
+                    //        break;
+                    //    case "New":
+                    //    case "Assigned":
+                    //    case "Unapproved":
+                    //        solveBtn = $("<a/>",
+                    //        {
+                    //            "class": "btn btn-sm btn-default margin-left10",
+                    //            "href": "/Ticket/Solve/" + row.Id,
+                    //            "html": "Solve",
+                    //            "data-id": row.Id
+                    //        });
+                    //        break;
+                    //}
 
-                    return ediBtn[0].outerHTML + solveBtn[0].outerHTML + cancelBtn[0].outerHTML;
+                    //var cancelBtn;
+                    //switch (row.Status) {
+                    //    case "Solved":
+                    //    case "Closed":
+                    //    case "Canceled":
+                    //    case "Unapproved":
+                    //        cancelBtn = $("<a/>",
+                    //        {
+                    //            "class": "btn btn-sm btn-default margin-left10",
+                    //            "data-role": "btn-show-cancel-modal",
+                    //            "html": "Cancel",
+                    //            "disabled": "disabled",
+                    //            "data-ticket-id": row.Id
+                    //        });
+                    //        break;
+                    //    case "New":
+                    //    case "Assigned":
+                    //        cancelBtn = $("<a/>",
+                    //        {
+                    //            "class": "btn btn-sm btn-default margin-left10",
+                    //            "data-role": "btn-show-cancel-modal",
+                    //            "html": "Cancel",
+                    //            "data-ticket-id": row.Id
+                    //        });
+                    //        break;
+                    //}
+
+                    //return ediBtn[0].outerHTML + solveBtn[0].outerHTML + cancelBtn[0].outerHTML;
                 }
             }
         ],
@@ -235,6 +317,16 @@ function initDropdownControl() {
     });
 }
 
+//$(document).on('click', '#see-more', function (event) {
+//    $(this).parent().trunk8('revert').append('<br/><a id="see-less" href="javascript:void{0}">See Less</a>');
+//    return false;
+//});
+
+//$(document).on('click', '#see-less', function (event) {
+//    $(this).parent().trunk8();
+//    return false;
+//});
+
 function openTicketDetailModal(ticketId) {
     $.ajax({
         url: '/Ticket/GetTicketDetail',
@@ -262,6 +354,10 @@ function openTicketDetailModal(ticketId) {
             $("#reopen-resolve-btn").attr("href", "/Ticket/Solve/" + data.id);
             $("#reopen-reassign-btn").attr("data-ticket-id", data.id);
             $("#refer-older-ticket-btn").attr("data-id", data.id);
+            //action button group
+            $("#action-cancel-btn").attr("data-ticket-id", data.id);
+            $("#action-solve-btn").attr("href", "/Ticket/Solve/" + data.id);
+            $("#action-edit-btn").attr("href", "/HelpDesk/ManageTicket/EditTicket/" + data.id);
 
             if (!data.solution || data.solution == "-") {
                 $('#ticket-solution').text("This ticket is not solved yet.");
@@ -270,38 +366,52 @@ function openTicketDetailModal(ticketId) {
                 $('#ticket-solution').text(data.solution);
             }
 
+            $('#ticket-attachments').empty();
             if (!data.attachments || data.attachments == "") {
-                $('#ticket-attachment').text("-");
+                $('#ticket-attachments').append("No attachments.");
             } else {
-                $('#ticket-attachment').text(data.attachments);
+                $('#ticket-attachments').append(data.attachments);
             }
 
-
-            $('[data-role="modal-btn-solve"]').attr("href", "/Ticket/Solve/" + data.id);
-
+            //solve: new
+            //edit: all
+            //cancel: new, assigned
+            //reopen: unapproved
             if (data.status == 1) {
                 $('#ticket-status').html(getStatusLabel('New'));
-                $('[data-role="modal-btn-solve"]').removeClass("disabled");
+                $('#action-solve-btn').show();
+                $("#action-edit-btn").show();
+                $("#action-cancel-btn").show();
                 $("#reopen-div").hide();
             } else if (data.status == 2) {
                 $('#ticket-status').html(getStatusLabel('Assigned'));
-                $('[data-role="modal-btn-solve"]').removeClass("disabled");
+                $('#action-solve-btn').hide();
+                $("#action-edit-btn").show();
+                $("#action-cancel-btn").show();
                 $("#reopen-div").hide();
             } else if (data.status == 3) {
                 $('#ticket-status').html(getStatusLabel('Solved'));
-                $('[data-role="modal-btn-solve"]').addClass("disabled");
+                $('#action-solve-btn').hide();
+                $("#action-edit-btn").show();
+                $("#action-cancel-btn").hide();
                 $("#reopen-div").hide();
             } else if (data.status == 4) {
                 $('#ticket-status').html(getStatusLabel('Unapproved'));
-                $('[data-role="modal-btn-solve"]').addClass("invisible");
+                $('#action-solve-btn').hide();
+                $("#action-edit-btn").show();
+                $("#action-cancel-btn").hide();
                 $("#reopen-div").show();
             } else if (data.status == 5) {
                 $('#ticket-status').html(getStatusLabel('Cancelled'));
-                $('[data-role="modal-btn-solve"]').addClass("disabled");
+                $('#action-solve-btn').hide();
+                $("#action-edit-btn").show();
+                $("#action-cancel-btn").hide();
                 $("#reopen-div").hide();
             } else if (data.status == 6) {
                 $('#ticket-status').html(getStatusLabel('Closed'));
-                $('[data-role="modal-btn-solve"]').addClass("disabled");
+                $('#action-solve-btn').hide();
+                $("#action-edit-btn").show();
+                $("#action-cancel-btn").hide();
                 $("#reopen-div").hide();
             }
 
@@ -315,7 +425,14 @@ function openTicketDetailModal(ticketId) {
 
             $('#ticket-solveUser').text(data.solveUser);
 
+
+
             $('#detail-modal').modal("show");
+            $('#ticket-solution, #ticket-description').trunk8({
+                tooltip: false,
+                lines: 3,
+                fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
+            });
         },
         failure: function (data) {
             alert(data.d);
@@ -323,289 +440,233 @@ function openTicketDetailModal(ticketId) {
     });
 }
 
-$(document)
-        .ready(function () {
 
-            setActiveTicketMenu();
-            initTicketTable();
 
-            $("#search-txt").keyup(function () {
-                ticketTable.draw();
-            });
+$(document).ready(function () {
+    setActiveTicketMenu();
+    initTicketTable();
 
-            $("#status-dropdown").change(function () {
-                ticketTable.draw();
-            });
+    $("#search-txt").keyup(function () {
+        ticketTable.draw();
+    });
 
-            $('#ticket-table tbody')
-                .on('click',
-                    'a[data-role="btn-show-cancel-modal"]:not([disabled])',
-                    function () {
-                        cancelTicketId = this.getAttribute("data-ticket-id");
-                        $("#modal-cancel-ticket").modal("show");
+    $("#status-dropdown").change(function () {
+        ticketTable.draw();
+    });
+
+    $('#ticket-table tbody').on('click', 'a[data-role="btn-show-cancel-modal"]:not([disabled])', function () {
+        cancelTicketId = this.getAttribute("data-ticket-id");
+        $("#modal-cancel-ticket").modal("show");
+    });
+
+    $("[data-role='btn-confirm-cancel']").on('click', function () {
+        $("[data-role='btn-confirm-cancel']").prop("disabled", true);
+        $.ajax({
+            "url": "/HelpDesk/ManageTicket/CancelTicket",
+            "method": "POST",
+            "data": {
+                ticketId: cancelTicketId
+            },
+            "success": function (data) {
+                if (data.success) {
+                    $("#modal-cancel-ticket").modal("hide");
+                    noty({
+                        text: data.msg,
+                        layout: "topCenter",
+                        type: "success",
+                        timeout: 2000
                     });
-
-            $("[data-role='btn-confirm-cancel']")
-                .on('click',
-                    function () {
-                        $("[data-role='btn-confirm-cancel']").prop("disabled", true);
-                        $.ajax({
-                            "url": "/HelpDesk/ManageTicket/CancelTicket",
-                            "method": "POST",
-                            "data": {
-                                ticketId: cancelTicketId
-                            },
-                            "success": function (data) {
-                                if (data.success) {
-                                    $("#modal-cancel-ticket").modal("hide");
-                                    noty({
-                                        text: data.msg,
-                                        layout: "topCenter",
-                                        type: "success",
-                                        timeout: 2000
-                                    });
-                                    ticketTable.draw();
-                                } else {
-                                    $("#modal-cancel-ticket").modal("hide");
-                                    noty({
-                                        text: data.msg,
-                                        type: "error",
-                                        layout: "topRight",
-                                        timeout: 2000
-                                    });
-                                    ticketTable.draw();
-                                }
-                                $("[data-role='btn-confirm-cancel']").prop("disabled", false);
-                            },
-                            "error": function () {
-                                $("#modal-cancel-ticket").modal("hide");
-                                noty({
-                                    text: "Cannot connect to server!",
-                                    type: "error",
-                                    layout: "topCenter",
-                                    timeout: 2000
-                                });
-                            }
-                        });
-                    });
-
-            $("a[data-role='btn-merge-ticket'")
-                .on("click",
-                    function () {
-                        if (selectedTickets.length < 2) {
-                            noty({
-                                text: "Less than 2 tickets, can not merge!",
-                                type: "error",
-                                layout: "topCenter",
-                                timeout: 2000
-                            });
-                        } else {
-                            $("#modal-merge-ticket").modal("show");
-                        }
-
-                    });
-
-            $("[data-role='btn-confirm-merge']")
-                .on('click',
-                    function () {
-                        $("[data-role='btn-confirm-merge']").prop("disabled", true);
-                        $.ajax({
-                            "url": "/HelpDesk/ManageTicket/MergeTicket",
-                            "method": "POST",
-                            "data": {
-                                selectedTickets: selectedTickets
-                            },
-                            "success": function (data) {
-                                if (data.success) {
-                                    noty({
-                                        text: data.msg,
-                                        type: "success",
-                                        layout: "topCenter",
-                                        timeout: 2000
-                                    });
-                                    $("#modal-merge-ticket").modal("hide");
-                                    selectedTickets = [];
-                                    $("a[data-role='btn-merge-ticket']").addClass("disabled");
-                                    ticketTable.draw();
-                                } else {
-                                    noty({
-                                        text: data.msg,
-                                        type: "error",
-                                        layout: "topCenter",
-                                        timeout: 2000
-                                    });
-                                    $("#modal-merge-ticket").modal("hide");
-                                    selectedTickets = [];
-                                    $("a[data-role='btn-merge-ticket']").addClass("disabled");
-                                    ticketTable.draw();
-                                }
-                                $("[data-role='btn-confirm-merge']").prop("disabled", false);
-                            },
-                            "error": function () {
-                                $("#modal-merge-ticket").modal("hide");
-                                noty({
-                                    text: "Cannot connect to server!",
-                                    type: "error",
-                                    layout: "topCenter",
-                                    timeout: 2000
-                                });
-                            }
-                        });
-                    });
-
-            $('#ticket-table tbody').on('click', 'input[data-role="cbo-ticket"]', function (e) {
-                var id = $(this).attr("data-id");
-                if (selectedTickets.indexOf(id) == -1) {
-                    selectedTickets.push(id);
+                    ticketTable.draw();
                 } else {
-                    selectedTickets.splice(selectedTickets.indexOf(id), 1);
+                    $("#modal-cancel-ticket").modal("hide");
+                    noty({
+                        text: data.msg,
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
+                    ticketTable.draw();
                 }
-                if (selectedTickets.length < 2) {
+                $("[data-role='btn-confirm-cancel']").prop("disabled", false);
+            },
+            "error": function () {
+                $("#modal-cancel-ticket").modal("hide");
+                noty({
+                    text: "Cannot connect to server!",
+                    type: "error",
+                    layout: "topCenter",
+                    timeout: 2000
+                });
+            }
+        });
+    });
+
+    $("a[data-role='btn-merge-ticket'").on("click", function () {
+        if (selectedTickets.length < 2) {
+            noty({
+                text: "Less than 2 tickets, can not merge!",
+                type: "error",
+                layout: "topCenter",
+                timeout: 2000
+            });
+        } else {
+            $("#modal-merge-ticket").modal("show");
+        }
+
+    });
+
+    $("[data-role='btn-confirm-merge']").on('click', function () {
+        $("[data-role='btn-confirm-merge']").prop("disabled", true);
+        $.ajax({
+            "url": "/HelpDesk/ManageTicket/MergeTicket",
+            "method": "POST",
+            "data": {
+                selectedTickets: selectedTickets
+            },
+            "success": function (data) {
+                if (data.success) {
+                    noty({
+                        text: data.msg,
+                        type: "success",
+                        layout: "topCenter",
+                        timeout: 2000
+                    });
+                    $("#modal-merge-ticket").modal("hide");
+                    selectedTickets = [];
                     $("a[data-role='btn-merge-ticket']").addClass("disabled");
+                    ticketTable.draw();
                 } else {
-                    $("a[data-role='btn-merge-ticket']").removeClass("disabled");
+                    noty({
+                        text: data.msg,
+                        type: "error",
+                        layout: "topCenter",
+                        timeout: 2000
+                    });
+                    $("#modal-merge-ticket").modal("hide");
+                    selectedTickets = [];
+                    $("a[data-role='btn-merge-ticket']").addClass("disabled");
+                    ticketTable.draw();
                 }
-            });
+                $("[data-role='btn-confirm-merge']").prop("disabled", false);
+            },
+            "error": function () {
+                $("#modal-merge-ticket").modal("hide");
+                noty({
+                    text: "Cannot connect to server!",
+                    type: "error",
+                    layout: "topCenter",
+                    timeout: 2000
+                });
+            }
+        });
+    });
 
-            $('#detail-modal').on('click', 'a[data-role="btn-show-close-modal"]', function () {
-                closeTicketId = this.getAttribute("data-ticket-id");
-                $("#modal-close-ticket").css("z-index", "1100");
-                $("#modal-close-ticket").modal("show");
-            });
+    $('#ticket-table tbody').on('click', 'input[data-role="cbo-ticket"]', function (e) {
+        var id = $(this).attr("data-id");
+        if (selectedTickets.indexOf(id) == -1) {
+            selectedTickets.push(id);
+        } else {
+            selectedTickets.splice(selectedTickets.indexOf(id), 1);
+        }
+        if (selectedTickets.length < 2) {
+            $("a[data-role='btn-merge-ticket']").addClass("disabled");
+        } else {
+            $("a[data-role='btn-merge-ticket']").removeClass("disabled");
+        }
+    });
 
-            $('#detail-modal').on('click', 'a[data-role="btn-show-reassign-modal"]', function () {
-                reassignTicketId = $(this).attr("data-ticket-id");
-                initDropdownControl();
-                $.ajax({
-                    url: "/HelpDesk/ManageTicket/GetTicketDetailForReassign",
-                    type: "GET",
-                    dataType: "json",
-                    data: {
-                        ticketId: reassignTicketId
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            loadInitDropdown('ddl-department', data.department, data.departmentId);
-                            loadInitDropdown('ddl-technician', data.technician, data.technicianId);
-                        } else {
-                            noty({
-                                text: data.message,
-                                layout: "topRight",
-                                type: "error",
-                                timeout: 2000
-                            });
-                        }
-                    },
-                    error: function () {
+    $("[data-role='ddl-department']").on("change", function () {
+        $("[data-role='ddl-technician']").select2("val", "");
+    });
+
+    $("[data-role='btn-confirm-reassign']").click(function () {
+        var technicianId = $("#technician-select").val();
+        if (technicianId == null || technicianId.trim() == "") {
+            $("#reassign-validation-message").html("Please select technician!");
+            $("#reassign-validation-message").show();
+        } else {
+            $.ajax({
+                url: "/HelpDesk/ManageTicket/Reassign",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    technicianId: technicianId,
+                    ticketId: reassignTicketId
+                },
+                success: function (data) {
+                    if (data.success) {
                         noty({
-                            text: "Cannot connect to server!",
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                    } else {
+                        noty({
+                            text: data.message,
                             layout: "topRight",
                             type: "error",
                             timeout: 2000
                         });
                     }
-                });
-                $("#reassign-validation-message").hide();
-                $("#modal-reassign-ticket").css("z-index", "1100");
-                $("#modal-reassign-ticket").modal("show");
-            });
-
-            $("[data-role='ddl-department']").on("change", function () {
-                $("[data-role='ddl-technician']").select2("val", "");
-            });
-
-            $("[data-role='btn-confirm-reassign']").click(function () {
-                var technicianId = $("#technician-select").val();
-                if (technicianId == null || technicianId.trim() == "") {
-                    $("#reassign-validation-message").html("Please select technician!");
-                    $("#reassign-validation-message").show();
-                } else {
-                    $.ajax({
-                        url: "/HelpDesk/ManageTicket/Reassign",
-                        type: "POST",
-                        dataType: "json",
-                        data: {
-                            technicianId: technicianId,
-                            ticketId: reassignTicketId
-                        },
-                        success: function (data) {
-                            if (data.success) {
-                                noty({
-                                    text: data.message,
-                                    layout: "topCenter",
-                                    type: "success",
-                                    timeout: 2000
-                                });
-                                $("#modal-reassign-ticket").modal("hide");
-                                $("#detail-modal").modal("hide");
-                                ticketTable.draw();
-                            } else {
-                                noty({
-                                    text: data.message,
-                                    layout: "topRight",
-                                    type: "error",
-                                    timeout: 2000
-                                });
-                                $("#modal-reassign-ticket").modal("hide");
-                                $("#detail-modal").modal("hide");
-                                ticketTable.draw();
-                            }
-                        },
-                        error: function () {
-                            noty({
-                                text: "Cannot connect to server!",
-                                layout: "topRight",
-                                type: "error",
-                                timeout: 2000
-                            });
-                        }
+                    $(".modal").modal("hide");
+                    ticketTable.draw();
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
                     });
                 }
             });
+        }
+    });
 
-            $("[data-role='btn-confirm-close']").on('click', function () {
-                $.ajax({
-                    url: "/HelpDesk/ManageTicket/CloseTicket",
-                    type: "POST",
-                    data: {
-                        ticketId: closeTicketId
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            noty({
-                                text: data.msg,
-                                layout: "topCenter",
-                                type: "success",
-                                timeout: 2000
-                            });
-                            $("#modal-close-ticket").modal("hide");
-                            $('#detail-modal').modal("hide");
-                            ticketTable.draw();
-                        } else {
-                            noty({
-                                text: data.msg,
-                                type: "error",
-                                layout: "topRight",
-                                timeout: 2000
-                            });
-                            $("#modal-close-ticket").modal("hide");
-                            $('#detail-modal').modal("hide");
-                            ticketTable.draw();
-                        }
-                    },
-                    error: function () {
-                        noty({
-                            text: "Cannot connect to server!",
-                            type: "error",
-                            layout: "topCenter",
-                            timeout: 2000
-                        });
-                        $("#modal-cancel-ticket").modal("hide");
-                        $('#detail-modal').modal("hide");
-                    }
+    $("[data-role='btn-confirm-close']").on('click', function () {
+        $.ajax({
+            url: "/HelpDesk/ManageTicket/CloseTicket",
+            type: "POST",
+            data: {
+                ticketId: closeTicketId
+            },
+            success: function (data) {
+                if (data.success) {
+                    noty({
+                        text: data.msg,
+                        layout: "topCenter",
+                        type: "success",
+                        timeout: 2000
+                    });
+                    $("#modal-close-ticket").modal("hide");
+                    $('#detail-modal').modal("hide");
+                    ticketTable.draw();
+                } else {
+                    noty({
+                        text: data.msg,
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
+                    $("#modal-close-ticket").modal("hide");
+                    $('#detail-modal').modal("hide");
+                    ticketTable.draw();
+                }
+            },
+            error: function () {
+                noty({
+                    text: "Cannot connect to server!",
+                    type: "error",
+                    layout: "topCenter",
+                    timeout: 2000
                 });
-            });
+                $("#modal-cancel-ticket").modal("hide");
+                $('#detail-modal').modal("hide");
+            }
         });
+    });
+});
 
 $("#refer-older-ticket-link").click(function () {
     var keywords = $("[name='Subject']").val();
@@ -751,3 +812,46 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
         }
     });
 });
+
+var showCloseModal = function (obj) {
+    closeTicketId = $(obj).attr("data-ticket-id");
+    $("#modal-close-ticket").css("z-index", "1100");
+    $("#modal-close-ticket").modal("show");
+}
+
+var showReassignModal = function (obj) {
+    reassignTicketId = $(obj).attr("data-ticket-id");
+    initDropdownControl();
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetTicketDetailForReassign",
+        type: "GET",
+        dataType: "json",
+        data: {
+            ticketId: reassignTicketId
+        },
+        success: function (data) {
+            if (data.success) {
+                loadInitDropdown('ddl-department', data.department, data.departmentId);
+                loadInitDropdown('ddl-technician', data.technician, data.technicianId);
+            } else {
+                noty({
+                    text: data.message,
+                    layout: "topRight",
+                    type: "error",
+                    timeout: 2000
+                });
+            }
+        },
+        error: function () {
+            noty({
+                text: "Cannot connect to server!",
+                layout: "topRight",
+                type: "error",
+                timeout: 2000
+            });
+        }
+    });
+    $("#reassign-validation-message").hide();
+    $("#modal-reassign-ticket").css("z-index", "1100");
+    $("#modal-reassign-ticket").modal("show");
+}

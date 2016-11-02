@@ -330,7 +330,9 @@
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
+    <Compile Include="Utils\LevenshteinDistance.cs" />
     <Compile Include="Utils\PredicateBuilder.cs" />
+    <Compile Include="Utils\SentenceUtil.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
     <Compile Include="Utils\MaxFileSizeAttribute.cs" />
     <Compile Include="Utils\ValidateDateSQLAttribute.cs" />
@@ -344,6 +346,7 @@
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
+    <Compile Include="ViewModels\RecentTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
@@ -366,17 +369,20 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="404.html" />
     <Content Include="Content\AdminLTE.css" />
     <Content Include="Content\AdminLTE.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\css\graph.css" />
     <Content Include="Content\css\select2.min.css" />
+    <Content Include="Content\custom-css\admin.css" />
     <Content Include="Content\custom-css\ticket-detail.css" />
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />
     <Content Include="Content\custom-js\tms-dropdown.js" />
     <Content Include="Content\font-awesome.min.css" />
-    <Content Include="Content\img\impact_urgency.jpg" />
+    <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\add-requester-icon.ico" />
     <Content Include="Content\img\avatar.png" />
     <Content Include="Content\img\avatar04.png" />
@@ -404,9 +410,13 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
+    <Content Include="Content\js\jPages.min.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
+    <Content Include="Content\js\html2canvas.js" />
     <Content Include="Content\js\jquery.noty.js" />
+    <Content Include="Content\js\printThis.js" />
+    <Content Include="Content\js\jquery.truncate.js" />
     <Content Include="Content\js\select2.min.js" />
     <Content Include="Content\js\trunk8.min.js" />
     <Content Include="Content\knowledgebase\style.css" />
@@ -539,10 +549,6 @@
     <Content Include="Areas\Technician\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\Shared\_Layout.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Create.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Delete.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Details.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\ManageTicket\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\Index.cshtml" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Areas\Admin\Views\ManageUser\HelpDesk.cshtml" />
@@ -572,10 +578,13 @@
     <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\PriorityMatrix.cshtml" />
-    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
     <Content Include="Areas\Admin\Views\Department\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BussinessRules\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\CreateManager.cshtml" />
+    <Content Include="Areas\Admin\Views\ManageUser\EditManager.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Profile\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Profile\UpdateProfile.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -658,13 +667,12 @@
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
     <Content Include="Views\Error\Error500.cshtml" />
-    <Content Include="Views\KnowledgeBase\Index_bk.cshtml" />
     <Content Include="Views\Ticket\Solve.cshtml" />
     <Content Include="Views\KnowledgeBase\Create.cshtml" />
     <Content Include="Views\Ticket\Detail.cshtml" />
     <Content Include="Views\KnowledgeBase\Edit.cshtml" />
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
-    <Content Include="Views\KnowledgeBase\Detail.cshtml" />
+    <Content Include="Views\FAQ\Detail.cshtml" />
     <Content Include="Views\Shared\KBLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -675,7 +683,6 @@
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
-    <Folder Include="Content\knowledgebase\js\" />
     <Folder Include="Content\Plugins\jquery.ui\images\" />
   </ItemGroup>
   <ItemGroup>

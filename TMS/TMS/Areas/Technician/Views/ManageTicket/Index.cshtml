@@ -192,9 +192,9 @@
                                             <div class="col-sm-12 row-content">
                                                 <div class="col-sm-6">
                                                     <div class="col-sm-5 labels">
-                                                        <b>Created date: </b>
+                                                        <b>Solved date: </b>
                                                     </div>
-                                                    <div class="col-sm-7"><span id="ticket-created-date"></span></div>
+                                                    <div class="col-sm-7"><span id="ticket-solved-date"></span></div>
                                                 </div>
                                                 <div class="col-sm-6">
                                                     <div class="col-sm-5 labels">
@@ -230,14 +230,6 @@
                                                         <b>Actual end time: </b>
                                                     </div>
                                                     <div class="col-sm-7"><span id="ticket-actual-end"></span></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-12 row-content">
-                                                <div class="col-sm-6">
-                                                    <div class="col-sm-5 labels">
-                                                        <b>Solved date: </b>
-                                                    </div>
-                                                    <div class="col-sm-7"><span id="ticket-solved-date"></span></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -502,7 +494,7 @@
                         $('#ticket-solution').empty().append("<p>" + data.solution + "</p>");
                     }
 
-                    $('#ticket-created-date').text(data.createdDate);
+                    $('#ticket-solved-date').text(data.solvedDate);
                     $('#ticket-modified-date').text(data.lastModified);
                     $('#ticket-schedule-start').text(data.scheduleStart);
                     $('#ticket-schedule-end').text(data.scheduleEnd);

@@ -87,7 +87,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             }
 
-            if (string.IsNullOrEmpty(model.Subject))
+            if (string.IsNullOrEmpty(model.Subject) || model.Subject.Trim() == "")
             {
                 errs.Add(new ModelError
                 {
@@ -171,7 +171,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             ticket.ModifiedTime = DateTime.Now;
             ticket.Status = (int)TicketStatusEnum.New;
             ticket.RequesterID = model.RequesterId;
-            ticket.Subject = model.Subject;
+            ticket.Subject = model.Subject.Trim();
             ticket.Description = model.Description;
             ticket.Solution = model.Solution;
             if (model.Type != 0) ticket.Type = model.Type;
@@ -308,15 +308,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     var att = new AttachmentViewModel();
                     att.id = attachment.ID;
-                    if (attachment.Filename.Length > 17)
-                    {
-                        string ext = attachment.Filename.Split('.').Last();
-                        att.name = attachment.Filename.Substring(0, 10) + "...." + ext;
-                    }
-                    else
-                    {
-                        att.name = attachment.Filename;
-                    }
+                    att.name = TMSUtils.GetMinimizedAttachmentName(attachment.Filename);
                     if (attachment.Type == ConstantUtil.TicketAttachmentType.Description)
                     {
                         model.DescriptionAttachments.Add(att);
@@ -342,7 +334,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 return HttpNotFound();
             }
 
-            if (string.IsNullOrEmpty(model.Subject))
+            if (string.IsNullOrEmpty(model.Subject) || model.Subject.Trim() == "")
             {
                 errs.Add(new ModelError
                 {
@@ -423,7 +415,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             ticket.ModifiedTime = DateTime.Now;
-            ticket.Subject = model.Subject;
+            ticket.Subject = model.Subject.Trim();
             if (model.Type != 0) ticket.Type = model.Type;
             else ticket.Type = null;
             ticket.Description = model.Description;
@@ -1103,7 +1095,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.start).Take(param.length).OrderBy(m => m.Subject).Select(m => new Ticket
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new Ticket
             {
                 ID = m.ID,
                 Code = m.Code,

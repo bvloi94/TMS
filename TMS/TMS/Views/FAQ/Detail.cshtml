@@ -1,0 +1,166 @@
+﻿@model TMS.ViewModels.KnowledgeBaseViewModel
+@{
+    Layout = "~/Views/Shared/KBLayout.cshtml";
+    var relatedSolution = ViewBag.relatedSolution;
+}
+@using TMS.Models;
+<link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
+
+<style>
+    .category-item li {
+        background: none;
+    }
+
+    .subcategory-item {
+        padding-left: 20px;
+    }
+
+    .widget ul li {
+        border-bottom: none;
+    }
+
+    .jstree-anchor {
+        border: none;
+    }
+
+    .jstree-default .jstree-clicked {
+        color: #0094ff;
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .jstree-anchor:hover {
+        color: #0094ff;
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .link-color, .category-link {
+        color: #3393d8;
+    }
+</style>
+
+<div class="col-lg-12">
+    <div class="span8 page-content">
+        <article class="type-post format-standard hentry clearfix" id="all-articles">
+            <h1 class="post-title">@Html.DisplayFor(m => m.Subject)</h1>
+            <div class="post-meta clearfix">
+                <span class="date">@Html.DisplayFor(m => m.CreatedTime)</span>
+                <span class="category"><a class="category-link" id="@Model.CategoryID" href="#">@Html.DisplayFor(m => m.CategoryPath)</a></span>
+            </div>
+            <p class="pre-wrap">@Html.Raw(Model.Content)</p>
+            <p><i>Keyword: @Html.DisplayFor(m => m.Keyword)</i></p>
+        </article>
+    </div>
+    <aside class="span4 page-sidebar">
+        <section class="widget">
+            <h3 class="title">Related Articles</h3>
+            <ul class="articles">
+                @foreach (Solution solution in relatedSolution)
+                {
+                    <li class="article-entry standard">
+                        <h4><a class="link-color" href="/FAQ/Detail?Path=@solution.Path">@solution.Subject</a></h4>
+                        <span class="article-meta">@solution.CreatedTime in <a class="category-link" id="@solution.CategoryID" href="#">@solution.Category.Name</a></span>
+                    </li>
+                }
+            </ul>
+        </section>
+        <section class="widget">
+            <h3 class="title">Categories</h3>
+            <div id="category-treeview-div">
+            </div>
+        </section>
+    </aside>
+</div>
+@section scripts {
+    <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            showTreeViewModal();
+        });
+
+        $('.category-link').on("click", function () {
+            loadSolution($(this).attr("id"));
+        });
+
+        function loadSolution(id) {
+            $.ajax({
+                url: "/KnowledgeBase/GetSolutionsByCategory/",
+                type: "GET",
+                data: { id: id },
+                success: function (data) {
+                    $('#all-articles').empty();
+                    if (data.data.length == 0) {
+                        $("#all-articles").append("<p style='text-align: center'><i>There is no solution to display.</i></p>");
+                    } else {
+                        for (i = 0; i < data.data.length; i++) {
+                            var content = data.data[i].Content;
+                            content = $.truncate(content, {
+                                length: 350,
+                            });
+                            var path = data.data[i].Path
+                            $('#all-articles').append(
+                                '<article class="type-post format-standard hentry clearfix">'
+                                + '<h3 class="post-title"><a href="/FAQ/Detail?Path=' + path + '">' + data.data[i].Subject + '</a></h3>'
+                                + '<div class="post-meta clearfix">'
+                                + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
+                                + '<span class="category" id=' + data.data[i].CategoryID + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
+                                + '<p class="longContent">' + content + '<a class="link-color" href="/FAQ/Detail?Path=' + path + '"> Continue reading</a></p>'
+                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></article>');
+                        }
+                    }
+                }
+            });
+        }
+
+        var showTreeViewModal = function () {
+            $("#category-treeview-div").jstree({
+                "core": {
+                    "check_callback": true,
+                    "themes": {
+                        "stripes": false,
+                        "icons": false,
+                        "dots": false
+                    },
+                    "data": {
+                        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
+                        "type": "GET",
+                        "contentType": "application/json; charset=utf-8",
+                        "dataFilter": function (json) {
+                            var data = $.parseJSON(json);
+                            var nodes = [];
+                            for (i = 0; i < data.data.length; i++) {
+                                var dataItem = data.data[i];
+                                var node = {
+                                    id: dataItem.ID,
+                                    parent: dataItem.ParentId == null ? "#" : dataItem.ParentId,
+                                    text: dataItem.Name,
+                                    state: {
+                                        'opened': false,
+                                        'selected': false
+                                    },
+                                    li_attr: {
+                                        "style": ""
+                                    },
+                                    a_attr: {
+                                        "data-id": dataItem.ID,
+                                        "class": "category-node"
+                                    }
+                                };
+                                nodes.push(node);
+                            }
+                            return JSON.stringify(nodes);
+                        }
+                    }
+                },
+            });
+        };
+
+        $('#category-treeview-div').on("select_node.jstree", function (e, data) {
+            //data.instance.toggle_node(data.node);
+            loadSolution(data.node.id);
+        });
+    </script>
+}

@@ -39,7 +39,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.PriorityRepository.Insert(priority);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch (Exception)
             {
@@ -59,7 +59,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.PriorityRepository.Update(priority);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch (Exception)
             {
@@ -75,20 +75,8 @@ namespace TMS.Services
 
         public void DeletePriority(Priority priority)
         {
-            try
-            {
-                foreach (PriorityMatrixItem priorityMatrixItem in priority.PriorityMatrixItems.ToList())
-                {
-                    _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
-                }
-                _unitOfWork.PriorityRepository.Delete(priority);
-                _unitOfWork.Save();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
+           _unitOfWork.PriorityRepository.Delete(priority);
+           _unitOfWork.Commit();
         }
     }
 }

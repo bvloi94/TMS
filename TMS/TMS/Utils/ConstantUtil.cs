@@ -14,6 +14,7 @@ namespace TMS.Utils
             public static readonly int HelpDesk = 2;
             public static readonly int Requester = 3;
             public static readonly int Technician = 4;
+            public static readonly int Manager = 5;
         }
 
         public class UserRoleString
@@ -22,6 +23,7 @@ namespace TMS.Utils
             public static readonly string HelpDesk = "Helpdesk";
             public static readonly string Requester = "Requester";
             public static readonly string Technician = "Technician";
+            public static readonly string Manager = "Manager";
         }
 
         public class TicketType
@@ -127,7 +129,32 @@ namespace TMS.Utils
             public const string DBExceptionError = "Some error occured! Please try again later!";
             public const string UnavailableTicket = "This ticket is not available!";
             public const string UnavailableTechnician = "This technician is not available!";
+            public const string UnavailableUser = "This user is not available!";
             public const string InvalidTicket = "This ticket is invalid!";
         }
+
+        public class TimeOption
+        {
+            public const int Today = 1;
+            public const int FourDaysAgo = 2;
+            public const int ThisWeek = 3;
+            public const int ThisMonth = 4;
+            public const int ThisYear = 5;
+        }
+
+        public class TicketCodeTemplate
+        {
+            public const int Length = 8;
+            public const string FirstLetter = "TK";
+            public const string CharacterTemplate = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            public const string NumberTemplate = "0123456789";
+        }
+
+        public class Attachment
+        {
+            public const int NameLength = 25;
+            public const string NameReplace = "....";
+        }
+
     }
 }

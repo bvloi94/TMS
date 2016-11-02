@@ -8,6 +8,7 @@ using TMS.Class;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Utils;
+using TMS.ViewModels;
 
 namespace TMS.Services
 {
@@ -373,23 +374,62 @@ namespace TMS.Services
             return isSatisfied;
         }
 
+        public IEnumerable<Ticket> GetRecentTickets(int timeOption)
+        {
+            IEnumerable<Ticket> tickets = _unitOfWork.TicketRepository.Get();
+            IEnumerable<Ticket> recentTickets = tickets;
+            switch (timeOption)
+            {
+                case ConstantUtil.TimeOption.Today:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.Date);
+                    break;
+                case ConstantUtil.TimeOption.FourDaysAgo:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.AddDays(-4).Date);
+                    break;
+                case ConstantUtil.TimeOption.ThisWeek:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.Date.AddDays(-(int)DateTime.Now.DayOfWeek).Date
+                        && m.CreatedTime.Date <= DateTime.Now.Date);
+                    break;
+                case ConstantUtil.TimeOption.ThisMonth:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Year == DateTime.Now.Year && m.CreatedTime.Month == DateTime.Now.Month);
+                    break;
+                case ConstantUtil.TimeOption.ThisYear:
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Year == DateTime.Now.Year);
+                    break;
+            }
+            return recentTickets;
+        }
+
         public void AddTicket(Ticket ticket)
         {
+            string ticketCode = GenerateTicketCode();
+            if (ticketCode != "") { ticket.Code = ticketCode; }
+
             try
             {
                 _unitOfWork.TicketRepository.Insert(ticket);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
                 throw;
             }
+
+            //int ticketID = ticket.ID;
+            //string ticketCode = "T";
+            //for (int i = 0; i < 6 - ticketID.ToString().Length; i++)
+            //{
+            //    ticketCode += "0";
+            //}
+            //ticketCode += ticketID;
+            //ticket.Code = ticketCode;
+            //UpdateTicket(ticket);
         }
 
         public bool UpdateTicket(Ticket ticket)
         {
             _unitOfWork.TicketRepository.Update(ticket);
-            return _unitOfWork.Save() > 0;
+            return _unitOfWork.Commit();
         }
 
         public void CancelTicket(Ticket ticket)
@@ -399,7 +439,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.TicketRepository.Update(ticket);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -411,7 +451,7 @@ namespace TMS.Services
         {
             ticket.Status = ConstantUtil.TicketStatus.Solved; //Solved
             _unitOfWork.TicketRepository.Update(ticket);
-            _unitOfWork.Save();
+            _unitOfWork.Commit();
         }
 
         public IEnumerable<Ticket> GetTechnicianTickets(string id)
@@ -424,25 +464,47 @@ namespace TMS.Services
             return _unitOfWork.TicketRepository.Get(m => m.RequesterID == id);
         }
 
-        public string GetTicketCode()
+        //public string GetTicketCode()
+        //{
+        //    int maxSize = 6;
+        //    int minSize = 6;
+        //    char[] chars = new char[62];
+        //    string a;
+        //    a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        //    chars = a.ToCharArray();
+        //    int size = maxSize;
+        //    byte[] data = new byte[1];
+        //    RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider();
+        //    crypto.GetNonZeroBytes(data);
+        //    size = maxSize;
+        //    data = new byte[size];
+        //    crypto.GetNonZeroBytes(data);
+        //    StringBuilder result = new StringBuilder(size);
+        //    foreach (byte b in data)
+        //    { result.Append(chars[b % (chars.Length - 1)]); }
+        //    return result.ToString();
+        //}
+
+        public string GenerateTicketCode()
         {
-            int maxSize = 6;
-            int minSize = 6;
-            char[] chars = new char[62];
-            string a;
-            a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-            chars = a.ToCharArray();
-            int size = maxSize;
-            byte[] data = new byte[1];
-            RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider();
-            crypto.GetNonZeroBytes(data);
-            size = maxSize;
-            data = new byte[size];
-            crypto.GetNonZeroBytes(data);
-            StringBuilder result = new StringBuilder(size);
-            foreach (byte b in data)
-            { result.Append(chars[b % (chars.Length - 1)]); }
-            return result.ToString();
+            bool duplicated = true;
+            string sample = ConstantUtil.TicketCodeTemplate.NumberTemplate;
+            Random rnd = new Random();
+            int size;
+            int num;
+            string code="";
+            while (duplicated)
+            {
+                size = ConstantUtil.TicketCodeTemplate.Length;
+                code = ConstantUtil.TicketCodeTemplate.FirstLetter;
+                for (int i = 0; i < size - ConstantUtil.TicketCodeTemplate.FirstLetter.Length; i++)
+                {
+                    num = rnd.Next(0, sample.Length);
+                    code += sample[num];
+                }
+                duplicated = _unitOfWork.TicketRepository.Get(m => m.Code == code).Any();
+            }
+            return code;
         }
 
         public void CloseTicket(Ticket ticket)
@@ -452,7 +514,7 @@ namespace TMS.Services
             try
             {
                 _unitOfWork.TicketRepository.Update(ticket);
-                _unitOfWork.Save();
+                _unitOfWork.Commit();
             }
             catch
             {
@@ -470,6 +532,54 @@ namespace TMS.Services
         {
             return _unitOfWork.TicketRepository.Get(m => m.Status == ConstantUtil.TicketStatus.Solved
                 || m.Status == ConstantUtil.TicketStatus.Closed);
+        }
+
+        public IEnumerable<RecentTicketViewModel> GetSimilarTickets(IEnumerable<Ticket> tickets)
+        {
+            tickets = tickets.OrderByDescending(m => m.Subject.Length);
+            List<RecentTicketViewModel> result = new List<RecentTicketViewModel>();
+            List<Ticket> temp = tickets.ToList();
+            List<Ticket> ignore = new List<Ticket>();
+            foreach (Ticket compareTicket in temp)
+            {
+                int count = 1;
+                if (ignore.Where(m => m.ID == compareTicket.ID).Any())
+                {
+                    continue;
+                }
+                ignore.Add(compareTicket);
+                int percent = 0;
+                foreach (Ticket remainingTicket in temp)
+                {
+                    if (ignore.Where(m => m.ID == remainingTicket.ID).Any())
+                    {
+                        continue;
+                    }
+                    //int editDistance = LevenshteinDistance.DamerauLevenshteinCompute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
+                    //if (compareTicket.Subject.Length >= remainingTicket.Subject.Length)
+                    //{
+                    //    percent = Convert.ToInt32(((float) (compareTicket.Subject.Length - editDistance) / compareTicket.Subject.Length) * 100);
+                    //}
+                    //else
+                    //{
+                    //    percent = Convert.ToInt32(((float) (remainingTicket.Subject.Length - editDistance) / remainingTicket.Subject.Length) * 100);
+                    //}
+                    percent = SentenceUtil.Compute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
+                    if (percent >= 70)
+                    {
+                        count++;
+                        ignore.Add(remainingTicket);
+                    }
+                }
+                RecentTicketViewModel similarTicket = new RecentTicketViewModel
+                {
+                    Subject = compareTicket.Subject,
+                    Count = count
+                };
+                result.Add(similarTicket);
+            }
+
+            return result;
         }
     }
 }

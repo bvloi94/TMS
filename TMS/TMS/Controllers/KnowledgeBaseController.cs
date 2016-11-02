@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -38,9 +37,11 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult Create()
+        [ActionName("Create")]
+        public ActionResult CreateGet(KnowledgeBaseViewModel model)
         {
-            return View();
+            ModelState.Clear();
+            return View(model);
         }
 
         [HttpGet]
@@ -51,7 +52,7 @@ namespace TMS.Controllers
                 Solution solution = _solutionServices.GetSolutionById(id.Value);
                 if (solution != null)
                 {
-                    KnowledgeBaseViewModels model = new KnowledgeBaseViewModels();
+                    KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
                     model.Keyword = solution.Keyword.Replace("\"", "");
@@ -79,7 +80,7 @@ namespace TMS.Controllers
         //   [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(KnowledgeBaseViewModels model)
+        public ActionResult Create(KnowledgeBaseViewModel model)
         {
             // validate subject
             if (string.IsNullOrWhiteSpace(model.Subject))
@@ -161,10 +162,11 @@ namespace TMS.Controllers
                         solution.SolutionAttachments.Add(attachment);
                     }
                 }
-                string keyword = "";
 
-                if (!string.IsNullOrEmpty(model.Keyword))
+
+                if (!string.IsNullOrWhiteSpace(model.Keyword))
                 {
+                    string keyword = "";
                     string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
                     string delimeter = "";
                     foreach (string keywordItem in keywordArr)
@@ -176,9 +178,10 @@ namespace TMS.Controllers
                             delimeter = ",";
                         }
                     }
+                    solution.Keyword = keyword;
                 }
 
-                solution.Keyword = keyword == null ? "" : keyword.Trim().ToLower();
+
                 solution.Path = model.Path.Trim().ToLower();
                 solution.CreatedTime = DateTime.Now;
                 solution.ModifiedTime = DateTime.Now;
@@ -201,7 +204,7 @@ namespace TMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int? id, KnowledgeBaseViewModels model)
+        public ActionResult Edit(int? id, KnowledgeBaseViewModel model)
         {
             if (id.HasValue)
             {
@@ -224,7 +227,7 @@ namespace TMS.Controllers
                 {
                     var path = model.Path.Trim();
 
-                    bool isDuplicatePath = _solutionServices.IsduplicatePath(id, path);
+                    bool isDuplicatePath = _solutionServices.IsduplicatePath(id.Value, path);
                     if (isDuplicatePath)
                     {
                         ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
@@ -265,19 +268,23 @@ namespace TMS.Controllers
                     {
                         solution.Subject = model.Subject.Trim();
                         solution.ContentText = model.Content;
-                        string keyword = "";
-                        string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
-                        string delimeter = "";
-                        foreach (string keywordItem in keywordArr)
+
+                        if (!string.IsNullOrWhiteSpace(model.Keyword))
                         {
-                            if (!string.IsNullOrWhiteSpace(keywordItem))
+                            string keyword = "";
+                            string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
+                            string delimeter = "";
+                            foreach (string keywordItem in keywordArr)
                             {
-                                string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
-                                keyword += delimeter + '"' + keywordItemTmp + '"';
-                                delimeter = ",";
+                                if (!string.IsNullOrWhiteSpace(keywordItem))
+                                {
+                                    string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
+                                    keyword += delimeter + '"' + keywordItemTmp + '"';
+                                    delimeter = ",";
+                                }
                             }
+                            solution.Keyword = keyword;
                         }
-                        solution.Keyword = keyword;
                         solution.CategoryID = model.CategoryID;
                         solution.Path = model.Path.Trim().ToLower();
                         solution.ModifiedTime = DateTime.Now;
@@ -328,14 +335,17 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult GetSolutions(string key_search)
         {
-            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
-            filteredListItems = _solutionServices.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
+            IEnumerable<KnowledgeBaseViewModel> filteredListItems;
+            filteredListItems = _solutionServices.GetAllSolutions().Select(m => new KnowledgeBaseViewModel
             {
                 ID = m.ID,
                 Subject = m.Subject,
-                CategoryID = m.CategoryID,
+                Category = m.Category.Name,
+                CategoryID = m.Category.ID,
+                CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
                 Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
             }).ToArray();
@@ -356,17 +366,20 @@ namespace TMS.Controllers
         {
             if (id.HasValue)
             {
-                IEnumerable<KnowledgeBaseViewModels> filteredListItems;
+                IEnumerable<KnowledgeBaseViewModel> filteredListItems;
                 List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
                 filteredListItems = _solutionServices.GetAllSolutions()
                     .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
-                    .Select(m => new KnowledgeBaseViewModels
+                    .Select(m => new KnowledgeBaseViewModel
                     {
                         ID = m.ID,
                         Subject = m.Subject,
-                        CategoryID = m.CategoryID,
+                        Category = m.Category.Name,
+                        CategoryID = m.Category.ID,
+                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
                         Content = m.ContentText,
                         Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        Path = m.Path,
                         CreatedTime = m.CreatedTime,
                         ModifiedTime = m.ModifiedTime
                     }).ToArray();
@@ -381,19 +394,109 @@ namespace TMS.Controllers
                     data = filteredListItems
                 }, JsonRequestBehavior.AllowGet);
             }
-
-            return Json(new
+            else
             {
-                success = false,
-                error = true,
-                msg = "Cannot find solutions!"
-            });
+                IEnumerable<KnowledgeBaseViewModel> filteredListItems = _solutionServices.GetAllSolutions()
+                    .Where(m => m.CategoryID == id.Value)
+                    .Select(m => new KnowledgeBaseViewModel
+                    {
+                        ID = m.ID,
+                        Subject = m.Subject,
+                        Category = m.Category.Name,
+                        CategoryID = m.Category.ID,
+                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                        Content = m.ContentText,
+                        Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        Path = m.Path,
+                        CreatedTime = m.CreatedTime,
+                        ModifiedTime = m.ModifiedTime
+                    }).ToArray();
+
+                if (!string.IsNullOrEmpty(key_search))
+                {
+                    filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                }
+
+                return Json(new
+                {
+                    data = filteredListItems
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         [HttpGet]
-        public ActionResult Detail()
+        public ActionResult GetSimilarTicketFrequency(JqueryDatatableParameterViewModel param, int? timeOption)
         {
-            return View();
+            if (!timeOption.HasValue)
+            {
+                timeOption = ConstantUtil.TimeOption.ThisWeek;
+            }
+
+            IEnumerable<RecentTicketViewModel> recentTickets = _ticketService.GetSimilarTickets(_ticketService.GetRecentTickets(timeOption.Value));
+
+            IEnumerable<RecentTicketViewModel> filteredListItems = recentTickets;
+            if (!string.IsNullOrEmpty(param.search["value"]))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Subject != null && (p.Subject.ToLower().Contains(param.search["value"].ToLower())));
+            }
+
+            //if (!string.IsNullOrWhiteSpace(keywords))
+            //{
+            //    keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+            //    Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+            //    keywords = regex.Replace(keywords, " ");
+            //    string[] keywordArr = keywords.Split(' ');
+            //    var predicate = PredicateBuilder.False<Ticket>();
+            //    foreach (string keyword in keywordArr)
+            //    {
+            //        predicate = predicate.Or(p => p.Subject.ToLower().Contains(keyword.ToLower()));
+            //    }
+            //    filteredListItems = filteredListItems.Where(predicate);
+            //}
+
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortDirection = param.order[0]["dir"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Subject)
+                        : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+                case 1:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Count)
+                        : filteredListItems.OrderByDescending(p => p.Count);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new RecentTicketViewModel
+            {
+                Subject = m.Subject,
+                Count = m.Count
+            });
+
+            //JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
+            //rsModel.draw = param.draw;
+            //rsModel.recordsTotal = displayedList.ToList().Count();
+            //rsModel.recordsFiltered = filteredListItems.Count();
+            //rsModel.data = displayedList;
+            var totalTicket = 0;
+            foreach (RecentTicketViewModel ticket in recentTickets)
+            {
+                totalTicket += ticket.Count;
+            }
+
+            return Json(new
+            {
+                draw = param.draw,
+                recordsTotal = displayedList.ToList().Count(),
+                recordsFiltered = filteredListItems.Count(),
+                data = displayedList,
+                totalTicket = totalTicket
+            }, JsonRequestBehavior.AllowGet);
         }
     }
 }

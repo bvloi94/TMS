@@ -1,6 +1,5 @@
-﻿@using TMS.Utils
-@{
-    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+﻿@{
+    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Solutions";
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
@@ -38,17 +37,17 @@
 
     .left-menu {
         padding: 0;
-        background: #188de1;
         height: 100%;
+        background: #f5f3f3;
     }
     /*remove list style (circles)*/
     .menu-collapse {
-        color: white;
+        color: #E4E4E4;
     }
     /*header line style and border*/
     .header {
-        color: #F8F8F8;
-        background-color: #085c9a;
+        color: #2c2c2c;
+        background-color: #f5f3f3;
         padding: 4px 12px;
     }
 
@@ -63,19 +62,19 @@
 
     .header-content {
         color: #666;
-        background-color: #b4d2ef;
+        background-color: #fff;
         padding: 5px 12px 4px 12px;
     }
 
     .question-row {
-        border-bottom: solid 1px #b4d2ef;
+        border-bottom: solid 1px #ccc;
         padding: 10px;
         overflow-y: auto;
     }
 
-    .question-row:last-of-type {
-        border-bottom: none;
-    }
+        .question-row:last-of-type {
+            border-bottom: none;
+        }
 
     .question-list {
         height: 70vh;
@@ -86,45 +85,23 @@
         padding: 8px 20px;
         display: none;
     }
-
-    .rightItems {
-        text-align: right;
-    }
-
-    .modal-title {
-        color: #ffffff;
-        text-align: center;
-    }
-
-    .modal-header {
-        background-color: #1074bd;
-    }
-
-    .modal-body {
-        background-color: #e6e6e6;
-    }
-
-    input, select, textarea {
-        max-width: 674px;
-    }
-
-    .required {
-        color: red;
-    }
-
     .jstree-node {
         margin-left: 0px !important;
         padding-left: 12px !important;
     }
 
+    .jstree-anchor, .jstree-anchor:link, .jstree-anchor:visited, .jstree-anchor:hover, .jstree-anchor:active {
+        color: #2c2c2c;
+    }
+
     .jstree-icon {
-        display: none !important;
+        /*display: none !important;*/
     }
 
     li[aria-level="1"] > .jstree-children {
-        background-color: #5aa4d9;
-        margin-left: -12px !important;
-        padding-left: 12px !important;
+        background-color: #E4E4E4;
+        margin-left: -15px !important;
+        padding-left: 20px !important;
     }
 
     .jstree-default .jstree-anchor {
@@ -141,11 +118,17 @@
     }
 
     .jstree-clicked {
-        background: #085c9a !important;
+        color: #fff !important;
+        background: #b6b2b2 !important;
+    }
+
+    .button {
+        text-align: right;
     }
 
     .jstree-anchor:hover {
-        background: #085c9a;
+        color: #fff;
+        background: #b6b2b2;
     }
 </style>
 
@@ -161,10 +144,13 @@
             <div class="questions col-md-9">
                 <div class="header-content col-md-12">
                     <div class="col-md-6">
-                        <a class="btn btn-default" href="/KnowledgeBase/Create">New solution</a>
+					<a class="btn btn-primary btn-flat" href="/KnowledgeBase/Create">
+                            <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
+                        </a>
+                        <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showSimilarTicketFrequencyModal();">Similar ticket frequency</a>
                         <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
                     </div>
-                    <div class="box-tools pull-right col-md-4" style="">
+                    <div class="box-tools pull-right col-md-4">
                         <div class="has-feedback">
                             <input type="text" id="key_search" class="form-control input-sm" placeholder="Search solution..." />
                             <span class="glyphicon glyphicon-search form-control-feedback"></span>
@@ -177,13 +163,54 @@
         </div>
     </div>
 </div>
+
+<div id="similar-ticket-frequency-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Similar Ticket Frequency</h4>
+            </div>
+            <div class="modal-body">
+                <div class="pull-right">
+                    <select id="similar-ticket-time-option-select">
+                        <option value="1">Today</option>
+                        <option value="2">4 Days ago</option>
+                        <option value="3" selected>This Week</option>
+                        <option value="4">This Month</option>
+                        <option value="5">This Year</option>
+                    </select>
+                </div>
+                <table class="table dataTable" id="similar-ticket-frequency-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Frequency</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts{
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
+        var sum = 0;
+
         $(document).ready(function () {
             notifyFlashMessage();
             showTreeViewModal();
             getAllSolution();
+            initSimilarTicketFrequencyTable();
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -262,7 +289,7 @@
                                     },
                                     a_attr: {
                                         "data-id": dataItem.ID,
-                                        "class" : "category-node"
+                                        "class": "category-node"
                                     }
                                 };
                                 nodes.push(node);
@@ -274,7 +301,7 @@
             });
         };
 
-        function getAllSolution () {
+        function getAllSolution() {
             $.ajax({
                 url: "/KnowledgeBase/GetSolutions/",
                 type: "GET",
@@ -287,11 +314,18 @@
                         $(".question-list").append("<div class='col-sm-12' style='text-align:center'><p>There is no solution to display. </p></div>");
                     } else {
                         for (i = 0; i < data.data.length; i++) {
+                            var content = data.data[i].Content;
+                            content = $.truncate(content, {
+                                length: 350,
+                            });
+                            
                             $(".question-list").append(
-                                '<div class="question-row"><div class="question-header col-sm-11"><input type="checkbox" />'
+                                '<div class="question-row"><div class="question-header col-sm-10"><input type="checkbox" />'
                                 + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
-                                + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
-                                + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
+                                + '<div class="col-sm-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
+                                + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
+                                + '<div class="question-detail col-sm-12">' + content
+                                + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
                                 + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
                         }
                     }
@@ -321,11 +355,18 @@
                         $(".question-list").append("<div class='col-sm-12' style='text-align:center'><p>There is no solution to display. </p></div>");
                     } else {
                         for (i = 0; i < data.data.length; i++) {
+                            var content = data.data[i].Content;
+                            content = $.truncate(content, {
+                                length: 350,
+                            });
+
                             $(".question-list").append(
-                                '<div class="question-row"><div class="question-header col-sm-11"><input type="checkbox" />'
+                                '<div class="question-row"><div class="question-header col-sm-10"><input type="checkbox" />'
                                 + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
-                                + '<div class="col-sm-1"><a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
-                                + '<div class="question-detail col-sm-12"><p class="pre-wrap">' + data.data[i].Content + '</p>'
+                                + '<div class="col-sm-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
+                                + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
+                                + '<div class="question-detail col-sm-12">' + content
+                                + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
                                 + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
                         }
                     }
@@ -370,6 +411,69 @@
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
             data.instance.toggle_node(data.node);
         });
+
+        var initSimilarTicketFrequencyTable = function () {
+            $("#similar-ticket-frequency-table").dataTable({
+                processing: true,
+                serverSide: true,
+                paging: true,
+                sort: true,
+                filter: false,
+                lengthMenu: [5],
+                order: [[1, 'desc']],
+                lengthChange: false,
+                ajax: {
+                    url: "/KnowledgeBase/GetSimilarTicketFrequency",
+                    data: function (d) {
+                        d.timeOption = $("#similar-ticket-time-option-select").val()
+                    }
+                },
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        "targets": 0,
+                        "width": "50%",
+                        "render": function (data, type, row) {
+                            return row.Subject;
+                        }
+                    },
+                    {
+                        "targets": 1,
+                        "width": "40%",
+                        "render": function (data, type, row) {
+                            var percent = parseInt(row.Count / sum * 100);
+                            return '<div class="clearfix">'
+                                + '<small class="pull-right">' + row.Count + '/' + sum + '</small>'
+                                + '</div>'
+                                + '<div class="progress xs">'
+                                + '<div class="progress-bar progress-bar-blue" style="width: ' + percent + '%;"></div>'
+                                + '</div>';
+                        }
+                    },
+                    {
+                        "targets": 2,
+                        "sortable": false,
+                        "width": "10%",
+                        "render": function (data, type, row) {
+                            return '<a href="/KnowledgeBase/Create?Subject=' + row.Subject + '" class="btn btn-flat btn-primary">Create Solution</a>';
+                        }
+                    }
+                ]
+            });
+        }
+
+        $('#similar-ticket-frequency-table').on('xhr.dt', function (e, settings, json, xhr) {
+            sum = json.totalTicket;
+        });
+
+        $("#similar-ticket-time-option-select").on("change", function () {
+            $("#similar-ticket-frequency-table").dataTable().api().ajax.reload();
+        });
+
+        var showSimilarTicketFrequencyModal = function () {
+            $("#similar-ticket-frequency-table").dataTable().api().ajax.reload();
+            $("#similar-ticket-frequency-modal").modal("show");
+        }
     </script>
 }
 
