@@ -345,7 +345,7 @@
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
-    <Compile Include="ViewModels\KnowledgeBaseViewModels.cs" />
+    <Compile Include="ViewModels\KnowledgeBaseViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
