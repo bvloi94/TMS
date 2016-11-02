@@ -24,6 +24,9 @@
         color: #ff0000;
     }
 
+    .select2 {
+        width: 674px !important;
+    }
 </style>
 
 <div class="row">
@@ -95,39 +98,43 @@
     <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
     <script>
         $(document)
-         .ready(function () {
-             $('#content-area').wysihtml5();
-             $("#keyword").tagit();
-             initCategoryDropdown({
-                 control: $("[data-role=ddl-category]"),
-                 ignore: function () {
-                     return [];
-                 }
-             });
-             loadInitDropdown('ddl-category', '@(Model.CategoryID == 0 ? "--Chooose Category--" : @Model.Category)', @Model.CategoryID);
-                @if (Model != null) {
-                 if (Model.CategoryID != 0 && Model.Category != null)
-                 {
-                     <text>
-                         loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
-                     </text>
-                 }
-             }
-           
-         });
+            .ready(function() {
+                $('#content-area').wysihtml5();
+                $("#keyword").tagit();
+                initCategoryDropdown({
+                    control: $("[data-role=ddl-category]"),
+                    ignore: function() {
+                        return [];
+                    }
+                });
+                loadInitDropdown('ddl-category', '@(Model.CategoryID == 0 ? "--Chooose Category--" : @Model.Category)',
+                    @Model.CategoryID);
+                @if (Model != null)
+                {
+                    if (Model.CategoryID != 0 && Model.Category != null)
+                    {
+                        <text>
+                loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
+                </text>
+                    }
+                }
 
-        $("#subject-txt").keyup(function () {
-            getPath();
-        });
+            });
+
+        $("#subject-txt")
+            .keyup(function() {
+                getPath();
+            });
 
         var getPath = function () {
             $("#path")
-                    .val($("#subject-txt").val().trim()
+                    .val($("#subject-txt")
+                        .val()
+                        .trim()
                         .toLowerCase()
-                        .replace(/  /g, ' ')
-                        .replace(/ /g, '-')
-                        .replace(/[^\w-]+/g, '')
-                        .replace(/\--/g, ''));
-     
+                        .replace(/\s/g, '-')
+                        .replace(/\-{2,}/g, '-')
+                        .replace(/[^\w-]+/g, ''));
+        }
     </script>
 }
