@@ -1,9 +1,9 @@
-﻿@model TMS.ViewModels.KnowledgeBaseViewModels
+﻿@model TMS.ViewModels.KnowledgeBaseViewModel
 @{
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Create knowledge Base";
 }
-<link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css"/>
+<link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css" />
 <style>
     h4, h5 {
         color: #345aaa;
@@ -87,6 +87,7 @@
             .ready(function () {
                 $('#content-area').wysihtml5();
                 $("#keyword").tagit();
+                getPath();
                 initCategoryDropdown({
                     control: $("[data-role=ddl-category]"),
                     ignore: function () {
@@ -98,22 +99,26 @@
                     if (Model.CategoryID != 0 && Model.Category != null)
                     {
                         <text>
-                            loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
-                        </text>
+                loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
+                </text>
                     }
                 }
             });
 
         $("#subject-txt")
             .keyup(function () {
-                $("#path")
-                    .val($("#subject-txt").val().trim()
-                        .toLowerCase()
-                        .replace(/  /g, ' ')
-                        .replace(/ /g, '-')
-                        .replace(/[^\w-]+/g, '')
-                        .replace(/\--/g, ''));
+                getPath();
             });
 
+        var getPath = function () {
+            $("#path")
+                    .val($("#subject-txt")
+                        .val()
+                        .trim()
+                        .toLowerCase()
+                        .replace(/\s/g, '-')
+                        .replace(/\-{2,}/g, '-')
+                        .replace(/[^\w-]+/g, ''));
+        }
     </script>
 }

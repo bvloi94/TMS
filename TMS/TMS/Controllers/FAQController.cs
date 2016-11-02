@@ -44,34 +44,38 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult GetFAQ(int? id)
         {
-            IEnumerable<KnowledgeBaseViewModels> filteredListItems;
+            IEnumerable<KnowledgeBaseViewModel> filteredListItems;
             if (id.HasValue)
             {
                 List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
                 filteredListItems = _solutionService.GetAllSolutions()
                     .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
-                    .Select(m => new KnowledgeBaseViewModels
-                {
-                    ID = m.ID,
-                    Subject = m.Subject,
-                    CategoryID = m.CategoryID,
-                    CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                    Content = m.ContentText,
-                    Keyword = m.Keyword == null ? "-" : m.Keyword,
-                    CreatedTime = m.CreatedTime,
-                    ModifiedTime = m.ModifiedTime
-                }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
+                    .Select(m => new KnowledgeBaseViewModel
+                    {
+                        ID = m.ID,
+                        Subject = m.Subject,
+                        Category = m.Category.Name,
+                        CategoryID = m.Category.ID,
+                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                        Content = m.ContentText,
+                        Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        Path = m.Path,
+                        CreatedTime = m.CreatedTime,
+                        ModifiedTime = m.ModifiedTime
+                    }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
             }
             else
             {
-                filteredListItems = _solutionService.GetAllSolutions().Select(m => new KnowledgeBaseViewModels
+                filteredListItems = _solutionService.GetAllSolutions().Select(m => new KnowledgeBaseViewModel
                 {
                     ID = m.ID,
                     Subject = m.Subject,
-                    CategoryID = m.CategoryID,
+                    Category = m.Category.Name,
+                    CategoryID = m.Category.ID,
                     CategoryPath = _categoryService.GetCategoryPath(m.Category),
                     Content = m.ContentText,
                     Keyword = m.Keyword == null ? "-" : m.Keyword,
+                    Path = m.Path,
                     CreatedTime = m.CreatedTime,
                     ModifiedTime = m.ModifiedTime
                 }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
@@ -86,14 +90,14 @@ namespace TMS.Controllers
 
 
         [HttpGet]
-        public ActionResult Detail(int? id)
+        public ActionResult Detail(string path)
         {
-            if (id.HasValue)
+            if (!string.IsNullOrWhiteSpace(path))
             {
-                Solution solution = _solutionService.GetSolutionById(id.Value);
+                Solution solution = _solutionService.GetSolutionByPath(path);
                 if (solution != null)
                 {
-                    KnowledgeBaseViewModels model = new KnowledgeBaseViewModels();
+                    KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
                     model.ID = solution.ID;
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
@@ -105,7 +109,8 @@ namespace TMS.Controllers
                         model.ModifiedTime = solution.ModifiedTime;
                     }
                     model.Keyword = solution.Keyword == null ? "-" : solution.Keyword;
-                    ViewBag.relatedSolution = LoadRelatedArticle(id.Value);
+                    model.Path = solution.Path;
+                    ViewBag.relatedSolution = LoadRelatedArticle(solution.ID);
 
                     AspNetRole userRole = null;
                     if (User.Identity.GetUserId() != null)
@@ -160,9 +165,9 @@ namespace TMS.Controllers
         public IEnumerable<Solution> LoadRelatedArticle(int id)
         {
             Solution mainSolution = _solutionService.GetSolutionById(id);
-            List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id);
+            List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(mainSolution.CategoryID);
             IEnumerable<Solution> relatedSolution = _solutionService.GetAllSolutions()
-                .Where(m => (m.CategoryID == id) || (childrenCategoriesIdList.Contains(m.CategoryID)) && m.ID != id)
+                .Where(m => (m.CategoryID == mainSolution.CategoryID || (childrenCategoriesIdList.Contains(m.CategoryID)) && m.ID != id))
                 .Select(m => new Solution
                 {
                     ID = m.ID,
@@ -170,6 +175,7 @@ namespace TMS.Controllers
                     Category = m.Category,
                     CategoryID = m.CategoryID,
                     ContentText = m.ContentText,
+                    Path = m.Path,
                     Keyword = m.Keyword == null ? "-" : m.Keyword,
                     CreatedTime = m.CreatedTime,
                     ModifiedTime = m.ModifiedTime

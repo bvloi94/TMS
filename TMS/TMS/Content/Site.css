@@ -76,3 +76,8 @@ tr.shown td.details-control {
 .dataTable {
     vertical-align: middle;
 }
+
+.tagit-label {
+    font-weight: bold;
+    color: #0073ea;
+}

@@ -157,7 +157,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="ContentText" Type="nvarchar(max)" />
           <Property Name="CategoryID" Type="int" Nullable="false" />
           <Property Name="Keyword" Type="nvarchar" MaxLength="255" />
@@ -188,7 +188,7 @@
           <Property Name="PriorityID" Type="int" />
           <Property Name="CategoryID" Type="int" />
           <Property Name="Status" Type="int" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="Solution" Type="nvarchar(max)" />
           <Property Name="UnapproveReason" Type="nvarchar(max)" />
@@ -204,6 +204,7 @@
           <Property Name="TechnicianID" Type="nvarchar" MaxLength="128" />
           <Property Name="AssignedByID" Type="nvarchar" MaxLength="128" />
           <Property Name="RequesterID" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Note" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="TicketAttachment">
           <Key>
@@ -1024,7 +1025,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Subject" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="ContentText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
           <Property Name="Keyword" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
@@ -1058,7 +1059,7 @@
           <Property Name="PriorityID" Type="Int32" />
           <Property Name="CategoryID" Type="Int32" />
           <Property Name="Status" Type="Int32" Nullable="false" />
-          <Property Name="Subject" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Subject" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Solution" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="UnapproveReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -1074,6 +1075,7 @@
           <Property Name="TechnicianID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="AssignedByID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="RequesterID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_Ticket_AspNetUsers" FromRole="Ticket" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="TMSModel.FK_Ticket_AspNetUsers1" FromRole="Ticket" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="TMSModel.FK_Ticket_AspNetUsers2" FromRole="Ticket" ToRole="AspNetUser" />
@@ -1623,6 +1625,7 @@
           <EntitySetMapping Name="Tickets">
             <EntityTypeMapping TypeName="TMSModel.Ticket">
               <MappingFragment StoreEntitySet="Ticket">
+                <ScalarProperty Name="Note" ColumnName="Note" />
                 <ScalarProperty Name="RequesterID" ColumnName="RequesterID" />
                 <ScalarProperty Name="AssignedByID" ColumnName="AssignedByID" />
                 <ScalarProperty Name="TechnicianID" ColumnName="TechnicianID" />
