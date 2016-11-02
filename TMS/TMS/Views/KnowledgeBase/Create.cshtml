@@ -3,7 +3,7 @@
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Create knowledge Base";
 }
-<link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css"/>
+<link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css" />
 <style>
     h4, h5 {
         color: #345aaa;
@@ -99,8 +99,8 @@
                     if (Model.CategoryID != 0 && Model.Category != null)
                     {
                         <text>
-                            loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
-                        </text>
+                loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');
+                </text>
                     }
                 }
             });
@@ -112,12 +112,13 @@
 
         var getPath = function () {
             $("#path")
-                    .val($("#subject-txt").val().trim()
+                    .val($("#subject-txt")
+                        .val()
+                        .trim()
                         .toLowerCase()
-                        .replace(/  /g, ' ')
-                        .replace(/ /g, '-')
-                        .replace(/[^\w-]+/g, '')
-                        .replace(/\--/g, ''));
+                        .replace(/\s/g, '-')
+                        .replace(/\-{2,}/g, '-')
+                        .replace(/[^\w-]+/g, ''));
         }
     </script>
 }
