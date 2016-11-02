@@ -278,14 +278,27 @@ namespace TMS.Controllers
             }
 
             IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id);
-            string attachmentStr = "";
+            string descriptionAttachment = "";
+            string solutionAttachment = "";
+
             if (ticketAttachments.Count() > 0)
             {
                 string fileName;
                 foreach (var attachFile in ticketAttachments)
                 {
                     fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
-                    attachmentStr += "<a download=\'" + fileName + "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path + "\' target=\'_blank\' >" + fileName + "</a>";
+                    if (attachFile.Type == ConstantUtil.TicketAttachmentType.Description)
+                    {
+                        descriptionAttachment += "<a download=\'" + fileName +
+                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
+                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                    }
+                    else if (attachFile.Type == ConstantUtil.TicketAttachmentType.Solution)
+                    {
+                        solutionAttachment += "<a download=\'" + fileName +
+                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
+                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                    }
                 }
             }
 
@@ -364,7 +377,8 @@ namespace TMS.Controllers
                 assigner = assigner == null ? "-" : assigner.Fullname,
                 technician = technician == null ? "-" : technician.Fullname,
                 department = department,
-                attachments = attachmentStr
+                descriptionAttachment = descriptionAttachment,
+                solutionAttachment = solutionAttachment
             }, JsonRequestBehavior.AllowGet);
         }
 
