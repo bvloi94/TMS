@@ -390,7 +390,8 @@ namespace TMS.Services
                     recentTickets = recentTickets.Where(m => m.CreatedTime.Date > DateTime.Now.AddYears(-1).Date);
                     break;
             }
-            return recentTickets.GroupBy(m => m.Subject).Select(m => new RecentTicketViewModel {
+            return recentTickets.GroupBy(m => m.Subject).Select(m => new RecentTicketViewModel
+            {
                 Subject = m.Key,
                 Count = m.Select(l => l.Subject).Count()
             });
@@ -400,26 +401,8 @@ namespace TMS.Services
         {
             string ticketCode = GenerateTicketCode();
             if (ticketCode != "") { ticket.Code = ticketCode; }
-
-            try
-            {
-                _unitOfWork.TicketRepository.Insert(ticket);
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
-
-            //int ticketID = ticket.ID;
-            //string ticketCode = "T";
-            //for (int i = 0; i < 6 - ticketID.ToString().Length; i++)
-            //{
-            //    ticketCode += "0";
-            //}
-            //ticketCode += ticketID;
-            //ticket.Code = ticketCode;
-            //UpdateTicket(ticket);
+            _unitOfWork.TicketRepository.Insert(ticket);
+            _unitOfWork.Commit();
         }
 
         public bool UpdateTicket(Ticket ticket)
@@ -432,15 +415,8 @@ namespace TMS.Services
         {
             ticket.Status = ConstantUtil.TicketStatus.Cancelled;
             ticket.ModifiedTime = DateTime.Now;
-            try
-            {
-                _unitOfWork.TicketRepository.Update(ticket);
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.TicketRepository.Update(ticket);
+            _unitOfWork.Commit();
         }
 
         public void SolveTicket(Ticket ticket)
@@ -460,27 +436,6 @@ namespace TMS.Services
             return _unitOfWork.TicketRepository.Get(m => m.RequesterID == id);
         }
 
-        //public string GetTicketCode()
-        //{
-        //    int maxSize = 6;
-        //    int minSize = 6;
-        //    char[] chars = new char[62];
-        //    string a;
-        //    a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        //    chars = a.ToCharArray();
-        //    int size = maxSize;
-        //    byte[] data = new byte[1];
-        //    RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider();
-        //    crypto.GetNonZeroBytes(data);
-        //    size = maxSize;
-        //    data = new byte[size];
-        //    crypto.GetNonZeroBytes(data);
-        //    StringBuilder result = new StringBuilder(size);
-        //    foreach (byte b in data)
-        //    { result.Append(chars[b % (chars.Length - 1)]); }
-        //    return result.ToString();
-        //}
-
         public string GenerateTicketCode()
         {
             bool duplicated = true;
@@ -488,7 +443,7 @@ namespace TMS.Services
             Random rnd = new Random();
             int size;
             int num;
-            string code="";
+            string code = "";
             while (duplicated)
             {
                 size = ConstantUtil.TicketCodeTemplate.Length;
@@ -507,15 +462,8 @@ namespace TMS.Services
         {
             ticket.Status = ConstantUtil.TicketStatus.Closed;
             ticket.ModifiedTime = DateTime.Now;
-            try
-            {
-                _unitOfWork.TicketRepository.Update(ticket);
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.TicketRepository.Update(ticket);
+            _unitOfWork.Commit();
         }
 
         public IEnumerable<Ticket> GetPendingTickets()
