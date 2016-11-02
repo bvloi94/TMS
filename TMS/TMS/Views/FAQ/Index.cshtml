@@ -5,7 +5,6 @@
 }
 @using TMS.Models;
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
-<link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css" />
 
 <style>
     .post-title {
@@ -126,9 +125,9 @@
 
 <div class="col-lg-12">
     <div class="span8 page-content">
-        <div style="padding-left: 25px"><h1 id="main-title"></h1></div>
+        <div id="main-title" style="padding-left: 25px"></div>
         <ul id="all-articles"></ul>
-        <div class="holder"></div>
+        <div class="holder hidden"></div>
     </div>
 
     <aside class="span4 page-sidebar">
@@ -191,17 +190,27 @@
             });
         };
 
+        $('#search-solution').keyup(function () {
+            loadFAQ();
+        });
+
         var loadFAQ = function (id, categoryName) {
             $.ajax({
                 url: "/FAQ/GetFAQ",
                 type: "GET",
-                data: { id: id },
+                data: {
+                    id: id,
+                    key_search: $('#search-solution').val()
+                },
                 success: function (data) {
                     $('#all-articles').empty();
-                    if (id == null) {
-                        $("#main-title").text("All articles");
+                    var key_search = $('#search-solution').val();
+                    if (key_search) {
+                        $("#main-title").empty().append("<h4>Searching with keyword: " + $('#search-solution').val() + "</h4>");
+                    } else if (categoryName) {
+                        $("#main-title").empty().append("<h1>Category: " + categoryName + "</h1>");
                     } else {
-                        $("#main-title").text("Category: " + categoryName);
+                        $("#main-title").empty().append("<h1>All articles</h1>");
                     }
                     if (data.data.length == 0) {
                         $("#all-articles").append("<p style='text-align: center'><i>There is no solution to display.</i></p>");
@@ -219,7 +228,7 @@
                                 + '<div class="post-meta clearfix">'
                                 + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
                                 + '<span class="category" id=' + data.data[i].CategoryID + ' data-id=' + data.data[i].Category + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
-                                + '<p class="longContent">' + content + '</p><a class="link-color" href="/FAQ/Detail/' + sId + '"> Continue reading</a>'
+                                + '<p class="longContent">' + content + '</p><a class="link-color" href="/FAQ/Detail?Path=' + data.data[i].Path + '"> Continue reading</a>'
                                 + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></article></li>');
                             $("#keyword" + sId).empty();
                             for (j = 0; j < keywordTags.length; j++) {
@@ -227,18 +236,23 @@
                                 $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
                             }
                         }
-                        $('div.holder').jPages({
-                            containerID: "all-articles",
-                            perPage: 5,
-                            startPage: 1,
-                            startRange: 1,
-                            midRange: 2,
-                            endRange: 1,
-                            first: "First",
-                            last: "Last",
-                            previous: "Previous",
-                            next: "Next",
-                        });
+                        if (data.data.length > 5) {
+                            $('div.holder').removeClass("hidden");
+                            $('div.holder').jPages({
+                                containerID: "all-articles",
+                                perPage: 5,
+                                startPage: 1,
+                                startRange: 1,
+                                midRange: 2,
+                                endRange: 1,
+                                first: "First",
+                                last: "Last",
+                                previous: "Previous",
+                                next: "Next",
+                            });
+                        } else {
+                            $('div.holder').addClass("hidden");
+                        }
                         $("#all-articles").find('img').hide();
                     }
                 }
@@ -249,9 +263,9 @@
             loadFAQ($(this).attr("id"), $(this).attr("data-id"));
         });
 
-
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
             //window.location.href = data.node.a_attr.href;
+            $('#search-solution').val('');
             loadFAQ(data.node.id, data.node.text);
         });
     </script>
