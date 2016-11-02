@@ -7,8 +7,16 @@
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 
 <style>
+    .post-title {
+        font-size: 30px !important;
+    }
+
     .category-item li {
         background: none;
+    }
+
+    #all-articles li {
+        list-style: none;
     }
 
     .subcategory-item {
@@ -40,19 +48,98 @@
     .link-color, .category-link {
         color: #3393d8;
     }
+
+    #all-articles {
+        min-height: 100px !important;
+    }
+
+    .holder {
+        text-align: center;
+    }
+
+        .holder a {
+            font-size: 13px;
+            cursor: pointer;
+            color: #458dc2;
+            padding: 5px 15px;
+            border: solid 1px #bfbfbf;
+            border-right: none;
+        }
+
+            .holder a:last-of-type {
+                border-right: solid 1px #bfbfbf;
+            }
+
+            .holder a:hover {
+                color: #fff;
+                background-color: #3393d8;
+            }
+
+            .holder a.jp-current, a.jp-current:hover {
+                color: #fff;
+                background-color: #3393d8 !important;
+                font-weight: bold;
+            }
+
+            .holder a.jp-disabled, a.jp-disabled:hover {
+                color: #808080;
+                background-color: #e9e8e8 !important;
+            }
+
+            .holder a.jp-current, a.jp-current:hover, .holder a.jp-disabled, a.jp-disabled:hover {
+                cursor: default;
+                background: none;
+            }
+
+        .holder span {
+            font-size: 13px;
+            color: #161616;
+            padding: 5px 15px;
+            border: solid 1px #bfbfbf;
+            border-right: none;
+        }
+
+    .keywords {
+        margin-left: 0px;
+        margin-bottom: 35px;
+        float: left;
+        list-style: none;
+    }
+
+        .keywords li {
+            float: left;
+            display: inline-block;
+            margin-right: 1em;
+        }
+
+    .key-tags {
+        position: relative;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 15px;
+        background-color: #e6e6e6;
+        border-left: solid 5px #3393d8;
+        color: #191919;
+    }
 </style>
 
 <div class="col-lg-12">
     <div class="span8 page-content">
-        <article class="type-post format-standard hentry clearfix" id="all-articles">
-            <h1 class="post-title">@Html.DisplayFor(m => m.Subject)</h1>
-            <div class="post-meta clearfix">
-                <span class="date">@Html.DisplayFor(m => m.CreatedTime)</span>
-                <span class="category"><a class="category-link" id="@Model.CategoryID" href="#">@Html.DisplayFor(m => m.CategoryPath)</a></span>
-            </div>
-            <p class="pre-wrap">@Html.Raw(Model.Content)</p>
-            <p><i>Keyword: @Html.DisplayFor(m => m.Keyword)</i></p>
-        </article>
+        <div id="main-title" style="padding-left: 25px"></div>
+        <ul id="all-articles">
+            <li>
+                <article class="type-post format-standard hentry clearfix">
+                    <h1 class="post-title">@Html.DisplayFor(m => m.Subject)</h1>
+                    <div class="post-meta clearfix">
+                        <span class="date">@Html.DisplayFor(m => m.CreatedTime)</span>
+                        <span class="category"><a class="category-link" id="@Model.CategoryID">@Html.DisplayFor(m => m.CategoryPath)</a></span>
+                    </div>
+                    <p class="pre-wrap">@Html.Raw(Model.Content)</p>
+                    <p><ul class="keywords" id="keyword-@Model.CategoryID" data-id="@Model.Keyword"></ul></p>
+                </article>
+            </li>
+        </ul>
+        <div class="holder hidden"></div>
     </div>
     <aside class="span4 page-sidebar">
         <section class="widget">
@@ -62,7 +149,7 @@
                 {
                     <li class="article-entry standard">
                         <h4><a class="link-color" href="/FAQ/Detail?Path=@solution.Path">@solution.Subject</a></h4>
-                        <span class="article-meta">@solution.CreatedTime in <a class="category-link" id="@solution.CategoryID" href="#">@solution.Category.Name</a></span>
+                        <span class="article-meta">@solution.CreatedTime in <a class="category-link" id="@solution.CategoryID" href="javascript:void{0}">@solution.Category.Name</a></span>
                     </li>
                 }
             </ul>
@@ -79,19 +166,44 @@
     <script>
         $(document).ready(function () {
             showTreeViewModal();
+            loadKeyword($(".keywords").attr("id"), $(".keywords").attr("data-id"));
         });
 
         $('.category-link').on("click", function () {
-            loadSolution($(this).attr("id"));
+            loadFAQ($(this).attr("id"));
         });
 
-        function loadSolution(id) {
+        $('#search-solution').keyup(function () {
+            loadFAQ();
+        });
+
+        function loadKeyword(id, keyword) {
+            var keywordTags = keyword.split(',');
+            $('#' + id).empty();
+            for (i = 0; i < keywordTags.length; i++) {
+                var key = keywordTags[i].replace(/"/g, '');
+                $('#' + id).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+            }
+        }
+
+        function loadFAQ(id, categoryName) {
             $.ajax({
-                url: "/KnowledgeBase/GetSolutionsByCategory/",
+                url: "/FAQ/GetFAQ",
                 type: "GET",
-                data: { id: id },
+                data: {
+                    id: id,
+                    key_search: $('#search-solution').val()
+                },
                 success: function (data) {
                     $('#all-articles').empty();
+                    var key_search = $('#search-solution').val();
+                    if (key_search) {
+                        $("#main-title").empty().append("<h4>Searching with keyword: " + $('#search-solution').val() + "</h4>");
+                    } else if (categoryName) {
+                        $("#main-title").empty().append("<h1>Category: " + categoryName + "</h1>");
+                    } else {
+                        $("#main-title").empty();
+                    }
                     if (data.data.length == 0) {
                         $("#all-articles").append("<p style='text-align: center'><i>There is no solution to display.</i></p>");
                     } else {
@@ -100,16 +212,41 @@
                             content = $.truncate(content, {
                                 length: 350,
                             });
-                            var path = data.data[i].Path
+                            var sId = data.data[i].ID;
+                            var keywordTags = (data.data[i].Keyword).split(',');
                             $('#all-articles').append(
-                                '<article class="type-post format-standard hentry clearfix">'
-                                + '<h3 class="post-title"><a href="/FAQ/Detail?Path=' + path + '">' + data.data[i].Subject + '</a></h3>'
+                                '<li><article class="type-post format-standard hentry clearfix">'
+                                + '<br/><h2 class="post-title"><a href="/FAQ/Detail?Path=' + data.data[i].Path + '">' + data.data[i].Subject + '</a></h2>'
                                 + '<div class="post-meta clearfix">'
                                 + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
-                                + '<span class="category" id=' + data.data[i].CategoryID + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
-                                + '<p class="longContent">' + content + '<a class="link-color" href="/FAQ/Detail?Path=' + path + '"> Continue reading</a></p>'
-                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></article>');
+                                + '<span class="category" id=' + data.data[i].CategoryID + ' data-id=' + data.data[i].Category + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
+                                + '<p class="longContent">' + content + '</p><a class="link-color" href="/FAQ/Detail?Path=' + data.data[i].Path + '"> Continue reading</a>'
+                                + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></article></li>');
+                            $("#keyword" + sId).empty();
+                            for (j = 0; j < keywordTags.length; j++) {
+                                var key = keywordTags[j].replace(/"/g, '');
+                                $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+                            }
                         }
+                        
+                        if (data.data.length > 5) {
+                            $('div.holder').removeClass("hidden");
+                            $('div.holder').jPages({
+                                containerID: "all-articles",
+                                perPage: 5,
+                                startPage: 1,
+                                startRange: 1,
+                                midRange: 2,
+                                endRange: 1,
+                                first: "First",
+                                last: "Last",
+                                previous: "Previous",
+                                next: "Next",
+                            });
+                        } else {
+                            $('div.holder').addClass("hidden");
+                        }
+                        $("#all-articles").find('img').hide();
                     }
                 }
             });
@@ -158,9 +295,14 @@
             });
         };
 
+        $("#all-articles").on("click", ".category", function () {
+            loadFAQ($(this).attr("id"), $(this).attr("data-id"));
+        });
+
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
-            //data.instance.toggle_node(data.node);
-            loadSolution(data.node.id);
+            //window.location.href = data.node.a_attr.href;
+            $('#search-solution').val('');
+            loadFAQ(data.node.id, data.node.text);
         });
     </script>
 }

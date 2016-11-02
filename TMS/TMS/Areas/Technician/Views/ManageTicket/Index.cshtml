@@ -1,7 +1,5 @@
-﻿@{
+﻿@{    
     Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
-}
-@{
     ViewBag.Title = "Ticket List";
 }
 
@@ -368,7 +366,7 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="#" class="view-detail" data-id=' + row[6] + '>' + row[2] + '</a>';
+                            return '<a href="javascript:void{0}" class="view-detail" data-id=' + row[6] + '>' + row[2] + '</a>';
                         },
                         "targets": 2
                     },

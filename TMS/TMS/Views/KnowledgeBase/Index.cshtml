@@ -38,16 +38,16 @@
     .left-menu {
         padding: 0;
         height: 100%;
-        background: #f5f3f3;
+        background: #d9d7d7;
     }
     /*remove list style (circles)*/
     .menu-collapse {
-        color: #E4E4E4;
+        color: #ccc;
     }
     /*header line style and border*/
     .header {
-        color: #2c2c2c;
-        background-color: #f5f3f3;
+        color: #fff;
+        background-color: #8e8e8e;
         padding: 4px 12px;
     }
 
@@ -62,7 +62,7 @@
 
     .header-content {
         color: #666;
-        background-color: #fff;
+        background-color: #E4E4E4;
         padding: 5px 12px 4px 12px;
     }
 
@@ -85,6 +85,7 @@
         padding: 8px 20px;
         display: none;
     }
+
     .jstree-node {
         margin-left: 0px !important;
         padding-left: 12px !important;
@@ -130,6 +131,29 @@
         color: #fff;
         background: #b6b2b2;
     }
+
+    .keywords {
+        margin-left: 0px;
+        padding-left: 0px;
+        margin-bottom: 5px;
+        float: left;
+        list-style: none;
+    }
+
+        .keywords li {
+            float: left;
+            margin-right: 1em;
+        }
+
+    .key-tags {
+        position: relative;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 15px;
+        background-color: #e6e6e6;
+        border-left: solid 5px #3393d8;
+        color: #191919;
+    }
 </style>
 
 <div class="row">
@@ -143,16 +167,16 @@
             </div>
             <div class="questions col-md-9">
                 <div class="header-content col-md-12">
-                    <div class="col-md-6">
-					<a class="btn btn-primary btn-flat" href="/KnowledgeBase/Create">
+                    <div class="col-md-8">
+                        <a class="btn btn-primary btn-flat" href="/KnowledgeBase/Create">
                             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
                         </a>
-                        <a href="javascript:void(0)" class="btn btn-flat btn-primary" onclick="showSimilarTicketFrequencyModal();">Similar ticket frequency</a>
-                        <a class="btn btn-default" href="#"><i class="fa fa-trash"></i></a>
+                        <a href="javascript:void(0)" class="btn btn-flat btn-info" onclick="showSimilarTicketFrequencyModal();">Similar ticket frequency</a>
+                        <a class="btn btn-default btn-flat" href="javascript:void{0}"><i class="fa fa-trash"></i></a>
                     </div>
                     <div class="box-tools pull-right col-md-4">
                         <div class="has-feedback">
-                            <input type="text" id="key_search" class="form-control input-sm" placeholder="Search solution..." />
+                            <input type="text" id="key_search" class="form-control input" placeholder="Search solution..." />
                             <span class="glyphicon glyphicon-search form-control-feedback"></span>
                         </div>
                     </div>
@@ -255,7 +279,6 @@
                 }
             });
             $('#create-solution-form textarea').wysihtml5();
-
         });
 
         var showTreeViewModal = function () {
@@ -318,15 +341,28 @@
                             content = $.truncate(content, {
                                 length: 350,
                             });
-                            
+                            var sId = data.data[i].ID;
+                            var keywordTags = (data.data[i].Keyword).split(',');
                             $(".question-list").append(
-                                '<div class="question-row"><div class="question-header col-sm-10"><input type="checkbox" />'
-                                + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
-                                + '<div class="col-sm-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
-                                + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
-                                + '<div class="question-detail col-sm-12">' + content
-                                + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
-                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
+                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-id="' + sId + '/>'
+                             + '&nbsp;&nbsp;<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
+                             + '</div><div class="col-lg-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
+                             + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + sId + '"><i class="fa fa-pencil"></i></a></div>'
+                             + '<div class="question-detail col-sm-12">'
+                             + '<p><i class="fa fa-calendar"></i>&nbsp;Created time: ' + formatDateTime(new Date(parseInt(data.data[i].CreatedTime.substr(6)))) + '</p>'
+                             + content + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
+                             + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></div></div>');
+                            $("#keyword" + sId).empty();
+                            if (data.data[i].Keyword != "-") {
+                                $("#keyword" + sId).append("<li style='padding: 5px 0px'>Keywords: </li>");
+                                for (j = 0; j < keywordTags.length; j++) {
+                                    var key = keywordTags[j].replace(/"/g, '');
+                                    $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+                                }
+                            } else {
+                                $("#keyword" + sId).append("<li>Keywords: -</li>");
+                            }
+                            $(".question-list").find('img').hide();
                         }
                     }
                 },
@@ -359,15 +395,28 @@
                             content = $.truncate(content, {
                                 length: 350,
                             });
-
+                            var sId = data.data[i].ID;
+                            var keywordTags = (data.data[i].Keyword).split(',');
                             $(".question-list").append(
-                                '<div class="question-row"><div class="question-header col-sm-10"><input type="checkbox" />'
-                                + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
-                                + '<div class="col-sm-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
-                                + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
-                                + '<div class="question-detail col-sm-12">' + content
-                                + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
-                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
+                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" />'
+                             + '<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
+                             + '</div><div class="col-lg-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
+                             + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + sId + '"><i class="fa fa-pencil"></i></a></div>'
+                             + '<div class="question-detail col-sm-12">'
+                             + '<p><i class="fa fa-calendar"></i>&nbsp;Created time: ' + formatDateTime(new Date(parseInt(data.data[i].CreatedTime.substr(6)))) + '</p>'
+                             + content + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
+                             + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></div></div>');
+                            $("#keyword" + sId).empty();
+                            if (data.data[i].Keyword != "-") {
+                                $("#keyword" + sId).append("<li style='padding: 5px 0px'>Keywords: </li>");
+                                for (j = 0; j < keywordTags.length; j++) {
+                                    var key = keywordTags[j].replace(/"/g, '');
+                                    $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+                                }
+                            } else {
+                                $("#keyword" + sId).append("<li>Keywords: -</li>");
+                            }
+                            $(".question-list").find('img').hide();
                         }
                     }
                 },
@@ -385,6 +434,49 @@
         function setQuestionListHeight() {
             var contentHeight = $("#category-treeview-div").height();
             $(".question-list").css("height", contentHeight);
+        }
+
+        function deleteSolutions(id) {
+            var selectedSolutions = [];
+            $('input[type="checkbox"]').each(function (index, element) {
+                var id = $(element).attr("data-id");
+                if (selectedSolutions.indexOf(id) != -1) {
+                    $(element).prop("checked", true);
+                }
+            });
+
+            $.ajax({
+                url: "/KnowledgeBase/Delete/",
+                type: "POST",
+                data: {
+                    selectedSolutions: selectedSolutions
+                },
+                success: function (data) {
+                    if (!data.success) {
+                        noty({
+                            text: data.msg,
+                            layout: "topCenter",
+                            type: "error",
+                            timeout: 2000
+                        });
+                    } else {
+                        noty({
+                            text: data.msg,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                    }
+                },
+                error: function (data) {
+                    noty({
+                        text: "Cannot connect to server! Please try again later!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2500
+                    });
+                }
+            });
         }
 
         $("#key_search").on("keyup", function () {

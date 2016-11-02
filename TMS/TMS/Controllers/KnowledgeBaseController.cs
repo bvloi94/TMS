@@ -332,6 +332,43 @@ namespace TMS.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult Delete(int[] selectedSolutions)
+        {
+            if (selectedSolutions.Length == 0)
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "Please choose at least 1 solution to delete!"
+                });
+            }
+
+            List<Solution> solutionList = new List<Solution>();
+            try
+            {
+                for (int i = 0; i < selectedSolutions.Length; i++)
+                {
+                    Solution solution = _solutionServices.GetSolutionById(selectedSolutions[i]);
+                    solutionList.Add(solution);
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    msg = ""
+                });
+            }
+            catch
+            {
+                return Json(new
+                {
+                    success = false,
+                    msg = "Some errors occured! Please try again later!"
+                });
+            }
+        }
+
         [HttpGet]
         public ActionResult GetSolutions(string key_search)
         {
@@ -352,7 +389,9 @@ namespace TMS.Controllers
 
             if (!string.IsNullOrEmpty(key_search))
             {
-                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                filteredListItems = filteredListItems.
+                        Where(p => p.Subject.ToLower().Contains(key_search.ToLower())
+                        || p.Keyword.ToLower().Contains(key_search.ToLower().Trim())); ;
             }
 
             return Json(new
@@ -386,7 +425,9 @@ namespace TMS.Controllers
 
                 if (!string.IsNullOrEmpty(key_search))
                 {
-                    filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                    filteredListItems = filteredListItems.
+                        Where(p => p.Subject.ToLower().Contains(key_search.ToLower())
+                        || p.Keyword.ToLower().Contains(key_search.ToLower()));
                 }
 
                 return Json(new
@@ -396,30 +437,11 @@ namespace TMS.Controllers
             }
             else
             {
-                IEnumerable<KnowledgeBaseViewModel> filteredListItems = _solutionServices.GetAllSolutions()
-                    .Where(m => m.CategoryID == id.Value)
-                    .Select(m => new KnowledgeBaseViewModel
-                    {
-                        ID = m.ID,
-                        Subject = m.Subject,
-                        Category = m.Category.Name,
-                        CategoryID = m.Category.ID,
-                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                        Content = m.ContentText,
-                        Keyword = m.Keyword == null ? "-" : m.Keyword,
-                        Path = m.Path,
-                        CreatedTime = m.CreatedTime,
-                        ModifiedTime = m.ModifiedTime
-                    }).ToArray();
-
-                if (!string.IsNullOrEmpty(key_search))
-                {
-                    filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
-                }
-
                 return Json(new
                 {
-                    data = filteredListItems
+                    success = false,
+                    error = true,
+                    msg = "Category does not exist!"
                 }, JsonRequestBehavior.AllowGet);
             }
         }
