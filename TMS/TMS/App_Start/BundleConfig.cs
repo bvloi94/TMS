@@ -35,6 +35,7 @@ namespace TMS
                 "~/Content/js/select2.min.js",
                 "~/Content/js/jquery.truncate.js",
                 "~/Content/js/trunk8.min.js",
+                "~/Content/js/jPages.min.js",
                 "~/Content/custom-js/tms-dropdown.js",
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
                 "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js",

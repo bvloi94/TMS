@@ -410,6 +410,7 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
+    <Content Include="Content\js\jPages.min.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\html2canvas.js" />

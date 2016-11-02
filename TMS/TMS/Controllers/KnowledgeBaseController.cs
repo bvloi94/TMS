@@ -340,9 +340,12 @@ namespace TMS.Controllers
             {
                 ID = m.ID,
                 Subject = m.Subject,
+                Category = m.Category.Name,
+                CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
                 Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
             }).ToArray();
@@ -371,10 +374,12 @@ namespace TMS.Controllers
                     {
                         ID = m.ID,
                         Subject = m.Subject,
-                        CategoryID = m.CategoryID,
+                        Category = m.Category.Name,
+                        CategoryID = m.Category.ID,
                         CategoryPath = _categoryService.GetCategoryPath(m.Category),
                         Content = m.ContentText,
                         Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        Path = m.Path,
                         CreatedTime = m.CreatedTime,
                         ModifiedTime = m.ModifiedTime
                     }).ToArray();
@@ -397,10 +402,12 @@ namespace TMS.Controllers
                     {
                         ID = m.ID,
                         Subject = m.Subject,
-                        CategoryID = m.CategoryID,
+                        Category = m.Category.Name,
+                        CategoryID = m.Category.ID,
                         CategoryPath = _categoryService.GetCategoryPath(m.Category),
                         Content = m.ContentText,
                         Keyword = m.Keyword == null ? "-" : m.Keyword,
+                        Path = m.Path,
                         CreatedTime = m.CreatedTime,
                         ModifiedTime = m.ModifiedTime
                     }).ToArray();

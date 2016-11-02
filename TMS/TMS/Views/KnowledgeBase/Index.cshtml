@@ -322,10 +322,10 @@
                             $(".question-list").append(
                                 '<div class="question-row"><div class="question-header col-sm-10"><input type="checkbox" />'
                                 + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
-                                + '<div class="col-sm-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail/' + data.data[i].ID + '"><i class="fa fa-eye"></i></a>'
+                                + '<div class="col-sm-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
                                 + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
                                 + '<div class="question-detail col-sm-12">' + content
-                                + '<a href="/FAQ/Detail/' + data.data[i].ID + '">...Continue Reading</a>'
+                                + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
                                 + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
                         }
                     }
@@ -359,13 +359,14 @@
                             content = $.truncate(content, {
                                 length: 350,
                             });
+
                             $(".question-list").append(
                                 '<div class="question-row"><div class="question-header col-sm-10"><input type="checkbox" />'
                                 + '<a class="question-title" href="#"> ' + data.data[i].Subject + '</a></div>'
-                                + '<div class="col-sm-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail/' + data.data[i].ID + '"><i class="fa fa-eye"></i></a>'
+                                + '<div class="col-sm-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
                                 + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + data.data[i].ID + '"><i class="fa fa-pencil"></i></a></div>'
                                 + '<div class="question-detail col-sm-12">' + content
-                                + '<a href="/FAQ/Detail/' + data.data[i].ID + '">...Continue Reading</a>'
+                                + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
                                 + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></div></div>');
                         }
                     }

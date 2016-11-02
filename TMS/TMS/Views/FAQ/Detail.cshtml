@@ -37,73 +37,36 @@
         box-shadow: none !important;
     }
 
-    .link-color {
+    .link-color, .category-link {
         color: #3393d8;
     }
-
-    #all-articles {
-        min-height: 100px !important;
-    }
-
-        #all-articles li {
-            list-style: none;
-        }
-
-    .holder {
-        text-align: center;
-    }
-
-        .holder a {
-            font-size: 13px;
-            cursor: pointer;
-            color: #458dc2;
-            padding: 5px 15px;
-            border: solid 1px #bfbfbf;
-            border-right: none;
-        }
-
-        .holder a:last-of-type {
-            border-right: solid 1px #bfbfbf;
-        }
-
-            .holder a:hover {
-                color: #fff;
-                background-color: #3393d8;
-            }
-
-            .holder a.jp-current, a.jp-current:hover {
-                color: #fff;
-                background-color: #3393d8 !important;
-                font-weight: bold;
-            }
-
-            .holder a.jp-disabled, a.jp-disabled:hover {
-                color: #808080;
-                background-color: #e9e8e8 !important;
-            }
-
-            .holder a.jp-current, a.jp-current:hover, .holder a.jp-disabled, a.jp-disabled:hover {
-                cursor: default;
-                background: none;
-            }
-
-        .holder span {
-            font-size: 13px;
-            color: #161616;
-            padding: 5px 15px;
-            border: solid 1px #bfbfbf;
-            border-right: none;
-        }
 </style>
 
 <div class="col-lg-12">
     <div class="span8 page-content">
-        <div style="padding-left: 25px"><h2 id="main-title"></h2></div>
-        <ul id="all-articles"></ul>
-        <div class="holder"></div>
+        <article class="type-post format-standard hentry clearfix" id="all-articles">
+            <h1 class="post-title">@Html.DisplayFor(m => m.Subject)</h1>
+            <div class="post-meta clearfix">
+                <span class="date">@Html.DisplayFor(m => m.CreatedTime)</span>
+                <span class="category"><a class="category-link" id="@Model.CategoryID" href="#">@Html.DisplayFor(m => m.CategoryPath)</a></span>
+            </div>
+            <p class="pre-wrap">@Html.Raw(Model.Content)</p>
+            <p><i>Keyword: @Html.DisplayFor(m => m.Keyword)</i></p>
+        </article>
     </div>
-
     <aside class="span4 page-sidebar">
+        <section class="widget">
+            <h3 class="title">Related Articles</h3>
+            <ul class="articles">
+                @foreach (Solution solution in relatedSolution)
+                {
+                    <li class="article-entry standard">
+                        <h4><a class="link-color" href="/FAQ/Detail?Path=@solution.Path">@solution.Subject</a></h4>
+                        <span class="article-meta">@solution.CreatedTime in <a class="category-link" id="@solution.CategoryID" href="#">@solution.Category.Name</a></span>
+                    </li>
+                }
+            </ul>
+        </section>
         <section class="widget">
             <h3 class="title">Categories</h3>
             <div id="category-treeview-div">
@@ -116,21 +79,19 @@
     <script>
         $(document).ready(function () {
             showTreeViewModal();
-            loadFAQ();
         });
 
-        var loadFAQ = function (id, categoryName) {
+        $('.category-link').on("click", function () {
+            loadSolution($(this).attr("id"));
+        });
+
+        function loadSolution(id) {
             $.ajax({
-                url: "/FAQ/GetFAQ",
+                url: "/KnowledgeBase/GetSolutionsByCategory/",
                 type: "GET",
                 data: { id: id },
                 success: function (data) {
                     $('#all-articles').empty();
-                    if (id == null) {
-                        $("#main-title").text("All articles");
-                    } else {
-                        $("#main-title").text("Category: " + categoryName);
-                    }
                     if (data.data.length == 0) {
                         $("#all-articles").append("<p style='text-align: center'><i>There is no solution to display.</i></p>");
                     } else {
@@ -139,36 +100,20 @@
                             content = $.truncate(content, {
                                 length: 350,
                             });
-                            var sId = data.data[i].ID
+                            var path = data.data[i].Path
                             $('#all-articles').append(
-                                '<li><article class="type-post format-standard hentry clearfix">'
-                                + '<h3 class="post-title"><a href="/FAQ/Detail?Path=' + data.data[i].Path + '">' + data.data[i].Subject + '</a></h3>'
+                                '<article class="type-post format-standard hentry clearfix">'
+                                + '<h3 class="post-title"><a href="/FAQ/Detail?Path=' + path + '">' + data.data[i].Subject + '</a></h3>'
                                 + '<div class="post-meta clearfix">'
                                 + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
-                                + '<span class="category" id=' + data.data[i].CategoryID + ' data-id=' + data.data[i].Category + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
-                                + '<p class="longContent">' + content + '</p><a class="link-color" href="/FAQ/Detail/' + sId + '"> Continue reading</a><br/><br/>'
-                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></article></li>');
+                                + '<span class="category" id=' + data.data[i].CategoryID + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
+                                + '<p class="longContent">' + content + '<a class="link-color" href="/FAQ/Detail?Path=' + path + '"> Continue reading</a></p>'
+                                + '<p><i>Keyword: ' + data.data[i].Keyword + '</i></p></article>');
                         }
-                        $('div.holder').jPages({
-                            containerID: "all-articles",
-                            perPage: 5,
-                            startPage: 1,
-                            startRange: 1,
-                            midRange: 2,
-                            endRange: 1,
-                            first: "First",
-                            last: "Last",
-                            previous: "Previous",
-                            next: "Next",
-                        });
                     }
                 }
             });
         }
-
-        $("#all-articles").on("click", ".category", function () {
-            loadFAQ($(this).attr("id"), $(this).attr("data-id"));
-        });
 
         var showTreeViewModal = function () {
             $("#category-treeview-div").jstree({
@@ -201,7 +146,6 @@
                                     },
                                     a_attr: {
                                         "data-id": dataItem.ID,
-                                        "href": "/FAQ/Index/" + dataItem.Name,
                                         "class": "category-node"
                                     }
                                 };
@@ -215,8 +159,8 @@
         };
 
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
-            //window.location.href = data.node.a_attr.href;
-            loadFAQ(data.node.id, data.node.text);
+            //data.instance.toggle_node(data.node);
+            loadSolution(data.node.id);
         });
     </script>
 }
