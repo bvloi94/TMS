@@ -12,7 +12,7 @@ namespace TMS.ViewModels
     {
         public int? ID { get; set; }
         [Required(ErrorMessage = "Please input a subject!")]
-        [StringLength(100)]
+        [StringLength(200)]
         public string Subject { get; set; }
         [AllowHtml]
         public string Content { get; set; }

@@ -52,8 +52,6 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         public ActionResult Index()
         {
-            //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
-            //return View(tickets.ToList());
             return View();
         }
 

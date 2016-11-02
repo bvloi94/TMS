@@ -12,7 +12,7 @@
         width: 100% !important;
     }
 
-    #ticket-attachments a {
+    #ticket-description-attachments a, #ticket-solution-attachments a  {
         margin: 2px 2px 2px 0px;
         display: inline-block;
     }
@@ -276,6 +276,13 @@
                                 <div class="col-sm-12 row-content ">
                                     <div class="col-sm-12">
                                         <div class="col-sm-2 labels">
+                                        </div>
+                                        <div class="col-sm-10" id="ticket-description-attachments"></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 row-content ">
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-2 labels">
                                             <b>Solution: </b>
                                         </div>
                                         <div class="col-sm-10" style="padding-left: 10px"><span class="pre-wrap" id="ticket-solution"></span></div>
@@ -284,9 +291,8 @@
                                 <div class="col-sm-12 row-content ">
                                     <div class="col-sm-12">
                                         <div class="col-sm-2 labels">
-                                            <b>Attachment: </b>
                                         </div>
-                                        <div class="col-sm-10" id="ticket-attachments"></div>
+                                        <div class="col-sm-10" id="ticket-solution-attachments"></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content">
