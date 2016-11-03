@@ -26,7 +26,7 @@
             <!-- Header Navbar: style can be found in header.less -->
             <nav class="navbar navbar-static-top">
                 <!-- Sidebar toggle button-->
-                <a href="javascript:void{0}" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                     <span class="sr-only">Toggle navigation</span>
                 </a>
                 <!-- Navbar Right Menu -->
@@ -86,13 +86,13 @@
                             <ul class="dropdown-menu">
                                 <!-- User image -->
                                 <li class="user-header">
-                                    <img src="@ViewBag.LayoutAvatarURL" class="img-circle" alt="User Image">
+                                    <img src="@ViewBag.LayoutAvatarURL" class="img-circle" alt="User Image" style="height: 45px;">
                                     <p>@ViewBag.LayoutName</p>
                                 </li>
                                 <!-- Menu Footer-->
                                 <li class="user-footer">
                                     <div class="pull-left">
-                                        <a href="/Admin/Profile" class="btn btn-default btn-flat">Profile</a>
+                                        <a href="/Manager/Profile" class="btn btn-default btn-flat">Profile</a>
                                     </div>
                                     <div class="pull-right">
                                         @using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
@@ -125,21 +125,27 @@
                 <!-- sidebar menu: : style can be found in sidebar.less -->
                 <ul class="sidebar-menu">
                     <li class="header">MAIN NAVIGATION</li>
-                    <li class="treeview @Html.Raw((controllerName == "ManageUser") ? "active" : "")">
+                    <li class="treeview @Html.Raw((controllerName == "Department") ? "active" : "")">
+                        <a href="/Manager/Department">
+                            <i class="fa fa-building" aria-hidden="true"></i>
+                            <span>MANAGE DEPARTMENTS</span>
+                        </a>
+                    </li>
+                    <li class="treeview @Html.Raw((controllerName == "ManageSC") ? "active" : "")">
                         <a href="#">
-                            <i class="fa fa-users"></i>
-                            <span>MANAGE USER</span>
+                            <i class="fa fa-gears"></i>
+                            <span>MANAGE SYSTEM CONFIG</span>
                         </a>
                         <ul class="treeview-menu">
-                            <li @Html.Raw((actionName == "Requester" || actionName == "CreateRequester" || actionName == "EditRequester") ? "class='active'" : "")><a href="/Admin/ManageUser/Requester"><i class="fa fa-circle-o"></i>Requester</a></li>
-                            <li @Html.Raw((actionName == "HelpDesk" || actionName == "CreateHelpDesk" || actionName == "EditHelpDesk") ? "class='active'" : "")><a href="/Admin/ManageUser/HelpDesk"><i class="fa fa-circle-o"></i>Help Desk</a></li>
-                            <li @Html.Raw((actionName == "Technician" || actionName == "CreateTechnician" || actionName == "EditTechnician") ? "class='active'" : "")><a href="/Admin/ManageUser/Technician"><i class="fa fa-circle-o"></i>Technician</a></li>
-                            <li @Html.Raw((actionName == "Manager" || actionName == "CreateManager" || actionName == "EditManager") ? "class='active'" : "")><a href="/Admin/ManageUser/Manager"><i class="fa fa-circle-o"></i>Manager</a></li>
-                            <li @Html.Raw((actionName == "Admin" || actionName == "CreateAdmin" || actionName == "EditAdmin") ? "class='active'" : "")><a href="/Admin/ManageUser/Admin"><i class="fa fa-circle-o"></i>Admin</a></li>
+                            <li @Html.Raw((actionName == "Impact") ? "class='active'" : "")><a href="/Manager/ManageSC/Impact"><i class="fa fa-circle-o"></i>Impact</a></li>
+                            <li @Html.Raw((actionName == "Urgency") ? "class='active'" : "")><a href="/Manager/ManageSC/Urgency"><i class="fa fa-circle-o"></i>Urgency</a></li>
+                            <li @Html.Raw((actionName == "Priority") ? "class='active'" : "")><a href="/Manager/ManageSC/Priority"><i class="fa fa-circle-o"></i>Priority</a></li>
+                            <li @Html.Raw((actionName == "Category") ? "class='active'" : "")><a href="/Manager/ManageSC/Category"><i class="fa fa-circle-o"></i>Category</a></li>
+                            <li @Html.Raw((actionName == "PriorityMatrix") ? "class='active'" : "")><a href="/Manager/ManageSC/PriorityMatrix"><i class="fa fa-circle-o"></i>Priority Matrix</a></li>
                         </ul>
                     </li>
                     <li class="treeview @Html.Raw((controllerName == "Profile") ? "active" : "")">
-                        <a href="/Admin/Profile">
+                        <a href="/Manager/Profile">
                             <i class="fa fa-user"></i>
                             <span>PROFILE</span>
                         </a>

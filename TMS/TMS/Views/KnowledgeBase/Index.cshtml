@@ -1,6 +1,16 @@
-﻿@{
-    Layout = ViewBag.Layout;
+﻿@using TMS.Utils
+@{
     ViewBag.Title = "Solutions";
+}
+@{ 
+    if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.HelpDesk)
+    {
+        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    }
+    else if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.Technician)
+    {
+        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    }
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 
@@ -309,7 +319,7 @@
                         "dots": false
                     },
                     "data": {
-                        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
+                        "url": "/KnowledgeBase/GetCategoryTreeViewData",
                         "type": "GET",
                         "contentType": "application/json; charset=utf-8",
                         "dataFilter": function (json) {

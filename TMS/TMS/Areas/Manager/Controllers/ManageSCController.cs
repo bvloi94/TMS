@@ -1,4 +1,5 @@
 ﻿using log4net;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,9 @@ using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
 
-namespace TMS.Areas.Admin.Controllers
+namespace TMS.Areas.Manager.Controllers
 {
+    [CustomAuthorize(Roles = "Manager")]
     public class ManageSCController : Controller
     {
         private UnitOfWork _unitOfWork;
@@ -18,6 +20,7 @@ namespace TMS.Areas.Admin.Controllers
         private UrgencyService _urgencyService;
         private PriorityService _priorityService;
         private CategoryService _categoryService;
+        private UserService _userService;
         private PriorityMatrixService _priorityMatrixService;
         private ILog log = LogManager.GetLogger(typeof(ManageSCController));
 
@@ -28,10 +31,11 @@ namespace TMS.Areas.Admin.Controllers
             _urgencyService = new UrgencyService(_unitOfWork);
             _priorityService = new PriorityService(_unitOfWork);
             _categoryService = new CategoryService(_unitOfWork);
+            _userService = new UserService(_unitOfWork);
             _priorityMatrixService = new PriorityMatrixService(_unitOfWork);
         }
 
-        // GET: Admin/ManageSC/Priority
+        // GET: Manager/ManageSC/Priority
         public ActionResult Priority()
         {
             return View();
@@ -48,7 +52,7 @@ namespace TMS.Areas.Admin.Controllers
             return View();
         }
 
-        // GET: Admin/ManageSC/Category
+        // GET: Manager/ManageSC/Category
         [HttpGet]
         public ActionResult Category()
         {
@@ -404,7 +408,7 @@ namespace TMS.Areas.Admin.Controllers
             }
         }
 
-        // POST: Admin/ManageSC/EditImpact
+        // POST: Manager/ManageSC/EditImpact
         [HttpPost]
         public ActionResult EditImpact(int? id, ImpactViewModel model)
         {
@@ -1393,6 +1397,18 @@ namespace TMS.Areas.Admin.Controllers
             {
                 data = list
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser manager = _userService.GetUserById(id);
+            if (manager != null)
+            {
+                ViewBag.LayoutName = manager.Fullname;
+                ViewBag.LayoutAvatarURL = manager.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }

@@ -1,24 +1,20 @@
-﻿@{
-    ViewBag.Title = "Priority";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+﻿@model TMS.Models.Impact
+@{
+    ViewBag.Title = "Impact";
+    Layout = "~/Areas/Manager/Views/Shared/_Layout.cshtml";
 }
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
-          <div class="box-body">
-                <button type="button" class="btn btn-flat btn-primary" data-target="#myModal" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Priority</button>
-                <table class="table dataTable" id="priority-table">
+            <div class="box-body">
+                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Impact</button>
+                <table class="table dataTable" id="impact-table">
                     <thead>
                     <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Description
-                        </th>
-                        <th>
-                        </th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody></tbody>
@@ -39,7 +35,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Priority</h4>
+                <h4 class="modal-title">Impact</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
@@ -51,7 +47,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <labeL class="col-sm-2 control-label">Description</labeL>
+                        <label class="col-sm-2 control-label">Description</label>
                         <div class="col-sm-10">
                             <textarea class="form-control" rows="3" placeholder="Description" id="description-txt"></textarea>
                         </div>
@@ -59,7 +55,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="create-btn" onclick="createPriority()">Save</button>
+                <button type="button" class="btn btn-success" id="create-btn" onclick="createImpact()">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -81,7 +77,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="yes-btn">Yes</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-            </div>
+            </div> 
         </div>
         <!-- /.modal-content -->
     </div>
@@ -93,16 +89,15 @@
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
-        $("#priority-table")
+        $("#impact-table")
             .DataTable({
                 processing: true,
                 serverSide: true,
-                lengthChange: false,
                 paging: false,
                 sort: false,
                 filter: false,
                 ajax: {
-                    url: "/Admin/ManageSC/GetPriority"
+                    url: "/Manager/ManageSC/GetImpacts"
                 },
                 "columnDefs": [
                     {
@@ -120,15 +115,16 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getPriorityDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getImpactDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
                                    '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                         },
                         "targets": 2
                     }
                 ]
             });
+
         var reloadDataTable = function () {
-            var oTable = $("#priority-table").dataTable();
+            var oTable = $("#impact-table").dataTable();
             oTable._fnPageChange(0);
             oTable._fnAjaxUpdate();
         };
@@ -142,20 +138,20 @@
         var showCreateModal = function () {
             clearModal();
             $("#myModal").modal('show');
-            $('#create-btn').attr('onclick', 'createPriority()');
+            $('#create-btn').attr('onclick', 'createImpact()');
         };
 
-        var createPriority = function () {
+        var createImpact = function () {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
-                $("#name-validation-message").html("Name is requried!");
+                $("#name-validation-message").html("Name is required!");
                 $("#name-validation-message").show();
             } else if (name.trim().length < 4) {
                 $("#name-validation-message").html("Name must be longer than 4 characters!");
                 $("#name-validation-message").show();
             } else {
                 $.ajax({
-                    url: "/Admin/ManageSC/CreatePriority",
+                    url: "/Manager/ManageSC/CreateImpact",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -183,10 +179,10 @@
             }
         };
 
-        var getPriorityDetail = function (id) {
+        var getImpactDetail = function (id) {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetPriorityDetail",
+                url: "/Manager/ManageSC/GetImpactDetail",
                 dataType: "json",
                 type: "GET",
                 data: {
@@ -197,7 +193,7 @@
                         $("#myModal").modal("show");
                         $("#name-txt").val(data.name);
                         $("#description-txt").val(data.description);
-                        $("#create-btn").attr("onclick", "editPriority('" + id + "')");
+                        $("#create-btn").attr("onclick", "editImpact('" + id + "')");
                     } else {
                         if (data.error) {
                             $.notify(data.message, "error");
@@ -210,7 +206,8 @@
             });
         };
 
-        var editPriority = function (id) {
+        var editImpact = function (id) {
+            //jquery
             var name = $("#name-txt").val();
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required");
@@ -222,7 +219,7 @@
                 //ajax syntax
                 $.ajax(
                 {
-                    url: "/Admin/ManageSC/EditPriority",
+                    url: "/Manager/ManageSC/EditImpact",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -252,13 +249,13 @@
         };
 
         var showDeleteModal = function (id) {
-            $("#yes-btn").attr("onclick", "deletePriority('" + id + "')");
+            $("#yes-btn").attr("onclick", "deleteImpact('" + id + "')");
             $("#delete-modal").modal("show");
         };
 
-        var deletePriority = function (id) {
+        var deleteImpact = function (id) {
             $.ajax({
-                url: "/Admin/ManageSC/DeletePriority",
+                url: "/Manager/ManageSC/DeleteImpact",
                 dataType: "json",
                 type: "POST",
                 data: { id: id },
@@ -278,7 +275,5 @@
             });
 
         };
-
     </script>
-
 }

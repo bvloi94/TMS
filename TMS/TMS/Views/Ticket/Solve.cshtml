@@ -1,6 +1,4 @@
-﻿@using TMS.Models;
-@using TMS.Utils;
-@model TMS.ViewModels.TicketSolveViewModel
+﻿@model TMS.ViewModels.TicketSolveViewModel
 @{
     ViewBag.Title = "Solve Ticket";
 }
@@ -321,9 +319,6 @@
 
 @section scripts{
     <script>
-
-
-
         $("#search-btn")
             .on("click",
                 function () {
@@ -456,13 +451,11 @@
                                 if (data.userRole == "Helpdesk") {
                                     setTimeout(function () {
                                         window.location.href = "/HelpDesk/ManageTicket/";
-                                    },
-                                        1000);
+                                    }, 1000);
                                 } else if (data.userRole == "Technician") {
                                     setTimeout(function () {
                                         window.location.href = "/Technician/ManageTicket/";
-                                    },
-                                        1000);
+                                    }, 1000);
                                 }
                             }
                         }

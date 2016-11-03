@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using log4net;
 using Microsoft.AspNet.Identity;
@@ -18,10 +16,8 @@ using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
 using ModelError = TMS.ViewModels.ModelError;
-using System.Threading.Tasks;
 using System.Threading;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -30,8 +26,6 @@ namespace TMS.Areas.HelpDesk.Controllers
     {
 
         private ILog log = LogManager.GetLogger(typeof(JobManager));
-
-        private TMSEntities db = new TMSEntities();
 
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
@@ -58,8 +52,6 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         public ActionResult Index()
         {
-            //var tickets = db.Tickets.Include(t => t.AspNetUser).Include(t => t.AspNetUser1).Include(t => t.AspNetUser2).Include(t => t.AspNetUser3).Include(t => t.Category).Include(t => t.Department).Include(t => t.Impact).Include(t => t.Priority).Include(t => t.Urgency);
-            //return View(tickets.ToList());
             return View();
         }
 
@@ -738,7 +730,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 else
                 {
                     //Hide Canceled and Closed Tickets
-                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Canceled);
+                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Cancelled);
                     filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Closed);
                 }
             }
@@ -1111,13 +1103,16 @@ namespace TMS.Areas.HelpDesk.Controllers
             return Json(rsModel, JsonRequestBehavior.AllowGet);
         }
 
-        protected override void Dispose(bool disposing)
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (disposing)
+            string id = User.Identity.GetUserId();
+            AspNetUser admin = _userService.GetUserById(id);
+            if (admin != null)
             {
-                db.Dispose();
+                ViewBag.LayoutName = admin.Fullname;
+                ViewBag.LayoutAvatarURL = admin.AvatarURL;
             }
-            base.Dispose(disposing);
+            base.OnActionExecuting(filterContext);
         }
     }
 }

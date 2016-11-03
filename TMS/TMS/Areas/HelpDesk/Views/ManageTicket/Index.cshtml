@@ -1,5 +1,4 @@
-﻿@model IEnumerable<TMS.Models.Ticket>
-@{
+﻿@{
     Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Ticket Management";
 }
@@ -13,7 +12,7 @@
         width: 100% !important;
     }
 
-    #ticket-attachments a {
+    #ticket-description-attachments a, #ticket-solution-attachments a  {
         margin: 2px 2px 2px 0px;
         display: inline-block;
     }
@@ -277,6 +276,13 @@
                                 <div class="col-sm-12 row-content ">
                                     <div class="col-sm-12">
                                         <div class="col-sm-2 labels">
+                                        </div>
+                                        <div class="col-sm-10" id="ticket-description-attachments"></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 row-content ">
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-2 labels">
                                             <b>Solution: </b>
                                         </div>
                                         <div class="col-sm-10" style="padding-left: 10px"><span class="pre-wrap" id="ticket-solution"></span></div>
@@ -285,9 +291,8 @@
                                 <div class="col-sm-12 row-content ">
                                     <div class="col-sm-12">
                                         <div class="col-sm-2 labels">
-                                            <b>Attachment: </b>
                                         </div>
-                                        <div class="col-sm-10" id="ticket-attachments"></div>
+                                        <div class="col-sm-10" id="ticket-solution-attachments"></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content">
@@ -386,10 +391,10 @@
         <div class="box box-solid">
             <div class="box-body" style="display: block;">
                 <a class="btn bg-olive btn-flat" style="display: inline-block;" href='@Url.Action("CreateNewTicket", "ManageTicket")'>
-                    <i class="fa fa-plus" aria-hidden="true"></i> Create New
+                    <i class="fa fa-plus" aria-hidden="true"></i> New Ticket
                 </a>
                 <a class="btn bg-olive btn-flat margin-left10 disabled" style="display: inline-block;" data-role="btn-merge-ticket">
-                    Merge
+                    <i class="fa fa-compress" aria-hidden="true"></i> Merge
                 </a>
                 <div class="pull-right" style="margin-right: 20px">
                     <label>Status: </label>
@@ -403,7 +408,7 @@
                         <option value="6">Closed</option>
                     </select>&nbsp;&nbsp;
                     <label>Search:</label>
-                    <input type="text" id="search-txt" />
+                    <input type="text" id="search-txt" placeholder="Subject"/>
                 </div>
                 <table class="table" id="ticket-table">
                     <thead>

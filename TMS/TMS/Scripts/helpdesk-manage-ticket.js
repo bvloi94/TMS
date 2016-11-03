@@ -366,11 +366,14 @@ function openTicketDetailModal(ticketId) {
                 $('#ticket-solution').text(data.solution);
             }
 
-            $('#ticket-attachments').empty();
-            if (!data.attachments || data.attachments == "") {
-                $('#ticket-attachments').append("No attachments.");
-            } else {
-                $('#ticket-attachments').append(data.attachments);
+            $('#ticket-description-attachments').empty();
+            if (data.descriptionAttachment && data.descriptionAttachment != "") {
+                $('#ticket-description-attachments').append(data.descriptionAttachment);
+            }
+
+            $('#ticket-solution-attachments').empty();
+            if (data.solutionAttachment && data.solutionAttachment != "") {
+                $('#ticket-solution-attachments').append(data.solutionAttachment);
             }
 
             //solve: new

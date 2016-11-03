@@ -41,12 +41,10 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$password", password);
             try
             {
-                //Task task = new Task(() => SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage));
-                //task.RunSynchronously();
                 await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 log.Warn(string.Format("Resend email to {0} unsuccessfully!", username));
                 return false;

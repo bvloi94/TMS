@@ -20,18 +20,25 @@ namespace TMS.Services
             return _unitOfWork.SolutionRepository.Get();
         }
 
-        public void AddSolution(Solution solution)
+        public bool AddSolution(Solution solution)
         {
             _unitOfWork.SolutionRepository.Insert(solution);
-            _unitOfWork.Commit();
+            return _unitOfWork.Commit();
         }
-
+        /// <summary>
+        /// IsDuplicateSubject
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="subject">subject</param>
+        /// <returns>True | False</returns>
         public bool IsDuplicateSubject(int? id, string subject)
         {
+            // id == null
             if (id == null)
             {
                 return _unitOfWork.SolutionRepository.Get(m => m.Subject.ToLower().Equals(subject.ToLower())).Any();
             }
+            // id != null
             else
             {
                 return _unitOfWork.SolutionRepository.Get(m => m.ID != id && m.Subject.ToLower().Equals(subject.ToLower())).Any();
@@ -51,23 +58,30 @@ namespace TMS.Services
             }
         }
 
-        public void EditSolution(Solution solution)
+        public bool EditSolution(Solution solution)
         {
             _unitOfWork.SolutionRepository.Update(solution);
-            _unitOfWork.Commit();
+            return _unitOfWork.Commit();
         }
 
         public IEnumerable<Solution> GetSolutionsByCategory(int id)
         {
             return _unitOfWork.SolutionRepository.Get(m => m.CategoryID == id);
         }
-
+        /// <summary>
+        /// IsduplicatePath
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="path">path</param>
+        /// <returns>True | False</returns>
         public bool IsduplicatePath(int? id, string path)
         {
+            // id == null
             if (id == null)
             {
                 return _unitOfWork.SolutionRepository.Get(m => m.Path.ToLower().Equals(path.ToLower())).Any();
             }
+            // id != null
             else
             {
                 return _unitOfWork.SolutionRepository.Get(m => m.ID != id && m.Path.ToLower().Equals(path.ToLower())).Any();

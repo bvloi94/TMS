@@ -24,7 +24,6 @@ namespace TMS.Controllers
         public CategoryService _categoryService { get; set; }
         public SolutionService _solutionService { get; set; }
 
-
         public TicketController()
         {
             _ticketService = new TicketService(unitOfWork);
@@ -33,7 +32,6 @@ namespace TMS.Controllers
             _ticketAttachmentService = new TicketAttachmentService(unitOfWork);
             _categoryService = new CategoryService(unitOfWork);
             _solutionService = new SolutionService(unitOfWork);
-
         }
 
         // GET: Tickets
@@ -278,14 +276,27 @@ namespace TMS.Controllers
             }
 
             IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id);
-            string attachmentStr = "";
+            string descriptionAttachment = "";
+            string solutionAttachment = "";
+
             if (ticketAttachments.Count() > 0)
             {
                 string fileName;
                 foreach (var attachFile in ticketAttachments)
                 {
                     fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
-                    attachmentStr += "<a download=\'" + fileName + "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path + "\' target=\'_blank\' >" + fileName + "</a>";
+                    if (attachFile.Type == ConstantUtil.TicketAttachmentType.Description)
+                    {
+                        descriptionAttachment += "<a download=\'" + fileName +
+                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
+                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                    }
+                    else if (attachFile.Type == ConstantUtil.TicketAttachmentType.Solution)
+                    {
+                        solutionAttachment += "<a download=\'" + fileName +
+                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
+                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                    }
                 }
             }
 
@@ -364,236 +375,239 @@ namespace TMS.Controllers
                 assigner = assigner == null ? "-" : assigner.Fullname,
                 technician = technician == null ? "-" : technician.Fullname,
                 department = department,
-                attachments = attachmentStr
+                descriptionAttachment = descriptionAttachment,
+                solutionAttachment = solutionAttachment
             }, JsonRequestBehavior.AllowGet);
         }
 
         [CustomAuthorize(Roles = "Helpdesk,Technician")]
         [HttpGet]
-        public ActionResult Solve(int id)
+        public ActionResult Solve(int? id)
         {
-            Ticket ticket = _ticketService.GetTicketByID(id);
-            if (ticket == null)
+            if (id.HasValue)
             {
-                return HttpNotFound();
-            }
-            AspNetRole userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
-
-            if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
-            {
-                ViewBag.Role = "Technician";
-                if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
                 {
-                    return RedirectToAction("Index", new { Area = "Technician" }); // Redirect to Index so the Technician cannot go to Solve view.
+                    AspNetRole userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+
+                    if (userRole.Id == ConstantUtil.UserRole.Technician.ToString())
+                    {
+                        ViewBag.Role = "Technician";
+                        if (ticket.Status != ConstantUtil.TicketStatus.Assigned) // Ticket status is not "Assigned"
+                        {
+                            return RedirectToAction("Index", new { Area = "Technician" }); // Redirect to Index so the Technician cannot go to Solve view.
+                        }
+                    }
+                    else if (userRole.Id == ConstantUtil.UserRole.HelpDesk.ToString())
+                    {
+                        ViewBag.Role = "HelpDesk";
+                        if (ticket.Status != ConstantUtil.TicketStatus.New &&
+                            ticket.Status != ConstantUtil.TicketStatus.Unapproved)
+                        {
+                            return RedirectToAction("Index", "ManageTicket", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.
+                        }
+                    }
+                    // Get Ticket information
+                    AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
+                    AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
+                    AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+                    TicketSolveViewModel model = new TicketSolveViewModel();
+
+                    model.ID = ticket.ID;
+                    model.Subject = ticket.Subject;
+                    model.Description = ticket.Description;
+
+                    switch (ticket.Mode)
+                    {
+                        case ConstantUtil.TicketMode.PhoneCall: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
+                        case ConstantUtil.TicketMode.WebForm: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
+                        case ConstantUtil.TicketMode.Email: model.Mode = ConstantUtil.TicketModeString.Email; break;
+                    }
+
+                    switch (ticket.Type)
+                    {
+                        case ConstantUtil.TicketType.Request: model.Type = ConstantUtil.TicketTypeString.Request; break;
+                        case ConstantUtil.TicketType.Problem: model.Type = ConstantUtil.TicketTypeString.Problem; break;
+                        case ConstantUtil.TicketType.Change: model.Type = ConstantUtil.TicketTypeString.Change; break;
+                    }
+
+                    switch (ticket.Status)
+                    {
+                        case ConstantUtil.TicketStatus.New: model.Status = "New"; break;
+                        case ConstantUtil.TicketStatus.Assigned: model.Status = "Assigned"; break;
+                        case ConstantUtil.TicketStatus.Solved: model.Status = "Solved"; break;
+                        case ConstantUtil.TicketStatus.Unapproved: model.Status = "Unapproved"; break;
+                        case ConstantUtil.TicketStatus.Cancelled: model.Status = "Cancelled"; break;
+                        case ConstantUtil.TicketStatus.Closed: model.Status = "Closed"; break;
+                    }
+
+                    model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
+                    model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+                    model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
+                    model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
+                    model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
+                    model.CreateTime = ticket.CreatedTime;
+                    model.ModifiedTime = ticket.ModifiedTime;
+                    model.ScheduleEndTime = ticket.ScheduleEndDate;
+                    model.ScheduleStartTime = ticket.ScheduleStartDate;
+                    model.ActualStartTime = ticket.ActualStartDate;
+                    model.ActualEndTime = ticket.ActualEndDate;
+                    model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
+                    model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
+                    model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
+                    model.Solution = ticket.Solution;
+                    model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
+                    return View(model);
                 }
             }
-            else if (userRole.Id == ConstantUtil.UserRole.HelpDesk.ToString())
-            {
-                ViewBag.Role = "HelpDesk";
-                if (ticket.Status != ConstantUtil.TicketStatus.New &&
-                    ticket.Status != ConstantUtil.TicketStatus.Unapproved)
-                {
-                    return RedirectToAction("Index", "ManageTicket", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.
-                }
-            }
-            // Get Ticket information
-            AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
-            AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
-            AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
-            TicketSolveViewModel model = new TicketSolveViewModel();
-
-            model.ID = ticket.ID;
-            model.Subject = ticket.Subject;
-            model.Description = ticket.Description;
-
-            switch (ticket.Mode)
-            {
-                case ConstantUtil.TicketMode.PhoneCall: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
-                case ConstantUtil.TicketMode.WebForm: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
-                case ConstantUtil.TicketMode.Email: model.Mode = ConstantUtil.TicketModeString.Email; break;
-            }
-
-            switch (ticket.Type)
-            {
-                case ConstantUtil.TicketType.Request: model.Type = ConstantUtil.TicketTypeString.Request; break;
-                case ConstantUtil.TicketType.Problem: model.Type = ConstantUtil.TicketTypeString.Problem; break;
-                case ConstantUtil.TicketType.Change: model.Type = ConstantUtil.TicketTypeString.Change; break;
-            }
-
-            switch (ticket.Status)
-            {
-                case 1: model.Status = "New"; break;
-                case 2: model.Status = "Assigned"; break;
-                case 3: model.Status = "Solved"; break;
-                case 4: model.Status = "Unapproved"; break;
-                case 5: model.Status = "Cancelled"; break;
-                case 6: model.Status = "Closed"; break;
-            }
-
-            model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
-            model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
-            model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
-            model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
-            model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
-            model.CreateTime = ticket.CreatedTime;
-            model.ModifiedTime = ticket.ModifiedTime;
-            model.ScheduleEndTime = ticket.ScheduleEndDate;
-            model.ScheduleStartTime = ticket.ScheduleStartDate;
-            model.ActualStartTime = ticket.ActualStartDate;
-            model.ActualEndTime = ticket.ActualEndDate;
-            model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
-            model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
-            model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
-            model.Solution = ticket.Solution;
-            model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
-            return View(model);
+            return HttpNotFound();
         }
+
+        //[CustomAuthorize(Roles = "Helpdesk,Technician")]
+        //[HttpPost]
+        //public ActionResult Solve(int id, TicketSolveViewModel model, string command)
+        //{
+        //    Ticket ticket = _ticketService.GetTicketByID(id);
+        //    if (ticket == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+
+
+        //    switch (command)
+        //    {
+        //        case "Solve":
+        //            if (ModelState.IsValid)
+        //            {
+        //                ticket.SolveID = User.Identity.GetUserId();
+        //                ticket.SolvedDate = DateTime.Now;
+        //                ticket.ModifiedTime = DateTime.Now;
+        //                ticket.Solution = model.Solution;
+        //                _ticketService.SolveTicket(ticket);
+        //                return RedirectToAction("Index");
+        //            }
+        //            break;
+        //        case "Save":
+        //            if (ModelState.IsValid)
+        //            {
+        //                ticket.ModifiedTime = DateTime.Now;
+        //                ticket.Solution = model.Solution;
+        //                _ticketService.UpdateTicket(ticket);
+        //                return RedirectToAction("Index");
+        //            }
+        //            break;
+        //    }
+
+        //    // Get Ticket information
+        //    AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
+        //    AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
+        //    AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+
+        //    model.ID = ticket.ID;
+        //    model.Subject = ticket.Subject;
+        //    model.Description = ticket.Description;
+
+        //    switch (ticket.Mode)
+        //    {
+        //        case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
+        //        case 2: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
+        //        case 3: model.Mode = ConstantUtil.TicketModeString.Email; break;
+        //    }
+
+        //    switch (ticket.Type)
+        //    {
+        //        case 1: model.Type = ConstantUtil.TicketTypeString.Request; break;
+        //        case 2: model.Type = ConstantUtil.TicketTypeString.Problem; break;
+        //        case 3: model.Type = ConstantUtil.TicketTypeString.Change; break;
+        //    }
+
+        //    switch (ticket.Status)
+        //    {
+        //        case 1: model.Status = "New"; break;
+        //        case 2: model.Status = "Assigned"; break;
+        //        case 3: model.Status = "Solved"; break;
+        //        case 4: model.Status = "Unapproved"; break;
+        //        case 5: model.Status = "Cancelled"; break;
+        //        case 6: model.Status = "Closed"; break;
+        //    }
+
+        //    model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
+        //    model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+        //    model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
+        //    model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
+        //    model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
+        //    model.CreateTime = ticket.CreatedTime;
+        //    model.ModifiedTime = ticket.ModifiedTime;
+        //    model.ScheduleEndTime = ticket.ScheduleEndDate;
+        //    model.ScheduleStartTime = ticket.ScheduleStartDate;
+        //    model.ActualStartTime = ticket.ActualStartDate;
+        //    model.ActualEndTime = ticket.ActualEndDate;
+        //    model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
+        //    model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
+        //    model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
+        //    model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
+
+        //    return View(model);
+        //}
 
         [CustomAuthorize(Roles = "Helpdesk,Technician")]
         [HttpPost]
-        public ActionResult Solve(int id, TicketSolveViewModel model, string command)
+        public ActionResult SolveTicket(int? id, string solution, string command)
         {
-            Ticket ticket = _ticketService.GetTicketByID(id);
-            if (ticket == null)
+            if (id.HasValue)
             {
-                return HttpNotFound();
-            }
+                AspNetUser user = _userService.GetUserById(User.Identity.GetUserId());
+                string userRole = user.AspNetRoles.FirstOrDefault().Name;
 
-
-            switch (command)
-            {
-                case "Solve":
-                    if (ModelState.IsValid)
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket == null)
+                {
+                    return Json(new
                     {
+                        success = false,
+                        msg = ConstantUtil.CommonError.UnavailableTicket
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(solution))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        msg = "Please enter solution!"
+                    });
+                }
+
+                ticket.ModifiedTime = DateTime.Now;
+                ticket.Solution = solution;
+                string message = "";
+                switch (command)
+                {
+                    case "solveBtn":
                         ticket.SolveID = User.Identity.GetUserId();
                         ticket.SolvedDate = DateTime.Now;
-                        ticket.ModifiedTime = DateTime.Now;
-                        ticket.Solution = model.Solution;
                         _ticketService.SolveTicket(ticket);
-                        return RedirectToAction("Index");
-                    }
-                    break;
-                case "Save":
-                    if (ModelState.IsValid)
-                    {
-                        ticket.ModifiedTime = DateTime.Now;
-                        ticket.Solution = model.Solution;
+                        message = "Ticket was solved!";
+                        break;
+                    case "saveBtn":
                         _ticketService.UpdateTicket(ticket);
-                        return RedirectToAction("Index");
-                    }
-                    break;
-            }
-
-            // Get Ticket information
-            AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
-            AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
-            AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
-
-            model.ID = ticket.ID;
-            model.Subject = ticket.Subject;
-            model.Description = ticket.Description;
-
-            switch (ticket.Mode)
-            {
-                case 1: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
-                case 2: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
-                case 3: model.Mode = ConstantUtil.TicketModeString.Email; break;
-            }
-
-            switch (ticket.Type)
-            {
-                case 1: model.Type = ConstantUtil.TicketTypeString.Request; break;
-                case 2: model.Type = ConstantUtil.TicketTypeString.Problem; break;
-                case 3: model.Type = ConstantUtil.TicketTypeString.Change; break;
-            }
-
-            switch (ticket.Status)
-            {
-                case 1: model.Status = "New"; break;
-                case 2: model.Status = "Assigned"; break;
-                case 3: model.Status = "Solved"; break;
-                case 4: model.Status = "Unapproved"; break;
-                case 5: model.Status = "Cancelled"; break;
-                case 6: model.Status = "Closed"; break;
-            }
-
-            model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
-            model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
-            model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
-            model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
-            model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
-            model.CreateTime = ticket.CreatedTime;
-            model.ModifiedTime = ticket.ModifiedTime;
-            model.ScheduleEndTime = ticket.ScheduleEndDate;
-            model.ScheduleStartTime = ticket.ScheduleStartDate;
-            model.ActualStartTime = ticket.ActualStartDate;
-            model.ActualEndTime = ticket.ActualEndDate;
-            model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
-            model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
-            model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
-            model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
-
-            return View(model);
-        }
-
-        [CustomAuthorize(Roles = "Helpdesk,Technician")]
-        [HttpPost]
-        public ActionResult SolveTicket(int id, string solution, string command)
-        {
-
-            AspNetRole userRole = null;
-            if (User.Identity.GetUserId() != null)
-            {
-                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
-            }
-
-            if (userRole == null)
-            {
-                return HttpNotFound();
-            }
-
-            Ticket ticket = _ticketService.GetTicketByID(id);
-            if (ticket == null)
-            {
-                return HttpNotFound();
-            }
-
-            var message = "";
-
-            if (string.IsNullOrWhiteSpace(solution))
-            {
-                message = "Please enter solution!";
+                        message = "Solution saved!";
+                        break;
+                }
                 return Json(new
                 {
-                    success = false,
-                    error = true,
-                    msg = message
+                    success = true,
+                    msg = message,
+                    userRole = userRole
                 });
-            }
-            ticket.ModifiedTime = DateTime.Now;
-            ticket.Solution = solution;
-
-            switch (command)
-            {
-                case "solveBtn":
-                    ticket.SolveID = User.Identity.GetUserId();
-                    ticket.SolvedDate = DateTime.Now;
-                    _ticketService.SolveTicket(ticket);
-                    message = "Ticket was solved!";
-                    break;
-                case "saveBtn":
-                    _ticketService.UpdateTicket(ticket);
-                    message = "Solution saved!";
-                    break;
             }
             return Json(new
             {
-                success = true,
-                msg = message,
-                userRole = userRole.Name
+                success = false,
+                msg = ConstantUtil.CommonError.UnavailableTicket
             });
         }
-
 
         [HttpPost]
         public ActionResult ApproveTicket(int? id, string unapprovedReason)
@@ -764,5 +778,16 @@ namespace TMS.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser requester = _userService.GetUserById(id);
+            if (requester != null)
+            {
+                ViewBag.LayoutName = requester.Fullname;
+                ViewBag.LayoutAvatarURL = requester.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
+        }
     }
 }

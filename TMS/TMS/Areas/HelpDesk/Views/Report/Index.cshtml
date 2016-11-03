@@ -70,7 +70,7 @@
                     <!--Button Generate Report-->
                     <div class="form-group">
                         <div class="col-sm-offset-4">
-                            <button onclick="exportReport()" class="btn btn-primary btn-flat">Export Report</button>
+                            <button onclick="exportReport()" id="export-report-btn" class="btn btn-primary btn-flat">Export Report</button>
                         </div>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
 
                             <th>Actual End Date</th>
                             <th>Type</th>
-                            <th>Status</th>
+                            <th>Status</th> <!--Comlumn 6-->
                             <th>Mode</th>
 
                             <th>Catagory</th>
@@ -113,13 +113,31 @@
         <!-- /.box -->
     </div>
 </div>
-<div class="modal" id="loading-modal">
-    <img src="~/Content/img/ajax-loader.gif" />
+
+<div class="modal fade bs-example-modal-sm" id="loading-modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Exporting Report</h4>
+            </div>
+            <div class="modal-body alignCenter">
+                <p>We're exporting your report. Please wait...</p>
+                <img src="~/Content/img/ajax-loader.gif" />
+            </div>
+        </div>
+    </div>
 </div>
+
+<form class="hidden" id="export-report-form" action="/HelpDesk/Report/Export" method="POST">
+    <input type="hidden" name="GraphImage" id="graph-txt"/>
+    <input type="hidden" name="DataImage" id="data-txt"/>
+</form>
 
 @section Scripts {
     @Scripts.Render("~/bundles/chart")
     <script src="~/Content/js/html2canvas.js"></script>
+    <script src="~/Content/Plugins/jquerydownload/jquery.fileDownload.js"></script>
     <script>
         var defaultColors = [
             "#FF6384", "#36A2EB", "#FFCE56", "#f0f8ff", "#a4c639", "#8db600", "#ff9966", "#007fff", "#fae7b5",
@@ -178,7 +196,6 @@
                     {
                         data: chartData, // data format: [12, 19, 3, 5, 2, 3]
                         backgroundColor: colors
-                        //hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
                     }
                 ]
             }
@@ -222,7 +239,11 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[1];
+                            if (row[4] > row[3]) {
+                                return row[1] + "&nbsp;&nbsp;<label class='label label-danger'>Overdue</label>";
+                            } else {
+                                return row[1];
+                            }
                         },
                         // Subject
                         "targets": 1
@@ -244,6 +265,7 @@
                     {
                         "render": function (data, type, row) {
                             return row[4];
+                            
                         },
                         // Actual End Date
                         "targets": 4,
@@ -257,7 +279,19 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[6];
+                            if (row[6] == "New") {
+                                return "<label class='label label-info'>New</label>";
+                            }else if (row[6] == "Assigned") {
+                                return "<label class='label label-warning'>Assigned</label>";
+                            } else if (row[6] == "Solved") {
+                                return "<label class='label label-success'>Solved</label>";
+                            } else if (row[6] == "Unapproved") {
+                                return "<label class='label label-danger'>Unapproved</label>";
+                            } else if (row[6] == "Cancelled") {
+                                return "<label class='label label-default'>Cancelled</label>";
+                            } else if (row[6] == "Closed") {
+                                return "<label class='label label-default'>Closed</label>";
+                            }
                         },
                         // Status
                         "targets": 6,
@@ -391,6 +425,7 @@
         });
 
         var exportReport = function () {
+            $("#export-report-btn").prop("disabled", true);
             var graph_condition_div = document.getElementById("graph-condition-div");
             var data_div = document.getElementById("data-div");
             $("#loading-modal").modal('show');
@@ -398,27 +433,18 @@
                 onrendered: function (graph_condition_canvas) {
                     html2canvas(data_div, {
                         onrendered: function (data_canvas) {
-                            var graph_condition_img = new Image;
 
-                            graph_condition_img.id = 'graph-condition-img';    /// give an id so we can remove it in next step
-                            graph_condition_img.src = graph_condition_canvas.toDataURL("image/png");
-                            graph_condition_img.className = 'canvas-image'
-
-                            var data_img = new Image;
-
-                            data_img.id = 'data-img';    /// give an id so we can remove it in next step
-                            data_img.src = data_canvas.toDataURL("image/png");
-                            data_img.className = 'canvas-image'
-
-                            var hide = $('<style>').html('body *:not(.canvas-image) { display: none !important; }').appendTo(document.head);
-                            document.body.appendChild(graph_condition_img);
-                            document.body.appendChild(data_img);
-
-                            window.print();
-                            $('#graph-condition-img').remove();
-                            $('#data-img').remove();
-                            $("#loading-modal").modal('hide');
-                            hide.remove();
+                            $("#graph-txt").val(graph_condition_canvas.toDataURL("image/png"));
+                            $("#data-txt").val(data_canvas.toDataURL("image/png"));
+                            $.fileDownload($("#export-report-form").attr('action'), {
+                                successCallback: function (url) {
+                                    $("#loading-modal").modal('hide');
+                                },
+                                failMessageHtml: "There was a problem generating your report, please try again.",
+                                httpMethod: "POST",
+                                data: $("#export-report-form").serialize()
+                            });
+                            $("#export-report-btn").prop("disabled", false);
                         }
                     });
                 }

@@ -48,6 +48,10 @@
       <HintPath>..\packages\EAGetMail.4.6.0.3\lib\net45\EAGetMail45.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="itextsharp, Version=5.5.10.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -211,12 +215,14 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-    <Compile Include="Areas\Admin\Controllers\DepartmentController.cs" />
-    <Compile Include="Areas\Admin\Controllers\ManageSCController.cs" />
+    <Compile Include="Areas\Manager\Controllers\DepartmentController.cs" />
+    <Compile Include="Areas\Manager\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\BusinessRuleController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
+    <Compile Include="Areas\Manager\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
@@ -324,6 +330,7 @@
     <Compile Include="Schedulers\JobManager.cs" />
     <Compile Include="Schedulers\ConvertTicketJob.cs" />
     <Compile Include="Services\DepartmentService.cs" />
+    <Compile Include="Services\BusinessRuleService.cs" />
     <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Services\UserRoleService.cs" />
     <Compile Include="Utils\CustomAuthorizeAttribute.cs" />
@@ -331,6 +338,7 @@
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="Utils\LevenshteinDistance.cs" />
+    <Compile Include="Utils\PDFUtil.cs" />
     <Compile Include="Utils\PredicateBuilder.cs" />
     <Compile Include="Utils\SentenceUtil.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
@@ -339,13 +347,16 @@
     <Compile Include="Utils\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
+    <Compile Include="ViewModels\BusinessRuleViewModel.cs" />
+    <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
-    <Compile Include="ViewModels\KnowledgeBaseViewModels.cs" />
+    <Compile Include="ViewModels\KnowledgeBaseViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
+    <Compile Include="ViewModels\ProfileManagerViewModel.cs" />
     <Compile Include="ViewModels\RecentTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
@@ -410,7 +421,6 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
-    <Content Include="Content\js\jPages.min.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\html2canvas.js" />
@@ -474,6 +484,7 @@
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.full.min.js" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.css" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.min.js" />
+    <Content Include="Content\Plugins\jquerydownload\jquery.fileDownload.js" />
     <Content Include="Content\Plugins\jstree\32px.png" />
     <Content Include="Content\Plugins\jstree\style.min.css" />
     <Content Include="Content\Plugins\jstree\throbber.gif" />
@@ -542,9 +553,9 @@
     <Content Include="Areas\Admin\Views\ManageUser\Requester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateRequester.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditRequester.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\Priority.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\Impact.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\Urgency.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Priority.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Impact.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Urgency.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Technician\Views\web.config" />
     <Content Include="Areas\HelpDesk\Views\web.config" />
@@ -573,20 +584,25 @@
     <Content Include="Models\TMSModel.edmx.diagram">
       <DependentUpon>TMSModel.edmx</DependentUpon>
     </Content>
-    <Content Include="Areas\Admin\Views\ManageSC\Category.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Category.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\CreateNewTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\ManageTicket\EditTicket.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\PriorityMatrix.cshtml" />
-    <Content Include="Areas\Admin\Views\ManageSC\_PriorityMatrixTable.cshtml" />
-    <Content Include="Areas\Admin\Views\Department\Index.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\PriorityMatrix.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\_PriorityMatrixTable.cshtml" />
+    <Content Include="Areas\Manager\Views\Department\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\BussinessRules\Index.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BusinessRule\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateManager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditManager.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Profile\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Profile\UpdateProfile.cshtml" />
+    <Content Include="Areas\Manager\Views\web.config" />
+    <Content Include="Areas\Manager\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Manager\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\Manager\Views\Profile\UpdateProfile.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -678,8 +694,8 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Areas\Admin\Views\Default\" />
     <Folder Include="Areas\HelpDesk\Models\" />
+    <Folder Include="Areas\Manager\Models\" />
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
@@ -710,7 +726,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>58339</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

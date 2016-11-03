@@ -1,13 +1,14 @@
 ﻿@{
-    ViewBag.Title = "Urgency";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Priority";
+    Layout = "~/Areas/Manager/Views/Shared/_Layout.cshtml";
 }
+
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
-            <div class="box-body">
-                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Urgency</button>
-                <table class="table dataTable" id="urgency-table" dt-options="dtOptions">
+          <div class="box-body">
+                <button type="button" class="btn btn-flat btn-primary" data-target="#myModal" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Priority</button>
+                <table class="table dataTable" id="priority-table">
                     <thead>
                     <tr>
                         <th>
@@ -38,7 +39,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Urgency</h4>
+                <h4 class="modal-title">Priority</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
@@ -50,7 +51,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Description</label>
+                        <labeL class="col-sm-2 control-label">Description</labeL>
                         <div class="col-sm-10">
                             <textarea class="form-control" rows="3" placeholder="Description" id="description-txt"></textarea>
                         </div>
@@ -58,7 +59,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="create-btn" onclick="createUrgency()">Save</button>
+                <button type="button" class="btn btn-success" id="create-btn" onclick="createPriority()">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -92,20 +93,16 @@
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
-        $(document).ready(function () {
-            reloadDataTable();
-        });
-
-        $("#urgency-table")
+        $("#priority-table")
             .DataTable({
                 processing: true,
                 serverSide: true,
                 lengthChange: false,
-                filter: false,
-                paging: true,
+                paging: false,
                 sort: false,
+                filter: false,
                 ajax: {
-                    url: "/Admin/ManageSC/GetUrgency"
+                    url: "/Manager/ManageSC/GetPriority"
                 },
                 "columnDefs": [
                     {
@@ -123,15 +120,15 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getUrgencyDetail(\'' + row[0] + '\')"><i class = "fa fa-pencil"></i></a>&nbsp;&nbsp;' +
-                                '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
+                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getPriorityDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                                   '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                         },
                         "targets": 2
                     }
                 ]
             });
         var reloadDataTable = function () {
-            var oTable = $("#urgency-table").dataTable();
+            var oTable = $("#priority-table").dataTable();
             oTable._fnPageChange(0);
             oTable._fnAjaxUpdate();
         };
@@ -145,20 +142,20 @@
         var showCreateModal = function () {
             clearModal();
             $("#myModal").modal('show');
-            $('#create-btn').attr('onclick', 'createUrgency()');
+            $('#create-btn').attr('onclick', 'createPriority()');
         };
 
-        var createUrgency = function () {
+        var createPriority = function () {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
-                $("#name-validation-message").html("Name is required!");
+                $("#name-validation-message").html("Name is requried!");
                 $("#name-validation-message").show();
             } else if (name.trim().length < 4) {
                 $("#name-validation-message").html("Name must be longer than 4 characters!");
                 $("#name-validation-message").show();
             } else {
                 $.ajax({
-                    url: "/Admin/ManageSC/CreateUrgency",
+                    url: "/Manager/ManageSC/CreatePriority",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -186,10 +183,10 @@
             }
         };
 
-        var getUrgencyDetail = function (id) {
+        var getPriorityDetail = function (id) {
             clearModal();
             $.ajax({
-                url: "/Admin/ManageSC/GetUrgencyDetail",
+                url: "/Manager/ManageSC/GetPriorityDetail",
                 dataType: "json",
                 type: "GET",
                 data: {
@@ -200,7 +197,7 @@
                         $("#myModal").modal("show");
                         $("#name-txt").val(data.name);
                         $("#description-txt").val(data.description);
-                        $("#create-btn").attr("onclick", "editUrgency('" + id + "')");
+                        $("#create-btn").attr("onclick", "editPriority('" + id + "')");
                     } else {
                         if (data.error) {
                             $.notify(data.message, "error");
@@ -213,8 +210,7 @@
             });
         };
 
-        var editUrgency = function (id) {
-            //jquery
+        var editPriority = function (id) {
             var name = $("#name-txt").val();
             if (name.trim() === "") {
                 $("#name-validation-message").html("Name is required");
@@ -226,7 +222,7 @@
                 //ajax syntax
                 $.ajax(
                 {
-                    url: "/Admin/ManageSC/EditUrgency",
+                    url: "/Manager/ManageSC/EditPriority",
                     dataType: "json",
                     type: "POST",
                     data: {
@@ -253,39 +249,36 @@
                     }
                 });
             }
-
         };
 
         var showDeleteModal = function (id) {
-            $("#yes-btn").attr("onclick", "deleteUrgency('" + id + "')");
+            $("#yes-btn").attr("onclick", "deletePriority('" + id + "')");
             $("#delete-modal").modal("show");
         };
 
-        var deleteUrgency = function (id) {
+        var deletePriority = function (id) {
             $.ajax({
-                url: "/Admin/ManageSC/DeleteUrgency",
+                url: "/Manager/ManageSC/DeletePriority",
                 dataType: "json",
-                type: "post",
-                data: {
-                    id: id
-                },
+                type: "POST",
+                data: { id: id },
                 success: function (data) {
                     if (data.success) {
-                        $("#delete-modal").modal("hide");
                         $.notify(data.message, "success");
+                        $("#delete-modal").modal("hide");
                         reloadDataTable();
                     } else if (!data.success) {
-                        $("#delete-modal").modal("hide");
                         $.notify(data.message, "error");
+                        $("#delete-modal").modal("hide");
                     }
                 },
                 error: function () {
                     $.notify(data.message, "error");
                 }
             });
-        }
 
+        };
 
     </script>
-}
 
+}
