@@ -33,7 +33,26 @@ namespace TMS.Controllers
         // GET: KB
         public ActionResult Index()
         {
+            switch(UserRole())
+            {
+                case "Admin": ViewBag.Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; break;
+                case "Technician": ViewBag.Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml"; break;
+                case "Helpdesk": ViewBag.Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml"; break;
+                default: ViewBag.Layout = "~/Views/Shared/TMSRequesterLayout.cshtml"; break;
+            }
             return View();
+        }
+
+        public string UserRole()
+        {
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                return userRole.Name;
+            }
+
+            return "Guest";
         }
 
         [HttpGet]

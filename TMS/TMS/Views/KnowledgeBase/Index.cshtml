@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    Layout = ViewBag.Layout;
     ViewBag.Title = "Solutions";
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
@@ -172,7 +172,7 @@
                             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
                         </a>
                         <a href="javascript:void(0)" class="btn btn-flat btn-info" onclick="showSimilarTicketFrequencyModal();">Similar ticket frequency</a>
-                        <a class="btn btn-default btn-flat" href="javascript:void{0}"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-default btn-flat" id="delete-solutions" href="javascript:void{0}"><i class="fa fa-trash"></i></a>
                     </div>
                     <div class="box-tools pull-right col-md-4">
                         <div class="has-feedback">
@@ -182,6 +182,23 @@
                     </div>
                 </div>
                 <div class="question-list col-md-12">
+                </div>
+            </div>
+            <div id="delete-modal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Confirm</h4>
+                        </div>
+                        <div class="modal-body detail-modal-body">
+                             Do you want to delete these solutions?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="yesBtn" class="btn btn-primary btn-flat">Yes</button>
+                            <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">No</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -229,6 +246,7 @@
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
         var sum = 0;
+        var selectedSolutions = [];
 
         $(document).ready(function () {
             notifyFlashMessage();
@@ -344,7 +362,7 @@
                             var sId = data.data[i].ID;
                             var keywordTags = (data.data[i].Keyword).split(',');
                             $(".question-list").append(
-                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-id="' + sId + '/>'
+                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-role="cbox-solution" data-id="' + sId + '/>'
                              + '&nbsp;&nbsp;<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
                              + '</div><div class="col-lg-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
                              + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + sId + '"><i class="fa fa-pencil"></i></a></div>'
@@ -398,8 +416,8 @@
                             var sId = data.data[i].ID;
                             var keywordTags = (data.data[i].Keyword).split(',');
                             $(".question-list").append(
-                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" />'
-                             + '<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
+                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-role="cbox-solution" data-id="' + sId + '/>'
+                             + '&nbsp;&nbsp;<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
                              + '</div><div class="col-lg-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
                              + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + sId + '"><i class="fa fa-pencil"></i></a></div>'
                              + '<div class="question-detail col-sm-12">'
@@ -436,15 +454,16 @@
             $(".question-list").css("height", contentHeight);
         }
 
-        function deleteSolutions(id) {
-            var selectedSolutions = [];
-            $('input[type="checkbox"]').each(function (index, element) {
+        function checkSelectedCheckbox() {
+            $('input[data-role="cbox-solution"]').each(function (index, element) {
                 var id = $(element).attr("data-id");
                 if (selectedSolutions.indexOf(id) != -1) {
                     $(element).prop("checked", true);
                 }
             });
+        }
 
+        function deleteSolutions() {
             $.ajax({
                 url: "/KnowledgeBase/Delete/",
                 type: "POST",
@@ -478,6 +497,29 @@
                 }
             });
         }
+
+        $('.question-list').on('click', 'input[data-role="cbox-solution"]', function (e) {
+            var id = $(this).attr("data-id");
+            if (selectedSolutions.indexOf(id) == -1) {
+                selectedSolutions.push(id);
+            } else {
+                selectedSolutions.splice(selectedSolutions.indexOf(id), 1);
+            }
+            if (selectedSolutions.length == 0) {
+                $("#delete-solutions").addClass("disabled");
+            } else {
+                $("#delete-solutions").removeClass("disabled");
+            }
+        });
+
+        $("#delete-solutions").on("click", function () {
+            $modal = $("#delete-modal");
+            $modal.modal("show");
+        });
+
+        $("#yesBtn").on("click", function () {
+            deleteSolutions();
+        });
 
         $("#key_search").on("keyup", function () {
             if ($("#category-treeview-div .category-node").hasClass("jstree-clicked")) {
