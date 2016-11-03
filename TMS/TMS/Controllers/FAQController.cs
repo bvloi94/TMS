@@ -30,7 +30,7 @@ namespace TMS.Controllers
             _categoryService = new CategoryService(_unitOfWork);
         }
         // GET: FAQ
-        public ActionResult Index()
+        public ActionResult Index(string SearchKey, string Category)
         {
             AspNetRole userRole = null;
             if (User.Identity.GetUserId() != null)
@@ -40,36 +40,38 @@ namespace TMS.Controllers
 
             switch (userRole.Name)
             {
-                case "Requester":
-                    ViewBag.Home = "/Index";
-                    ViewBag.ItemLink1 = "/FAQ/Index";
-                    ViewBag.Item1 = "FAQ";
-                    ViewBag.ItemLink2 = "/Ticket/Index";
-                    ViewBag.Item2 = "Ticket";
-                    ViewBag.Profile = "#";
-                    break;
                 case "Admin":
-                    ViewBag.Home = "System Config";
+                    ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/Admin/ManageSC/Impact";
-                    ViewBag.Item1 = "FAQ";
+                    ViewBag.Item1 = "System Config";
                     ViewBag.ItemLink2 = "/Admin/ManageUser/Admin";
                     ViewBag.Item2 = "Manage User";
                     ViewBag.Profile = "#"; break;
                 case "Technician":
-                    ViewBag.Home = "/Index";
+                    ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/KnowledgeBase/Index";
                     ViewBag.Item1 = "Knowledge Base";
                     ViewBag.ItemLink2 = "/Technician/ManageTicket";
                     ViewBag.Item2 = "Ticket";
                     ViewBag.Profile = "#"; break;
                 case "Helpdesk":
-                    ViewBag.Home = "/Index";
+                    ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/KnowledgeBase/Index";
                     ViewBag.Item1 = "Knowledge Base";
                     ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
                     ViewBag.Item2 = "Ticket";
                     ViewBag.Profile = "#"; break;
+                default:
+                    ViewBag.Home = "/FAQ/Index";
+                    ViewBag.ItemLink1 = "/FAQ/Index";
+                    ViewBag.Item1 = "FAQ";
+                    ViewBag.ItemLink2 = "/Ticket/Index";
+                    ViewBag.Item2 = "Ticket";
+                    ViewBag.Profile = "#";
+                    break;
             }
+
+
             return View();
         }
 
@@ -172,39 +174,35 @@ namespace TMS.Controllers
 
                     switch (userRole.Name)
                     {
-                        case "Requester":
-                            ViewBag.Home = "/Index";
+                        case "Admin":
+                            ViewBag.Home = "/FAQ/Index";
+                            ViewBag.ItemLink1 = "/Admin/ManageSC/Impact";
+                            ViewBag.Item1 = "System Config";
+                            ViewBag.ItemLink2 = "/Admin/ManageUser/Admin";
+                            ViewBag.Item2 = "Manage User";
+                            ViewBag.Profile = "#"; break;
+                        case "Technician":
+                            ViewBag.Home = "/FAQ/Index";
+                            ViewBag.ItemLink1 = "/KnowledgeBase/Index";
+                            ViewBag.Item1 = "Knowledge Base";
+                            ViewBag.ItemLink2 = "/Technician/ManageTicket";
+                            ViewBag.Item2 = "Ticket";
+                            ViewBag.Profile = "#"; break;
+                        case "Helpdesk":
+                            ViewBag.Home = "/FAQ/Index";
+                            ViewBag.ItemLink1 = "/KnowledgeBase/Index";
+                            ViewBag.Item1 = "Knowledge Base";
+                            ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
+                            ViewBag.Item2 = "Ticket";
+                            ViewBag.Profile = "#"; break;
+                        default:
+                            ViewBag.Home = "/FAQ/Index";
                             ViewBag.ItemLink1 = "/FAQ/Index";
                             ViewBag.Item1 = "FAQ";
                             ViewBag.ItemLink2 = "/Ticket/Index";
                             ViewBag.Item2 = "Ticket";
                             ViewBag.Profile = "#";
                             break;
-                        case "Admin":
-                            ViewBag.Home = "#";
-                            ViewBag.ItemLink1 = "/Admin/ManageUser/Admin";
-                            ViewBag.Item1 = "Users";
-                            ViewBag.ItemLink2 = "/Admin/ManageSC/Impact";
-                            ViewBag.Item2 = "System configuration";
-                            ViewBag.Profile = "#";
-                            break;
-                        case "Technician":
-                            ViewBag.Home = "#";
-                            ViewBag.ItemLink1 = "#";
-                            ViewBag.Item1 = "Home";
-                            ViewBag.ItemLink2 = "/Technician/ManageTicket";
-                            ViewBag.Item2 = "Ticket";
-                            ViewBag.Profile = "#";
-                            break;
-                        case "Helpdesk":
-                            ViewBag.Home = "#";
-                            ViewBag.ItemLink1 = "/KnowledgeBase";
-                            ViewBag.Item1 = "Knowledge base";
-                            ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
-                            ViewBag.Item2 = "Ticket";
-                            ViewBag.Profile = "#";
-                            break;
-                        default: break;
                     }
 
                     return View(model);
