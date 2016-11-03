@@ -112,8 +112,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 p.PriorityID == null ? "-" : _priorityService.GetPriorityByID((int) p.PriorityID).Name,
                 p.TechnicianID == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name
             });
-
-
+            
             return Json(new
             {
                 param.sEcho,
@@ -156,19 +155,19 @@ namespace TMS.Areas.HelpDesk.Controllers
                 // All pending requests
                 case ConstantUtil.TicketTypeValue.PendingRequest:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
-                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
                         && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                 // All pending problems
                 case ConstantUtil.TicketTypeValue.PendingProblem:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
-                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
                         && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                 // All pending changes
                 case ConstantUtil.TicketTypeValue.PendingChange:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
-                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
                         && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                     // Default All tickets
@@ -278,27 +277,30 @@ namespace TMS.Areas.HelpDesk.Controllers
                 // Department
                 case 5:
                     {
-                        IEnumerable<AspNetUser> listTechinicians = _userService.GetTechnicians();
+                        IEnumerable<AspNetUser> allTehnicians = _userService.GetTechnicians();
                         IEnumerable<Ticket> techinicianInteTickets = new List<Ticket>();
                         labels.Add("Unassigned");
                         data.Add(filteredListItems.Where(p => p.TechnicianID == null).Count());
-                        foreach (var techinician in listTechinicians)
+                        IEnumerable<Department> departments = _departmentService.GetAll();
+                        foreach (var department in departments)
                         {
-                            techinicianInteTickets = filteredListItems.Where(p => p.TechnicianID == techinician.Id);
-                            IEnumerable<Department> departments = _departmentService.GetAll();
-                            foreach (var department in departments)
+                            int ticketCount = 0;
+                            var listTechOfDepartment = allTehnicians.Where(p => p.DepartmentID == department.ID);
+                            // lay list technician co department la "department"
+                            foreach (var techinician in listTechOfDepartment)
                             {
-                                labels.Add(department.Name);
-                                listTechinicians = listTechinicians.Where(p => p.DepartmentID == department.ID);
-                                data.Add(listTechinicians.Count());
+                                // duyet list ticket theo technician ID 
+                                techinicianInteTickets = filteredListItems.Where(p => p.TechnicianID == techinician.Id);
+                                ticketCount += techinicianInteTickets.Count();
                             }
+                            labels.Add(department.Name);
+                            data.Add(ticketCount);
                         }
                         return Json(new
                         {
                             label = labels,
                             data = data
                         }, JsonRequestBehavior.AllowGet);
-
                     }
                 // Status
                 case 6:
