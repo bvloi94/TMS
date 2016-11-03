@@ -94,3 +94,4 @@ ERROR 2016-11-03 11:18:44,166 JobManager             ExecuteAllJobs     - The Jo
 DEBUG 2016-11-03 11:18:44,167 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
 DEBUG 2016-11-03 11:18:44,169 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
 DEBUG 2016-11-03 11:18:44,172 JobManager             ExecuteAllJobs     - End Method
+ERROR 2016-11-03 11:49:06,589 EmailUtil              ailsUsingEAGetMail - No such host is known
