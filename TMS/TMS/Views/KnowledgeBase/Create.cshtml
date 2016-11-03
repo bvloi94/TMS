@@ -1,7 +1,17 @@
-﻿@model TMS.ViewModels.KnowledgeBaseViewModel
+﻿@using TMS.Utils
+@model TMS.ViewModels.KnowledgeBaseViewModel
 @{
-    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Create knowledge Base";
+}
+@{
+    if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.HelpDesk)
+    {
+        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    }
+    else if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.Technician)
+    {
+        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    }
 }
 <link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css" />
 <style>
