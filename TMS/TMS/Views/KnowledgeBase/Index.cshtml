@@ -373,7 +373,7 @@
                             var sId = data.data[i].ID;
                             var keywordTags = (data.data[i].Keyword).split(',');
                             $(".question-list").append(
-                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-role="cbox-solution" data-id="' + sId + '/>'
+                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-role="cbox-solution" data-id="' + sId + '"/>'
                              + '&nbsp;&nbsp;<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
                              + '</div><div class="col-lg-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
                              + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + sId + '"><i class="fa fa-pencil"></i></a></div>'

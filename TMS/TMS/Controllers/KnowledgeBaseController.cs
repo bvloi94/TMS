@@ -463,7 +463,7 @@ namespace TMS.Controllers
             }
             return Json(new
             {
-                data = filteredListItems
+                data = filteredListItems.OrderBy(m => m.Subject)
             }, JsonRequestBehavior.AllowGet);
         }
 

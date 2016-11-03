@@ -94,7 +94,7 @@ namespace TMS.Controllers
                         Path = m.Path,
                         CreatedTime = m.CreatedTime,
                         ModifiedTime = m.ModifiedTime
-                    }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
+                    }).OrderBy(m => m.Subject).ToArray().Take(20);
             }
             else
             {
@@ -110,7 +110,7 @@ namespace TMS.Controllers
                     Path = m.Path,
                     CreatedTime = m.CreatedTime,
                     ModifiedTime = m.ModifiedTime
-                }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
+                }).OrderBy(m => m.Subject).ToArray();
             }
 
             if (!string.IsNullOrWhiteSpace(key_search))
@@ -231,7 +231,7 @@ namespace TMS.Controllers
                     Keyword = m.Keyword == null ? "-" : m.Keyword,
                     CreatedTime = m.CreatedTime,
                     ModifiedTime = m.ModifiedTime
-                }).ToList().Take(5);
+                }).OrderBy(m => m.Subject).ToList().Take(5);
             return relatedSolution;
         }
     }
