@@ -46,7 +46,7 @@ namespace TMS.Utils
                 //    leftHeight = height;
                 //}
                 PdfContentByte canvas = PDFWriter.DirectContent;
-                canvas.AddImage(image, w, 0, 0, h, document.LeftMargin, document.BottomMargin);
+                canvas.AddImage(image, 2 * w / 3, 1 * w / 3, 0, h, document.LeftMargin, document.BottomMargin);
                 document.NewPage();
                 //document.Add(image);
             }
