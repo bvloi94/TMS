@@ -32,12 +32,44 @@ namespace TMS.Controllers
         // GET: FAQ
         public ActionResult Index()
         {
-            ViewBag.Home = "/Index";
-            ViewBag.ItemLink1 = "/FAQ/Index";
-            ViewBag.Item1 = "FAQ";
-            ViewBag.ItemLink2 = "/Ticket/Index";
-            ViewBag.Item2 = "Ticket";
-            ViewBag.Profile = "#";
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+            }
+
+            switch (userRole.Name)
+            {
+                case "Requester":
+                    ViewBag.Home = "/Index";
+                    ViewBag.ItemLink1 = "/FAQ/Index";
+                    ViewBag.Item1 = "FAQ";
+                    ViewBag.ItemLink2 = "/Ticket/Index";
+                    ViewBag.Item2 = "Ticket";
+                    ViewBag.Profile = "#";
+                    break;
+                case "Admin":
+                    ViewBag.Home = "System Config";
+                    ViewBag.ItemLink1 = "/Admin/ManageSC/Impact";
+                    ViewBag.Item1 = "FAQ";
+                    ViewBag.ItemLink2 = "/Admin/ManageUser/Admin";
+                    ViewBag.Item2 = "Manage User";
+                    ViewBag.Profile = "#"; break;
+                case "Technician":
+                    ViewBag.Home = "/Index";
+                    ViewBag.ItemLink1 = "/KnowledgeBase/Index";
+                    ViewBag.Item1 = "Knowledge Base";
+                    ViewBag.ItemLink2 = "/Technician/ManageTicket";
+                    ViewBag.Item2 = "Ticket";
+                    ViewBag.Profile = "#"; break;
+                case "Helpdesk":
+                    ViewBag.Home = "/Index";
+                    ViewBag.ItemLink1 = "/KnowledgeBase/Index";
+                    ViewBag.Item1 = "Knowledge Base";
+                    ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
+                    ViewBag.Item2 = "Ticket";
+                    ViewBag.Profile = "#"; break;
+            }
             return View();
         }
 
@@ -62,7 +94,7 @@ namespace TMS.Controllers
                         Path = m.Path,
                         CreatedTime = m.CreatedTime,
                         ModifiedTime = m.ModifiedTime
-                    }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
+                    }).OrderBy(m => m.Subject).ToArray().Take(20);
             }
             else
             {
@@ -78,7 +110,7 @@ namespace TMS.Controllers
                     Path = m.Path,
                     CreatedTime = m.CreatedTime,
                     ModifiedTime = m.ModifiedTime
-                }).OrderByDescending(m => m.ModifiedTime).ToArray().Take(20);
+                }).OrderBy(m => m.Subject).ToArray();
             }
 
             if (!string.IsNullOrWhiteSpace(key_search))
@@ -93,6 +125,21 @@ namespace TMS.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult GetCategoryTreeViewData()
+        {
+            IEnumerable<CategoryViewModel> list = _categoryService.GetAll().Select(m => new CategoryViewModel
+            {
+                ID = m.ID,
+                Name = m.Name,
+                ParentId = m.ParentID,
+                Level = m.CategoryLevel
+            }).ToArray();
+            return Json(new
+            {
+                data = list
+            }, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpGet]
         public ActionResult Detail(string path)
@@ -184,24 +231,8 @@ namespace TMS.Controllers
                     Keyword = m.Keyword == null ? "-" : m.Keyword,
                     CreatedTime = m.CreatedTime,
                     ModifiedTime = m.ModifiedTime
-                }).ToList().Take(5);
+                }).OrderBy(m => m.Subject).ToList().Take(5);
             return relatedSolution;
-        }
-
-        [HttpGet]
-        public ActionResult GetCategoryTreeViewData()
-        {
-            IEnumerable<CategoryViewModel> list = _categoryService.GetAll().Select(m => new CategoryViewModel
-            {
-                ID = m.ID,
-                Name = m.Name,
-                ParentId = m.ParentID,
-                Level = m.CategoryLevel
-            }).ToArray();
-            return Json(new
-            {
-                data = list
-            }, JsonRequestBehavior.AllowGet);
         }
     }
 }

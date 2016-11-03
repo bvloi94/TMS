@@ -182,7 +182,7 @@
                             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
                         </a>
                         <a href="javascript:void(0)" class="btn btn-flat btn-info" onclick="showSimilarTicketFrequencyModal();">Similar ticket frequency</a>
-                        <a class="btn btn-default btn-flat" href="javascript:void{0}"><i class="fa fa-trash"></i></a>
+                        <a class="btn btn-default btn-flat" id="delete-solutions" href="javascript:void{0}"><i class="fa fa-trash"></i></a>
                     </div>
                     <div class="box-tools pull-right col-md-4">
                         <div class="has-feedback">
@@ -192,6 +192,23 @@
                     </div>
                 </div>
                 <div class="question-list col-md-12">
+                </div>
+            </div>
+            <div id="delete-modal" class="modal fade" role="dialog">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Confirm</h4>
+                        </div>
+                        <div class="modal-body detail-modal-body">
+                             Do you want to delete these solutions?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="yesBtn" class="btn btn-primary btn-flat">Yes</button>
+                            <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">No</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -239,11 +256,12 @@
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
         var sum = 0;
+        var selectedSolutions = [];
 
         $(document).ready(function () {
             notifyFlashMessage();
             showTreeViewModal();
-            getAllSolution();
+            getSolutionsByActiveNode(null);
             initSimilarTicketFrequencyTable();
             $(".menu-item").click(function () {
 
@@ -334,59 +352,6 @@
             });
         };
 
-        function getAllSolution() {
-            $.ajax({
-                url: "/KnowledgeBase/GetSolutions/",
-                type: "GET",
-                data: {
-                    key_search: $("#key_search").val()
-                },
-                success: function (data) {
-                    $(".question-list").empty();
-                    if (data.data.length == 0) {
-                        $(".question-list").append("<div class='col-sm-12' style='text-align:center'><p>There is no solution to display. </p></div>");
-                    } else {
-                        for (i = 0; i < data.data.length; i++) {
-                            var content = data.data[i].Content;
-                            content = $.truncate(content, {
-                                length: 350,
-                            });
-                            var sId = data.data[i].ID;
-                            var keywordTags = (data.data[i].Keyword).split(',');
-                            $(".question-list").append(
-                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-id="' + sId + '/>'
-                             + '&nbsp;&nbsp;<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
-                             + '</div><div class="col-lg-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
-                             + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + sId + '"><i class="fa fa-pencil"></i></a></div>'
-                             + '<div class="question-detail col-sm-12">'
-                             + '<p><i class="fa fa-calendar"></i>&nbsp;Created time: ' + formatDateTime(new Date(parseInt(data.data[i].CreatedTime.substr(6)))) + '</p>'
-                             + content + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
-                             + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></div></div>');
-                            $("#keyword" + sId).empty();
-                            if (data.data[i].Keyword != "-") {
-                                $("#keyword" + sId).append("<li style='padding: 5px 0px'>Keywords: </li>");
-                                for (j = 0; j < keywordTags.length; j++) {
-                                    var key = keywordTags[j].replace(/"/g, '');
-                                    $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
-                                }
-                            } else {
-                                $("#keyword" + sId).append("<li>Keywords: -</li>");
-                            }
-                            $(".question-list").find('img').hide();
-                        }
-                    }
-                },
-                error: function (data) {
-                    noty({
-                        text: "Cannot connect to server! Please try again later!",
-                        type: "error",
-                        layout: "topRight",
-                        timeout: 2500
-                    });
-                }
-            });
-        }
-
         function getSolutionsByActiveNode(id) {
             $.ajax({
                 url: "/KnowledgeBase/GetSolutionsByCategory/",
@@ -408,8 +373,8 @@
                             var sId = data.data[i].ID;
                             var keywordTags = (data.data[i].Keyword).split(',');
                             $(".question-list").append(
-                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" />'
-                             + '<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
+                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-role="cbox-solution" data-id="' + sId + '"/>'
+                             + '&nbsp;&nbsp;<a class="question-title" href="javascrip:void{0}"> ' + data.data[i].Subject + '</a>'
                              + '</div><div class="col-lg-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
                              + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + sId + '"><i class="fa fa-pencil"></i></a></div>'
                              + '<div class="question-detail col-sm-12">'
@@ -446,15 +411,16 @@
             $(".question-list").css("height", contentHeight);
         }
 
-        function deleteSolutions(id) {
-            var selectedSolutions = [];
-            $('input[type="checkbox"]').each(function (index, element) {
+        function checkSelectedCheckbox() {
+            $('input[data-role="cbox-solution"]').each(function (index, element) {
                 var id = $(element).attr("data-id");
                 if (selectedSolutions.indexOf(id) != -1) {
                     $(element).prop("checked", true);
                 }
             });
+        }
 
+        function deleteSolutions() {
             $.ajax({
                 url: "/KnowledgeBase/Delete/",
                 type: "POST",
@@ -489,12 +455,35 @@
             });
         }
 
+        $('.question-list').on('click', 'input[data-role="cbox-solution"]', function (e) {
+            var id = $(this).attr("data-id");
+            if (selectedSolutions.indexOf(id) == -1) {
+                selectedSolutions.push(id);
+            } else {
+                selectedSolutions.splice(selectedSolutions.indexOf(id), 1);
+            }
+            if (selectedSolutions.length == 0) {
+                $("#delete-solutions").addClass("disabled");
+            } else {
+                $("#delete-solutions").removeClass("disabled");
+            }
+        });
+
+        $("#delete-solutions").on("click", function () {
+            $modal = $("#delete-modal");
+            $modal.modal("show");
+        });
+
+        $("#yesBtn").on("click", function () {
+            deleteSolutions();
+        });
+
         $("#key_search").on("keyup", function () {
             if ($("#category-treeview-div .category-node").hasClass("jstree-clicked")) {
                 getSolutionsByActiveNode($(".jstree-clicked").attr("data-id"));
             }
             else {
-                getAllSolution();
+                getSolutionsByActiveNode(null);
             }
         });
 

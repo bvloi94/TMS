@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using TMS.DAL;
@@ -317,6 +319,34 @@ namespace TMS.Areas.HelpDesk.Controllers
                     }
             }
             return null;
+        }
+
+        [HttpPost]
+        public FileContentResult Export(string GraphImage, string DataImage)
+        {
+            byte[] graphBytes = Convert.FromBase64String(GraphImage.Replace("data:image/png;base64,", String.Empty));
+            byte[] dataBytes = Convert.FromBase64String(DataImage.Replace("data:image/png;base64,", String.Empty));
+            List<byte[]> imagesByte = new List<byte[]>();
+            imagesByte.Add(graphBytes);
+            imagesByte.Add(dataBytes);
+
+            var content = PDFUtil.ReportContent(imagesByte);
+
+            string fileName = DateTime.Now.ToShortDateString().Replace("/", String.Empty) + "report.pdf";
+
+            Response.Buffer = false;
+            Response.Clear();
+            Response.ClearContent();
+            Response.ClearHeaders();
+            Response.AppendHeader("content-disposition", "attachment;filename=" + fileName);
+            Response.AppendHeader("Set-Cookie", "fileDownload=true; path=/");
+            Response.ContentType = "Application/pdf";
+
+            //Write the file content directly to the HTTP content output stream.    
+            Response.BinaryWrite(content);
+            Response.Flush();
+            Response.End();
+            return File(content, "application/pdf");
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

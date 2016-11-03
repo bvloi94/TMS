@@ -173,8 +173,18 @@
             loadFAQ($(this).attr("id"));
         });
 
-        $('#search-solution').keyup(function () {
+        //$('#search-solution').keyup(function () {
+        //    loadFAQ();
+        //});
+
+        $('#btn-search-solution').on("click", function () {
             loadFAQ();
+        });
+
+        $('#search-solution').on("keypress", function (e) {
+            if (e.keyCode == 13) {
+                loadFAQ();
+            }
         });
 
         function loadKeyword(id, keyword) {
@@ -198,7 +208,11 @@
                     $('#all-articles').empty();
                     var key_search = $('#search-solution').val();
                     if (key_search) {
-                        $("#main-title").empty().append("<h4>Searching with keyword: " + $('#search-solution').val() + "</h4>");
+                        if (data.data.length >= 1) {
+                            $("#main-title").empty().append("<h4>There are " + data.data.length + " results matched with keyword <i>" + $('#search-solution').val() + ".<i></h4>");
+                        } else {
+                            $("#main-title").empty().append("<h4>There is no result matched with keyword <i>" + $('#search-solution').val() + "<i></h4>");
+                        }
                     } else if (categoryName) {
                         $("#main-title").empty().append("<h1>Category: " + categoryName + "</h1>");
                     } else {
@@ -223,9 +237,11 @@
                                 + '<p class="longContent">' + content + '</p><a class="link-color" href="/FAQ/Detail?Path=' + data.data[i].Path + '"> Continue reading</a>'
                                 + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></article></li>');
                             $("#keyword" + sId).empty();
-                            for (j = 0; j < keywordTags.length; j++) {
-                                var key = keywordTags[j].replace(/"/g, '');
-                                $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+                            if (keywordTags[0] != "-") {
+                                for (j = 0; j < keywordTags.length; j++) {
+                                    var key = keywordTags[j].replace(/"/g, '');
+                                    $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+                                }
                             }
                         }
                         
@@ -262,7 +278,7 @@
                         "dots": false
                     },
                     "data": {
-                        "url": "/Admin/ManageSC/GetCategoryTreeViewData",
+                        "url": "/FAQ/GetCategoryTreeViewData",
                         "type": "GET",
                         "contentType": "application/json; charset=utf-8",
                         "dataFilter": function (json) {

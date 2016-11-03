@@ -48,6 +48,10 @@
       <HintPath>..\packages\EAGetMail.4.6.0.3\lib\net45\EAGetMail45.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="itextsharp, Version=5.5.10.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -334,6 +338,7 @@
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
     <Compile Include="Utils\LevenshteinDistance.cs" />
+    <Compile Include="Utils\PDFUtil.cs" />
     <Compile Include="Utils\PredicateBuilder.cs" />
     <Compile Include="Utils\SentenceUtil.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
@@ -479,6 +484,7 @@
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.full.min.js" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.css" />
     <Content Include="Content\Plugins\datetimepicker\jquery.datetimepicker.min.js" />
+    <Content Include="Content\Plugins\jquerydownload\jquery.fileDownload.js" />
     <Content Include="Content\Plugins\jstree\32px.png" />
     <Content Include="Content\Plugins\jstree\style.min.css" />
     <Content Include="Content\Plugins\jstree\throbber.gif" />
