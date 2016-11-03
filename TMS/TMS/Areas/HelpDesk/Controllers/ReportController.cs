@@ -60,35 +60,35 @@ namespace TMS.Areas.HelpDesk.Controllers
             // Type
             switch (type)
             {
-                // All Request 
+                // All Request : All ticket have type request
                 case ConstantUtil.TicketTypeValue.Request:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
                     break;
-                // All Problems
+                // All Problems: All ticket have type problem
                 case ConstantUtil.TicketTypeValue.Problem:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
                     break;
-                // All Request
+                // All Request:  All ticket have type change
                 case ConstantUtil.TicketTypeValue.Change:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
                     break;
-                // All pending requests
+                // All pending requests: All ticket have type request and have status != cancel and closed
                 case ConstantUtil.TicketTypeValue.PendingRequest:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
-                // All pending problems
+                // All pending problems: All ticket have type problems and have status != cancel and closed
                 case ConstantUtil.TicketTypeValue.PendingProblem:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
-                // All pending changes
+                // All pending changes: All ticket have type change and have status != cancel and closed
                 case ConstantUtil.TicketTypeValue.PendingChange:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                     // Default All tickets
             }
@@ -155,19 +155,19 @@ namespace TMS.Areas.HelpDesk.Controllers
                 case ConstantUtil.TicketTypeValue.PendingRequest:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                 // All pending problems
                 case ConstantUtil.TicketTypeValue.PendingProblem:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                 // All pending changes
                 case ConstantUtil.TicketTypeValue.PendingChange:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                     // Default All tickets
             }
