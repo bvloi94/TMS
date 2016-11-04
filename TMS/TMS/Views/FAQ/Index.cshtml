@@ -1,14 +1,19 @@
-﻿@model TMS.ViewModels.KnowledgeBaseViewModel
+﻿@model IQueryable<KnowledgeBaseViewModel>
 @{
     Layout = "~/Views/Shared/KBLayout.cshtml";
     var relatedSolution = ViewBag.relatedSolution;
+    var SearchKey = ViewBag.SearchKey;
 }
-@using TMS.Models;
+@using TMS.ViewModels
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 
 <style>
     .post-title {
         font-size: 30px !important;
+    }
+
+    .page-content {
+        min-height: 400px;
     }
 
     .category-item li {
@@ -126,7 +131,64 @@
 <div class="col-lg-12">
     <div class="span8 page-content">
         <div id="main-title" style="padding-left: 25px"></div>
-        <ul id="all-articles"></ul>
+        <ul id="all-articles" class="hidden">
+            @if (Model != null)
+            {
+                if (!string.IsNullOrEmpty(ViewBag.SearchKey))
+                {
+                    if (Model.Count() == 1)
+                    {
+                        <li style="text-align: center"><h4>There is 1 result matched keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
+                    }
+                    else
+                    {
+                        <li style="text-align: center"><h4>There are @Model.Count() results matched keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
+                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(ViewBag.Category))
+                {
+                    <li><h2>Category: @ViewBag.Category</h2></li>
+                    if (Model.Count() == 0)
+                    {
+                        <li style="text-align: center"><p><i>This category is empty.</i></p></li>
+                    }
+                }
+                else
+                {
+                    <li><h2>All articles</h2></li>
+                }
+
+                var count = 0;
+
+                foreach (KnowledgeBaseViewModel solution in Model)
+                {
+                    count++;
+                    <li>
+                        <article class="type-post format-standard hentry clearfix">
+                            <br /><h2 class="post-title"><a href="/FAQ/Detail?Path=@solution.Path">@solution.Subject</a></h2>
+                            <div class="post-meta clearfix">
+                                <span class="date">@solution.ModifiedTime</span>
+                                <span class="category" id="@solution.CategoryID" data-id="">
+                                    <a class="link-color" href="/FAQ?Category=@solution.Category">@solution.CategoryPath</a>
+                                </span>
+                            </div>
+                            <div class="longContent" id="content-@count">@Html.Raw(solution.Content)</div>
+                            <a class="link-color" href="/FAQ/Detail?Path=@solution.Path">...See full solution</a>
+                            <p>
+                                <ul class="keywords" id="keyword-@count">@Html.Raw(solution.Keyword)</ul>
+                            </p>
+                        </article>
+                    </li>
+                }
+            }
+            else
+            {
+                if (Request.Url.ToString().Contains("SearchKey"))
+                {
+                    <li style="text-align: center"><h4>There is no result matched your keywords.</h4></li>
+                }
+            }
+        </ul>
         <div class="holder hidden"></div>
     </div>
 
@@ -141,10 +203,69 @@
 @section scripts {
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
+        var resultsNo = $(".post-title").length;
         $(document).ready(function () {
             showTreeViewModal();
-            loadFAQ();
+
+            $(function () {
+                articlePaging(resultsNo);
+            });
+
+            setupPage();
+            $("#all-articles").removeClass("hidden");
+
+            $(".longContent").trunk8({
+                lines: 5,
+                tooltip: false
+            });
         });
+
+        function setupPage() {
+            for (i = 1; i <= resultsNo; i++) {
+                loadKeywordToTags($("#keyword-" + i).text(), i);
+            }
+
+            $("#all-articles").find('img').hide();
+            $(".longContent").find('h1,h2,h3,h4,h5').css("font-size", "15px");
+        }
+
+        $(window).resize(function () {
+            $(".longContent").trunk8({
+                lines: 5,
+                tooltip: false
+            });
+        });
+
+        function loadKeywordToTags(keyword, id) {
+            var keywordTags = (keyword).split(',');
+            $("#keyword-" + id).empty();
+            if (keywordTags[0] != "-") {
+                for (j = 0; j < keywordTags.length; j++) {
+                    var key = keywordTags[j].replace(/"/g, '');
+                    $("#keyword-" + id).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+                }
+            }
+        }
+
+        function articlePaging(listNo) {
+            if (listNo > 5) {
+                $('div.holder').removeClass("hidden");
+                $('div.holder').jPages({
+                    containerID: "all-articles",
+                    perPage: 5,
+                    startPage: 1,
+                    startRange: 1,
+                    midRange: 2,
+                    endRange: 1,
+                    first: "First",
+                    last: "Last",
+                    previous: "Previous",
+                    next: "Next",
+                });
+            } else {
+                $('div.holder').addClass("hidden");
+            }
+        }
 
         var showTreeViewModal = function () {
             $("#category-treeview-div").jstree({
@@ -177,7 +298,8 @@
                                     },
                                     a_attr: {
                                         "data-id": dataItem.ID,
-                                        "href": "/FAQ/Index/" + dataItem.Name,
+                                        "name": "Category",
+                                        "href": "/FAQ?Category=" + dataItem.Name,
                                         "class": "category-node"
                                     }
                                 };
@@ -190,99 +312,58 @@
             });
         };
 
-        //$('#search-solution').keyup(function () {
-        //    loadFAQ();
-        //});
-
-        $('#btn-search-solution').on("click", function () {
-            loadFAQ();
-        });
-
-        $('#search-solution').on("keypress", function (e) {
-            if (e.keyCode == 13) {
-                loadFAQ();
-            }
-        });
-
-        var loadFAQ = function (id, categoryName) {
-            $.ajax({
-                url: "/FAQ/GetFAQ",
-                type: "GET",
-                data: {
-                    id: id,
-                    key_search: $('#search-solution').val()
-                },
-                success: function (data) {
-                    $('#all-articles').empty();
-                    var key_search = $('#search-solution').val();
-                    if (key_search) {
-                        if (data.data.length >= 1) {
-                            $("#main-title").empty().append("<h4>There are " + data.data.length + " results matched with keyword <i>" + $('#search-solution').val() + ".<i></h4>");
-                        } else {
-                            $("#main-title").empty().append("<h4>There is no result matched with keyword <i>" + $('#search-solution').val() + "<i></h4>");
-                        }
-                    } else if (categoryName) {
-                        $("#main-title").empty().append("<h1>Category: " + categoryName + "</h1>");
-                    } else {
-                        $("#main-title").empty().append("<h1>All articles</h1>");
-                    }
-                    if (data.data.length == 0) {
-                        $("#all-articles").append("<p style='text-align: center'><i>There is no solution to display.</i></p>");
-                    } else {
-                        for (i = 0; i < data.data.length; i++) {
-                            var content = data.data[i].Content;
-                            content = $.truncate(content, {
-                                length: 350,
-                            });
-                            var sId = data.data[i].ID;
-                            var keywordTags = (data.data[i].Keyword).split(',');
-                            $('#all-articles').append(
-                                '<li><article class="type-post format-standard hentry clearfix">'
-                                + '<br/><h2 class="post-title"><a href="/FAQ/Detail?Path=' + data.data[i].Path + '">' + data.data[i].Subject + '</a></h2>'
-                                + '<div class="post-meta clearfix">'
-                                + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
-                                + '<span class="category" id=' + data.data[i].CategoryID + ' data-id=' + data.data[i].Category + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
-                                + '<p class="longContent">' + content + '</p><a class="link-color" href="/FAQ/Detail?Path=' + data.data[i].Path + '"> Continue reading</a>'
-                                + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></article></li>');
-                            $("#keyword" + sId).empty();
-                            if (keywordTags[0] != "-") {
-                                for (j = 0; j < keywordTags.length; j++) {
-                                    var key = keywordTags[j].replace(/"/g, '');
-                                    $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
-                                }
-                            }
-                        }
-                        if (data.data.length > 5) {
-                            $('div.holder').removeClass("hidden");
-                            $('div.holder').jPages({
-                                containerID: "all-articles",
-                                perPage: 5,
-                                startPage: 1,
-                                startRange: 1,
-                                midRange: 2,
-                                endRange: 1,
-                                first: "First",
-                                last: "Last",
-                                previous: "Previous",
-                                next: "Next",
-                            });
-                        } else {
-                            $('div.holder').addClass("hidden");
-                        }
-                        $("#all-articles").find('img').hide();
-                    }
-                }
-            });
-        }
-
-        $("#all-articles").on("click", ".category", function () {
-            loadFAQ($(this).attr("id"), $(this).attr("data-id"));
-        });
+        //var loadFAQ = function (id, categoryName) {
+        //    $.ajax({
+        //        url: "/FAQ/GetFAQ",
+        //        type: "GET",
+        //        data: {
+        //            id: id,
+        //            //key_search: $('#search-solution').val()
+        //        },
+        //        success: function (data) {
+        //            $('#all-articles').empty();
+        //            if (categoryName) {
+        //                $("#main-title").empty().append("<h1>Category: " + categoryName + "</h1>");
+        //            } else {
+        //                $("#main-title").empty().append("<h1>All articles</h1>");
+        //            }
+        //            if (data.data.length == 0) {
+        //                $("#all-articles").append("<p style='text-align: center'><i>There is no solution to display.</i></p>");
+        //            } else {
+        //                for (i = 0; i < data.data.length; i++) {
+        //                    var content = data.data[i].Content;
+        //                    content = $.truncate(content, {
+        //                        length: 350,
+        //                    });
+        //                    var sId = data.data[i].ID;
+        //                    var keywordTags = (data.data[i].Keyword).split(',');
+        //                    $('#all-articles').append(
+        //                        '<li><article class="type-post format-standard hentry clearfix">'
+        //                        + '<br/><h2 class="post-title"><a href="/FAQ/Detail?Path=' + data.data[i].Path + '">' + data.data[i].Subject + '</a></h2>'
+        //                        + '<div class="post-meta clearfix">'
+        //                        + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
+        //                        + '<span class="category" id=' + data.data[i].CategoryID + ' data-id=' + data.data[i].Category + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
+        //                        + '<p class="longContent">' + content + '</p><a class="link-color" href="/FAQ/Detail?Path=' + data.data[i].Path + '"> Continue reading</a>'
+        //                        + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></article></li>');
+        //                    $("#keyword" + sId).empty();
+        //                    if (keywordTags[0] != "-") {
+        //                        for (j = 0; j < keywordTags.length; j++) {
+        //                            var key = keywordTags[j].replace(/"/g, '');
+        //                            $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+        //                        }
+        //                    }
+        //                }
+        //                articlePaging(data.data.length);
+        //                $("#all-articles").find('img').hide();
+        //            }
+        //        }
+        //    });
+        //}
 
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
-            //window.location.href = data.node.a_attr.href;
+            window.location.href = data.node.a_attr.href;
             $('#search-solution').val('');
-            loadFAQ(data.node.id, data.node.text);
+            //loadFAQ(data.node.id, data.node.text);
         });
     </script>
 }
