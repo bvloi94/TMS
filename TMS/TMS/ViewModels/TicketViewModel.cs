@@ -15,12 +15,13 @@ namespace TMS.ViewModels
     {
         public int No { get; set; }
         public int Id { get; set; }
-        [AllowHtml]
+        [Required(ErrorMessage = "Ticket's subject is required!")]
         public string Subject { get; set; }
         [AllowHtml]
         public string Description { get; set; }
         [AllowHtml]
         public string Solution { get; set; }
+        [Required(ErrorMessage = "Ticket's requester is required!")]
         public string RequesterId { get; set; }
         public string Requester { get; set; }
         public string TechnicianId { get; set; }
@@ -42,17 +43,24 @@ namespace TMS.ViewModels
         public int DepartmentId { get; set; }
         public string Department { get; set; }
         public string UnapproveReason { get; set; }
-        public string ScheduleStartDate { get; set; }
-        public string ScheduleEndDate { get; set; }
-        public string ActualStartDate { get; set; }
-        public string ActualEndDate { get; set; }
-        public string SolvedDate { get; set; }
-        public string CreatedTime { get; set; }
-        public string ModifiedTime { get; set; }
+        public DateTime? ScheduleStartDate { get; set; }
+        [CompareValidateDate(CompareToOperation.GreaterThan, "ScheduleStartDate", ErrorMessage = "Schedule End Date must greater than Schedule Start Date")]
+        public DateTime? ScheduleEndDate { get; set; }
+        public DateTime? ActualStartDate { get; set; }
+        [CompareValidateDate(CompareToOperation.GreaterThan, "ActualStartDate", ErrorMessage = "Actual End Date must greater than Actual Start Date")]
+        public DateTime? ActualEndDate { get; set; }
+        public DateTime? SolvedDate { get; set; }
+        public DateTime? CreatedTime { get; set; }
+        public DateTime? ModifiedTime { get; set; }
+        public string CreatedTimeString { get; set; }
+        public string ModifiedTimeString { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedId { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
+        [TagFormat(ErrorMessage = "Tags only contain characters 'a-z', '0-9' and separated by commas!")]
+        public string Tags { get; set; }
+        public string Note { get; set; }
         [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
         public IEnumerable<HttpPostedFileBase> DescriptionFiles { get; set; }
         [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]

@@ -98,7 +98,7 @@
                             <div class="col-md-4 col-xs-4">
                                 <label class="control-label">TYPE</label>
                                 <select class="form-control" name="Type">
-                                    <option value>None</option>
+                                    <option value="0">None</option>
                                     <option value="1">Request</option>
                                     <option value="2">Problem</option>
                                     <option value="3">Change</option>
@@ -137,6 +137,23 @@
                                 <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
                             </div>
                         </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">TAGS</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                <input type="text" name="Tags" id="tags" class="form-control" />
+                                <a href="javascript:generateTags()">Generate tags</a>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">NOTE</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                <textarea class="form-control textarea" name="Note" placeholder="" rows="5"></textarea>
+                            </div>
+                        </div>
                         <div class="row form-group" style="text-align: center;">
                             <div class="form-error-messages" data-role="group-form-error"></div>
                         </div>
@@ -149,7 +166,6 @@
                     </div>
                     <div class="col-md-2 col-xs-1"></div>
                 </form>
-
             </div>
         </div>
     </div>
@@ -466,6 +482,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/helpdesk-manage-ticket")
     <script src="~/Content/Plugins/mark/jquery.mark.min.js"></script>
+    <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
     <script>
         var requesterTable = null;
 
@@ -533,20 +550,16 @@
                                     layout: "topRight",
                                     timeout: 2000
                                 });
-                                if (data.data != null) {
-                                    $("#form-new-ticket [data-role=group-form-error]").html("");
-                                    for (var i = 0; i < data.data.length; i++) {
-                                        $("#form-new-ticket [data-role=group-form-error]")
-                                            .append($("<p/>",
-                                            {
-                                                "html": $("<font/>",
-                                                {
-                                                    "color": "red",
-                                                    "html": "*" + data.data[i].Message
-                                                })
-                                            }));
-                                    }
-                                }
+                                $("#form-new-ticket [data-role=group-form-error]").html("");
+                                $("#form-new-ticket [data-role=group-form-error]")
+                                    .append($("<p/>",
+                                    {
+                                        "html": $("<font/>",
+                                        {
+                                            "color": "red",
+                                            "html": "*" + data.msg
+                                        })
+                                    }));
                             }
                         },
                         cache: false,
@@ -637,6 +650,7 @@
                 requesterTable = initRequesterTable($("#requester-table"));
                 initOlderTicketsTable();
                 $(self._select2).parent().find(".select2-container").css('width', '');
+                $("#tags").tagit();
             });
     </script>
 }

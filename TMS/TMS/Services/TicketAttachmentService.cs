@@ -54,31 +54,24 @@ namespace TMS.Services
             return _unitOfWork.TicketAttachmentRepository.Get(m => m.TicketID == id);
         }
 
-        public void saveFile(int id, IEnumerable<HttpPostedFileBase> uploadFiles, bool type)
+        public bool saveFile(int id, IEnumerable<HttpPostedFileBase> uploadFiles, bool type)
         {
-            try
+            _unitOfWork.BeginTransaction();
+            string containFolder = "Attachments";
+            TicketAttachment files = null;
+            List<HttpPostedFileBase> upFiles = uploadFiles.ToList();
+            FileUploader _fileUploadService = new FileUploader();
+            for (int i = 0; i < upFiles.Count; i++)
             {
-                string containFolder = "Attachments";
-                TicketAttachment files = null;
-                List<HttpPostedFileBase> upFiles = uploadFiles.ToList();
-                FileUploader _fileUploadService = new FileUploader();
-                for (int i = 0; i < upFiles.Count; i++)
-                {
-                    string filePath = _fileUploadService.UploadFile(upFiles[i], containFolder);
-                    files = new TicketAttachment();
-                    files.TicketID = id;
-                    files.Path = filePath;
-                    files.Filename = upFiles[i].FileName;
-                    files.Type = type;
-                    _unitOfWork.TicketAttachmentRepository.Insert(files);
-                    _unitOfWork.Commit();
-                }
+                string filePath = _fileUploadService.UploadFile(upFiles[i], containFolder);
+                files = new TicketAttachment();
+                files.TicketID = id;
+                files.Path = filePath;
+                files.Filename = upFiles[i].FileName;
+                files.Type = type;
+                _unitOfWork.TicketAttachmentRepository.Insert(files);
             }
-            catch (Exception ex)
-            {
-                log.Error("Save Attachment Failed", ex);
-            }
-
+            return _unitOfWork.CommitTransaction();
         }
 
     }

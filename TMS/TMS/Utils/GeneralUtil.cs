@@ -30,5 +30,35 @@ namespace TMS.Utils
             }
             return sb.ToString();
         }
+
+        public static string ConvertToFormatKeyword(string unformattedKeyword)
+        {
+            if (!string.IsNullOrWhiteSpace(unformattedKeyword))
+            {
+                string keyword = "";
+                string[] keywordArr = unformattedKeyword.Trim().ToLower().Split(',');
+                string delimeter = "";
+                foreach (string keywordItem in keywordArr)
+                {
+                    if (!string.IsNullOrWhiteSpace(keywordItem))
+                    {
+                        string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
+                        keyword += delimeter + '"' + keywordItemTmp + '"';
+                        delimeter = ",";
+                    }
+                }
+               return keyword;
+            }
+            return null;
+        }
+
+        public static string ConvertFormattedKeywordToView(string formattedKeyword)
+        {
+            if (!string.IsNullOrWhiteSpace(formattedKeyword))
+            {
+                return formattedKeyword.Replace("\"", "");
+            }
+            return "";
+        }
     }
 }

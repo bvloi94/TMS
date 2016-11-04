@@ -205,6 +205,7 @@
           <Property Name="AssignedByID" Type="nvarchar" MaxLength="128" />
           <Property Name="RequesterID" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Note" Type="nvarchar(max)" />
+          <Property Name="Tags" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="TicketAttachment">
           <Key>
@@ -1076,6 +1077,7 @@
           <Property Name="AssignedByID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="RequesterID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Tags" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_Ticket_AspNetUsers" FromRole="Ticket" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="TMSModel.FK_Ticket_AspNetUsers1" FromRole="Ticket" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="TMSModel.FK_Ticket_AspNetUsers2" FromRole="Ticket" ToRole="AspNetUser" />
@@ -1625,6 +1627,7 @@
           <EntitySetMapping Name="Tickets">
             <EntityTypeMapping TypeName="TMSModel.Ticket">
               <MappingFragment StoreEntitySet="Ticket">
+                <ScalarProperty Name="Tags" ColumnName="Tags" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
                 <ScalarProperty Name="RequesterID" ColumnName="RequesterID" />
                 <ScalarProperty Name="AssignedByID" ColumnName="AssignedByID" />

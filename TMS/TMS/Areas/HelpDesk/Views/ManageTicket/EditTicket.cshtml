@@ -191,7 +191,23 @@
                                         </div>
                                     }
                                 </div>
-
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">TAGS</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                <input type="text" name="Tags" id="tags" class="form-control" value="@Model.Tags"/>
+                                <a href="javascript:generateTags()">Generate tags</a>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">NOTE</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                <textarea class="form-control textarea" name="Note" placeholder="" rows="5">@Model.Note</textarea>
                             </div>
                         </div>
                         <div class="row form-group" style="text-align: center;">
@@ -521,6 +537,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/helpdesk-manage-ticket")
     <script src="~/Content/Plugins/mark/jquery.mark.min.js"></script>
+    <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
     <script>
 
         var requesterTable = null;
@@ -695,6 +712,7 @@
                 initDropdownControl();
                 loadEditData();
                 initOlderTicketsTable();
+                $("#tags").tagit();
             });
     </script>
 }

@@ -400,12 +400,19 @@ namespace TMS.Services
             return recentTickets;
         }
 
-        public void AddTicket(Ticket ticket)
+        public bool AddTicket(Ticket ticket)
         {
             string ticketCode = GenerateTicketCode();
-            if (ticketCode != "") { ticket.Code = ticketCode; }
+            if (!string.IsNullOrWhiteSpace(ticketCode))
+            {
+                ticket.Code = ticketCode;
+            }
+            else
+            {
+                return false;
+            }
             _unitOfWork.TicketRepository.Insert(ticket);
-            _unitOfWork.Commit();
+            return _unitOfWork.Commit();
         }
 
         public bool UpdateTicket(Ticket ticket)

@@ -318,23 +318,7 @@ namespace TMS.Controllers
                     {
                         solution.Subject = model.Subject.Trim();
                         solution.ContentText = model.Content;
-                        // Keyword is null or whitespace
-                        if (!string.IsNullOrWhiteSpace(model.Keyword))
-                        {
-                            string keyword = "";
-                            string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
-                            string delimeter = "";
-                            foreach (string keywordItem in keywordArr)
-                            {
-                                if (!string.IsNullOrWhiteSpace(keywordItem))
-                                {
-                                    string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
-                                    keyword += delimeter + '"' + keywordItemTmp + '"';
-                                    delimeter = ",";
-                                }
-                            }
-                            solution.Keyword = keyword;
-                        }
+                        solution.Keyword = GeneralUtil.ConvertToFormatKeyword(model.Keyword);
                         solution.CategoryID = model.CategoryID;
                         solution.Path = model.Path.Trim().ToLower();
                         solution.ModifiedTime = DateTime.Now;
@@ -449,7 +433,8 @@ namespace TMS.Controllers
                 string[] keywordArr = keywords.Split(' ');
                 foreach (string keyword in keywordArr)
                 {
-                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keyword.ToLower()));
+                    string keywordTemp = '"' + keyword + '"';
+                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordTemp.ToLower()));
                 }
                 predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
                 filteredListItems = filteredListItems.Where(predicate);
@@ -555,6 +540,36 @@ namespace TMS.Controllers
             return Json(new
             {
                 data = list
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetKeywords(string subject)
+        {
+            HashSet<string> stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            string[] lines = System.IO.File.ReadAllLines(Server.MapPath(@"~/Utils/stopwords.txt"));
+            foreach (string s in lines)
+            {
+                stopWords.Add(s); // Assuming that each line contains one stop word.
+            }
+
+            List<string> keywords = new List<string>();
+            subject = GeneralUtil.RemoveSpecialCharacters(subject);
+            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+            string words = regex.Replace(subject, " ");
+            string[] wordArr = words.Split(' ');
+            foreach (string word in wordArr)
+            {
+                string lowerWord = word.ToLower();
+                if (!stopWords.Contains(lowerWord))
+                {
+                    keywords.Add(lowerWord);
+                }
+            }
+
+            return Json(new
+            {
+                data = keywords
             }, JsonRequestBehavior.AllowGet);
         }
 

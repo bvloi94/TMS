@@ -343,8 +343,10 @@
     <Compile Include="Utils\SentenceUtil.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
     <Compile Include="Utils\MaxFileSizeAttribute.cs" />
-    <Compile Include="Utils\ValidateDateSQLAttribute.cs" />
+    <Compile Include="Utils\TagFormatAttribute.cs" />
     <Compile Include="Utils\ValidateDateAttribute.cs" />
+    <Compile Include="Utils\ValidateDateSQLAttribute.cs" />
+    <Compile Include="Utils\CompareValidateDateAttribute.cs" />
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\BusinessRuleViewModel.cs" />
@@ -391,6 +393,7 @@
     <Content Include="Content\custom-css\ticket-detail.css" />
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />
+    <Content Include="Content\custom-js\knowledgebase.js" />
     <Content Include="Content\custom-js\tms-dropdown.js" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\img\ajax-loader.gif" />
@@ -637,6 +640,7 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Uploads\Avatar\avatar_female.png" />
     <Content Include="Uploads\Avatar\avatar_male.png" />
+    <Content Include="Utils\stopwords.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

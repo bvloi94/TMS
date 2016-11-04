@@ -40,6 +40,7 @@ function initTicketTable() {
                 tooltip: false
             });
         },
+        autoWidth: false,
         columnDefs: [
         {
             "targets": [0],
@@ -51,14 +52,14 @@ function initTicketTable() {
              {
                  "targets": [1],
                  "render": function (data, type, row) {
-                     //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
                      return $("<a/>",
                      {
                          "class": "ticket-subject",
                          "href": "javascript:openTicketDetailModal(" + row.Id + ")",
                          "html": row.Subject
                      })[0].outerHTML;
-                 }
+                 },
+                 "width" : "40%"
              },
             {
                 "targets": [2],
@@ -89,27 +90,23 @@ function initTicketTable() {
             {
                 "targets": [6],
                 "render": function (data, type, row) {
-                    return row.ModifiedTime != "" ? row.ModifiedTime : "-";
+                    return row.ModifiedTimeString != "" ? row.ModifiedTimeString : "-";
                 }
             },
             {
                 "targets": [7],
                 "sortable": false,
                 "render": function (data, type, row) {
-                    var reopen = '';
-                    var action = '<div class="btn-group">'
-                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
-                        + 'Action <span class="caret"></span>'
-                        + '</button>'
-                        + '<ul class="dropdown-menu">'
-                        + '<li>'
-                        + '<a href="/HelpDesk/ManageTicket/EditTicket/' + row.Id + '">'
-                        + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
-                        + '</a>'
-                        + '</li>';
+                    var links = '';
+                    var disable = '';
                     switch (row.Status) {
                         case "New":
-                            action += '<li>'
+                            links += '<li>'
+                       + '<a href="/HelpDesk/ManageTicket/EditTicket/' + row.Id + '">'
+                       + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
+                       + '</a>'
+                       + '</li>'
+                       + '<li>'
                        + '<a href="/Ticket/Solve/' + row.Id + '">'
                        + '<i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket'
                        + '</a>'
@@ -121,7 +118,12 @@ function initTicketTable() {
                        + '</li>';
                             break;
                         case "Assigned":
-                            action += '<li>'
+                            links += '<li>'
+                       + '<a href="/HelpDesk/ManageTicket/EditTicket/' + row.Id + '">'
+                       + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
+                       + '</a>'
+                       + '</li>'
+                       + '<li>'
                        + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" data-ticket-id="' + row.Id + '">'
                        + '<i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket'
                        + '</a>'
@@ -130,18 +132,14 @@ function initTicketTable() {
                         case "Solved":
                             break;
                         case "Unapproved":
-                            reopen += '<div class="btn-group" style="margin-left: 10px;">'
-                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
-                        + 'Reopen <span class="caret"></span>'
-                        + '</button>'
-                        + '<ul class="dropdown-menu">'
+                            links += '<li><a href="javascript:void(0)"><strong>Reopen Ticket</strong></a></li>'
                         + '<li>'
-                        + '<a href="javascript:void(0)" onclick="showCloseModal(this)" data-ticket-id="' + row.Id + '">'
+                        + '<a href="javascript:showCloseModal(this)" data-ticket-id="' + row.Id + '">'
                         + '<i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket'
                         + '</a>'
                         + '</li>'
                         + '<li>'
-                        + '<a href="javascript:void(0)" onclick="showReassignModal(this)" data-ticket-id="' + row.Id + '">'
+                        + '<a href="javascript:showReassignModal(this)" data-ticket-id="' + row.Id + '">'
                         + '<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Reassign'
                         + '</a>'
                         + '</li>'
@@ -149,108 +147,23 @@ function initTicketTable() {
                         + '<a href="/Ticket/Solve/' + row.Id + '">'
                         + '<i class="fa fa-commenting" aria-hidden="true"></i> Re-solve Ticket'
                         + '</a>'
-                        + '</li>'
-                        + '</ul>'
-                        + '</div>';
+                        + '</li>';
                             break;
                         case "Closed":
-                            break;
-                        case "Canceled":
-                            break;
+                            disable = 'disabled="disabled"';
+                        case "Cancelled":
+                            disable = 'disabled="disabled"';
                     }
+                    var action = '<div class="btn-group">'
+                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ' + disable + '>'
+                        + 'Action <span class="caret"></span>'
+                        + '</button>'
+                        + '<ul class="dropdown-menu">';
+                    action += links;
                     action += '</ul>'
                         + '</div>';
 
-                    return action + reopen;
-                    //var editBtn;
-                    //switch (row.Status) {
-                    //    case "Closed":
-                    //    case "Canceled":
-                    //    case "Solved":
-                    //        editBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-flat btn-default",
-                    //            "data-role": "btn-edit-ticket",
-                    //            "disabled": "disabled",
-                    //            "html": $("<i/>",
-                    //            {
-                    //                "class": "fa fa-pencil"
-                    //            }),
-                    //            "data-id": row.Id
-                    //        });
-                    //        break;
-                    //    case "New":
-                    //    case "Assigned":
-                    //    case "Unapproved":
-                    //        editBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default",
-                    //            "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
-                    //            "data-role": "btn-edit-ticket",
-                    //            "html": $("<i/>",
-                    //            {
-                    //                "class": "fa fa-pencil"
-                    //            }),
-                    //            "data-id": row.Id
-                    //        });
-                    //        break;
-                    //}
-
-                    //var solveBtn;
-                    //switch (row.Status) {
-                    //    case "Solved":
-                    //    case "Closed":
-                    //    case "Canceled":
-                    //        solveBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default margin-left10",
-                    //            //"data-role": "btn-show-solve-modal",
-                    //            "disabled": "disabled",
-                    //            "html": "Solve",
-                    //            "data-id": row.Id
-                    //        });
-                    //        break;
-                    //    case "New":
-                    //    case "Assigned":
-                    //    case "Unapproved":
-                    //        solveBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default margin-left10",
-                    //            "href": "/Ticket/Solve/" + row.Id,
-                    //            "html": "Solve",
-                    //            "data-id": row.Id
-                    //        });
-                    //        break;
-                    //}
-
-                    //var cancelBtn;
-                    //switch (row.Status) {
-                    //    case "Solved":
-                    //    case "Closed":
-                    //    case "Canceled":
-                    //    case "Unapproved":
-                    //        cancelBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default margin-left10",
-                    //            "data-role": "btn-show-cancel-modal",
-                    //            "html": "Cancel",
-                    //            "disabled": "disabled",
-                    //            "data-ticket-id": row.Id
-                    //        });
-                    //        break;
-                    //    case "New":
-                    //    case "Assigned":
-                    //        cancelBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default margin-left10",
-                    //            "data-role": "btn-show-cancel-modal",
-                    //            "html": "Cancel",
-                    //            "data-ticket-id": row.Id
-                    //        });
-                    //        break;
-                    //}
-
-                    //return ediBtn[0].outerHTML + solveBtn[0].outerHTML + cancelBtn[0].outerHTML;
+                    return action;
                 }
             }
         ],
@@ -857,4 +770,20 @@ var showReassignModal = function (obj) {
     $("#reassign-validation-message").hide();
     $("#modal-reassign-ticket").css("z-index", "1100");
     $("#modal-reassign-ticket").modal("show");
+}
+
+var generateTags = function () {
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetTags",
+        type: "GET",
+        dataType: "json",
+        data: {
+            subject: $("[name='Subject']").val()
+        },
+        success: function (data) {
+            for (i = 0; i < data.data.length; i++) {
+                $('#tags').tagit('createTag', data.data[i]);
+            }
+        }
+    });
 }
