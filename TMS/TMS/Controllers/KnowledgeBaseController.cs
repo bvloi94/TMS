@@ -33,7 +33,26 @@ namespace TMS.Controllers
         // GET: KB
         public ActionResult Index()
         {
+            switch (UserRole())
+            {
+                case "Admin": ViewBag.Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; break;
+                case "Technician": ViewBag.Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml"; break;
+                case "Helpdesk": ViewBag.Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml"; break;
+                default: ViewBag.Layout = "~/Views/Shared/TMSRequesterLayout.cshtml"; break;
+            }
             return View();
+        }
+
+        public string UserRole()
+        {
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                return userRole.Name;
+            }
+
+            return "Guest";
         }
 
         [HttpGet]
@@ -388,7 +407,7 @@ namespace TMS.Controllers
                 return Json(new
                 {
                     success = true,
-                    msg = "Delete successfully!"
+                    msg = ""
                 });
             }
             catch
@@ -404,66 +423,48 @@ namespace TMS.Controllers
         [HttpGet]
         public ActionResult GetSolutionsByCategory(int? id, string key_search)
         {
-            IEnumerable<KnowledgeBaseViewModel> filteredListItems;
+            string keywords = key_search;
+            IEnumerable<Solution> solutions = _solutionServices.GetAllSolutions();
+            IQueryable<KnowledgeBaseViewModel> filteredListItems = solutions.Select(m => new KnowledgeBaseViewModel
+            {
+                ID = m.ID,
+                Subject = m.Subject,
+                Category = m.Category.Name,
+                CategoryID = m.Category.ID,
+                CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                Content = m.ContentText,
+                Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Path = m.Path,
+                CreatedTime = m.CreatedTime,
+                ModifiedTime = m.ModifiedTime
+            }).AsQueryable();
+
+            var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
+
+            if (!string.IsNullOrWhiteSpace(key_search))
+            {
+                keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                keywords = regex.Replace(keywords, " ");
+                string[] keywordArr = keywords.Split(' ');
+                foreach (string keyword in keywordArr)
+                {
+                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keyword.ToLower()));
+                }
+                predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                filteredListItems = filteredListItems.Where(predicate);
+            }
+
             if (id.HasValue)
             {
                 List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
-                filteredListItems = _solutionServices.GetAllSolutions()
-                    .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
-                    .Select(m => new KnowledgeBaseViewModel
-                    {
-                        ID = m.ID,
-                        Subject = m.Subject,
-                        Category = m.Category.Name,
-                        CategoryID = m.Category.ID,
-                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                        Content = m.ContentText,
-                        Keyword = m.Keyword == null ? "-" : m.Keyword,
-                        Path = m.Path,
-                        CreatedTime = m.CreatedTime,
-                        ModifiedTime = m.ModifiedTime
-                    }).ToArray().OrderBy(m => m.Subject);
-
-                if (!string.IsNullOrEmpty(key_search))
-                {
-                    filteredListItems = filteredListItems.
-                        Where(p => p.Subject.ToLower().Contains(key_search.ToLower())
-                        || p.Keyword.ToLower().Contains(key_search.ToLower()));
-                }
-
-                return Json(new
-                {
-                    data = filteredListItems
-                }, JsonRequestBehavior.AllowGet);
+                filteredListItems = filteredListItems.Where(m => m.CategoryID == id.Value
+                    || childrenCategoriesIdList.Contains(m.CategoryID));
             }
-            else
+            return Json(new
             {
-                filteredListItems = _solutionServices.GetAllSolutions().Select(m => new KnowledgeBaseViewModel
-                {
-                    ID = m.ID,
-                    Subject = m.Subject,
-                    Category = m.Category.Name,
-                    CategoryID = m.Category.ID,
-                    CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                    Content = m.ContentText,
-                    Keyword = m.Keyword == null ? "-" : m.Keyword,
-                    Path = m.Path,
-                    CreatedTime = m.CreatedTime,
-                    ModifiedTime = m.ModifiedTime
-                }).ToArray().OrderBy(m => m.Subject);
-
-                if (!string.IsNullOrEmpty(key_search))
-                {
-                    filteredListItems = filteredListItems.
-                            Where(p => p.Subject.ToLower().Contains(key_search.ToLower())
-                            || p.Keyword.ToLower().Contains(key_search.ToLower().Trim())); ;
-                }
-
-                return Json(new
-                {
-                    data = filteredListItems
-                }, JsonRequestBehavior.AllowGet);
-            }
+                data = filteredListItems.OrderBy(m => m.Subject)
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

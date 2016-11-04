@@ -49,6 +49,11 @@ namespace TMS.Services
                 && m.ParentID == subCategoryId);
         }
 
+        public Category GetCategoryByName(string name)
+        {
+            return _unitOfWork.CategoryRepository.Get(m => m.Name.Equals(name)).ElementAt(0);
+        }
+
         public bool IsDuplicatedName(int? id, string name, int? parentId)
         {
             if (id.HasValue)

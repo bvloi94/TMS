@@ -261,7 +261,7 @@
         $(document).ready(function () {
             notifyFlashMessage();
             showTreeViewModal();
-            getSolutionsByCategory();
+            getSolutionsByActiveNode(null);
             initSimilarTicketFrequencyTable();
             $(".menu-item").click(function () {
 
@@ -352,7 +352,7 @@
             });
         };
 
-        function getSolutionsByCategory(id) {
+        function getSolutionsByActiveNode(id) {
             $.ajax({
                 url: "/KnowledgeBase/GetSolutionsByCategory/",
                 type: "GET",
@@ -480,15 +480,15 @@
 
         $("#key_search").on("keyup", function () {
             if ($("#category-treeview-div .category-node").hasClass("jstree-clicked")) {
-                getSolutionsByCategory($(".jstree-clicked").attr("data-id"));
+                getSolutionsByActiveNode($(".jstree-clicked").attr("data-id"));
             }
             else {
-                getSolutionsByCategory();
+                getSolutionsByActiveNode(null);
             }
         });
 
         $("#category-treeview-div").on("click", ".category-node", function () {
-            getSolutionsByCategory($(this).attr("data-id"));
+            getSolutionsByActiveNode($(this).attr("data-id"));
         });
 
         $("#category-treeview-div").on("after_open.jstree", function () {
