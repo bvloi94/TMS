@@ -1,68 +1,203 @@
-﻿@{
-    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
-}
+﻿@using TMS.Models;
+@using TMS.ViewModels;
 @{
-    ViewBag.Title = "Hello, Requester!";
+    Layout = "~/Views/Shared/_TopLayout.cshtml";
+    ViewBag.Title = "TMS - Home";
+    var ticketList = ViewBag.SolvedTicket;
+    AspNetUser user = ViewBag.UserInfo;
 }
 
 <style>
     .menu-item {
-        display: table;
         text-align: center;
-        position: relative;
-        height: 250px;
     }
 
+        .menu-item .img-circle {
+            padding: 16px;
+            height: 60px;
+            width: 60px;
+            color: #ffffff;
+            background-color: #00A65A;
+        }
+
         .menu-item a {
-            color: #2a2a2a;
+            color: #00A65A;
             display: table-cell;
-            vertical-align: middle;
             transition: all .2s ease-in-out;
         }
 
             .menu-item a:hover {
-                color: #1074bd;
-                transform: scale(1.05);
+                font-weight: bold;
+                transform: scale(1.1);
             }
+
+    .user-avatar .img-circle {
+        height: 100px;
+        width: 100px;
+    }
+
+    .user-avatar, .user-info {
+        position: relative;
+        float: left;
+    }
+
+    .user-avatar {
+        padding: 10px 10px;
+    }
+
+    .user-info {
+        padding-left: 10px;
+        color: #444343;
+    }
+
+    .vertical-center {
+        display: inline-block;
+        vertical-align: middle;
+        float: none;
+    }
+
+    .link-title {
+        font-size: 18px;
+        font-weight: bold;
+        padding-left: 8px;
+    }
+
+    .solved-ticket {
+        padding: 10px;
+        border-bottom: solid 1px #dedede;
+    }
+
+    /*.sep-pipe {
+        float: left;
+        display: block;
+        height: 16px;
+        border-left: 1px solid #cacaca;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 7px;
+    }*/
 </style>
 
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-solid">
             <div class="box-body">
-                <div class="col-sm-6 menu-item">
-                    <a href="@(Url.Action("Create", "Ticket"))">
-                        <i class="fa fa-tag fa-5x"></i>
-                        <br />
-                        <h3>Send Ticket</h3>
-                        Click here to send a ticket to help desk.
-                    </a>
+                <div class="user-avatar vertical-center">
+                    <img src="@ViewBag.LayoutAvatarURL" class="img-circle" alt="User Image">
                 </div>
-                <div class="col-sm-6 menu-item">
-                    <a href="@(Url.Action("Index", "Ticket"))">
-                        <i class="fa fa-tags fa-5x"></i>
-                        <br />
-                        <h3>View Ticket List</h3>
-                        Click here to view your ticket.
-                    </a>
-                </div>
-                <div class="col-sm-6 menu-item">
-                    <a href="@(Url.Action("Index", "Profile"))">
-                        <i class="fa fa-user fa-5x"></i>
-                        <br />
-                        <h3>View Profile</h3>
-                        Click here to view and edit your profile.
-                    </a>
-                </div>
-                <div class="col-sm-6 menu-item">
-                    <a href="@(Url.Action("Index", "FAQ"))">
-                        <i class="fa fa-question-circle fa-5x"></i>
-                        <br />
-                        <h3>FAQ</h3>
-                        See Frequently Asked Questions.
-                    </a>
+                <div class="user-info vertical-center">
+                    <div class="user-name">
+                        <span style="color: #00A65A; font-size: 30px; text-transform: uppercase">@user.Fullname </span>
+                        @if (!string.IsNullOrWhiteSpace(user.DepartmentName))
+                        {
+                        <span style="font-size: 20px">@user.DepartmentName </span>
+                        }
+                    </div>
+                    <p>
+                        <i class="fa fa-envelope"></i>&nbsp;&nbsp; @user.Email  &nbsp;&nbsp;&nbsp;&nbsp;
+                        <i class="fa fa-phone"></i>
+                        @if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                        {
+                        @Html.Raw("&nbsp;&nbsp;")@user.PhoneNumber;
+                        }
+                        else
+                        {
+                        <span>&nbsp;&nbsp; - </span>
+                        }
+                    </p>
+                    <p>
+                        <i class="fa fa-vcard"></i>
+                        @if (!string.IsNullOrWhiteSpace(user.Address))
+                        {
+                        @Html.Raw("&nbsp;&nbsp;")@user.Address;
+                        }
+                        else
+                        {
+                        <span>&nbsp;&nbsp;- </span>
+                        }
+                    </p>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="box box-solid">
+            <div class="box-body menu-item">
+                <a href="/Ticket/Create">
+                    <i class="fa fa-send fa-2x img-circle vertical-center"></i>
+                    <span class="link-title vertical-center">Send Ticket</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="box box-solid">
+            <div class="box-body menu-item">
+                <a href="/Ticket/">
+                    <i class="fa fa-tags fa-2x img-circle vertical-center"></i>
+                    <span class="link-title vertical-center">Ticket List</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="box box-solid">
+            <div class="box-body menu-item">
+                <a href="/Profile/">
+                    <i class="fa fa-user fa-2x img-circle vertical-center"></i>
+                    <span class="link-title vertical-center">View Profile</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="box box-solid">
+            <div class="box-body menu-item">
+                <a href="/FAQ/">
+                    <i class="fa fa-question fa-2x img-circle vertical-center"></i>
+                    <span class="link-title vertical-center">FAQ</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="box box-solid">
+            <div class="box-header bg-green-gradient" style="padding: 0px 25px">
+                <h4 style="text-transform: uppercase; padding: 7px 0px"><i class="fa fa-tags"></i>&nbsp;&nbsp;Solved tickets</h4>
+            </div>
+            @{
+                if (ticketList != null)
+                {
+                    <div class="box-body no-padding">
+                        @foreach (RequesterTicketViewModel ticket in ticketList)
+                        {
+                            <div class="col-sm-12 solved-ticket">
+                                <div class="col-lg-1 col-md-1 col-sm-2">
+                                    <div class="code-circle">
+                                        <span class="text-muted text-bold">#@ticket.Code</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-11 col-md-11 col-sm-10">
+                                    <p>
+                                        <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-blue">@ticket.Subject</a>
+                                    </p>
+                                    <p>
+                                        <i class="fa fa-check-square text-green"></i>&nbsp;&nbsp;Ticket solved in
+                                        <span class="text-green text-bold">@ticket.SolvedTime</span>
+                                        &nbsp;by <span class="text-green text-bold">@ticket.SolvedBy</span>
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="box-body" style="text-align: center; padding: 30px 20px">
+                        <span><i>There is no solved ticket at this moment.</i></span>
+                    </div>
+                }
+            }
         </div>
     </div>
 </div>
