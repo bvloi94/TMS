@@ -46,16 +46,16 @@ namespace TMS.Utils
                     {
                         if (minute < 1)
                         {
-                            return "Just now!";
+                            return "Just now";
                         }
                         else
                         {
-                            return minute == 1 ? minute + " minute ago" : minute + " minutes ago";
+                            return minute == 1 ? "A minute ago" : minute + " minutes ago";
                         }
                     }
                     else
                     {
-                        return hour == 1 ? hour + " hour ago" : hour + " hours ago";
+                        return hour == 1 ? hour + "An hour ago" : hour + " hours ago";
                     }
                 }
                 else
@@ -65,7 +65,7 @@ namespace TMS.Utils
             }
             else
             {
-                return dateTime.ToString("MMM d yyyy") + " at " + dateTime.ToShortTimeString();
+                return dateTime.ToString("MMM d, yyyy") + " at " + dateTime.ToShortTimeString();
             }
         }
     }
