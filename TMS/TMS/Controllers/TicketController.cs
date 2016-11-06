@@ -226,9 +226,9 @@ namespace TMS.Controllers
                         default: model.Mode = "-"; break;
                     }
 
-                    model.CreateTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
-                    model.SolvedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-                    model.Category = _categoryService.GetCategoryPath(ticket.Category);
+                    model.CreateTime = GeneralUtil.ShowDateTime(ticket.CreatedTime);
+                    model.SolvedTime = ticket.ModifiedTime.ToString("MMM d, yyyy hh:mm") ?? "-";
+                    model.Category = ticket.Category == null ? " - " : ticket.Category.Name;
                     return View(model);
                 }
                 else

@@ -34,11 +34,13 @@ namespace TMS.Utils
         public static string ShowDateTime(DateTime dateTime)
         {
             DateTime currentDateTime = DateTime.Now;
+            int year = currentDateTime.Year - dateTime.Year;
+            int month = currentDateTime.Month - dateTime.Month;
             int day = currentDateTime.Day - dateTime.Day;
             int hour = currentDateTime.Hour - dateTime.Hour;
             int minute = currentDateTime.Minute - dateTime.Minute;
 
-            if (day < 2)
+            if (day < 2 && year < 1 && month < 1)
             {
                 if (day < 1)
                 {
