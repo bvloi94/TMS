@@ -697,6 +697,7 @@
     <Content Include="Views\FAQ\Detail.cshtml" />
     <Content Include="Views\Shared\KBLayout.cshtml" />
     <Content Include="Views\Profile\UpdateProfile.cshtml" />
+    <Content Include="Views\Shared\_TopLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
