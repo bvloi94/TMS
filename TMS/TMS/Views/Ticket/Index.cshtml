@@ -5,8 +5,8 @@
     ViewBag.Title = "TMS - Ticket List";
 }
 <style>
-    .table thead {
-        color: #00A65A;
+    .labels {
+        font-size: 13px;
     }
 
     h3 {
@@ -15,6 +15,60 @@
 
     input {
         max-width: 500px;
+    }
+
+    .bg-light-green {
+        background-color: #D2EDDE;
+    }
+
+    .vertical-center {
+        clear: left;
+        display: inline-block;
+        vertical-align: middle;
+        float: none;
+    }
+
+    .status {
+        color: #ffffff;
+        text-align: center;
+    }
+
+    .column-body {
+        float: left;
+        padding: 7px 15px;
+        line-height: 10px;
+        border-right: solid 1px #ffffff;
+    }
+
+        .column-body:first-of-type {
+            padding: 15px 0px;
+            border-right: none;
+        }
+
+        .column-body:last-of-type {
+            border-right: none;
+        }
+
+    .row-content {
+        padding-bottom: 15px;
+    }
+
+    .no-pad-left {
+        padding-left: 0px;
+    }
+
+    #ticket-list {
+        padding-top: 20px;
+        padding-left: 0px;
+    }
+
+        #ticket-list li {
+            list-style: none;
+            padding: 5px 0px;
+        }
+
+    .ticket-subject a:hover {
+        background-color: transparent !important;
     }
 </style>
 
@@ -26,36 +80,46 @@
                 <p>You can see your all tickets here.</p>
             </div>
             <div class="box-body">
-                <a class="btn btn-success btn-flat" href="@(Url.Action("Create", "Ticket"))"><i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New ticket</a>
-                <div class="pull-right">
-                    <div class="input-group" style="width: 300px">
-                        <input type="text" id="search-txt" class="form-control" placeholder="Search by subject...">
-                        <span class="input-group-btn">
-                            <button name="search" id="search-btn" class="btn btn-default btn-flat">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </span>
-                    </div>
-                    @*<label>Search:</label>
-                        <input type="text" id="search-txt" />*@
+                <div class="col-sm-2 no-padding">
+                    <a class="btn btn-success btn-flat" href="@(Url.Action("Create", "Ticket"))">
+                        <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp;New ticket
+                    </a>
                 </div>
-                <table class="table" id="ticket-table">
-                    <thead>
-                        <tr>
-                            <th>Create Date</th>
-                            <th style="max-width: 400px">Subject</th>
-                            <th>Status</th>
-                            <th style="max-width: 400px">Solution</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div class="col-sm-offset-2 col-sm-3">
+                    <select class="form-control" id="sort-ticket">
+                        <option selected value="Default">-- Sort by --</option>
+                        <option value="DateDsc">Date - Recent to Oldest</option>
+                        <option value="DateAsc">Date - Oldest to Recent</option>
+                        <option value="StatusAsc">Status - New to Closed</option>
+                        <option value="StatusDsc">Status - Closed to New</option>
+                        <option value="SubjectAsc">Subject - A to Z</option>
+                        <option value="SubjectDsc">Subject - Z to A</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <select class="form-control" id="filter-status">
+                        <option selected value="All">-- All status --</option>
+                        <option value="New">New</option>
+                        <option value="Assigned">Assigned</option>
+                        <option value="Solved">Solved</option>
+                        <option value="Unapproved">Unapproved</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 input-group">
+                    <input type="text" id="search-txt" class="form-control" placeholder="Search by subject...">
+                    <span class="input-group-btn">
+                        <button name="search" id="search-btn" class="btn btn-default btn-flat">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+                <ul id="ticket-list"></ul>
+                <div class="pull-left" id="list-option"></div>
+                <div class="holder pull-right"></div>
             </div>
         </div>
-        <a href="@(Url.Action("Index", "Home"))">
-            <i class="fa fa-reply fa-1x" aria-hidden="true"></i>
-            Back to Homepage
-        </a>
     </div>
 </div>
 
@@ -63,104 +127,96 @@
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
-        var tempDescription, tempSolution, fullDescription, fullSolution;
-        setActiveTicketMenu();
-        $(window).on('resize', function () {
-            $('#ticket-table .long-table-column').trunk8({
-                lines: 4,
-                tooltip: false
-            });
-        });
-        var initDataTable = function () {
-            $("#ticket-table").DataTable({
-                processing: true,
-                serverSide: true,
-                paging: true,
-                sort: true,
-                "order": [[0, 'dsc']],
-                lengthMenu: [5],
-                lengthChange: false,
-                filter: false,
-                drawCallback: function () {
-                    $('#ticket-table .long-table-column').trunk8({
-                        lines: 4,
-                        tooltip: false
-                    });
+        function loadTicket() {
+            var filterStatus = $('#filter-status').find(":selected").val();
+            var sortItem = $('#sort-ticket').find(":selected").val();
+            var keySearch = $('#search-txt').val();
+            $.ajax({
+                url: "/Ticket/GetRequesterTickets",
+                method: "GET",
+                data: {
+                    filterItem: filterStatus,
+                    sortItem: sortItem,
+                    keySearch: keySearch
                 },
-                ajax: {
-                    url: "/Ticket/GetRequesterTickets",
-                    data: function (d) {
-                        d.select_status = $("#filter-by-status").val(),
-                        d.search_text = $("#search-txt").val()
+                success: function (data) {
+                    var dataItems = data.data;
+                    var innerCode = "";
+                    $('#ticket-list').empty();
+                    for (i = 0; i < dataItems.length; i++) {
+                        innerCode = '<li><div class="box box-solid"><div class="box-body bg-gray-light no-padding"><div class="col-lg-1 col-sm-2 no-padding text-center">'
+                                    + '<h5 style="font-size: 16px" class="text-muted text-bold">#' + dataItems[i].Code + '</h4>';
+                        innerCode += '</div><div class="col-lg-9 col-sm-7 ticket-subject" style="padding: 7px 15px">'
+                            + '<a class="text-bold" style="font-size: 16px" href="/Ticket/Detail/' + dataItems[i].ID + '">' + dataItems[i].Subject + '</a></div>'
+                            + '<div class="col-lg-2 col-sm-3 text-center pull-right" style="padding: 7px"><span class="text-muted">'
+                            + 'Date created</span><br /><span class="text-green">' + dataItems[i].CreatedTime + '</span></div></div>'
+                            + '<div class="box-footer no-padding bg-light-green">';
+                        switch (dataItems[i].Status) {
+                            case 1:
+                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-aqua">New</div>'; break;
+                            case 2:
+                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-orange">Assigned</div>'; break;
+                            case 3:
+                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-green">Solved</div>'; break;
+                            case 4:
+                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-red-active">Unapproved</div>'; break;
+                            case 5:
+                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-gray-active">Cancelled</div>'; break;
+                            case 6:
+                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-gray-active">Closed</div>'; break;
+                        }
+                        innerCode += '<div class="col-lg-2 col-sm-2 column-body">'
+                            + '<p class="labels">Mode: &nbsp;&nbsp;&nbsp;</p>' + dataItems[i].Mode + '</div>'
+                            + '<div class="col-lg-4 col-sm-3 column-body"><p class="labels">Created by: &nbsp;&nbsp;&nbsp;</p>'
+                            + dataItems[i].CreatedBy + '</div><div class="col-lg-5 col-sm-5 column-body">'
+                            + '<p class="labels">Category: &nbsp;&nbsp;&nbsp;</p>'
+                            + dataItems[i].Category + '</div></div></div></li>';
+                        $('#ticket-list').append(innerCode);
+                        $(".column-body:first-of-type").css("height", $(".column-body:last-of-type").outerHeight());
+                    }
+                    $('#list-option').empty().append('Showing 5 of ' + dataItems.length + ' items.');
+                    if (dataItems.length > 5) {
+                        $('div.holder').removeClass("hidden");
+                        $('div.holder').jPages({
+                            containerID: "ticket-list",
+                            perPage: 5,
+                            startPage: 1,
+                            startRange: 2,
+                            midRange: 5,
+                            endRange: 2,
+                            first: "First",
+                            last: "Last",
+                            previous: "Previous",
+                            next: "Next",
+                        });
+                    } else {
+                        $('div.holder').addClass("hidden");
                     }
                 },
-                "columnDefs": [
-                    {
-                        "render": function (data, type, row) {
-                            return row[0];
-                        },
-                        "targets": 0
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            //return '<a href="javascript:void{0}" class="view-detail" data-id=' + row[4] + '>' + row[1] + '</a>';
-                            return '<a href="/Ticket/Detail/' + row[4] + '" class="view-detail">' + row[1] + '</a>';
-                        },
-                        "targets": 1
-                    },
-                    {
-                        "render": function (data, type, row) {
-
-                            if (row[2] == 1) {
-                                return "<label class='label label-info'>New</label>";
-                            } else if (row[2] == 2) {
-                                return "<label class='label label-warning'>Assigned</label>";
-                            } else if (row[2] == 3) {
-                                return "<label class='label label-success'>Solved</label>";
-                            } else if (row[2] == 4) {
-                                return "<label class='label label-danger'>Unapproved</label>";
-                            } else if (row[2] == 5) {
-                                return "<label class='label label-default'>Cancelled</label>";
-                            } else if (row[2] == 6) {
-                                return "<label class='label label-default'>Closed</label>";
-                            }
-                        },
-                        "targets": 2
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return "<span class='long-table-column'>" + row[3] + "</span>";
-                        },
-                        "sortable": false,
-                        "targets": 3
-                    }]
+                error: function () {
+                    $('#ticket-list').append('<div class="col-sm-12 text-center">Cannot load ticket list.</div>');
+                }
             });
         }
 
-        var reloadDataTable = function () {
-            var oTable = $("#ticket-table").dataTable();
-            oTable.api().ajax.reload();
-        };
-
         $(document).ready(function () {
-            initDataTable();    
+            loadTicket();
         });
 
-        $("#search-txt").keyup(function () {
-            reloadDataTable();
+        $("#search-btn").on("click", function () {
+            loadTicket();
         });
+
+        $("select").on("change", function () {
+            loadTicket();
+        });
+
+
+        $(document).keypress(function (e) {
+            if (e.which == 13) {
+                loadTicket();
+            }
+        });
+
     </script>
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

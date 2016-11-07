@@ -11,6 +11,7 @@ using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
+    [CustomAuthorize(Roles = "Requester")]
     public class HomeController : Controller
     {
         UnitOfWork unitOfWork = new UnitOfWork();
@@ -31,14 +32,14 @@ namespace TMS.Controllers
                 .Where(p => p.Status == ConstantUtil.TicketStatus.Solved).ToArray().OrderByDescending(m => m.SolvedDate);
             if (filteredListItems != null)
             {
-                IEnumerable<RequesterTicketViewModel> ticketList = filteredListItems.Select(m => new RequesterTicketViewModel
+                IEnumerable<BasicTicketViewModel> ticketList = filteredListItems.Select(m => new BasicTicketViewModel
                 {
                     Code = m.Code,
                     ID = m.ID,
                     Subject = m.Subject,
                     Category = m.Category == null ? "-" : m.Category.Name,
                     SolvedBy = m.SolveID == null ? "-" : _userService.GetUserById(m.SolveID).Fullname,
-                    CreateTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
                     SolvedTime = m.SolvedDate == null ? " - " : GeneralUtil.ShowDateTime(m.SolvedDate.Value) 
                 }).ToArray();
                 ViewBag.SolvedTicket = ticketList;

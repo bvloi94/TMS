@@ -70,5 +70,16 @@ namespace TMS.Utils
                 return dateTime.ToString("MMM d, yyyy") + " at " + dateTime.ToShortTimeString();
             }
         }
+
+        public static string GetTicketMode(int mode)
+        {
+            switch (mode)
+            {
+                case 1: return ConstantUtil.TicketModeString.PhoneCall;
+                case 2: return ConstantUtil.TicketModeString.WebForm;
+                case 3: return ConstantUtil.TicketModeString.Email;
+                default: return "-";
+            }
+        }
     }
 }

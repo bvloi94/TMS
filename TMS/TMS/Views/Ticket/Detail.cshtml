@@ -1,11 +1,11 @@
-﻿@model TMS.ViewModels.RequesterTicketViewModel
+﻿@model TMS.ViewModels.BasicTicketViewModel
 @{
     Layout = "~/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "TMS - Ticket #" + Model.Code;
 }
 <style>
     .labels {
-        font-weight: bold;
+        font-size: 13px;
     }
 
     input, textarea {
@@ -31,37 +31,18 @@
 
     .status {
         color: #ffffff;
-        padding: 5px 10px;
-    }
-
-    .status-info {
-        background-color: #0094ff;
-    }
-
-    .status-warning {
-        background-color: #ff8823;
-    }
-
-    .status-success {
-        background-color: #00A65A;
-    }
-
-    .status-danger {
-        background-color: #e41414;
-    }
-
-    .status-default {
-        background-color: #a1a1a1;
     }
 
     .column-body {
         float: left;
         padding: 7px 15px;
-        border-right: solid 1px #cecece;
+        line-height: 12px;
+        border-right: solid 1px #ffffff;
     }
 
         .column-body:first-of-type {
-            padding-top: 20px;
+            padding-top: 15px;
+            border-right: none;
         }
 
         .column-body:last-of-type {
@@ -71,131 +52,169 @@
     .row-content {
         padding-bottom: 15px;
     }
+
+    .no-pad-left {
+        padding-left: 0px;
+    }
+
+    .bg-light-green {
+        background-color: #D2EDDE;
+    }
 </style>
 
 <div class="row">
     <div class="col-xs-12">
-        <div class="box box-solid">
+        <a href="/Index" style="font-size: 16px; padding: 15px 10px" ><i class="fa fa-arrow-left"></i>&nbsp;&nbsp; Back to Ticket list</a>
+        <div class="box box-solid" style="margin-top: 15px">
             <div class="box-header no-padding">
-                <div class="col-lg-1 col-sm-2 no-padding text-center vertical-center" style="margin-bottom: 10px">
-                    @switch (Model.Status)
-                    {
-                        case 1:
-                    <h4 class="text-light-blue">#@Html.DisplayFor(model => model.Code)</h4>
-                    <div class="status status-info">New</div> break;
-                        case 2:
-                    <h4 class="text-orange">#@Html.DisplayFor(model => model.Code)</h4>
-                    <div class="status status-warning">Assigned</div> break;
-                        case 3:
-                    <h4 class="text-green">#@Html.DisplayFor(model => model.Code)</h4>
-                    <div class="status status-success">Solved</div> break;
-                        case 4:
-                    <h4 class="text-red">#@Html.DisplayFor(model => model.Code)</h4>
-                    <div class="status status-danger">Unapproved</div> break;
-                        case 5:
-                    <h4 class="text-muted">#@Html.DisplayFor(model => model.Code)</h4>
-                    <div class="status status-default">Cancelled</div> break;
-                        case 6:
-                    <h4 class="text-muted">#@Html.DisplayFor(model => model.Code)</h4>
-                    <div class="status status-default">Closed</div> break;
-                    }
+                <div class="col-lg-1 col-sm-2 no-padding text-center">
+                    <h4 class="text-bold text-muted" style="font-size: 18px">#@Html.DisplayFor(model => model.Code)</h4>
                 </div>
-                <div class="col-lg-8 col-sm-7 vertical-center" style="padding-bottom: 7px">
-                    <h4 style="line-height: 25px">@Html.DisplayFor(model => model.Subject)</h4>
+                <div class="col-lg-8 col-sm-7" style="padding: 7px 15px">
+                    <p class="text-bold text-green" style="font-size: 18px">@Html.DisplayFor(model => model.Subject)</p>
                 </div>
-                <div class="col-lg-2 col-sm-2 text-center pull-right" style="padding-top: 15px">
+                <div class="col-lg-2 col-sm-2 text-center pull-right" style="padding: 7px">
                     <span class="text-muted">Date created</span><br />
-                    <span class="text-light-blue">@Html.DisplayFor(model => model.CreateTime) </span>
+                    <span class="text-green">@Html.DisplayFor(model => model.CreatedTime) </span>
                 </div>
             </div>
-            <div class="box-body no-padding" style="border-top: solid 1px #cecece; background-color: #eeeded">
-                <div class="col-lg-1 col-sm-2 text-center column-body" id="back-btn">
-                    <a href="@(Url.Action("Index", "Ticket"))" style="color: #000000">
-                        <i class="fa fa-arrow-left fa-1x" aria-hidden="true"></i>&nbsp; Back
-                    </a>
-                </div>
+            <div class="box-body no-padding bg-light-green">
+                @switch (Model.Status)
+                {
+                    case 1:
+                        <div class="col-lg-1 col-sm-2 text-center column-body status bg-aqua" id="status-div">New</div> break;
+                    case 2:
+                        <div class="col-lg-1 col-sm-2 text-center column-body status bg-orange" id="status-div">Assigned</div> break;
+                    case 3:
+                        <div class="col-lg-1 col-sm-2 text-center column-body status bg-green" id="status-div">Solved</div> break;
+                    case 4:
+                        <div class="col-lg-1 col-sm-2 text-center column-body status bg-red-active" id="status-div">Unapproved</div> break;
+                    case 5:
+                        <div class="col-lg-1 col-sm-2 text-center column-body status bg-gray" id="status-div">Cancelled</div> break;
+                    case 6:
+                        <div class="col-lg-1 col-sm-2 text-center column-body status bg-gray" id="status-div">Closed</div> break;
+                }
                 <div class="col-lg-2 col-sm-2 column-body">
-                    <p class="labels text-muted">Mode: &nbsp;&nbsp;&nbsp;</p>
+                    <p class="labels">Mode: &nbsp;&nbsp;&nbsp;</p>
                     @Html.DisplayFor(model => model.Mode)
                 </div>
                 <div class="col-lg-4 col-sm-3 column-body">
-                    <p class="labels text-muted">Created by: &nbsp;&nbsp;&nbsp;</p>
+                    <p class="labels">Created by: &nbsp;&nbsp;&nbsp;</p>
                     @Html.DisplayFor(model => model.CreatedBy)
                 </div>
                 <div class="col-lg-5 col-sm-5 column-body">
-                    <p class="labels text-muted">Category: &nbsp;&nbsp;&nbsp;</p>
+                    <p class="labels">Category: &nbsp;&nbsp;&nbsp;</p>
                     @Html.DisplayFor(model => model.Category)
                 </div>
             </div>
         </div>
         <div class="box box-solid">
-            <div class="box-body">
-                <div class="col-sm-12 row-content">
-                    <div class="col-sm-2 labels text-muted">Description: </div>
-                    <div class="col-sm-10"><span class="pre-wrap" id="ticket-description">@Html.DisplayFor(model => model.Description)</span></div>
-                </div>
-                <div class="col-sm-12 row-content">
-                    <div class="col-sm-2 labels text-muted">Attachment: </div>
-                    <div class="col-sm-10"><span id="ticket-attachment">None</span></div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-2 labels text-muted">Solution: </div>
-                    <div class="col-sm-10"><span class="pre-wrap" id="ticket-solution">@Html.DisplayFor(model => model.Solution)</span></div>
-                </div>
-                <div class="col-sm-12 row-content">
-                    <div class="col-sm-2 labels text-muted">Attachment: </div>
-                    <div class="col-sm-10"><span id="ticket-attachment">None</span></div>
-                </div>
-                <div class="col-sm-6 row-content">
-                    <div class="col-sm-4 labels text-muted">Solved by: </div>
-                    <div class="col-sm-8">@Html.DisplayFor(model => model.SolvedBy)</div>
-                </div>
-                <div class="col-sm-6 row-content">
-                    <div class="col-sm-4 labels text-muted">Solved date: </div>
-                    <div class="col-sm-8">@Html.DisplayFor(model => model.SolvedTime)</div>
-                </div>
-                @if (Model.Status == 3)
+            <div class="box-body no-pad-left">
+                <div class="col-lg-1 col-sm-2 text-bold">Description: </div>
+                <div class="col-lg-11 col-sm-10"><span class="pre-wrap" id="ticket-description">@Html.DisplayFor(model => model.Description)</span></div>
+            </div>
+            <div class="box-footer no-pad-left bg-light-green">
+                <div class="col-lg-1 col-sm-2 text-bold">Attachment: </div>
+                <div class="col-sm-10">
+                @if (!string.IsNullOrWhiteSpace(Model.DescriptionAttachment))
                 {
-                    <div id="approve-ticket">
-                        <div class="col-sm-12 row-content" style="text-align: center">
-                            <div class="col-sm-offset-2 col-sm-8" style="padding-left: 15px">
-                                <input type="hidden" id="ticketId" value="@Model.ID" />
-                                <a href="javascript:void{0}" id="unapproved" class="text-red">Click here</a>
-                                <span class="text-red"> if this solution didn't solve your problem!</span>
+                    <span id="ticket-attachment">@Html.Raw(Model.DescriptionAttachment)</span>
+                }
+                else
+                {
+                    <span id="ticket-attachment">None</span>
+                }
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Solution == "-")
+        {
+            <div class="col-sm-12 text-center text-"><span><i>This ticket is not solved yet.</i></span></div>
+        }
+        else
+        {
+            <div class="box box-solid">
+                <div class="box-body no-pad-left">
+                    <div class="col-lg-1 col-sm-2 text-bold">Solution: </div>
+                    <div class="col-lg-11 col-sm-10">
+                        <p class="pre-wrap" id="ticket-solution">@Html.DisplayFor(model => model.Solution)</p>
+                        <span class="text-bold text-green">Solved by </span>@Html.DisplayFor(model => model.SolvedBy)
+                        <span class="text-bold text-green"> on </span>@Html.DisplayFor(model => model.SolvedTime)
+                    </div>
+                </div>
+                <div class="box-footer no-pad-left bg-light-green">
+                    <div class="col-lg-1 col-sm-2 text-bold">Attachment: </div>
+                    <div class="col-lg-5 col-sm-4">
+                        @if (!string.IsNullOrWhiteSpace(Model.SolutionAttachment))
+                        {
+                            <span id="ticket-attachment">@Html.Raw(Model.SolutionAttachment)</span>
+                        }
+                        else
+                        {
+                            <span id="ticket-attachment">None</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.UnapproveReason))
+        {
+            <div class="box box-solid">
+                <div class="box-body no-pad-left bg-light-green">
+                    <div class="col-lg-1 col-sm-2 text-bold">Unapproved reason: </div>
+                    <div class="col-lg-11 col-sm-10">
+                        <p class="pre-wrap" id="ticket-solution">@Html.DisplayFor(model => model.UnapproveReason)</p>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        @if (Model.Status == 3)
+            {
+            <div class="box box-solid">
+                <div class="box-body" id="approve-ticket">
+                    <div class="col-sm-12" style="text-align: center">
+                        <div class="col-sm-offset-2 col-sm-8">
+                            <input type="hidden" id="ticketId" value="@Model.ID" />
+                            <a href="javascript:void{0}" id="unapproved" class="text-red">Click here</a>
+                            <span class="text-red"> if this solution didn't solve your problem!</span>
+                        </div>
+                    </div>
+                    <div id="feedback-form" class="hidden">
+                        <div class="col-sm-12" style="text-align: left">
+                            <div class="col-lg-offset-1 col-lg-8 col-sm-offset-2 col-sm-6 vertical-center">
+                                Please tell us what's wrong with this solution?
+                            </div>
+                            <div class="col-lg-2 col-sm-2 vertical-center" style="text-align: right; padding-right: 17px">
+                                <a href="javascrip:void{0}" id="submitBtn" style="width: 80px" class="btn btn-success btn-flat">
+                                    <i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;&nbsp;Send
+                                </a>
                             </div>
                         </div>
-                        <div id="feedback-form" class="hidden">
-                            <div class="col-sm-12 row-content" style="text-align: left">
-                                <div class="col-sm-offset-2 col-sm-6 vertical-center">
-                                    Please tell us what's wrong with this solution?
-                                </div>
-                                <div class="col-sm-2 vertical-center" style="text-align: right; padding-right: 18px">
-                                    <a href="javascrip:void{0}" id="submitBtn" style="width: 80px" class="btn btn-primary btn-flat">
-                                        <i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp;&nbsp;Send
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-sm-12 row-content">
-                                <div class="col-sm-offset-2 col-sm-8">
-                                    @Html.TextAreaFor(m => m.UnapproveReason, new { @class = "form-control", id = "feedback", rows = "6" })
-                                </div>
+                        <div class="col-sm-12">
+                            <div class="col-lg-offset-1 col-lg-10 col-sm-offset-2 col-sm-8">
+                                @Html.TextAreaFor(m => m.UnapproveReason, new { @class = "form-control", id = "feedback", rows = "6" })
                             </div>
                         </div>
                     </div>
-                }
+                </div>
             </div>
-        </div>
+        }
     </div>
 </div>
 
 @section scripts{
     <script>
         $(document).ready(function () {
-            $("#back-btn").css("height", $(".column-body:last-of-type").outerHeight());
+            $("#status-div").css("height", $(".column-body:last-of-type").outerHeight());
         });
 
         $(document).on('click', '#see-more', function (event) {
             $(this).parent().trunk8('revert').append('<br/><a id="see-less" href="javascript:void{0}">See Less</a>');
+            $('html, body').animate({ scrollTop: $(document).height() }, 'slow');
             return false;
         });
 
