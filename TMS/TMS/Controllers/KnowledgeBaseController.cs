@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using log4net;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -15,12 +17,16 @@ namespace TMS.Controllers
 {
     public class KnowledgeBaseController : Controller
     {
+
+
         private UnitOfWork _unitOfWork = new UnitOfWork();
         private TicketService _ticketService;
         private UserService _userService;
         private SolutionService _solutionServices;
         private FileUploader _fileUploader;
         private CategoryService _categoryService;
+        private SolutionAttachmentService _solutionAttachmentService;
+
         public KnowledgeBaseController()
         {
             _ticketService = new TicketService(_unitOfWork);
@@ -28,6 +34,7 @@ namespace TMS.Controllers
             _solutionServices = new SolutionService(_unitOfWork);
             _fileUploader = new FileUploader();
             _categoryService = new CategoryService(_unitOfWork);
+            _solutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
         }
 
         // GET: KB
@@ -81,10 +88,22 @@ namespace TMS.Controllers
                     model.CategoryID = solution.CategoryID;
                     model.Category = _categoryService.GetCategoryById(solution.CategoryID).Name;
                     model.Path = solution.Path;
+                    // Get SolutionAttachment By SolutionID
+                    IEnumerable<SolutionAttachment> attachments = _solutionAttachmentService.GetSolutionAttachmentBySolutionID(solution.ID);
+                    if (attachments != null)
+                    {
+                        model.SolutionAttachmentsList = new List<AttachmentViewModel>();
+                        foreach (var attachment in attachments)
+                        {
+                            var att = new AttachmentViewModel();
+                            att.id = attachment.ID;
+                            att.name = TMSUtils.GetMinimizedAttachmentName(attachment.Filename);
 
+                            model.SolutionAttachmentsList.Add(att);
+                        }
+                    }
                     ViewBag.ID = solution.ID;
                     ViewBag.SolutionAttachments = solution.SolutionAttachments;
-
                     return View(model);
                 }
                 else
@@ -99,7 +118,7 @@ namespace TMS.Controllers
         }
 
 
-        //   [Utils.Authorize(Roles = "Helpdesk")]
+        // [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(KnowledgeBaseViewModel model)
@@ -195,6 +214,7 @@ namespace TMS.Controllers
                         solution.SolutionAttachments.Add(attachment);
                     }
                 }
+
                 // Keyword is null or whitespace
                 if (!string.IsNullOrWhiteSpace(model.Keyword))
                 {
@@ -235,6 +255,7 @@ namespace TMS.Controllers
             return View(model);
         }
 
+        //   [CustomAuthorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int? id, KnowledgeBaseViewModel model)
@@ -350,6 +371,24 @@ namespace TMS.Controllers
                                 solution.SolutionAttachments.Add(attachment);
                             }
                         }
+                        // Get Solution Attachment By SolutionID
+                        List<SolutionAttachment> attachments = _solutionAttachmentService.GetSolutionAttachmentBySolutionID(solution.ID).ToList();
+                        bool isDelete;
+                        for (int i = 0; i < attachments.Count(); i++)
+                        {
+                            isDelete = true;
+                            if (model.SolutionAttachmentsList != null && model.SolutionAttachmentsList.Count > 0)
+                            {
+                                for (int j = 0; j < model.SolutionAttachmentsList.Count; j++)
+                                {
+                                    if (attachments[i].ID == model.SolutionAttachmentsList[j].id)
+                                    {
+                                        isDelete = false;
+                                    }
+                                }
+                            }
+                            if (isDelete) _solutionAttachmentService.DeleteAttachment(attachments[i]);
+                        }
                         // Edit solution.
                         bool editResult = _solutionServices.EditSolution(solution);
                         // Eit success.
@@ -383,39 +422,80 @@ namespace TMS.Controllers
             }
         }
 
+        ////   [CustomAuthorize(Roles = "Helpdesk")]
+        //[HttpPost]
+        //public ActionResult Delete(int[] selectedSolutions)
+        //{
+        //    if (selectedSolutions == null || selectedSolutions.Count() == 0)
+        //    {
+        //        return Json(new
+        //        {
+        //            success = false,
+        //            message = "Please choose at least 1 solution to delete!"
+        //        });
+        //    }
+        //    else
+        //    {
+        //        foreach (var solutionId in selectedSolutions)
+        //        {
+        //            Solution solution = _solutionServices.GetSolutionById(solutionId);
+        //            if (solution == null)
+        //            {
+        //                return Json(new
+        //                {
+        //                    success = false,
+        //                    message = "Delete solution unsuccessfully!"
+        //                });
+        //            }
+        //            else
+        //            {
+        //                bool resultDelete = _solutionServices.DeleteSolution(solution);
+        //                if (!resultDelete)
+        //                {
+        //                    return Json(new
+        //                    {
+        //                        success = false,
+        //                        message = ConstantUtil.CommonError.DBExceptionError
+        //                    });
+        //                }
+        //            }
+        //        }
+        //        return Json(new
+        //        {
+        //            success = true,
+        //            message = "Delete solution successfully!"
+        //        });
+        //    }
+        //}
+
+        //   [CustomAuthorize(Roles = "Helpdesk")]
+
         [HttpPost]
         public ActionResult Delete(int[] selectedSolutions)
         {
-            if (selectedSolutions.Length == 0)
+            if (selectedSolutions == null || selectedSolutions.Count() == 0)
             {
                 return Json(new
                 {
                     success = false,
-                    msg = "Please choose at least 1 solution to delete!"
+                    message = "Please choose at least 1 solution to delete!"
                 });
             }
-
-            List<Solution> solutionList = new List<Solution>();
-            try
+            else
             {
-                for (int i = 0; i < selectedSolutions.Length; i++)
+                bool resultDelete = _solutionServices.DeleteSolution(selectedSolutions);
+                if (!resultDelete)
                 {
-                    Solution solution = _solutionServices.GetSolutionById(selectedSolutions[i]);
-                    solutionList.Add(solution);
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
                 }
-
                 return Json(new
                 {
                     success = true,
-                    msg = ""
-                });
-            }
-            catch
-            {
-                return Json(new
-                {
-                    success = false,
-                    msg = "Some errors occured! Please try again later!"
+                    message = "Delete solution successfully!"
                 });
             }
         }

@@ -224,6 +224,7 @@
     <Compile Include="Areas\Manager\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
+    <Compile Include="Areas\Technician\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="Controllers\KnowledgeBaseController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Services\SolutionAttachmentService.cs" />
     <Compile Include="Models\TMSModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -357,6 +359,8 @@
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
     <Compile Include="ViewModels\ProfileManagerViewModel.cs" />
+    <Compile Include="ViewModels\ProfileRequesterViewModel.cs" />
+    <Compile Include="ViewModels\ProfileTechnicianViewModel.cs" />
     <Compile Include="ViewModels\RecentTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
     <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
@@ -603,6 +607,8 @@
     <Content Include="Areas\Manager\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Manager\Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
+    <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -690,6 +696,7 @@
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
     <Content Include="Views\FAQ\Detail.cshtml" />
     <Content Include="Views\Shared\KBLayout.cshtml" />
+    <Content Include="Views\Profile\UpdateProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Solutions";
 }
-@{ 
+@{
     if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.HelpDesk)
     {
         Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
@@ -202,7 +202,7 @@
                             <h4 class="modal-title">Confirm</h4>
                         </div>
                         <div class="modal-body detail-modal-body">
-                             Do you want to delete these solutions?
+                            Do you want to delete these solutions?
                         </div>
                         <div class="modal-footer">
                             <button type="button" id="yesBtn" class="btn btn-primary btn-flat">Yes</button>
@@ -416,7 +416,7 @@
                 var id = $(element).attr("data-id");
                 if (selectedSolutions.indexOf(id) != -1) {
                     $(element).prop("checked", true);
-                }
+                } 
             });
         }
 
@@ -430,18 +430,22 @@
                 success: function (data) {
                     if (!data.success) {
                         noty({
-                            text: data.msg,
+                            text: data.message,
                             layout: "topCenter",
                             type: "error",
                             timeout: 2000
                         });
                     } else {
                         noty({
-                            text: data.msg,
+                            text: data.message,
                             layout: "topCenter",
                             type: "success",
-                            timeout: 2000
-                        });
+                            timeout: 2000,
+
+                        },selectedSolutions = [] );
+                     
+                        getSolutionsByActiveNode();
+
                     }
                 },
                 error: function (data) {
@@ -476,6 +480,9 @@
 
         $("#yesBtn").on("click", function () {
             deleteSolutions();
+            $modal = $("#delete-modal");
+            $modal.modal("hide");
+
         });
 
         $("#key_search").on("keyup", function () {
@@ -565,6 +572,8 @@
             $("#similar-ticket-frequency-table").dataTable().api().ajax.reload();
             $("#similar-ticket-frequency-modal").modal("show");
         }
+
+
     </script>
 }
 

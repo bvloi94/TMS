@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using TMS.DAL;
 using TMS.Models;
@@ -103,14 +104,25 @@ namespace TMS.Services
         {
             return _unitOfWork.SolutionRepository.Get(m => m.Path.Equals(path)).FirstOrDefault();
         }
-
-        public void DeleteSolution(List<Solution> solution)
+        /// <summary>
+        /// Delete Solution
+        /// </summary>
+        /// <param name="solution">solution</param>
+        /// <returns>True | False</returns>
+        public bool DeleteSolution(int[] selectedSolutions)
         {
-            for (int i = 0; i < solution.Count(); i++)
+            _unitOfWork.BeginTransaction();
+
+            var solutions = _unitOfWork.SolutionRepository.Get(m => selectedSolutions.Contains(m.ID));
+            foreach (var solution in solutions.ToList())
             {
-                _unitOfWork.SolutionRepository.Delete(solution.ElementAt(i));
+                foreach (var solutionattachment in solution.SolutionAttachments.ToList())
+                {
+                    _unitOfWork.SolutionAttachmentRepository.Delete(solutionattachment.ID);
+                }
+                _unitOfWork.SolutionRepository.Delete(solution.ID);
             }
-            _unitOfWork.Commit();
+            return _unitOfWork.CommitTransaction();
         }
     }
 }
