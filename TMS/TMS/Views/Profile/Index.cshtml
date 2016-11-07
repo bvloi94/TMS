@@ -1,8 +1,7 @@
-﻿@{
-    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
-}
+﻿@model TMS.ViewModels.ProfileRequesterViewModel
 @{
-    ViewBag.Title = "My Profile";
+    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
+    ViewBag.Title = "Profile";
 }
 
 <style>
@@ -33,91 +32,163 @@
         padding: 20px;
     }
 </style>
-
-<div class="row">
-    <div class="col-xs-12">
-        <div class="box box-primary">
-            <div class="box box-body">
-                <div class="form-horizontal inputform">
-                    <div class="col-md-3 profileAvatar">
-                        <div class="avatar">
-                            <i class="fa fa-user fa-5x" aria-hidden="true"></i>
+<div class="form-horizontal">
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="box box-primary">
+                <div class="box-body large-text-container profileInfo">
+                    <br />
+                    <!--Username-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Username</label>
+                        <div class="col-sm-7">
+                            @ViewBag.Username
                         </div>
                     </div>
-                    <div class="col-md-8 profileInfo">
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Username</label>
-                            <div class="col-md-4">
-                                thynh1610@gmail.com
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Email</label>
-                            <div class="col-md-4">
-                                thynh1610@gmail.com
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Fullname</label>
-                            <div class="col-md-4">
-                                Nguyen Hoang Thy
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Address</label>
-                            <div class="col-md-4">
-                                Quan 3 Thanh pho Ho Chi Minh
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Phone</label>
-                            <div class="col-md-4">
-                                0987654321
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Birthday</label>
-                            <div class="col-md-4">
-                                16/10/1994
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Gender</label>
-                            <div class="col-md-4">
-                                Female
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Job title</label>
-                            <div class="col-md-4">
-                                Student
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Department</label>
-                            <div class="col-md-4">
-                                Software Engineer
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Company name</label>
-                            <div class="col-md-4">
-                                FPT University
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-offset-1 col-md-3">Company address</label>
-                            <div class="col-md-4">
-                                To Ky Quan 12 TPHCM
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-offset-3 col-md-4">
-                                <a class="btn btn-primary" href="@(Url.Action("Edit","Profile"))">Edit</a>
-                                <a class="btn btn-default" href="@(Url.Action("Index","Home"))">Back</a>
-                            </div>
+                    <!--Email-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3 ">Email</label>
+                        <div class="col-sm-7">
+                            @Model.Email
                         </div>
                     </div>
+                    <!--Fullname-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Fullname</label>
+                        <div class="col-sm-7">
+                            @Model.Fullname
+                        </div>
+                    </div>
+                    <!--Adrress-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Address</label>
+                        <div class="col-sm-7">
+                            @if (!string.IsNullOrWhiteSpace(Model.Address))
+                            {
+                            @Model.Address
+                            }
+                            else
+                            { <span>-</span>}
+                        </div>
+                    </div>
+                    <!--Phone-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Phone</label>
+                        <div class="col-sm-7">
+                            @if (!string.IsNullOrWhiteSpace(Model.PhoneNumber))
+                            {
+                            <span>@Model.PhoneNumber</span>
+                            }
+                            else
+                            {<span>-</span>}
+                        </div>
+                    </div>
+                    <!--Birthday-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Birthday</label>
+                        <div class="col-sm-7">
+                            @if (Model.Birthday.HasValue)
+                            {
+                            @Model.Birthday.Value.ToString("dd/MM/yyyy")
+                            }
+                            else
+                            {
+                            <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--Gender-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Gender</label>
+                        <div class="col-sm-7">
+                            @if (Model.Gender.HasValue)
+                            {
+                                if (Model.Gender.Value)
+                                {
+                            <p>Male</p>
+                                }
+                                else
+                                {
+                            <p>Female</p>
+                                }
+                            }
+                            else
+                            {
+                            <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--Job title-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Job Title</label>
+                        <div class="col-sm-7">
+                            @if (!string.IsNullOrWhiteSpace(Model.JobTitle))
+                            {
+                            @Model.JobTitle
+                            }
+                            else
+                            {
+                            <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--Department-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Department</label>
+                        <div class="col-sm-7">
+                            @if (!string.IsNullOrWhiteSpace(Model.DepartmentName))
+                            {
+                            @Model.DepartmentName;
+                            }
+                            else
+                            {
+                            <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--CompanyName-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Company Name</label>
+                        <div class="col-sm-7">
+                            @if (!string.IsNullOrWhiteSpace(Model.CompanyName))
+                            {
+                            @Model.CompanyName;
+                            }
+                            else
+                            {
+                            <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--CompanyAddress-->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3">Company Address</label>
+                        <div class="col-sm-7">
+                            @if (!string.IsNullOrWhiteSpace(Model.CompanyAddress))
+                            {
+                            @Model.CompanyAddress;
+                            }
+                            else
+                            {
+                            <span>-</span>
+                            }
+                        </div>
+                    </div>
+                    <!--Btn Update profile-->
+                    <div class="form-group">
+                        <div class="col-xs-offset-4 col-xs-8">
+                            @Html.ActionLink("Update Profile", "UpdateProfile", null, new { @class = "btn btn-success" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="box box-primary">
+                <div class="box-body" style="text-align: center">
+                    <span class="lead"><strong>Avatar</strong></span>
+                    <br />
+                    <img src="@ViewBag.AvatarURL" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
                 </div>
             </div>
         </div>

@@ -1,7 +1,8 @@
-﻿@model TMS.ViewModels.ProfileAdminViewModel
+﻿@using Microsoft.Ajax.Utilities
+@model TMS.ViewModels.ProfileTechnicianViewModel
 @{
+    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "View Profile";
-    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
 <style>
@@ -9,6 +10,7 @@
         text-align: right;
     }
 </style>
+
 <div class="form-horizontal">
     <div class="row">
         <div class="col-xs-8">
@@ -33,20 +35,20 @@
                     <div class="form-group">
                         <label class="col-sm-offset-2 col-sm-3">Fullname</label>
                         <div class="col-sm-7">
-                            @Model.FullName
+                            @Model.Fullname
                         </div>
                     </div>
                     <!--Birthday-->
                     <div class="form-group">
                         <label class="col-sm-offset-2 col-sm-3 ">Birthday</label>
                         <div class="col-sm-7">
-                            @if (Model.DayOfBirth.HasValue)
+                            @if (Model.Birthday.HasValue)
                             {
-                                @Model.DayOfBirth.Value.ToString("dd/MM/yyyy")
+                            @Model.Birthday.Value.ToString("dd/MM/yyyy")
                             }
                             else
                             {
-                                <span>-</span>
+                            <span>-</span>
                             }
                         </div>
                     </div>
@@ -54,9 +56,9 @@
                     <div class="form-group">
                         <label class="col-sm-offset-2 col-sm-3">Address</label>
                         <div class="col-sm-7">
-                            @if (!string.IsNullOrWhiteSpace(Model.Address))
+                            @if (!Model.Address.IsNullOrWhiteSpace())
                             {
-                                @Model.Address
+                            @Model.Address
                             }
                             else
                             { <span>-</span>}
@@ -66,13 +68,13 @@
                     <div class="form-group">
                         <label class="col-sm-offset-2 col-sm-3">Phone</label>
                         <div class="col-sm-7">
-                            @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                            @if (!Model.PhoneNumber.IsNullOrWhiteSpace())
                             {
-                                <span>@Model.Phone</span>
+                            <span>@Model.PhoneNumber</span>
                             }
                             else
                             {
-                                <span>-</span>
+                            <span>-</span>
                             }
                         </div>
                     </div>
@@ -83,20 +85,24 @@
                             @if (Model.Gender.HasValue)
                             {
                                 if (Model.Gender.Value)
-                                {
-                                    <p>Male</p>
-                                }
+                                   {<p>Male</p>}
                                 else
-                                {
-                                    <p>Female</p>
-                                }
+                                   {<p>Female</p>}
                             }
                             else
                             {
-                                <span>-</span>
+                            <span>-</span>
                             }
                         </div>
                     </div>
+                    <!--Department -->
+                    <div class="form-group">
+                        <label class="col-sm-offset-2 col-sm-3 ">Department</label>
+                        <div class="col-sm-7">
+                               @Model.DepartmentName
+                        </div>
+                    </div>
+                  
                     <!--Btn Update profile-->
                     <div class="form-group">
                         <div class="col-xs-offset-4 col-xs-8">
@@ -117,3 +123,4 @@
         </div>
     </div>
 </div>
+
