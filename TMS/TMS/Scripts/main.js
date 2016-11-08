@@ -152,9 +152,21 @@ var notifyFlashMessage = function (options) {
     }
     if (options.message) {
         if (options.status) {
-            $.notify(options.message, options.status);
-        } else {
-            $.notify(options.message, "success");
+            if (options.status == "success") {
+                noty({
+                    text: options.message,
+                    layout: "topCenter",
+                    type: "success",
+                    timeout: 2000
+                });
+            } else {
+                noty({
+                    text: options.message,
+                    type: "error",
+                    layout: "topRight",
+                    timeout: 2000
+                });
+            }
         }
     }
 };

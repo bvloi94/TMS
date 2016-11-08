@@ -102,13 +102,28 @@
                 },
                 success: function (data) {
                     if (data.success) {
-                        $.notify(data.message, "success");
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
                     } else {
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
                 }
             });
         });

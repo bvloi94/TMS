@@ -167,11 +167,7 @@
                 numberOfData += chartData[i];
             }
 
-            if (chartLabels == null) {
-                $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
-                $.notify("No lables to draw chart", "success");
-                return;
-            } else if (numberOfData == 0) {
+         if (numberOfData == 0) {
                 $('#pieChart').replaceWith('<div id="pieChart"><center><h2>No data</h2></center></div>');
                 return;
             }

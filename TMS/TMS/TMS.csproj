@@ -215,6 +215,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\Controllers\DepartmentController.cs" />
     <Compile Include="Areas\Manager\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
@@ -350,6 +351,7 @@
     <Compile Include="Utils\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\BusinessRuleViewModel.cs" />
+    <Compile Include="ViewModels\ChangPaswordViewModel.cs" />
     <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
@@ -698,6 +700,7 @@
     <Content Include="Views\Shared\KBLayout.cshtml" />
     <Content Include="Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Views\Shared\_TopLayout.cshtml" />
+    <Content Include="Views\Profile\ChangePassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

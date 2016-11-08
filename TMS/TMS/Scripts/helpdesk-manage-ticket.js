@@ -497,7 +497,7 @@ $(document).ready(function () {
                 noty({
                     text: "Cannot connect to server!",
                     type: "error",
-                    layout: "topCenter",
+                    layout: "topRight",
                     timeout: 2000
                 });
             }
@@ -509,7 +509,7 @@ $(document).ready(function () {
             noty({
                 text: "Less than 2 tickets, can not merge!",
                 type: "error",
-                layout: "topCenter",
+                layout: "topRight",
                 timeout: 2000
             });
         } else {
@@ -542,7 +542,7 @@ $(document).ready(function () {
                     noty({
                         text: data.msg,
                         type: "error",
-                        layout: "topCenter",
+                        layout: "topRight",
                         timeout: 2000
                     });
                     $("#modal-merge-ticket").modal("hide");
@@ -557,7 +557,7 @@ $(document).ready(function () {
                 noty({
                     text: "Cannot connect to server!",
                     type: "error",
-                    layout: "topCenter",
+                    layout: "topRight",
                     timeout: 2000
                 });
             }
