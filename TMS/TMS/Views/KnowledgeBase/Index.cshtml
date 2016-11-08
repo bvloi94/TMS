@@ -419,7 +419,7 @@
                 var id = $(element).attr("data-id");
                 if (selectedSolutions.indexOf(id) != -1) {
                     $(element).prop("checked", true);
-                }
+                } 
             });
         }
 
@@ -433,18 +433,22 @@
                 success: function (data) {
                     if (!data.success) {
                         noty({
-                            text: data.msg,
+                            text: data.message,
                             layout: "topCenter",
                             type: "error",
                             timeout: 2000
                         });
                     } else {
                         noty({
-                            text: data.msg,
+                            text: data.message,
                             layout: "topCenter",
                             type: "success",
-                            timeout: 2000
-                        });
+                            timeout: 2000,
+
+                        },selectedSolutions = [] );
+                     
+                        getSolutionsByActiveNode();
+
                     }
                 },
                 error: function (data) {
@@ -479,6 +483,9 @@
 
         $("#yesBtn").on("click", function () {
             deleteSolutions();
+            $modal = $("#delete-modal");
+            $modal.modal("hide");
+
         });
 
         $("#key_search").on("keyup", function () {
@@ -582,6 +589,8 @@
             content += '</ul>';
             return content;
         }
+
+
     </script>
 }
 

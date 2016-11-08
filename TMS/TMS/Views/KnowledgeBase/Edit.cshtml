@@ -61,11 +61,18 @@
                 <div class="form-group">
                     <label class="control-label col-md-2">Attach file</label>
                     <div class="col-md-10">
-                        <input type="file" name="SolutionAttachments" multiple class="form-control" placeholder="Drop file here" />
-                        @foreach (SolutionAttachment solutionAttachment in ViewBag.SolutionAttachments)
-                        {
-                            <span>@solutionAttachment.Filename</span>
-                        }
+                        <input class="form-control" type="file" id="SolutionAttachments" name="SolutionAttachments" multiple>
+                        <div style="height: auto; margin-top: 5px;">
+                            @for (int i = 0; i < Model.SolutionAttachmentsList.Count(); i++)
+                            {
+                                <div class="attachment-div" style="display: inline;">
+                                    @Html.HiddenFor(it => Model.SolutionAttachmentsList[i].id)
+                                    @Html.HiddenFor(it => Model.SolutionAttachmentsList[i].name)
+                                    <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.SolutionAttachmentsList[i].id">@Model.SolutionAttachmentsList[i].name</label>
+                                    <span class='attachment-delete'> x </span>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -133,6 +140,17 @@
         $("#subject-txt")
             .keyup(function() {
                 getPath();
+            });
+
+
+        $(".attachment-delete")
+        .on("click",
+            function () {
+                var inputs = $(this).parent().find(':input');
+                inputs.each(function (index, element) {
+                    element.value = "";
+                });
+                $(this).parent().addClass("hidden");
             });
     </script>
 }

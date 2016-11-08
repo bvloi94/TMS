@@ -21,7 +21,6 @@ namespace TMS.ViewModels
         public int CategoryID { get; set; }
         public string CategoryPath { get; set; }
         public string Category { get; set; }
-        public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
         [TagFormat(ErrorMessage = "Keyword only contain characters 'a-z', 'A-Z', '0-9' and separated by commas!")]
         public string Keyword { get; set; }
         public Nullable<DateTime> CreatedTime { get; set; }
@@ -29,5 +28,9 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Please input a path!")]
         [PathFormat(ErrorMessage = "Path can not contain special characters and spaces!")]
         public string Path { get; set; }
+        // [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
+        public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
+        public List<AttachmentViewModel> SolutionAttachmentsList { get; set; }
+        public List<AttachmentViewModel> DescriptionAttachments { get; set; }
     }
 }

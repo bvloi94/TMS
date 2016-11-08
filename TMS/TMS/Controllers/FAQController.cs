@@ -93,13 +93,16 @@ namespace TMS.Controllers
                     ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
                     ViewBag.Item2 = "Ticket";
                     ViewBag.Profile = "#"; break;
-                default:
+                case "Requester":
                     ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/FAQ/Index";
                     ViewBag.Item1 = "FAQ";
                     ViewBag.ItemLink2 = "/Ticket/Index";
                     ViewBag.Item2 = "Ticket";
                     ViewBag.Profile = "#";
+                    break;
+                default:
+                    ViewBag.Home = "/FAQ/Index";
                     break;
             }
         }
