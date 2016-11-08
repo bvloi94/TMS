@@ -132,10 +132,10 @@
                     <h1 class="post-title">@Html.DisplayFor(m => m.Subject)</h1>
                     <div class="post-meta clearfix">
                         <span class="date">@Html.DisplayFor(m => m.CreatedTime)</span>
-                        <span class="category"><a class="category-link" id="@Model.CategoryID">@Html.DisplayFor(m => m.CategoryPath)</a></span>
+                        <span class="category"><a class="category-link" id="@Model.CategoryID" href="/FAQ/Category/@Model.Category">@Html.DisplayFor(m => m.CategoryPath)</a></span>
                     </div>
                     <p class="pre-wrap">@Html.Raw(Model.Content)</p>
-                    <p><ul class="keywords" id="keyword-@Model.CategoryID" data-id="@Model.Keyword"></ul></p>
+                    <p><ul class="keywords" id="keyword">@Model.Keyword</ul></p>
                 </article>
             </li>
         </ul>
@@ -148,7 +148,7 @@
                 @foreach (Solution solution in relatedSolution)
                 {
                     <li class="article-entry standard">
-                        <h4><a class="link-color" href="/FAQ/Detail?Path=@solution.Path">@solution.Subject</a></h4>
+                        <h4><a class="link-color" href="/FAQ/Detail/@solution.Path">@solution.Subject</a></h4>
                         <span class="article-meta">@solution.CreatedTime in <a class="category-link" id="@solution.CategoryID" href="javascript:void{0}">@solution.Category.Name</a></span>
                     </li>
                 }
@@ -166,20 +166,20 @@
     <script>
         $(document).ready(function () {
             showTreeViewModal();
-            loadKeyword($(".keywords").attr("id"), $(".keywords").attr("data-id"));
+            loadKeyword($("#keyword").html(), $("#keyword"));
         });
 
         $('.category-link').on("click", function () {
             loadFAQ($(this).attr("id"));
         });
 
-        function loadKeyword(id, keyword) {
+        function loadKeyword(keyword, obj) {
             var keywordTags = (keyword).split(',');
-            $("#keyword-" + id).empty();
+            $(obj).empty();
             if (keywordTags[0] != "-") {
                 for (j = 0; j < keywordTags.length; j++) {
                     var key = keywordTags[j].replace(/"/g, '');
-                    $("#keyword-" + id).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+                    $(obj).append('<li><div class="key-tags"><a href="/FAQ/Tags/' + key + ' ">' + key + '</a></div></li>');
                 }
             }
         }
@@ -287,7 +287,7 @@
                                     a_attr: {
                                         "data-id": dataItem.ID,
                                         "name": "Category",
-                                        "href": "/FAQ?Category=" + dataItem.Name,
+                                        "href": "/FAQ/Category/" + dataItem.Name,
                                         "class": "category-node"
                                     }
                                 };

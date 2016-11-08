@@ -156,5 +156,15 @@ namespace TMS.Utils
             public const string NameReplace = "....";
         }
 
+        public class TicketHistoryType
+        {
+            public const int Created = 1;
+            public const int Updated = 2;
+            public const int Solved = 3;
+            public const int Unapproved = 4;
+            public const int Cancelled = 5;
+            public const int Closed = 6;
+            public const int Merged = 7;
+        }
     }
 }

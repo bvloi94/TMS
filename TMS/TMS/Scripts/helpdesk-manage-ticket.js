@@ -59,7 +59,7 @@ function initTicketTable() {
                          "html": row.Subject
                      })[0].outerHTML;
                  },
-                 "width" : "40%"
+                 "width": "40%"
              },
             {
                 "targets": [2],
@@ -79,7 +79,7 @@ function initTicketTable() {
                 "targets": [4],
                 "sortable": false,
                 "render": function (data, type, row) {
-                    return row.SolvedDate != "" ? row.SolvedDate : "-";
+                    return row.SolvedDateString;
                 }
             }, {
                 "targets": [5],
@@ -90,7 +90,7 @@ function initTicketTable() {
             {
                 "targets": [6],
                 "render": function (data, type, row) {
-                    return row.ModifiedTimeString != "" ? row.ModifiedTimeString : "-";
+                    return row.ModifiedTimeString;
                 }
             },
             {
@@ -98,7 +98,11 @@ function initTicketTable() {
                 "sortable": false,
                 "render": function (data, type, row) {
                     var links = '';
-                    var disable = '';
+                    var history = '<li>'
+                    + '<a href="/Ticket/History/' + row.Id + '">'
+                    + '<i class="fa fa-history" aria-hidden="true"></i> Ticket History'
+                    + '</a>'
+                    + '</li>';
                     switch (row.Status) {
                         case "New":
                             links += '<li>'
@@ -106,13 +110,14 @@ function initTicketTable() {
                        + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
                        + '</a>'
                        + '</li>'
+                       + history
                        + '<li>'
                        + '<a href="/Ticket/Solve/' + row.Id + '">'
                        + '<i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket'
                        + '</a>'
                        + '</li>'
                        + '<li>'
-                       + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" id="action-cancel-btn" data-ticket-id="' + row.Id + '">'
+                       + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" data-ticket-id="' + row.Id + '">'
                        + '<i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket'
                        + '</a>'
                        + '</li>';
@@ -123,6 +128,7 @@ function initTicketTable() {
                        + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
                        + '</a>'
                        + '</li>'
+                       + history
                        + '<li>'
                        + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" data-ticket-id="' + row.Id + '">'
                        + '<i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket'
@@ -130,9 +136,11 @@ function initTicketTable() {
                        + '</li>';
                             break;
                         case "Solved":
+                            links += history;
                             break;
                         case "Unapproved":
-                            links += '<li><a href="javascript:void(0)"><strong>Reopen Ticket</strong></a></li>'
+                            links += history
+                        + '<li><a href="javascript:void(0)"><strong>Reopen Ticket</strong></a></li>'
                         + '<li>'
                         + '<a href="javascript:showCloseModal(this)" data-ticket-id="' + row.Id + '">'
                         + '<i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket'
@@ -150,15 +158,17 @@ function initTicketTable() {
                         + '</li>';
                             break;
                         case "Closed":
-                            disable = 'disabled="disabled"';
+                            links += history;
+                            break;
                         case "Cancelled":
-                            disable = 'disabled="disabled"';
+                            links += history;
+                            break;
                     }
                     var action = '<div class="btn-group">'
-                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ' + disable + '>'
+                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
                         + 'Action <span class="caret"></span>'
                         + '</button>'
-                        + '<ul class="dropdown-menu">';
+                        + '<ul class="dropdown-menu dropdown-menu-right">';
                     action += links;
                     action += '</ul>'
                         + '</div>';
@@ -250,7 +260,7 @@ function openTicketDetailModal(ticketId) {
         },
         success: function (data) {
             $('#ticket-subject').text(data.subject);
-            $('#ticket-description').text(data.description);
+            $('#ticket-description').html(data.description);
             $('#ticket-department').text(data.department);
             $('#ticket-technician').text(data.technician);
             $('#ticket-created-by').text(data.creater);
@@ -271,12 +281,13 @@ function openTicketDetailModal(ticketId) {
             $("#action-cancel-btn").attr("data-ticket-id", data.id);
             $("#action-solve-btn").attr("href", "/Ticket/Solve/" + data.id);
             $("#action-edit-btn").attr("href", "/HelpDesk/ManageTicket/EditTicket/" + data.id);
+            $("#action-history-btn").attr("href", "/Ticket/History/" + data.id);
 
             if (!data.solution || data.solution == "-") {
                 $('#ticket-solution').text("This ticket is not solved yet.");
             }
             else {
-                $('#ticket-solution').text(data.solution);
+                $('#ticket-solution').html(data.solution);
             }
 
             $('#ticket-description-attachments').empty();
@@ -355,8 +366,6 @@ function openTicketDetailModal(ticketId) {
         }
     });
 }
-
-
 
 $(document).ready(function () {
     setActiveTicketMenu();
@@ -582,6 +591,10 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("*").tooltip({
+        disabled: true
+    });
 });
 
 $("#refer-older-ticket-link").click(function () {
@@ -643,7 +656,7 @@ var initOlderTicketsTable = function () {
                 "sortable": false,
                 "width": "45%",
                 "render": function (data, type, row) {
-                    return (row.Description == "") ? "-" : '<span class="description-text">' + row.Description + '</span>';
+                    return '<span class="description-text">' + row.Description + '</span>';
                 }
             },
             {
@@ -677,17 +690,24 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
         success: function (data) {
             if (data.success) {
                 var ticket = data.data;
-                $("[name='Subject']").val(ticket.Subject);
-                $("[name='Description']").val(ticket.Description);
+                $("[name='Subject']:not([readonly])").val(ticket.Subject);
+                $("[name='Description']:not([readonly])").val(ticket.Description);
                 if (ticket.Type != 0) {
                     $("[name='Type']").val(ticket.Type);
                 }
                 $("[name='ImpactDetail']").val(ticket.ImpactDetail);
-                $("[name='ScheduleStartDate']").val(ticket.ScheduleStartDate);
-                $("[name='ScheduleEndDate']").val(ticket.ScheduleEndDate);
-                $("[name='ActualStartDate']").val(ticket.ActualStartDate);
-                $("[name='ActualEndDate']").val(ticket.ActualEndDate);
+                $("[name='ScheduleStartDate']").val(ticket.ScheduleStartDateString);
+                $("[name='ScheduleEndDate']").val(ticket.ScheduleEndDateString);
+                $("[name='ActualStartDate']").val(ticket.ActualStartDateString);
+                $("[name='ActualEndDate']").val(ticket.ActualEndDateString);
                 $("[name='Solution']").val(ticket.Solution);
+                if (ticket.Tags) {
+                    var tags = ticket.Tags.split(',');
+                    for (i = 0; i < tags.length; i++) {
+                        $('#tags').tagit('createTag', tags[i]);
+                    }
+                }
+                $("[name='Note']").val(ticket.Solution);
 
                 if (ticket.UrgencyId != 0) {
                     loadInitDropdown('ddl-urgency', ticket.Urgency, ticket.UrgencyId);

@@ -179,7 +179,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Code" Type="nvarchar" MaxLength="8" />
+          <Property Name="Code" Type="nvarchar" MaxLength="8" Nullable="false" />
           <Property Name="Type" Type="int" />
           <Property Name="Mode" Type="int" Nullable="false" />
           <Property Name="ImpactID" Type="int" />
@@ -222,8 +222,8 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Type" Type="int" Nullable="false" />
           <Property Name="ActID" Type="nvarchar" MaxLength="128" />
-          <Property Name="ActedID" Type="nvarchar" MaxLength="128" />
           <Property Name="Action" Type="nvarchar(max)" />
           <Property Name="ActedTime" Type="datetime" />
           <Property Name="TicketID" Type="int" Nullable="false" />
@@ -556,18 +556,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_TicketHistory_AspNetUsers1">
-          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
-          <End Role="TicketHistory" Type="Self.TicketHistory" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUsers">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="TicketHistory">
-              <PropertyRef Name="ActedID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_TicketHistory_Ticket">
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="1" />
           <End Role="TicketHistory" Type="Self.TicketHistory" Multiplicity="*" />
@@ -705,10 +693,6 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="TicketHistory" EntitySet="TicketHistory" />
           </AssociationSet>
-          <AssociationSet Name="FK_TicketHistory_AspNetUsers1" Association="Self.FK_TicketHistory_AspNetUsers1">
-            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
-            <End Role="TicketHistory" EntitySet="TicketHistory" />
-          </AssociationSet>
           <AssociationSet Name="FK_TicketHistory_Ticket" Association="Self.FK_TicketHistory_Ticket">
             <End Role="Ticket" EntitySet="Ticket" />
             <End Role="TicketHistory" EntitySet="TicketHistory" />
@@ -771,10 +755,6 @@
             <End Role="Ticket" EntitySet="Tickets" />
           </AssociationSet>
           <AssociationSet Name="FK_TicketHistory_AspNetUsers" Association="TMSModel.FK_TicketHistory_AspNetUsers">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="TicketHistory" EntitySet="TicketHistories" />
-          </AssociationSet>
-          <AssociationSet Name="FK_TicketHistory_AspNetUsers1" Association="TMSModel.FK_TicketHistory_AspNetUsers1">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="TicketHistory" EntitySet="TicketHistories" />
           </AssociationSet>
@@ -913,7 +893,6 @@
           <NavigationProperty Name="Tickets2" Relationship="TMSModel.FK_Ticket_AspNetUsers2" FromRole="AspNetUser" ToRole="Ticket" />
           <NavigationProperty Name="Tickets3" Relationship="TMSModel.FK_Ticket_AspNetUsers3" FromRole="AspNetUser" ToRole="Ticket" />
           <NavigationProperty Name="TicketHistories" Relationship="TMSModel.FK_TicketHistory_AspNetUsers" FromRole="AspNetUser" ToRole="TicketHistory" />
-          <NavigationProperty Name="TicketHistories1" Relationship="TMSModel.FK_TicketHistory_AspNetUsers1" FromRole="AspNetUser" ToRole="TicketHistory" />
           <NavigationProperty Name="AspNetRoles" Relationship="TMSModel.AspNetUserRoles" FromRole="AspNetUser" ToRole="AspNetRole" />
         </EntityType>
         <EntityType Name="BusinessRule">
@@ -1051,7 +1030,7 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Code" Type="String" MaxLength="8" FixedLength="false" Unicode="true" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <Property Name="Type" Type="Int32" />
           <Property Name="Mode" Type="Int32" Nullable="false" />
           <Property Name="ImpactID" Type="Int32" />
@@ -1105,13 +1084,12 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Type" Type="Int32" Nullable="false" />
           <Property Name="ActID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ActedID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Action" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ActedTime" Type="DateTime" Precision="3" />
           <Property Name="TicketID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_TicketHistory_AspNetUsers" FromRole="TicketHistory" ToRole="AspNetUser" />
-          <NavigationProperty Name="AspNetUser1" Relationship="TMSModel.FK_TicketHistory_AspNetUsers1" FromRole="TicketHistory" ToRole="AspNetUser" />
           <NavigationProperty Name="Ticket" Relationship="TMSModel.FK_TicketHistory_Ticket" FromRole="TicketHistory" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="Urgency">
@@ -1233,18 +1211,6 @@
             </Principal>
             <Dependent Role="TicketHistory">
               <PropertyRef Name="ActID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_TicketHistory_AspNetUsers1">
-          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
-          <End Type="TMSModel.TicketHistory" Role="TicketHistory" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="AspNetUser">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="TicketHistory">
-              <PropertyRef Name="ActedID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1675,8 +1641,8 @@
                 <ScalarProperty Name="TicketID" ColumnName="TicketID" />
                 <ScalarProperty Name="ActedTime" ColumnName="ActedTime" />
                 <ScalarProperty Name="Action" ColumnName="Action" />
-                <ScalarProperty Name="ActedID" ColumnName="ActedID" />
                 <ScalarProperty Name="ActID" ColumnName="ActID" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>

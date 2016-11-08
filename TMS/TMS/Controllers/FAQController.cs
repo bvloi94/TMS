@@ -31,16 +31,8 @@ namespace TMS.Controllers
             _categoryService = new CategoryService(_unitOfWork);
         }
         // GET: FAQ
-        public ActionResult Index(string SearchKey, string Category)
+        public ActionResult Index(string search)
         {
-            AspNetRole userRole = null;
-            if (User.Identity.GetUserId() != null)
-            {
-                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
-            }
-
-            GetMenuItemByRoleName(userRole.Name);
-
             IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
             IQueryable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
             {
@@ -56,40 +48,23 @@ namespace TMS.Controllers
                 ModifiedTime = m.ModifiedTime
             }).AsQueryable().OrderBy(m => m.Subject);
 
-            if (!string.IsNullOrWhiteSpace(SearchKey))
+            if (!string.IsNullOrWhiteSpace(search))
             {
-
                 var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
 
-                SearchKey = GeneralUtil.RemoveSpecialCharacters(SearchKey);
+                search = GeneralUtil.RemoveSpecialCharacters(search);
                 Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                SearchKey = regex.Replace(SearchKey, " ");
-                string[] keywordArr = SearchKey.Split(' ');
+                search = regex.Replace(search, " ");
+                string[] keywordArr = search.Split(' ');
                 foreach (string keyword in keywordArr)
                 {
                     predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keyword.ToLower()));
                 }
-                predicate = predicate.Or(p => p.Subject.ToLower().Contains(SearchKey.ToLower()));
+                predicate = predicate.Or(p => p.Subject.ToLower().Contains(search.ToLower()));
                 model = model.Where(predicate);
-                ViewBag.SearchKey = SearchKey;
-                return View(model);
+                ViewBag.SearchKey = search;
             }
 
-            if (!string.IsNullOrWhiteSpace(Category))
-            {
-                Category category = _categoryService.GetCategoryByName(Category);
-                if (category != null)
-                {
-                    List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(category.ID);
-                    model = model.Where(m => m.CategoryID == category.ID
-                        || childrenCategoriesIdList.Contains(m.CategoryID));
-                }
-                ViewBag.Category = Category;
-                return View(model);
-            }
-
-            ViewBag.Category = Category;
-            ViewBag.SearchKey = SearchKey;
             return View(model);
         }
 
@@ -205,6 +180,7 @@ namespace TMS.Controllers
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
                     model.CategoryID = solution.CategoryID;
+                    model.Category = solution.Category.Name;
                     model.CategoryPath = _categoryService.GetCategoryPath(solution.Category);
                     if (solution.CreatedTime != null && solution.ModifiedTime != null)
                     {
@@ -248,6 +224,78 @@ namespace TMS.Controllers
                     ModifiedTime = m.ModifiedTime
                 }).OrderBy(m => m.Subject).ToList().Take(5);
             return relatedSolution;
+        }
+
+        public ActionResult Category(string category)
+        {
+            IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
+            IQueryable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
+            {
+                ID = m.ID,
+                Subject = m.Subject,
+                Category = m.Category.Name,
+                CategoryID = m.Category.ID,
+                CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                Content = m.ContentText,
+                Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Path = m.Path,
+                CreatedTime = m.CreatedTime,
+                ModifiedTime = m.ModifiedTime
+            }).AsQueryable().OrderBy(m => m.Subject);
+
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                Category cate = _categoryService.GetCategoryByName(category);
+                if (cate != null)
+                {
+                    List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(cate.ID);
+                    model = model.Where(m => m.CategoryID == cate.ID
+                        || childrenCategoriesIdList.Contains(m.CategoryID));
+                    ViewBag.Category = cate.Name;
+                }
+            }
+
+            return View("Index", model);
+        }
+
+        public ActionResult Tags(string tag)
+        {
+            IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
+            IQueryable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
+            {
+                ID = m.ID,
+                Subject = m.Subject,
+                Category = m.Category.Name,
+                CategoryID = m.Category.ID,
+                CategoryPath = _categoryService.GetCategoryPath(m.Category),
+                Content = m.ContentText,
+                Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Path = m.Path,
+                CreatedTime = m.CreatedTime,
+                ModifiedTime = m.ModifiedTime
+            }).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(tag))
+            {
+                tag = '"' + tag + '"';
+                model = model.Where(m => m.Keyword.Contains(tag.ToLower()));
+            };
+            model = model.OrderBy(m => m.Subject);
+
+            ViewBag.Tag = tag;
+            return View("Index", model);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+            }
+
+            GetMenuItemByRoleName(userRole.Name);
+            base.OnActionExecuting(filterContext);
         }
     }
 }

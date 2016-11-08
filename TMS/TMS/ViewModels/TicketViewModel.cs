@@ -17,9 +17,7 @@ namespace TMS.ViewModels
         public int Id { get; set; }
         [Required(ErrorMessage = "Ticket's subject is required!")]
         public string Subject { get; set; }
-        [AllowHtml]
         public string Description { get; set; }
-        [AllowHtml]
         public string Solution { get; set; }
         [Required(ErrorMessage = "Ticket's requester is required!")]
         public string RequesterId { get; set; }
@@ -36,7 +34,6 @@ namespace TMS.ViewModels
         public string Priority { get; set; }
         public int ImpactId { get; set; }
         public string Impact { get; set; }
-        [AllowHtml]
         public string ImpactDetail { get; set; }
         public int CategoryId { get; set; }
         public string Category { get; set; }
@@ -54,6 +51,11 @@ namespace TMS.ViewModels
         public DateTime? ModifiedTime { get; set; }
         public string CreatedTimeString { get; set; }
         public string ModifiedTimeString { get; set; }
+        public string SolvedDateString { get; set; }
+        public string ScheduleStartDateString { get; set; }
+        public string ScheduleEndDateString { get; set; }
+        public string ActualStartDateString { get; set; }
+        public string ActualEndDateString { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedId { get; set; }
         public string SolvedBy { get; set; }

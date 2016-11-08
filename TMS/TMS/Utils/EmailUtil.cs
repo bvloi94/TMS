@@ -97,7 +97,7 @@ namespace TMS.Utils
             {
                 emailMessage = emailMessage.Replace("$fullname", helpdesk.Fullname);
                 emailMessage = emailMessage.Replace("$code", ticket.Code);
-                emailMessage = emailMessage.Replace("$delayDay", ((int)(DateTime.Now - ticket.ScheduleEndDate).Value.TotalDays).ToString());
+                emailMessage = emailMessage.Replace("$delayDay", ((int)(DateTime.Now.Date - ticket.ScheduleEndDate.Value.Date).TotalDays).ToString());
                 try
                 {
                     await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
