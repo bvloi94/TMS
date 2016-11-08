@@ -387,15 +387,28 @@ namespace TMS.Controllers
                 Ticket ticket = _ticketService.GetTicketByID(id.Value);
                 if (ticket != null)
                 {
-                    AspNetRole userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                    AspNetUser currentUser = _userService.GetUserById(User.Identity.GetUserId());
+                    AspNetRole userRole = currentUser.AspNetRoles.FirstOrDefault();
 
                     // Get Ticket information
                     AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
                     AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
                     AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+                    AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+
+                    if (userRole.Name == "Technician" && currentUser.Id == ticket.TechnicianID)
+                    {
+                        ViewBag.Role = "TechnicianInCharge";
+                    }
+                    else
+                    {
+                        ViewBag.Role = userRole.Name;
+                    }
+
                     TicketViewModel model = new TicketViewModel();
 
                     model.Id = ticket.ID;
+                    model.Code = ticket.Code;
                     model.Subject = ticket.Subject;
                     model.Description = ticket.Description;
                     model.Mode = ticket.Mode;
@@ -411,23 +424,60 @@ namespace TMS.Controllers
                         case ConstantUtil.TicketStatus.Closed: model.Status = "Closed"; break;
                     }
 
+                    IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);
+                    string descriptionAttachment = "";
+                    string solutionAttachment = "";
+
+                    if (ticketAttachments.Count() > 0)
+                    {
+                        string fileName;
+                        foreach (var attachFile in ticketAttachments)
+                        {
+                            fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
+                            if (attachFile.Type == ConstantUtil.TicketAttachmentType.Description)
+                            {
+                                descriptionAttachment += "<a download=\'" + fileName +
+                                                 "\' class=\'btn-xs btn-primary\' href=\'" + attachFile.Path +
+                                                 "\' target=\'_blank\' >" + fileName + "</a>&nbsp;&nbsp";
+                            }
+                            else if (attachFile.Type == ConstantUtil.TicketAttachmentType.Solution)
+                            {
+                                solutionAttachment += "<a download=\'" + fileName +
+                                                 "\' class=\'btn-xs btn-primary\' href=\'" + attachFile.Path +
+                                                 "\' target=\'_blank\' >" + fileName + "</a>&nbsp;&nbsp";
+                            }
+                        }
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(descriptionAttachment))
+                    {
+                        descriptionAttachment = "None";
+                    }
+
+                    if (string.IsNullOrWhiteSpace(solutionAttachment))
+                    {
+                        descriptionAttachment = "None";
+                    }
+
                     model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
                     model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
                     model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
                     model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
                     model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
-                    model.CreatedTime = ticket.CreatedTime.ToString();
-                    model.ModifiedTime = ticket.ModifiedTime.ToString();
-                    model.ScheduleEndDate = ticket.ScheduleEndDate.ToString();
-                    model.ScheduleStartDate = ticket.ScheduleStartDate.ToString();
-                    model.ActualStartDate = ticket.ActualStartDate.ToString();
-                    model.ActualEndDate = ticket.ActualEndDate.ToString();
+                    model.CreatedTimeString = ticket.CreatedTime.ToString("MMM d yyyy, hh:mm");
+                    model.ModifiedTimeString = ticket.ModifiedTime == null ? "-" : ticket.ModifiedTime.ToString("MMM d yyyy, hh:mm");
+                    model.ScheduleEndDateString = ticket.ScheduleEndDate == null ? "-" : ticket.ScheduleEndDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.ScheduleStartDateString = ticket.ScheduleStartDate == null ? "-" : ticket.ScheduleStartDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.ActualStartDateString = ticket.ActualStartDate == null ? "-" : ticket.ActualStartDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.ActualEndDateString = ticket.ActualEndDate == null ? "-" : ticket.ActualEndDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
                     model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
                     model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
                     model.Solution = ticket.Solution;
+                    model.DescriptionAttachmentsURL = descriptionAttachment;
+                    model.SolutionAttachmentsURL = solutionAttachment;
                     model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
-                    ViewBag.Role = userRole.Name;
+                    
                     return View(model);
                 }
             }
@@ -923,5 +973,6 @@ namespace TMS.Controllers
             }
             base.OnActionExecuting(filterContext);
         }
+
     }
 }

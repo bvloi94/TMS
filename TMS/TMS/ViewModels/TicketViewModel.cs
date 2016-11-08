@@ -62,6 +62,8 @@ namespace TMS.ViewModels
         public string AssignedBy { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
+        public string DescriptionAttachmentsURL { get; set; }
+        public string SolutionAttachmentsURL { get; set; }
         [TagFormat(ErrorMessage = "Tags only contain characters 'a-z', '0-9' and separated by commas!")]
         public string Tags { get; set; }
         public string Note { get; set; }
