@@ -84,23 +84,24 @@
                             {
                                 if (Model.Gender.Value)
                                 {
-                                    <p>Male</p>
+                            <p>Male</p>
                                 }
                                 else
                                 {
-                                    <p>Female</p>
+                            <p>Female</p>
                                 }
                             }
                             else
                             {
-                                <span>-</span>
+                            <span>-</span>
                             }
                         </div>
                     </div>
                     <!--Btn Update profile-->
                     <div class="form-group">
-                        <div class="col-xs-offset-4 col-xs-8">
+                        <div class="col-xs-offset-3 col-xs-9">
                             @Html.ActionLink("Update Profile", "UpdateProfile", null, new { @class = "btn btn-success" })
+                            @Html.ActionLink("Change Password", "ChangePassword", new { area = "" }, new { @class = "btn btn-success" })
                         </div>
                     </div>
                 </div>

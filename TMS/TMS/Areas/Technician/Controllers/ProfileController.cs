@@ -107,5 +107,16 @@ namespace TMS.Areas.Technician.Controllers
             return View("UpdateProfile", model);
         }
 
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser technician = _userService.GetUserById(id);
+            if (technician != null)
+            {
+                ViewBag.LayoutName = technician.Fullname;
+                ViewBag.LayoutAvatarURL = technician.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
+        }
     }
 }

@@ -1,6 +1,11 @@
 ﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 using System;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using TMS.DAL;
 using TMS.Models;
@@ -14,12 +19,47 @@ namespace TMS.Controllers
     {
         private UnitOfWork _unitOfWork;
         private UserService _userService;
+        private ApplicationSignInManager _signInManager;
+        private ApplicationUserManager _userManager;
 
         public ProfileController()
         {
             _unitOfWork = new UnitOfWork();
             _userService = new UserService(_unitOfWork);
         }
+       
+        public ProfileController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        {
+            UserManager = userManager;
+            SignInManager = signInManager;
+        }
+
+        public ApplicationSignInManager SignInManager
+        {
+            get
+            {
+                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+            }
+            private set
+            {
+                _signInManager = value;
+            }
+        }
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
+
+     
+
         // GET: Profile
         //[CustomAuthorize(Roles = "Requester")]
         public ActionResult Index()
@@ -104,6 +144,72 @@ namespace TMS.Controllers
             ViewBag.username = requester.UserName;
             ViewBag.AvatarURL = requester.AvatarURL;
             return View("UpdateProfile", model);
+        }
+
+        [CustomAuthorize(Roles = "Admin,Helpdesk,Technician,Requester")]
+        public ActionResult ChangePassword()
+        {
+            string role = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name.ToLower();
+            ViewBag.Role = role;
+            return View();
+        }
+
+        // POST: /Manage/ChangePassword
+        [CustomAuthorize(Roles = "Admin,Helpdesk,Technician,Requester")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            string role = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name.ToLower();
+            var result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId(), model.OldPassword, model.NewPassword);
+            if (result.Succeeded)
+            {
+                switch (role)
+                {
+                    case "admin":
+                        return RedirectToAction("Index", "Profile", new { area = "Admin"});
+                    case "helpdesk":
+                        return RedirectToAction("Index", "Profile", new { area = "Helpdesk" });
+                    case "technician":
+                        return RedirectToAction("Index", "Profile", new { area = "Technician" });
+                    case "requester":
+                        return RedirectToAction("Index");
+                }
+            }
+            AddErrors(result);
+            ViewBag.Role = role;
+            return View(model);
+        }
+
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
+                if (error.StartsWith("Email", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ModelState.AddModelError("Email", error);
+                }
+                else if (error.StartsWith("Name", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    ModelState.AddModelError("Username", error);
+                }
+            }
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser technician = _userService.GetUserById(id);
+            if (technician != null)
+            {
+                ViewBag.LayoutName = technician.Fullname;
+                ViewBag.LayoutAvatarURL = technician.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }
