@@ -32,7 +32,7 @@ namespace TMS.Services
         /// <param name="id">id</param>
         /// <param name="subject">subject</param>
         /// <returns>True | False</returns>
-        public bool IsDuplicateSubject(int? id, string subject)
+        public bool IsDuplicatedSubject(int? id, string subject)
         {
             // id == null
             if (id == null)
@@ -75,7 +75,7 @@ namespace TMS.Services
         /// <param name="id">id</param>
         /// <param name="path">path</param>
         /// <returns>True | False</returns>
-        public bool IsduplicatePath(int? id, string path)
+        public bool IsDuplicatedPath(int? id, string path)
         {
             // id == null
             if (id == null)

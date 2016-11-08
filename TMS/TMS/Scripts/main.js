@@ -40,7 +40,7 @@ function getStatusLabel(status) {
         case "Unapproved":
             cssClass = "label-danger";
             break;
-        case "Canceled":
+        case "Cancelled":
             cssClass = "label-violet";
             break;
         case "Closed":

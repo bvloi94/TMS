@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Web;
 using TMS.Class;
 using TMS.DAL;
+using TMS.Enumerator;
 using TMS.Models;
 using TMS.Utils;
 using TMS.ViewModels;
@@ -387,7 +389,16 @@ namespace TMS.Services
                     recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.AddDays(-4).Date);
                     break;
                 case ConstantUtil.TimeOption.ThisWeek:
-                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.Date.AddDays(-(int)DateTime.Now.DayOfWeek).Date
+                    int intervalWeek = 0;
+                    if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        intervalWeek = 6;
+                    }
+                    else
+                    {
+                        intervalWeek = (int)DateTime.Now.DayOfWeek - 1;
+                    }
+                    recentTickets = recentTickets.Where(m => m.CreatedTime.Date >= DateTime.Now.Date.AddDays(-intervalWeek).Date
                         && m.CreatedTime.Date <= DateTime.Now.Date);
                     break;
                 case ConstantUtil.TimeOption.ThisMonth:
@@ -400,33 +411,99 @@ namespace TMS.Services
             return recentTickets;
         }
 
-        public void AddTicket(Ticket ticket)
+        public bool AddTicket(Ticket ticket)
         {
             string ticketCode = GenerateTicketCode();
-            if (ticketCode != "") { ticket.Code = ticketCode; }
-            _unitOfWork.TicketRepository.Insert(ticket);
-            _unitOfWork.Commit();
+            if (!string.IsNullOrWhiteSpace(ticketCode))
+            {
+                ticket.Code = ticketCode;
+                //start ticket history
+                TicketHistory ticketHistory = new TicketHistory();
+                ticketHistory.ActID = ticket.CreatedID;
+                ticketHistory.ActedTime = DateTime.Now;
+                ticketHistory.Type = ConstantUtil.TicketHistoryType.Created;
+                ticketHistory.Action = "OPERATION: CREATE";
+                ticket.TicketHistories.Add(ticketHistory);
+                //end ticket history
+                _unitOfWork.TicketRepository.Insert(ticket);
+                return _unitOfWork.Commit();
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public bool UpdateTicket(Ticket ticket)
+        public bool UpdateTicket(Ticket ticket, string actId)
         {
-            _unitOfWork.TicketRepository.Update(ticket);
-            return _unitOfWork.Commit();
+            Ticket oldTicket = _unitOfWork.TicketRepository.DbSet.AsNoTracking().Where(m => m.ID == ticket.ID).FirstOrDefault();
+            if (oldTicket != null)
+            {
+                _unitOfWork.BeginTransaction();
+                TicketHistory ticketHistory = GetUpdatedTicketHistory(oldTicket, ticket, actId);
+                if (ticketHistory != null)
+                {
+                    _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
+                }
+                _unitOfWork.TicketRepository.Update(ticket);
+                return _unitOfWork.CommitTransaction();
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        public void CancelTicket(Ticket ticket)
+        public bool ApproveTicket(Ticket ticket, string actId)
+        {
+            ticket.Status = ConstantUtil.TicketStatus.Unapproved;
+            ticket.ModifiedTime = DateTime.Now;
+            _unitOfWork.BeginTransaction();
+            //start ticket history
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.ActID = actId;
+            ticketHistory.ActedTime = DateTime.Now;
+            ticketHistory.Type = ConstantUtil.TicketHistoryType.Unapproved;
+            ticketHistory.Action = "OPERATION: APPROVE";
+            _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
+            //end ticket history
+            _unitOfWork.TicketRepository.Insert(ticket);
+            return _unitOfWork.CommitTransaction();
+        }
+
+        public bool CancelTicket(Ticket ticket, string actId)
         {
             ticket.Status = ConstantUtil.TicketStatus.Cancelled;
             ticket.ModifiedTime = DateTime.Now;
+            //start ticket history
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.TicketID = ticket.ID;
+            ticketHistory.Type = ConstantUtil.TicketHistoryType.Cancelled;
+            ticketHistory.ActID = actId;
+            ticketHistory.Action = "OPERATION: CANCEL";
+            ticketHistory.ActedTime = DateTime.Now;
+            //end ticket history
+            _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
             _unitOfWork.TicketRepository.Update(ticket);
-            _unitOfWork.Commit();
+            return _unitOfWork.CommitTransaction();
         }
 
-        public void SolveTicket(Ticket ticket)
+        public bool SolveTicket(Ticket ticket, string actId)
         {
-            ticket.Status = ConstantUtil.TicketStatus.Solved; //Solved
+            ticket.Status = ConstantUtil.TicketStatus.Solved;
+            ticket.ModifiedTime = DateTime.Now;
+            _unitOfWork.BeginTransaction();
+            //start ticket history
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.TicketID = ticket.ID;
+            ticketHistory.Type = ConstantUtil.TicketHistoryType.Solved;
+            ticketHistory.ActID = actId;
+            ticketHistory.Action = "OPERATION: SOLVE";
+            ticketHistory.ActedTime = DateTime.Now;
+            //end ticket history
+            _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
             _unitOfWork.TicketRepository.Update(ticket);
-            _unitOfWork.Commit();
+            return _unitOfWork.CommitTransaction();
         }
 
         public IEnumerable<Ticket> GetTechnicianTickets(string id)
@@ -461,12 +538,71 @@ namespace TMS.Services
             return code;
         }
 
-        public void CloseTicket(Ticket ticket)
+        public bool CloseTicket(Ticket ticket, string actId)
         {
             ticket.Status = ConstantUtil.TicketStatus.Closed;
             ticket.ModifiedTime = DateTime.Now;
+            //start ticket history
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.TicketID = ticket.ID;
+            ticketHistory.Type = ConstantUtil.TicketHistoryType.Closed;
+            ticketHistory.ActID = actId;
+            ticketHistory.Action = "OPERATION: CLOSE";
+            ticketHistory.ActedTime = DateTime.Now;
+            //end ticket history
+            _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
             _unitOfWork.TicketRepository.Update(ticket);
-            _unitOfWork.Commit();
+            return _unitOfWork.CommitTransaction();
+        }
+
+        public bool MergeTicket(List<Ticket> tickets, string actId)
+        {
+            UserService _userService = new UserService(_unitOfWork);
+            tickets.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));
+            Ticket newTicket = tickets[0];
+            _unitOfWork.BeginTransaction();
+            for (int i = 1; i < tickets.Count; i++)
+            {
+                Ticket oldTicket = tickets[i];
+                if (!string.IsNullOrWhiteSpace(newTicket.Description))
+                {
+                    newTicket.Description += "\n\n[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
+                }
+                else
+                {
+                    newTicket.Description = "[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
+                }
+                oldTicket.ModifiedTime = DateTime.Now;
+                int? status = oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
+                //start ticket history
+                TicketHistory oldTicketHistory = new TicketHistory();
+                oldTicketHistory.TicketID = oldTicket.ID;
+                oldTicketHistory.Type = ConstantUtil.TicketHistoryType.Merged;
+                oldTicketHistory.ActID = actId;
+                oldTicketHistory.Action = string.Format("Merged into ticket #{0}", newTicket.Code);
+                oldTicketHistory.ActedTime = DateTime.Now;
+                //end ticket history
+                _unitOfWork.TicketHistoryRepository.Insert(oldTicketHistory);
+                _unitOfWork.TicketRepository.Update(oldTicket);
+                if (status == ConstantUtil.TicketStatus.Assigned)
+                {
+                    AspNetUser technician = _userService.GetUserById(oldTicket.TechnicianID);
+                    Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(oldTicket, technician));
+                    thread.Start();
+                }
+            }
+            newTicket.ModifiedTime = DateTime.Now;
+            //start ticket history
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.TicketID = newTicket.ID;
+            ticketHistory.Type = ConstantUtil.TicketHistoryType.Merged;
+            ticketHistory.ActID = actId;
+            ticketHistory.Action = "OPERATION: MERGE";
+            ticketHistory.ActedTime = DateTime.Now;
+            //end ticket history
+            _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
+            _unitOfWork.TicketRepository.Update(newTicket);
+            return _unitOfWork.CommitTransaction();
         }
 
         public IEnumerable<Ticket> GetPendingTickets()
@@ -481,51 +617,273 @@ namespace TMS.Services
                 || m.Status == ConstantUtil.TicketStatus.Closed);
         }
 
-        public IEnumerable<RecentTicketViewModel> GetSimilarTickets(IEnumerable<Ticket> tickets)
+        public IEnumerable<FrequentlyAskedTicketViewModel> GetFrequentlyAskedSubjects(IEnumerable<Ticket> tickets)
         {
-            tickets = tickets.OrderByDescending(m => m.Subject.Length);
-            List<RecentTicketViewModel> result = new List<RecentTicketViewModel>();
-            List<Ticket> temp = tickets.ToList();
-            List<Ticket> ignore = new List<Ticket>();
-            foreach (Ticket compareTicket in temp)
+            IEnumerable<FrequentlyAskedTicketViewModel> results = tickets.Where(m => m.Tags != null && m.Tags.Trim() != string.Empty).GroupBy(m => m.Tags).Select(m => new FrequentlyAskedTicketViewModel
             {
-                int count = 1;
-                if (ignore.Where(m => m.ID == compareTicket.ID).Any())
-                {
-                    continue;
-                }
-                ignore.Add(compareTicket);
-                int percent = 0;
-                foreach (Ticket remainingTicket in temp)
-                {
-                    if (ignore.Where(m => m.ID == remainingTicket.ID).Any())
-                    {
-                        continue;
-                    }
-                    //int editDistance = LevenshteinDistance.DamerauLevenshteinCompute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
-                    //if (compareTicket.Subject.Length >= remainingTicket.Subject.Length)
-                    //{
-                    //    percent = Convert.ToInt32(((float) (compareTicket.Subject.Length - editDistance) / compareTicket.Subject.Length) * 100);
-                    //}
-                    //else
-                    //{
-                    //    percent = Convert.ToInt32(((float) (remainingTicket.Subject.Length - editDistance) / remainingTicket.Subject.Length) * 100);
-                    //}
-                    percent = SentenceUtil.Compute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
-                    if (percent >= 70)
-                    {
-                        count++;
-                        ignore.Add(remainingTicket);
-                    }
-                }
-                RecentTicketViewModel similarTicket = new RecentTicketViewModel
-                {
-                    Subject = compareTicket.Subject,
-                    Count = count
-                };
-                result.Add(similarTicket);
-            }
+                Tags = m.Key,
+                Count = m.Count()
+            }).OrderByDescending(m => m.Count);
 
+            //tickets = tickets.OrderByDescending(m => m.Subject.Length);
+            //List<RecentTicketViewModel> result = new List<RecentTicketViewModel>();
+            //List<Ticket> temp = tickets.ToList();
+            //List<Ticket> ignore = new List<Ticket>();
+            //foreach (Ticket compareTicket in temp)
+            //{
+            //    int count = 1;
+            //    if (ignore.Where(m => m.ID == compareTicket.ID).Any())
+            //    {
+            //        continue;
+            //    }
+            //    ignore.Add(compareTicket);
+            //    int percent = 0;
+            //    foreach (Ticket remainingTicket in temp)
+            //    {
+            //        if (ignore.Where(m => m.ID == remainingTicket.ID).Any())
+            //        {
+            //            continue;
+            //        }
+            //        //int editDistance = LevenshteinDistance.DamerauLevenshteinCompute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
+            //        //if (compareTicket.Subject.Length >= remainingTicket.Subject.Length)
+            //        //{
+            //        //    percent = Convert.ToInt32(((float) (compareTicket.Subject.Length - editDistance) / compareTicket.Subject.Length) * 100);
+            //        //}
+            //        //else
+            //        //{
+            //        //    percent = Convert.ToInt32(((float) (remainingTicket.Subject.Length - editDistance) / remainingTicket.Subject.Length) * 100);
+            //        //}
+            //        percent = SentenceUtil.Compute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
+            //        if (percent >= 70)
+            //        {
+            //            count++;
+            //            ignore.Add(remainingTicket);
+            //        }
+            //    }
+            //    RecentTicketViewModel similarTicket = new RecentTicketViewModel
+            //    {
+            //        Subject = compareTicket.Subject,
+            //        Count = count
+            //    };
+            //    result.Add(similarTicket);
+            //}
+
+            return results;
+        }
+
+        public string GetSubjectByTags(string key)
+        {
+            Ticket ticket = _unitOfWork.TicketRepository.Get(m => m.Tags.Equals(key)).FirstOrDefault();
+            return (ticket == null) ? "" : ticket.Subject;
+        }
+
+        public TicketHistory GetUpdatedTicketHistory(Ticket oldTicket, Ticket newTicket, string actId)
+        {
+            TicketHistory result = new TicketHistory();
+            result.TicketID = oldTicket.ID;
+            result.ActID = actId;
+            result.ActedTime = DateTime.Now;
+            result.Type = ConstantUtil.TicketHistoryType.Updated;
+
+            StringBuilder sb = new StringBuilder();
+            //status
+            if (oldTicket.Status != newTicket.Status)
+            {
+                sb.Append(string.Format(@"<p>Status changed from <b>{0}</b> to <b>{1}</b></p>", (TicketStatusEnum)oldTicket.Status, (TicketStatusEnum)newTicket.Status));
+            }
+            //impact
+            if (oldTicket.ImpactID != null || newTicket.ImpactID != null)
+            {
+                if (oldTicket.ImpactID != newTicket.ImpactID)
+                {
+                    Impact oldImpact = _unitOfWork.ImpactRepository.GetByID(oldTicket.ImpactID);
+                    Impact newImpact = _unitOfWork.ImpactRepository.GetByID(newTicket.ImpactID);
+                    string oldImpactName = "Unassigned";
+                    string newImpactName = "Unassigned";
+                    if (oldImpact != null)
+                    {
+                        oldImpactName = oldImpact.Name;
+                    }
+                    if (newImpact != null)
+                    {
+                        newImpactName = newImpact.Name;
+                    }
+                    sb.Append(string.Format(@"<p>Impact changed from <b>{0}</b> to <b>{1}</b></p>", oldImpactName, newImpactName));
+                }
+            }
+            //impact detail
+            if (oldTicket.ImpactDetail != null || newTicket.ImpactDetail != null)
+            {
+                if (oldTicket.ImpactDetail != newTicket.ImpactDetail)
+                {
+                    string oldImpactDetail = "None";
+                    string newImpactDetail = "None";
+                    if (!string.IsNullOrWhiteSpace(oldTicket.ImpactDetail))
+                    {
+                        oldImpactDetail = oldTicket.ImpactDetail;
+                    }
+                    if (!string.IsNullOrWhiteSpace(newTicket.ImpactDetail))
+                    {
+                        newImpactDetail = newTicket.ImpactDetail;
+                    }
+                    sb.Append(string.Format("<p>Mode changed from <b>{0}</b> to <b>{1}</b></p>", oldImpactDetail, newImpactDetail));
+                }
+            }
+            //urgency
+            if (oldTicket.UrgencyID != null || newTicket.UrgencyID != null)
+            {
+                if (oldTicket.UrgencyID != newTicket.UrgencyID)
+                {
+                    Urgency oldUrgency = _unitOfWork.UrgencyRepository.GetByID(oldTicket.UrgencyID);
+                    Urgency newUrgency = _unitOfWork.UrgencyRepository.GetByID(newTicket.UrgencyID);
+                    string oldUrgencyName = "Unassigned";
+                    string newUrgencyName = "Unassigned";
+                    if (oldUrgency != null)
+                    {
+                        oldUrgencyName = oldUrgency.Name;
+                    }
+                    if (newUrgency != null)
+                    {
+                        newUrgencyName = newUrgency.Name;
+                    }
+                    sb.Append(string.Format("<p>Urgency changed from <b>{0}</b> to <b>{1}</b></p>", oldUrgencyName, newUrgencyName));
+                }
+            }
+            //priority
+            if (oldTicket.PriorityID != null || newTicket.PriorityID != null)
+            {
+                if (oldTicket.PriorityID != newTicket.PriorityID)
+                {
+                    Priority oldPriority = _unitOfWork.PriorityRepository.GetByID(oldTicket.PriorityID);
+                    Priority newPriority = _unitOfWork.PriorityRepository.GetByID(newTicket.PriorityID);
+                    string oldPriorityName = "Unassigned";
+                    string newPriorityName = "Unassigned";
+                    if (oldPriority != null)
+                    {
+                        oldPriorityName = oldPriority.Name;
+                    }
+                    if (newPriority != null)
+                    {
+                        newPriorityName = newPriority.Name;
+                    }
+                    sb.Append(string.Format("<p>Priority changed from <b>{0}</b> to <b>{1}</b></p>", oldPriorityName, newPriorityName));
+                }
+            }
+            //category
+            if (oldTicket.CategoryID != null || newTicket.CategoryID != null)
+            {
+                if (oldTicket.CategoryID != newTicket.CategoryID)
+                {
+                    Category oldCategory = _unitOfWork.CategoryRepository.GetByID(oldTicket.CategoryID);
+                    Category newCategory = _unitOfWork.CategoryRepository.GetByID(newTicket.CategoryID);
+                    string oldCategoryName = "Unassigned";
+                    string newCategoryName = "Unassigned";
+                    CategoryService _categoryService = new CategoryService(_unitOfWork);
+                    if (oldCategory != null)
+                    {
+                        oldCategoryName = _categoryService.GetCategoryPath(oldCategory);
+                    }
+                    if (newCategory != null)
+                    {
+                        newCategoryName = _categoryService.GetCategoryPath(newCategory);
+                    }
+                    sb.Append(string.Format("<p>Category changed from <b>{0}</b> to <b>{1}</b></p>", oldCategoryName, newCategoryName));
+                }
+            }
+            //type
+            if (oldTicket.Type != null || newTicket.Type != null)
+            {
+                if (oldTicket.Type != newTicket.Type)
+                {
+                    string oldTypeName = GeneralUtil.GetTypeNameByType(oldTicket.Type);
+                    string newTypeName = GeneralUtil.GetTypeNameByType(newTicket.Type);
+                    sb.Append(string.Format("<p>Type changed from <b>{0}</b> to <b>{1}</b></p>", oldTypeName, newTypeName));
+                }
+            }
+            //mode
+            if (oldTicket.Mode != newTicket.Mode)
+            {
+                string oldModeName = GeneralUtil.GetModeNameByMode(oldTicket.Mode);
+                string newModeName = GeneralUtil.GetModeNameByMode(newTicket.Mode);
+                sb.Append(string.Format("<p>Mode changed from <b>{0}</b> to <b>{1}</b></p>", oldModeName, newModeName));
+            }
+            //schedule start date
+            if (oldTicket.ScheduleStartDate != null || newTicket.ScheduleStartDate != null)
+            {
+                if (oldTicket.ScheduleStartDate != newTicket.ScheduleStartDate)
+                {
+                    string oldDate = "Unassigned";
+                    string newDate = "Unassigned";
+                    if (oldTicket.ScheduleStartDate != null)
+                    {
+                        oldDate = oldTicket.ScheduleStartDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    if (newTicket.ScheduleStartDate != null)
+                    {
+                        newDate = newTicket.ScheduleStartDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    sb.Append(string.Format(@"<p>Schedule Start Date changed from <b>{0}</b> to <b>{1}</b></p>", oldDate, newDate));
+                }
+            }
+            //schedule end date
+            if (oldTicket.ScheduleEndDate != null || newTicket.ScheduleEndDate != null)
+            {
+                if (oldTicket.ScheduleEndDate != newTicket.ScheduleEndDate)
+                {
+                    string oldDate = "Unassigned";
+                    string newDate = "Unassigned";
+                    if (oldTicket.ScheduleEndDate != null)
+                    {
+                        oldDate = oldTicket.ScheduleEndDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    if (newTicket.ScheduleEndDate != null)
+                    {
+                        newDate = newTicket.ScheduleEndDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    sb.Append(string.Format(@"<p>Schedule End Date changed from <b>{0}</b> to <b>{1}</b></p>", oldDate, newDate));
+                }
+            }
+            //actual start date
+            if (oldTicket.ActualStartDate != null || newTicket.ActualStartDate != null)
+            {
+                if (oldTicket.ActualStartDate != newTicket.ActualStartDate)
+                {
+                    string oldDate = "Unassigned";
+                    string newDate = "Unassigned";
+                    if (oldTicket.ActualStartDate != null)
+                    {
+                        oldDate = oldTicket.ActualStartDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    if (newTicket.ActualStartDate != null)
+                    {
+                        newDate = newTicket.ActualStartDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    sb.Append(string.Format(@"<p>Actual Start Date changed from <b>{0}</b> to <b>{1}</b></p>", oldDate, newDate));
+                }
+            }
+            //actual end date
+            if (oldTicket.ActualEndDate != null || newTicket.ActualEndDate != null)
+            {
+                if (oldTicket.ActualEndDate != newTicket.ActualEndDate)
+                {
+                    string oldDate = "Unassigned";
+                    string newDate = "Unassigned";
+                    if (oldTicket.ActualEndDate != null)
+                    {
+                        oldDate = oldTicket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    if (newTicket.ActualEndDate != null)
+                    {
+                        newDate = newTicket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    sb.Append(string.Format(@"<p>Actual End Date changed from <b>{0}</b> to <b>{1}</b></p>", oldDate, newDate));
+                }
+            }
+            result.Action = sb.ToString();
+            if (string.IsNullOrWhiteSpace(result.Action))
+            {
+                return null;
+            }
             return result;
         }
     }

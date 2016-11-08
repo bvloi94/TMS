@@ -25,7 +25,6 @@ namespace TMS.Models
             this.Tickets2 = new HashSet<Ticket>();
             this.Tickets3 = new HashSet<Ticket>();
             this.TicketHistories = new HashSet<TicketHistory>();
-            this.TicketHistories1 = new HashSet<TicketHistory>();
             this.AspNetRoles = new HashSet<AspNetRole>();
         }
     
@@ -71,8 +70,6 @@ namespace TMS.Models
         public virtual ICollection<Ticket> Tickets3 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TicketHistory> TicketHistories { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<TicketHistory> TicketHistories1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetRole> AspNetRoles { get; set; }
     }
