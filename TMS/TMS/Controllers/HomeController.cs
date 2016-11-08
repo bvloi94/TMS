@@ -11,7 +11,6 @@ using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
-    [CustomAuthorize(Roles = "Requester")]
     public class HomeController : Controller
     {
         UnitOfWork unitOfWork = new UnitOfWork();
