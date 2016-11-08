@@ -143,54 +143,59 @@
                     var dataItems = data.data;
                     var innerCode = "";
                     $('#ticket-list').empty();
-                    for (i = 0; i < dataItems.length; i++) {
-                        innerCode = '<li><div class="box box-solid"><div class="box-body bg-gray-light no-padding"><div class="col-lg-1 col-sm-2 no-padding text-center">'
-                                    + '<h5 style="font-size: 16px" class="text-muted text-bold">#' + dataItems[i].Code + '</h4>';
-                        innerCode += '</div><div class="col-lg-9 col-sm-7 ticket-subject" style="padding: 7px 15px">'
-                            + '<a class="text-bold" style="font-size: 16px" href="/Ticket/Detail/' + dataItems[i].ID + '">' + dataItems[i].Subject + '</a></div>'
-                            + '<div class="col-lg-2 col-sm-3 text-center pull-right" style="padding: 7px"><span class="text-muted">'
-                            + 'Date created</span><br /><span class="text-green">' + dataItems[i].CreatedTime + '</span></div></div>'
-                            + '<div class="box-footer no-padding bg-light-green">';
-                        switch (dataItems[i].Status) {
-                            case 1:
-                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-aqua">New</div>'; break;
-                            case 2:
-                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-orange">Assigned</div>'; break;
-                            case 3:
-                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-green">Solved</div>'; break;
-                            case 4:
-                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-red-active">Unapproved</div>'; break;
-                            case 5:
-                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-gray-active">Cancelled</div>'; break;
-                            case 6:
-                                innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-gray-active">Closed</div>'; break;
+                    if (dataItems.length > 0) {
+                        for (i = 0; i < dataItems.length; i++) {
+                            innerCode = '<li><div class="box box-solid"><div class="box-body bg-gray-light no-padding"><div class="col-lg-1 col-sm-2 no-padding text-center">'
+                                        + '<h5 style="font-size: 16px" class="text-muted text-bold">#' + dataItems[i].Code + '</h4>';
+                            innerCode += '</div><div class="col-lg-9 col-sm-7 ticket-subject" style="padding: 7px 15px">'
+                                + '<a class="text-bold" style="font-size: 16px" href="/Ticket/Detail/' + dataItems[i].ID + '">' + dataItems[i].Subject + '</a></div>'
+                                + '<div class="col-lg-2 col-sm-3 text-center pull-right" style="padding: 7px"><span class="text-muted">'
+                                + 'Date created</span><br /><span class="text-green">' + dataItems[i].CreatedTime + '</span></div></div>'
+                                + '<div class="box-footer no-padding bg-light-green">';
+                            switch (dataItems[i].Status) {
+                                case 1:
+                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-aqua">New</div>'; break;
+                                case 2:
+                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-orange">Assigned</div>'; break;
+                                case 3:
+                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-green">Solved</div>'; break;
+                                case 4:
+                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-red-active">Unapproved</div>'; break;
+                                case 5:
+                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-gray-active">Cancelled</div>'; break;
+                                case 6:
+                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-gray-active">Closed</div>'; break;
+                            }
+                            innerCode += '<div class="col-lg-2 col-sm-2 column-body">'
+                                + '<p class="labels">Mode: &nbsp;&nbsp;&nbsp;</p>' + dataItems[i].Mode + '</div>'
+                                + '<div class="col-lg-4 col-sm-3 column-body"><p class="labels">Created by: &nbsp;&nbsp;&nbsp;</p>'
+                                + dataItems[i].CreatedBy + '</div><div class="col-lg-5 col-sm-5 column-body">'
+                                + '<p class="labels">Category: &nbsp;&nbsp;&nbsp;</p>'
+                                + dataItems[i].Category + '</div></div></div></li>';
+                            $('#ticket-list').append(innerCode);
+                            $(".column-body:first-of-type").css("height", $(".column-body:last-of-type").outerHeight());
                         }
-                        innerCode += '<div class="col-lg-2 col-sm-2 column-body">'
-                            + '<p class="labels">Mode: &nbsp;&nbsp;&nbsp;</p>' + dataItems[i].Mode + '</div>'
-                            + '<div class="col-lg-4 col-sm-3 column-body"><p class="labels">Created by: &nbsp;&nbsp;&nbsp;</p>'
-                            + dataItems[i].CreatedBy + '</div><div class="col-lg-5 col-sm-5 column-body">'
-                            + '<p class="labels">Category: &nbsp;&nbsp;&nbsp;</p>'
-                            + dataItems[i].Category + '</div></div></div></li>';
-                        $('#ticket-list').append(innerCode);
-                        $(".column-body:first-of-type").css("height", $(".column-body:last-of-type").outerHeight());
+                        if (dataItems.length > 5) {
+                            $('#list-option').empty().append('Showing 5 of ' + dataItems.length + ' items.');
+                            $('div.holder').removeClass("hidden");
+                            $('div.holder').jPages({
+                                containerID: "ticket-list",
+                                perPage: 5,
+                                startPage: 1,
+                                startRange: 2,
+                                midRange: 5,
+                                endRange: 2,
+                                first: "First",
+                                last: "Last",
+                                previous: "Previous",
+                                next: "Next",
+                            });
+                        } else {
+                            $('div.holder').addClass("hidden");
+                        }
                     }
-                    $('#list-option').empty().append('Showing 5 of ' + dataItems.length + ' items.');
-                    if (dataItems.length > 5) {
-                        $('div.holder').removeClass("hidden");
-                        $('div.holder').jPages({
-                            containerID: "ticket-list",
-                            perPage: 5,
-                            startPage: 1,
-                            startRange: 2,
-                            midRange: 5,
-                            endRange: 2,
-                            first: "First",
-                            last: "Last",
-                            previous: "Previous",
-                            next: "Next",
-                        });
-                    } else {
-                        $('div.holder').addClass("hidden");
+                    else {
+                        $('#ticket-list').empty().append('<div class="col-sm-12 text-center"><p>There is no ticket at this moment.</p></div>');
                     }
                 },
                 error: function () {

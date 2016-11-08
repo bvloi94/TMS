@@ -701,6 +701,7 @@
     <Content Include="Views\Shared\KBLayout.cshtml" />
     <Content Include="Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Views\Shared\_TopLayout.cshtml" />
+    <Content Include="Views\Ticket\TicketDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

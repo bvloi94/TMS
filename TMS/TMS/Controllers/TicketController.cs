@@ -376,6 +376,62 @@ namespace TMS.Controllers
             }
         }
 
+        [CustomAuthorize(Roles = "Helpdesk,Technician")]
+        [HttpGet]
+        public ActionResult TicketDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
+                {
+                    AspNetRole userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+
+                    // Get Ticket information
+                    AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
+                    AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
+                    AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+                    TicketViewModel model = new TicketViewModel();
+
+                    model.Id = ticket.ID;
+                    model.Subject = ticket.Subject;
+                    model.Description = ticket.Description;
+                    model.Mode = ticket.Mode;
+                    model.Type = ticket.Type == null ? 0 : ticket.Type.Value;
+
+                    switch (ticket.Status)
+                    {
+                        case ConstantUtil.TicketStatus.New: model.Status = "New"; break;
+                        case ConstantUtil.TicketStatus.Assigned: model.Status = "Assigned"; break;
+                        case ConstantUtil.TicketStatus.Solved: model.Status = "Solved"; break;
+                        case ConstantUtil.TicketStatus.Unapproved: model.Status = "Unapproved"; break;
+                        case ConstantUtil.TicketStatus.Cancelled: model.Status = "Cancelled"; break;
+                        case ConstantUtil.TicketStatus.Closed: model.Status = "Closed"; break;
+                    }
+
+                    model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
+                    model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+                    model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
+                    model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
+                    model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
+                    model.CreatedTime = ticket.CreatedTime.ToString();
+                    model.ModifiedTime = ticket.ModifiedTime.ToString();
+                    model.ScheduleEndDate = ticket.ScheduleEndDate.ToString();
+                    model.ScheduleStartDate = ticket.ScheduleStartDate.ToString();
+                    model.ActualStartDate = ticket.ActualStartDate.ToString();
+                    model.ActualEndDate = ticket.ActualEndDate.ToString();
+                    model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
+                    model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
+                    model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
+                    model.Solution = ticket.Solution;
+                    model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
+                    ViewBag.Role = userRole.Name;
+                    return View(model);
+                }
+            }
+            return HttpNotFound();
+        }
+
         [HttpGet]
         public ActionResult GetTicketDetail(int id)
         {

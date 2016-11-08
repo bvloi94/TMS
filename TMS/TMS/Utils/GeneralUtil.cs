@@ -57,7 +57,7 @@ namespace TMS.Utils
                     }
                     else
                     {
-                        return hour == 1 ? hour + "An hour ago" : hour + " hours ago";
+                        return hour == 1 ? "An hour ago" : hour + " hours ago";
                     }
                 }
                 else

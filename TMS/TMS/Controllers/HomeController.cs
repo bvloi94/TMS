@@ -30,7 +30,7 @@ namespace TMS.Controllers
             AspNetUser currentUser = _userService.GetUserById(User.Identity.GetUserId());
             IEnumerable<Ticket> filteredListItems = _ticketService.GetRequesterTickets(User.Identity.GetUserId())
                 .Where(p => p.Status == ConstantUtil.TicketStatus.Solved).ToArray().OrderByDescending(m => m.SolvedDate);
-            if (filteredListItems != null)
+            if (filteredListItems.Count() > 0)
             {
                 IEnumerable<BasicTicketViewModel> ticketList = filteredListItems.Select(m => new BasicTicketViewModel
                 {

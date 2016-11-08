@@ -14,6 +14,7 @@ namespace TMS.ViewModels
     public class TicketViewModel
     {
         public int No { get; set; }
+        public string Code { get; set; }
         public int Id { get; set; }
         [AllowHtml]
         public string Subject { get; set; }
@@ -51,6 +52,7 @@ namespace TMS.ViewModels
         public string ModifiedTime { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedId { get; set; }
+        public string AssignedBy { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
         [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
