@@ -43,7 +43,7 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetRequesterTickets(jQueryDataTableParamModel param)
+        public ActionResult GetRequesterTicketsTable(jQueryDataTableParamModel param)
         {
             // 1. Get Parameters
             string requesterID = User.Identity.GetUserId();
@@ -128,6 +128,116 @@ namespace TMS.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult GetRequesterTickets(string filterItem, string sortItem, string keySearch)
+        {
+            IEnumerable<Ticket> ticketList = _ticketService.GetRequesterTickets(User.Identity.GetUserId());
+
+            if (!string.IsNullOrWhiteSpace(sortItem))
+            {
+                switch (sortItem)
+                {
+                    case "DateAsc":
+                        ticketList = ticketList.OrderBy(p => p.CreatedTime);
+                        break;
+                    case "StatusAsc":
+                        ticketList = ticketList.OrderBy(p => p.Status);
+                        break;
+                    case "StatusDsc":
+                        ticketList = ticketList.OrderByDescending(p => p.Status);
+                        break;
+                    case "SubjectAsc":
+                        ticketList = ticketList.OrderBy(p => p.Subject);
+                        break;
+                    case "SubjectDsc":
+                        ticketList = ticketList.OrderByDescending(p => p.Subject);
+                        break;
+                    default:
+                        ticketList = ticketList.OrderByDescending(p => p.CreatedTime);
+                        break;
+                }
+            }
+
+            IEnumerable<BasicTicketViewModel> filteredListItems = ticketList.Select(p => new BasicTicketViewModel
+            {
+                ID = p.ID,
+                Code = p.Code,
+                CreatedBy = _userService.GetUserById(p.CreatedID).Fullname,
+                Subject = p.Subject,
+                Status = p.Status,
+                Solution = p.Solution == null ? "-" : p.Solution,
+                DescriptionAttachment = GetTicketAttachmentUrl(p.ID, ConstantUtil.TicketAttachmentType.Description),
+                SolutionAttachment = GetTicketAttachmentUrl(p.ID, ConstantUtil.TicketAttachmentType.Solution),
+                CreatedTime = GeneralUtil.ShowDateTime(p.CreatedTime),
+                Mode = GeneralUtil.GetTicketMode(p.Mode),
+                Category = p.Category == null ? "-" : p.Category.Name
+            }).ToArray();
+
+            if (!string.IsNullOrEmpty(keySearch))
+            {
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(keySearch.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(filterItem))
+            {
+                switch (filterItem)
+                {
+                    case "New":
+                        filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.New);
+                        break;
+                    case "Assigned":
+                        filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Assigned);
+                        break;
+                    case "Solved":
+                        filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Solved);
+                        break;
+                    case "Unapproved":
+                        filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Unapproved);
+                        break;
+                    case "Cancelled":
+                        filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Cancelled);
+                        break;
+                    case "Closed":
+                        filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Closed);
+                        break;
+                }
+            }
+
+            return Json(new
+            {
+                data = filteredListItems
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public string GetTicketAttachmentUrl(int? id, bool type)
+        {
+            IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);
+            string attachmentUrl = "";
+
+            if (ticketAttachments.Count() > 0)
+            {
+                string fileName;
+                foreach (var attachFile in ticketAttachments)
+                {
+                    fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
+                    if (type == ConstantUtil.TicketAttachmentType.Description)
+                    {
+                        attachmentUrl += "<a download=\'" + fileName +
+                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
+                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                    }
+                    else if (type == ConstantUtil.TicketAttachmentType.Solution)
+                    {
+                        attachmentUrl += "<a download=\'" + fileName +
+                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
+                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                    }
+                }
+            }
+
+            return attachmentUrl;
+        }
+
         // GET: Tickets/Create
         [CustomAuthorize(Roles = "Requester")]
         public ActionResult Create()
@@ -141,7 +251,7 @@ namespace TMS.Controllers
         [CustomAuthorize(Roles = "Requester")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(RequesterTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
+        public ActionResult Create(BasicTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
         {
             if (ModelState.IsValid)
             {
@@ -198,7 +308,7 @@ namespace TMS.Controllers
                 Ticket ticket = _ticketService.GetTicketByID(id.Value);
                 if (ticket != null)
                 {
-                    RequesterTicketViewModel model = new RequesterTicketViewModel();
+                    BasicTicketViewModel model = new BasicTicketViewModel();
                     AspNetUser solver = _userService.GetUserById(ticket.SolveID);
                     AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
 
@@ -228,9 +338,33 @@ namespace TMS.Controllers
                         default: model.Mode = "-"; break;
                     }
 
-                    model.CreateTime = GeneralUtil.ShowDateTime(ticket.CreatedTime);
+                    model.CreatedTime = GeneralUtil.ShowDateTime(ticket.CreatedTime);
                     model.SolvedTime = ticket.ModifiedTime.ToString("MMM d, yyyy hh:mm") ?? "-";
                     model.Category = ticket.Category == null ? " - " : ticket.Category.Name;
+
+                    IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);
+
+                    if (ticketAttachments.Count() > 0)
+                    {
+                        string fileName;
+                        foreach (var attachFile in ticketAttachments)
+                        {
+                            fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
+                            if (attachFile.Type == ConstantUtil.TicketAttachmentType.Description)
+                            {
+                                model.DescriptionAttachment += "<a download=\'" + fileName +
+                                                 "\' class=\'btn-xs btn-success\' href=\'" + attachFile.Path +
+                                                 "\' target=\'_blank\' >" + fileName + "</a>&nbsp;";
+                            }
+                            else if (attachFile.Type == ConstantUtil.TicketAttachmentType.Solution)
+                            {
+                                model.SolutionAttachment += "<a download=\'" + fileName +
+                                                 "\' class=\'btn-xs btn-success\' href=\'" + attachFile.Path +
+                                                 "\' target=\'_blank\' >" + fileName + "</a>&nbsp;";
+                            }
+                        }
+                    }
+
                     return View(model);
                 }
                 else
@@ -242,6 +376,112 @@ namespace TMS.Controllers
             {
                 return HttpNotFound();
             }
+        }
+
+        [CustomAuthorize(Roles = "Helpdesk,Technician")]
+        [HttpGet]
+        public ActionResult TicketDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
+                {
+                    AspNetUser currentUser = _userService.GetUserById(User.Identity.GetUserId());
+                    AspNetRole userRole = currentUser.AspNetRoles.FirstOrDefault();
+
+                    // Get Ticket information
+                    AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
+                    AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
+                    AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+                    AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+
+                    if (userRole.Name == "Technician" && currentUser.Id == ticket.TechnicianID)
+                    {
+                        ViewBag.Role = "TechnicianInCharge";
+                    }
+                    else
+                    {
+                        ViewBag.Role = userRole.Name;
+                    }
+
+                    TicketViewModel model = new TicketViewModel();
+
+                    model.Id = ticket.ID;
+                    model.Code = ticket.Code;
+                    model.Subject = ticket.Subject;
+                    model.Description = ticket.Description;
+                    model.Mode = ticket.Mode;
+                    model.Type = ticket.Type == null ? 0 : ticket.Type.Value;
+
+                    switch (ticket.Status)
+                    {
+                        case ConstantUtil.TicketStatus.New: model.Status = "New"; break;
+                        case ConstantUtil.TicketStatus.Assigned: model.Status = "Assigned"; break;
+                        case ConstantUtil.TicketStatus.Solved: model.Status = "Solved"; break;
+                        case ConstantUtil.TicketStatus.Unapproved: model.Status = "Unapproved"; break;
+                        case ConstantUtil.TicketStatus.Cancelled: model.Status = "Cancelled"; break;
+                        case ConstantUtil.TicketStatus.Closed: model.Status = "Closed"; break;
+                    }
+
+                    IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);
+                    string descriptionAttachment = "";
+                    string solutionAttachment = "";
+
+                    if (ticketAttachments.Count() > 0)
+                    {
+                        string fileName;
+                        foreach (var attachFile in ticketAttachments)
+                        {
+                            fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
+                            if (attachFile.Type == ConstantUtil.TicketAttachmentType.Description)
+                            {
+                                descriptionAttachment += "<a download=\'" + fileName +
+                                                 "\' class=\'btn-xs btn-primary\' href=\'" + attachFile.Path +
+                                                 "\' target=\'_blank\' >" + fileName + "</a>&nbsp;&nbsp";
+                            }
+                            else if (attachFile.Type == ConstantUtil.TicketAttachmentType.Solution)
+                            {
+                                solutionAttachment += "<a download=\'" + fileName +
+                                                 "\' class=\'btn-xs btn-primary\' href=\'" + attachFile.Path +
+                                                 "\' target=\'_blank\' >" + fileName + "</a>&nbsp;&nbsp";
+                            }
+                        }
+                    }
+                    
+                    if (string.IsNullOrWhiteSpace(descriptionAttachment))
+                    {
+                        descriptionAttachment = "None";
+                    }
+
+                    if (string.IsNullOrWhiteSpace(solutionAttachment))
+                    {
+                        descriptionAttachment = "None";
+                    }
+
+                    model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
+                    model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+                    model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
+                    model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
+                    model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
+                    model.CreatedTimeString = ticket.CreatedTime.ToString("MMM d yyyy, hh:mm");
+                    model.ModifiedTimeString = ticket.ModifiedTime == null ? "-" : ticket.ModifiedTime.ToString("MMM d yyyy, hh:mm");
+                    model.ScheduleEndDateString = ticket.ScheduleEndDate == null ? "-" : ticket.ScheduleEndDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.ScheduleStartDateString = ticket.ScheduleStartDate == null ? "-" : ticket.ScheduleStartDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.ActualStartDateString = ticket.ActualStartDate == null ? "-" : ticket.ActualStartDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.ActualEndDateString = ticket.ActualEndDate == null ? "-" : ticket.ActualEndDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
+                    model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
+                    model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
+                    model.Solution = ticket.Solution;
+                    model.DescriptionAttachmentsURL = descriptionAttachment;
+                    model.SolutionAttachmentsURL = solutionAttachment;
+                    model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
+                    
+                    return View(model);
+                }
+            }
+            return HttpNotFound();
         }
 
         [HttpGet]
@@ -732,5 +972,6 @@ namespace TMS.Controllers
             }
             base.OnActionExecuting(filterContext);
         }
+
     }
 }

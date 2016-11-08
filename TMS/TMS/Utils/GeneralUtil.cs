@@ -1,10 +1,20 @@
 ﻿using System;
 using System.Text;
+using TMS.DAL;
+using TMS.Services;
 
 namespace TMS.Utils
 {
     public class GeneralUtil
     {
+        UnitOfWork _unitOfWork = new UnitOfWork();
+        TicketAttachmentService _ticketAttachmentService;
+
+        public GeneralUtil()
+        {
+            _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
+        }
+
         public static string GeneratePassword()
         {
             const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -160,5 +170,17 @@ namespace TMS.Utils
                 return dateTime.ToString("MMM d, yyyy") + " at " + dateTime.ToShortTimeString();
             }
         }
+
+        public static string GetTicketMode(int mode)
+        {
+            switch (mode)
+            {
+                case 1: return ConstantUtil.TicketModeString.PhoneCall;
+                case 2: return ConstantUtil.TicketModeString.WebForm;
+                case 3: return ConstantUtil.TicketModeString.Email;
+                default: return "-";
+            }
+        }
+
     }
 }

@@ -14,6 +14,7 @@ namespace TMS.ViewModels
     public class TicketViewModel
     {
         public int No { get; set; }
+        public string Code { get; set; }
         public int Id { get; set; }
         [Required(ErrorMessage = "Ticket's subject is required!")]
         public string Subject { get; set; }
@@ -59,8 +60,11 @@ namespace TMS.ViewModels
         public string ActualEndDateString { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedId { get; set; }
+        public string AssignedBy { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
+        public string DescriptionAttachmentsURL { get; set; }
+        public string SolutionAttachmentsURL { get; set; }
         [TagFormat(ErrorMessage = "Tags only contain characters 'a-z', '0-9' and separated by commas!")]
         public string Tags { get; set; }
         public string Note { get; set; }

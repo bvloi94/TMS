@@ -436,7 +436,12 @@
                     $('#sub-category-action-btn').attr('onclick', 'createSubCategory()');
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -458,7 +463,12 @@
                     $('#item-action-btn').attr('onclick', 'createItem()');
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -483,12 +493,22 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            $.notify(data.message, "success");
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
                             $("#category-modal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                $.notify(data.message, "error");
+                                noty({
+                                    text: data.message,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });
                             } else {
                                 $("#category-name-validation-message").html(data.message);
                                 $("#category-name-validation-message").show();
@@ -496,7 +516,12 @@
                         }
                     },
                     error: function () {
-                        $.notify("Cannot connect to server!", "error");
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
                     }
                 });
             }
@@ -530,12 +555,22 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            $.notify(data.message, "success");
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
                             $("#sub-category-modal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                $.notify(data.message, "error");
+                                noty({
+                                    text: data.message,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });                               
                             } else {
                                 $("#sub-category-name-validation-message").html(data.message);
                                 $("#sub-category-name-validation-message").show();
@@ -543,7 +578,12 @@
                         }
                     },
                     error: function () {
-                        $.notify("Cannot connect to server!", "error");
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
                     }
                 });
             }
@@ -577,12 +617,22 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            $.notify(data.message, "success");
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
                             $("#item-modal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                $.notify(data.message, "error");
+                                noty({
+                                    text: data.message,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });
                             } else {
                                 $("#item-name-validation-message").html(data.message);
                                 $("#item-name-validation-message").show();
@@ -590,7 +640,12 @@
                         }
                     },
                     error: function () {
-                        $.notify("Cannot connect to server!", "error");
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
                     }
                 });
             }
@@ -613,12 +668,22 @@
                         $("#category-modal").modal('show');
                     } else {
                         if (data.error) {
-                            $.notify(data.message, "error");
+                            noty({
+                                text: data.message,
+                                type: "error",
+                                layout: "topRight",
+                                timeout: 2000
+                            });
                         }
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -646,11 +711,21 @@
                         $('#sub-category-action-btn').attr("onclick", "editSubCategory('" + id + "')");
                         $("#sub-category-modal").modal('show');
                     } else {
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -678,11 +753,21 @@
                         $('#item-action-btn').attr("onclick", "editItem('" + id + "')");
                         $("#item-modal").modal('show');
                     } else {
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -708,12 +793,22 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            $.notify(data.message, "success");
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
                             $("#category-modal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                $.notify(data.message, "error");
+                                noty({
+                                    text: data.message,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });
                             } else {
                                 $("#category-name-validation-message").html(data.message);
                                 $("#category-name-validation-message").show();
@@ -721,7 +816,12 @@
                         }
                     },
                     error: function () {
-                        $.notify("Cannot connect to server!", "error");
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
                     }
                 });
             }
@@ -756,12 +856,22 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            $.notify(data.message, "success");
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
                             $("#sub-category-modal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                $.notify(data.message, "error");
+                                noty({
+                                    text: data.message,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });
                             } else {
                                 $("#sub-category-name-validation-message").html(data.message);
                                 $("#sub-category-name-validation-message").show();
@@ -769,7 +879,12 @@
                         }
                     },
                     error: function () {
-                        $.notify("Cannot connect to server!", "error");
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
                     }
                 });
             }
@@ -804,12 +919,22 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            $.notify(data.message, "success");
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
                             $("#item-modal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                $.notify(data.message, "error");
+                                noty({
+                                    text: data.message,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });
                             } else {
                                 $("#item-name-validation-message").html(data.message);
                                 $("#item-name-validation-message").show();
@@ -817,7 +942,12 @@
                         }
                     },
                     error: function () {
-                        $.notify("Cannot connect to server!", "error");
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
                     }
                 });
             }
@@ -838,20 +968,34 @@
                 },
                 success: function (data) {
                     if (data.success) {
-                        $.notify(data.message, "success");
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
                         $("#delete-modal").modal("hide");
                         reloadDataTable();
                     } else if (!data.success) {
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                         $("#delete-modal").modal("hide");
                     }
                 },
                 error: function () {
-                    $.notify(data.message, "error");
+                    noty({
+                        text: data.message,
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
                     $("#delete-modal").modal("hide");
                 }
             });
-
         };
 
         var showTreeViewModal = function () {

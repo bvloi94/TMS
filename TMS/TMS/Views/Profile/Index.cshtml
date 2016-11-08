@@ -1,10 +1,14 @@
 ﻿@model TMS.ViewModels.ProfileRequesterViewModel
 @{
-    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
+    Layout = "~/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Profile";
 }
 
 <style>
+    body {
+        background-color: #25b774 !important;
+    }
+
     .profileAvatar {
         text-align: center;
     }
@@ -178,6 +182,7 @@
                     <div class="form-group">
                         <div class="col-xs-offset-4 col-xs-8">
                             @Html.ActionLink("Update Profile", "UpdateProfile", null, new { @class = "btn btn-success" })
+                            @Html.ActionLink("Change Password", "ChangePassword", new { area = "" }, new { @class = "btn btn-success" })
                         </div>
                     </div>
                 </div>

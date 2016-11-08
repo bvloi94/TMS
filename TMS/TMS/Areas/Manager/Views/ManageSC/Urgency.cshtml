@@ -9,16 +9,16 @@
                 <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Urgency</button>
                 <table class="table dataTable" id="urgency-table" dt-options="dtOptions">
                     <thead>
-                    <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Description
-                        </th>
-                        <th>
-                        </th>
-                    </tr>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                                Description
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -167,12 +167,22 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            $.notify(data.message, "success");
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
                             $("#myModal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                $.notify(data.message, "error");
+                                noty({
+                                    text: data.message,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });
                             } else {
                                 $("#name-validation-message").html(data.message);
                                 $("#name-validation-message").show();
@@ -180,7 +190,12 @@
                         }
                     },
                     error: function () {
-                        $.notify("Cannot connect to server!", "error");
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
                     }
                 });
             }
@@ -203,12 +218,22 @@
                         $("#create-btn").attr("onclick", "editUrgency('" + id + "')");
                     } else {
                         if (data.error) {
-                            $.notify(data.message, "error");
+                            noty({
+                                text: data.message,
+                                type: "error",
+                                layout: "topRight",
+                                timeout: 2000
+                            });
                         }
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -236,12 +261,22 @@
                     },
                     success: function (data) {
                         if (data.success) {
-                            $.notify(data.message, "success");
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
                             $("#myModal").modal("hide");
                             reloadDataTable();
                         } else {
                             if (data.error) {
-                                $.notify(data.message, "error");
+                                noty({
+                                    text: data.message,
+                                    type: "error",
+                                    layout: "topRight",
+                                    timeout: 2000
+                                });
                             } else if (!data.error) {
                                 $("#name-validation-message").html(data.message);
                                 $("#name-validation-message").show();
@@ -249,7 +284,12 @@
                         }
                     },
                     error: function () {
-                        $.notify("Cannot connect to server!", "error");
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
                     }
                 });
             }
@@ -272,15 +312,30 @@
                 success: function (data) {
                     if (data.success) {
                         $("#delete-modal").modal("hide");
-                        $.notify(data.message, "success");
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
                         reloadDataTable();
                     } else if (!data.success) {
                         $("#delete-modal").modal("hide");
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
                 },
                 error: function () {
-                    $.notify(data.message, "error");
+                    noty({
+                        text: data.message,
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
                 }
             });
         }

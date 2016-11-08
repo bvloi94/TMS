@@ -139,10 +139,20 @@
                 type: "POST",
                 success: function (data) {
                     if (data.success) {
-                        $.notify(data.message, "success");
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
                         $("#requester-table").dataTable().api().ajax.reload(null, false);
                     } else {
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
                 }
             });

@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "~/Views/Shared/_TopLayout.cshtml";
 }
-@model TMS.ViewModels.RequesterTicketViewModel
+@model TMS.ViewModels.BasicTicketViewModel
 @{
     ViewBag.Title = "Create ticket";
 }
@@ -84,7 +84,7 @@
                     else {
                         noty({
                             text: data.msg,
-                            layout: "topRight",
+                            layout: "topCenter",
                             type: "success",
                             timeout: 2500
                         });

@@ -215,6 +215,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\Controllers\DepartmentController.cs" />
     <Compile Include="Areas\Manager\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Manager\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
+    <Compile Include="Areas\Technician\Controllers\HomeController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
@@ -358,6 +360,7 @@
     <Compile Include="Utils\ValidateAttribute\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\BusinessRuleViewModel.cs" />
+    <Compile Include="ViewModels\ChangPaswordViewModel.cs" />
     <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
@@ -371,7 +374,7 @@
     <Compile Include="ViewModels\ProfileTechnicianViewModel.cs" />
     <Compile Include="ViewModels\RecentTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
-    <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
+    <Compile Include="ViewModels\BasicTicketViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
     <Compile Include="ViewModels\TicketHistoryViewModel.cs" />
@@ -617,6 +620,8 @@
     <Content Include="Areas\Manager\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Manager\Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
+    <Content Include="Areas\Technician\Views\Shared\_TopLayout.cshtml" />
+    <Content Include="Areas\Technician\Views\Home\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -710,6 +715,8 @@
     <Content Include="Views\Ticket\History.cshtml" />
     <Content Include="Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Views\Shared\_TopLayout.cshtml" />
+    <Content Include="Views\Profile\ChangePassword.cshtml" />
+    <Content Include="Views\Ticket\TicketDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

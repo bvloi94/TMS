@@ -434,7 +434,7 @@
                     if (!data.success) {
                         noty({
                             text: data.message,
-                            layout: "topCenter",
+                            layout: "topRight",
                             type: "error",
                             timeout: 2000
                         });
@@ -444,11 +444,8 @@
                             layout: "topCenter",
                             type: "success",
                             timeout: 2000,
-
-                        },selectedSolutions = [] );
-                     
+                        },selectedSolutions = [] );                     
                         getSolutionsByActiveNode();
-
                     }
                 },
                 error: function (data) {

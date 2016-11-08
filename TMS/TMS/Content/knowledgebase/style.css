@@ -34,3 +34,50 @@ html,body{
     position: absolute;
     right: 0;
 }
+
+
+    .holder {
+        text-align: center;
+    }
+
+        .holder a {
+            font-size: 13px;
+            cursor: pointer;
+            color: #458dc2;
+            padding: 5px 15px;
+            border: solid 1px #bfbfbf;
+            border-right: none;
+        }
+
+            .holder a:last-of-type {
+                border-right: solid 1px #bfbfbf;
+            }
+
+            .holder a:hover {
+                color: #fff;
+                background-color: #3393d8;
+            }
+
+            .holder a.jp-current, a.jp-current:hover {
+                color: #fff;
+                background-color: #3393d8 !important;
+                font-weight: bold;
+            }
+
+            .holder a.jp-disabled, a.jp-disabled:hover {
+                color: #808080;
+                background-color: #e9e8e8 !important;
+            }
+
+            .holder a.jp-current, a.jp-current:hover, .holder a.jp-disabled, a.jp-disabled:hover {
+                cursor: default;
+                background: none;
+            }
+
+        .holder span {
+            font-size: 13px;
+            color: #161616;
+            padding: 5px 15px;
+            border: solid 1px #bfbfbf;
+            border-right: none;
+        }
