@@ -17,6 +17,7 @@ namespace TMS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Ticket()
         {
+            this.Notifications = new HashSet<Notification>();
             this.TicketAttachments = new HashSet<TicketAttachment>();
             this.TicketHistories = new HashSet<TicketHistory>();
         }
@@ -56,6 +57,8 @@ namespace TMS.Models
         public virtual AspNetUser AspNetUser3 { get; set; }
         public virtual Category Category { get; set; }
         public virtual Impact Impact { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Notification> Notifications { get; set; }
         public virtual Priority Priority { get; set; }
         public virtual Urgency Urgency { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

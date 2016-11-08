@@ -88,9 +88,15 @@ namespace TMS.Utils
                 case ConstantUtil.TicketMode.PhoneCall:
                     return ConstantUtil.TicketModeString.PhoneCall;
                 case ConstantUtil.TicketMode.WebForm:
-                default:
                     return ConstantUtil.TicketModeString.WebForm;
+                case ConstantUtil.TicketMode.SocialNetwork:
+                    return ConstantUtil.TicketModeString.SocialNetwork;
+                case ConstantUtil.TicketMode.Forum:
+                    return ConstantUtil.TicketModeString.Forum;
+                case ConstantUtil.TicketMode.Other:
+                    return ConstantUtil.TicketModeString.Other;
             }
+            return "Unassigned";
         }
 
         public static string GetTicketHistoryTypeName(int type)
@@ -110,9 +116,9 @@ namespace TMS.Utils
                 case ConstantUtil.TicketHistoryType.Unapproved:
                     return "Unapproved";
                 case ConstantUtil.TicketHistoryType.Updated:
-                default:
                     return "Updated";
             }
+            return "Unassigned";
         }
 
         public static string ShowDateTime(DateTime dateTime)
@@ -141,7 +147,7 @@ namespace TMS.Utils
                     }
                     else
                     {
-                        return hour == 1 ? hour + "An hour ago" : hour + " hours ago";
+                        return hour == 1 ? "An hour ago" : hour + " hours ago";
                     }
                 }
                 else

@@ -112,7 +112,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 p.PriorityID == null ? "-" : _priorityService.GetPriorityByID((int) p.PriorityID).Name,
                 p.TechnicianID == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name
             });
-            
+
             return Json(new
             {
                 param.sEcho,
@@ -180,10 +180,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 // mode
                 case 0:
-                    foreach (TicketModeEnum mode in System.Enum.GetValues(typeof(TicketModeEnum)))
+                    foreach (var mode in typeof(ConstantUtil.TicketMode).GetFields())
                     {
-                        labels.Add(mode.ToString());
-                        var ticketModes = filteredListItems.Where(p => p.Mode == (int)mode);
+                        labels.Add(typeof(ConstantUtil.TicketModeString).GetField(mode.Name).GetValue(null).ToString());
+                        var ticketModes = filteredListItems.Where(p => p.Mode == (int)mode.GetValue(null));
                         data.Add(ticketModes.Count());
                     }
                     return Json(new

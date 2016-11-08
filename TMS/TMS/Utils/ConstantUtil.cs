@@ -55,6 +55,9 @@ namespace TMS.Utils
             public const int PhoneCall = 1;
             public const int WebForm = 2;
             public const int Email = 3;
+            public const int SocialNetwork = 4;
+            public const int Forum = 5;
+            public const int Other = 6;
         }
 
         public class TicketModeString
@@ -62,9 +65,10 @@ namespace TMS.Utils
             public static readonly string PhoneCall = "Phone Call";
             public static readonly string WebForm = "Web Form";
             public static readonly string Email = "Email";
+            public static readonly string SocialNetwork = "Social Network";
+            public static readonly string Forum = "Forum";
+            public static readonly string Other = "Other";
         }
-
-
 
         public class TicketStatus
         {

@@ -142,12 +142,12 @@ function initTicketTable() {
                             links += history
                         + '<li><a href="javascript:void(0)"><strong>Reopen Ticket</strong></a></li>'
                         + '<li>'
-                        + '<a href="javascript:showCloseModal(this)" data-ticket-id="' + row.Id + '">'
+                        + '<a href="javascript:void(0)" onclick="showCloseModal(this)" data-ticket-id="' + row.Id + '">'
                         + '<i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket'
                         + '</a>'
                         + '</li>'
                         + '<li>'
-                        + '<a href="javascript:showReassignModal(this)" data-ticket-id="' + row.Id + '">'
+                        + '<a href="javascript:void(0)" onclick="showReassignModal(this)" data-ticket-id="' + row.Id + '">'
                         + '<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Reassign'
                         + '</a>'
                         + '</li>'
@@ -240,16 +240,6 @@ function initDropdownControl() {
     });
 }
 
-//$(document).on('click', '#see-more', function (event) {
-//    $(this).parent().trunk8('revert').append('<br/><a id="see-less" href="javascript:void{0}">See Less</a>');
-//    return false;
-//});
-
-//$(document).on('click', '#see-less', function (event) {
-//    $(this).parent().trunk8();
-//    return false;
-//});
-
 function openTicketDetailModal(ticketId) {
     $.ajax({
         url: '/Ticket/GetTicketDetail',
@@ -309,31 +299,31 @@ function openTicketDetailModal(ticketId) {
                 $('#action-solve-btn').show();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").show();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 2) {
                 $('#ticket-status').html(getStatusLabel('Assigned'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").show();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 3) {
                 $('#ticket-status').html(getStatusLabel('Solved'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 4) {
                 $('#ticket-status').html(getStatusLabel('Unapproved'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").show();
+                $(".reopen-li").show();
             } else if (data.status == 5) {
                 $('#ticket-status').html(getStatusLabel('Cancelled'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 6) {
                 $('#ticket-status').html(getStatusLabel('Closed'));
                 $('#action-solve-btn').hide();

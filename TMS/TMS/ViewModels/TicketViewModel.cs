@@ -25,6 +25,7 @@ namespace TMS.ViewModels
         public string TechnicianId { get; set; }
         public string Technician { get; set; }
         public int Type { get; set; }
+        [Required(ErrorMessage = "Ticket's mode is required!")]
         public int Mode { get; set; }
         public int StatusId { get; set; }
         public string Status { get; set; }

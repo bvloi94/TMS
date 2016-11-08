@@ -95,7 +95,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 ticket.Solution = model.Solution;
                 ticket.CreatedID = User.Identity.GetUserId();
                 if (model.Type != 0) ticket.Type = model.Type;
-                ticket.Mode = ConstantUtil.TicketMode.PhoneCall;
+                ticket.Mode = model.Mode;
                 if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
                 ticket.ImpactDetail = model.ImpactDetail;
                 if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
@@ -293,6 +293,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 ticket.ActualEndDate = model.ActualEndDate;
                 ticket.ModifiedTime = DateTime.Now;
                 ticket.Subject = model.Subject.Trim();
+                ticket.Mode = model.Mode;
                 if (model.Type != 0)
                 {
                     ticket.Type = model.Type;

@@ -538,23 +538,22 @@ namespace TMS.Controllers
                         if (!string.IsNullOrWhiteSpace(unapprovedReason))
                         {
                             ticket.UnapproveReason = unapprovedReason;
-                            try
+                            bool approveResult = _ticketService.ApproveTicket(ticket, User.Identity.GetUserId());
+                            if (approveResult)
                             {
-                                _ticketService.ApproveTicket(ticket, User.Identity.GetUserId());
                                 return Json(new
                                 {
                                     success = true,
                                     msg = "Thank you for your feedback!"
                                 });
                             }
-                            catch
+                            else
                             {
                                 return Json(new
                                 {
                                     success = false,
                                     msg = ConstantUtil.CommonError.DBExceptionError
                                 });
-
                             }
                         }
                         else
@@ -704,7 +703,7 @@ namespace TMS.Controllers
                     IEnumerable<TicketHistoryViewModel> historyTickets = _ticketHistoryService.GetHistoryTicketsByTicketID(id.Value)
                         .Select(m => new TicketHistoryViewModel
                         {
-                            ActedDate = m.ActedTime.HasValue ? m.ActedTime.Value.ToString() : "-",
+                            ActedDate = m.ActedTime.HasValue ? GeneralUtil.ShowDateTime(m.ActedTime.Value) : "-",
                             Action = m.Action,
                             Performer = _userService.GetUserById(m.ActID) != null ? _userService.GetUserById(m.ActID).Fullname : "-",
                             Type = GeneralUtil.GetTicketHistoryTypeName(m.Type)

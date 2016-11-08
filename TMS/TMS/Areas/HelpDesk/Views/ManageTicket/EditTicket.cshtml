@@ -124,9 +124,19 @@
                                     <option value="2">Problem</option>
                                     <option value="3">Change</option>
                                 </select>
+                                <label class="control-label">MODE <font color="red">*</font></label>
+                                <select class="form-control" name="Mode">
+                                    <option value="@ConstantUtil.TicketMode.PhoneCall">@ConstantUtil.TicketModeString.PhoneCall</option>
+                                    <option value="@ConstantUtil.TicketMode.SocialNetwork">@ConstantUtil.TicketModeString.SocialNetwork</option>
+                                    <option value="@ConstantUtil.TicketMode.Forum">@ConstantUtil.TicketModeString.Forum</option>
+                                    <option value="@ConstantUtil.TicketMode.Other">@ConstantUtil.TicketModeString.Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
                                 <label class="control-label">CATEGORY</label>
                                 <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
-
                             </div>
                         </div>
                         <div class="row form-group">
@@ -201,7 +211,7 @@
                                 <label class="control-label">NOTE</label>
                             </div>
                             <div class="col-md-12 col-xs-12">
-                                @Html.TextAreaFor(m => m.Note, new { @class = "form-control textarea", placeholder = "Solution", rows = "5" })
+                                @Html.TextAreaFor(m => m.Note, new { @class = "form-control textarea", placeholder = "Note", rows = "5" })
                             </div>
                         </div>
                         <div class="row form-group" style="text-align: center;">
@@ -660,7 +670,6 @@
         }
 
         function loadEditData() {
-
             if ((@Model.Mode != @ConstantUtil.TicketMode.PhoneCall) ||
             (@Model.StatusId != @ConstantUtil.TicketStatus.New &&
                 @Model.StatusId != @ConstantUtil.TicketStatus.Assigned)) {
@@ -670,6 +679,7 @@
 
             $("#div-status").html(getStatusLabel('@Model.Status'));
             $("[name='Type']").val(@Model.Type);
+            $("[name='Mode']").val(@Model.Mode);
             loadInitDropdown('ddl-urgency', '@(Model.UrgencyId == 0 ? "None" : Model.Urgency)', @Model.UrgencyId);
             loadInitDropdown('ddl-priority', '@(Model.PriorityId == 0 ? "None" : Model.Priority)', @Model.PriorityId);
             loadInitDropdown('ddl-impact', '@(Model.ImpactId == 0 ? "None" : Model.Impact)', @Model.ImpactId);
