@@ -48,6 +48,7 @@ namespace TMS.Models
         public string AssignedByID { get; set; }
         public string RequesterID { get; set; }
         public string Note { get; set; }
+        public string Tags { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }

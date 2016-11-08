@@ -61,442 +61,380 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
+        [CustomAuthorize(Roles = "Helpdesk")]
         [ValidateAntiForgeryToken]
         public ActionResult AddNewTicket(TicketViewModel model)
         {
-            ModelErrorViewModel errs = null;
-            errs = new ModelErrorViewModel();
-
-            var ticket = new Ticket();
-            if (User.Identity.GetUserId() != null) ticket.CreatedID = User.Identity.GetUserId();
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
+                {
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = error.ErrorMessage
+                        });
+                    }
+                }
+            }
             else
             {
-                return Json(new
-                {
-                    success = false,
-                    msg = "Session time out! Please login again!",
-                });
+                var ticket = new Ticket();
+                ticket.Subject = model.Subject.Trim();
+                ticket.Description = model.Description;
+                ticket.ScheduleStartDate = model.ScheduleStartDate;
+                ticket.ScheduleEndDate = model.ScheduleEndDate;
+                ticket.ActualStartDate = model.ActualStartDate;
+                ticket.ActualEndDate = model.ActualEndDate;
+                ticket.CreatedTime = DateTime.Now;
+                ticket.ModifiedTime = DateTime.Now;
+                ticket.Status = (int)TicketStatusEnum.New;
+                ticket.RequesterID = model.RequesterId;
+                ticket.Solution = model.Solution;
+                ticket.CreatedID = User.Identity.GetUserId();
+                if (model.Type != 0) ticket.Type = model.Type;
+                ticket.Mode = ConstantUtil.TicketMode.PhoneCall;
+                if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
+                ticket.ImpactDetail = model.ImpactDetail;
+                if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
+                if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
+                if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
+                ticket.Tags = GeneralUtil.ConvertToFormatKeyword(model.Tags);
+                ticket.Note = model.Note;
 
-            }
+                if (!string.IsNullOrWhiteSpace(model.TechnicianId))
+                {
+                    ticket.TechnicianID = model.TechnicianId;
+                    ticket.AssignedByID = User.Identity.GetUserId();
+                    ticket.Status = (int)TicketStatusEnum.Assigned;
+                }
 
-            if (string.IsNullOrEmpty(model.Subject) || model.Subject.Trim() == "")
-            {
-                errs.Add(new ModelError
+                bool result = _ticketService.AddTicket(ticket);
+                if (result)
                 {
-                    Name = "Subject",
-                    Message = "Ticket's subject required!",
-                });
-                return Json(new
-                {
-                    success = false,
-                    data = errs,
-                    msg = "Please enter ticket's subject!",
-                });
-            }
-
-            if (model.RequesterId == null)
-            {
-                errs.Add(new ModelError
-                {
-                    Name = "Subject",
-                    Message = "Ticket's requester required!",
-                });
-                return Json(new
-                {
-                    success = false,
-                    data = errs,
-                    msg = "Please select requester!",
-                });
-            }
-
-            ticket.ScheduleStartDate = model.ScheduleStartDate != null
-                ? DateTime.ParseExact(model.ScheduleStartDate, ConstantUtil.DateTimeFormat, null)
-                : (DateTime?)null;
-            ticket.ScheduleEndDate = model.ScheduleEndDate != null
-                ? DateTime.ParseExact(model.ScheduleEndDate, ConstantUtil.DateTimeFormat, null)
-                : (DateTime?)null;
-
-            if (ticket.ScheduleStartDate.HasValue && ticket.ScheduleEndDate.HasValue)
-            {
-                if (DateTime.Compare((DateTime)ticket.ScheduleStartDate, (DateTime)ticket.ScheduleEndDate) > 0)
-                {
-                    errs.Add(new ModelError
+                    if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
                     {
-                        Name = "ScheduleDate",
-                        Message = "Schedule start date must before schedule end date!",
-                    });
+                        result = _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                        if (!result)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                msg = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+                    }
+                    if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
+                    {
+                        result = _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                        if (!result)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                msg = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+                    }
+                }
+                else
+                {
                     return Json(new
                     {
                         success = false,
-                        data = errs,
-                        msg = "Please check schedule date again!"
+                        msg = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
-            }
-
-            ticket.ActualStartDate = model.ActualStartDate != null
-                ? DateTime.ParseExact(model.ActualStartDate, ConstantUtil.DateTimeFormat, null)
-                : (DateTime?)null;
-            ticket.ActualEndDate = model.ActualEndDate != null
-                ? DateTime.ParseExact(model.ActualEndDate, ConstantUtil.DateTimeFormat, null)
-                : (DateTime?)null;
-
-            if (ticket.ActualStartDate.HasValue && ticket.ActualEndDate.HasValue)
-            {
-                if (DateTime.Compare((DateTime)ticket.ActualStartDate, (DateTime)ticket.ActualEndDate) > 0)
-                {
-                    errs.Add(new ModelError
-                    {
-                        Name = "ActualDate",
-                        Message = "actual start date must before actual end date!",
-                    });
-                    return Json(new
-                    {
-                        success = false,
-                        data = errs,
-                        msg = "Please check actual date again!"
-                    });
-                }
-            }
-
-            ticket.CreatedTime = DateTime.Now;
-            ticket.ModifiedTime = DateTime.Now;
-            ticket.Status = (int)TicketStatusEnum.New;
-            ticket.RequesterID = model.RequesterId;
-            ticket.Subject = model.Subject.Trim();
-            ticket.Description = model.Description;
-            ticket.Solution = model.Solution;
-            if (model.Type != 0) ticket.Type = model.Type;
-            ticket.Mode = ConstantUtil.TicketMode.PhoneCall;
-            if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
-            ticket.ImpactDetail = model.ImpactDetail;
-            if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
-            if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
-            if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
-
-            if (!string.IsNullOrEmpty(model.TechnicianId))
-            {
-                ticket.TechnicianID = model.TechnicianId;
-                ticket.AssignedByID = User.Identity.GetUserId();
-                ticket.Status = (int)TicketStatusEnum.Assigned;
-            }
-
-            try
-            {
-                _ticketService.AddTicket(ticket);
-                if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
-                {
-                    _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
-                }
-                if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
-                {
-                    _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
-                }
-            }
-            catch (DbUpdateException ex)
-            {
-                log.Error("An error has occured while update ticket.", ex);
                 return Json(new
                 {
-                    success = false,
-                    msg = "Some error occured. Please try again later!"
+                    success = true
                 });
             }
-
             return Json(new
             {
-                success = true
+                success = false,
+                msg = ConstantUtil.CommonError.DBExceptionError
             });
         }
 
         public ActionResult EditTicket(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Ticket ticket = _ticketService.GetTicketByID((int)id);
-            if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled
-                || ticket.Status == ConstantUtil.TicketStatus.Closed
-                || ticket.Status == ConstantUtil.TicketStatus.Unapproved)
+            if (!id.HasValue)
             {
                 return HttpNotFound();
             }
-            TicketViewModel model = new TicketViewModel();
-            model.Id = ticket.ID;
-            model.Subject = ticket.Subject;
-            model.Description = ticket.Description;
-            model.Solution = ticket.Solution;
-            //unapprove reason
-
-            if (!string.IsNullOrEmpty(ticket.RequesterID))
+            else
             {
-                model.RequesterId = ticket.RequesterID;
-                model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
-            }
-            model.Mode = ticket.Mode;
-            if (ticket.Type != null) model.Type = (int)ticket.Type;
-            model.StatusId = ticket.Status;
-            model.Status = ((TicketStatusEnum)ticket.Status).ToString();
-            if (ticket.CategoryID != null)
-            {
-                model.CategoryId = (int)ticket.CategoryID;
-                model.Category = _categoryService.GetCategoryById((int)ticket.CategoryID).Name;
-            }
-            if (ticket.UrgencyID != null)
-            {
-                model.UrgencyId = (int)ticket.UrgencyID;
-                model.Urgency = ticket.UrgencyID == null ? "" : _urgencyService.GetUrgencyByID((int)ticket.UrgencyID).Name;
-            }
-            if (ticket.PriorityID != null)
-            {
-                model.PriorityId = (int)ticket.PriorityID;
-                model.Priority = ticket.PriorityID == null
-                    ? ""
-                    : _priorityService.GetPriorityByID((int)ticket.PriorityID).Name;
-            }
-            if (ticket.ImpactID != null)
-            {
-                model.ImpactId = (int)ticket.ImpactID;
-                model.Impact = ticket.ImpactID == null ? "" : _impactService.GetImpactById((int)ticket.ImpactID).Name;
-            }
-            model.ImpactDetail = ticket.ImpactDetail;
-            model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.SolvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-            model.CreatedTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
-            model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
-
-            if (!string.IsNullOrEmpty(ticket.CreatedID))
-            {
-                model.CreatedId = ticket.CreatedID;
-                model.CreatedBy = _userService.GetUserById(ticket.CreatedID).Fullname;
-            }
-            if (!string.IsNullOrEmpty(ticket.SolveID))
-            {
-                model.SolvedId = ticket.SolveID;
-                model.SolvedBy = _userService.GetUserById(ticket.SolveID).Fullname;
-            }
-            if (!string.IsNullOrEmpty(ticket.TechnicianID))
-            {
-                AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
-                model.TechnicianId = technician.Id;
-                model.Technician = technician.Fullname;
-                if (technician.DepartmentID.HasValue)
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled
+                    || ticket.Status == ConstantUtil.TicketStatus.Closed)
                 {
-                    model.DepartmentId = (int)technician.DepartmentID;
-                    model.Department = _departmentService.GetDepartmentById((int)technician.DepartmentID).Name;
+                    return HttpNotFound();
                 }
-            }
+                TicketViewModel model = new TicketViewModel();
+                model.Id = ticket.ID;
+                model.Subject = ticket.Subject;
+                model.Description = ticket.Description;
+                model.Solution = ticket.Solution;
+                //unapprove reason
 
-            IEnumerable<TicketAttachment> attachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
-            if (attachments != null)
-            {
-                model.DescriptionAttachments = new List<AttachmentViewModel>();
-                model.SolutionAttachments = new List<AttachmentViewModel>();
-                foreach (var attachment in attachments)
+                if (!string.IsNullOrEmpty(ticket.RequesterID))
                 {
-                    var att = new AttachmentViewModel();
-                    att.id = attachment.ID;
-                    att.name = TMSUtils.GetMinimizedAttachmentName(attachment.Filename);
-                    if (attachment.Type == ConstantUtil.TicketAttachmentType.Description)
+                    model.RequesterId = ticket.RequesterID;
+                    model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
+                }
+
+                model.Mode = ticket.Mode;
+                if (ticket.Type.HasValue) model.Type = ticket.Type.Value;
+                model.Status = ((TicketStatusEnum)ticket.Status).ToString();
+                if (ticket.CategoryID.HasValue)
+                {
+                    model.CategoryId = ticket.CategoryID.Value;
+                    model.Category = _categoryService.GetCategoryById(ticket.CategoryID.Value).Name;
+                }
+                if (ticket.UrgencyID.HasValue)
+                {
+                    model.UrgencyId = ticket.UrgencyID.Value;
+                    model.Urgency = ticket.Urgency.Name;
+                }
+                if (ticket.PriorityID.HasValue)
+                {
+                    model.PriorityId = ticket.PriorityID.Value;
+                    model.Priority = ticket.Priority.Name;
+                }
+                if (ticket.ImpactID.HasValue)
+                {
+                    model.ImpactId = ticket.ImpactID.Value;
+                    model.Impact = ticket.Impact.Name;
+                }
+                model.ImpactDetail = ticket.ImpactDetail;
+                model.ScheduleStartDate = ticket.ScheduleStartDate;
+                model.ScheduleEndDate = ticket.ScheduleEndDate;
+                model.ActualStartDate = ticket.ActualStartDate;
+                model.ActualEndDate = ticket.ActualEndDate;
+                model.SolvedDate = ticket.SolvedDate;
+                model.CreatedTime = ticket.CreatedTime;
+                model.ModifiedTime = ticket.ModifiedTime;
+                model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                model.Note = ticket.Note;
+
+                if (!string.IsNullOrEmpty(ticket.CreatedID))
+                {
+                    model.CreatedId = ticket.CreatedID;
+                    model.CreatedBy = _userService.GetUserById(ticket.CreatedID).Fullname;
+                }
+                if (!string.IsNullOrEmpty(ticket.SolveID))
+                {
+                    model.SolvedId = ticket.SolveID;
+                    model.SolvedBy = _userService.GetUserById(ticket.SolveID).Fullname;
+                }
+                if (!string.IsNullOrEmpty(ticket.TechnicianID))
+                {
+                    AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                    model.TechnicianId = technician.Id;
+                    model.Technician = technician.Fullname;
+                    if (technician.DepartmentID.HasValue)
                     {
-                        model.DescriptionAttachments.Add(att);
-                    }
-                    else
-                    {
-                        model.SolutionAttachments.Add(att);
+                        model.DepartmentId = technician.DepartmentID.Value;
+                        model.Department = technician.Department.Name;
                     }
                 }
+
+                IEnumerable<TicketAttachment> attachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
+                if (attachments != null)
+                {
+                    model.DescriptionAttachments = new List<AttachmentViewModel>();
+                    model.SolutionAttachments = new List<AttachmentViewModel>();
+                    foreach (var attachment in attachments)
+                    {
+                        var att = new AttachmentViewModel();
+                        att.id = attachment.ID;
+                        att.name = TMSUtils.GetMinimizedAttachmentName(attachment.Filename);
+                        if (attachment.Type == ConstantUtil.TicketAttachmentType.Description)
+                        {
+                            model.DescriptionAttachments.Add(att);
+                        }
+                        else
+                        {
+                            model.SolutionAttachments.Add(att);
+                        }
+                    }
+                }
+                return View(model);
             }
-            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateTicket(TicketViewModel model)
         {
-            ModelErrorViewModel errs = null;
-            errs = new ModelErrorViewModel();
-            Ticket ticket = _ticketService.GetTicketByID((int)model.Id);
-            if (ticket == null)
+            if (!ModelState.IsValid)
             {
-                return HttpNotFound();
-            }
-
-            if (string.IsNullOrEmpty(model.Subject) || model.Subject.Trim() == "")
-            {
-                errs.Add(new ModelError
+                foreach (ModelState modelState in ViewData.ModelState.Values)
                 {
-                    Name = "Subject",
-                    Message = "Ticket's subject required!",
-                });
-                return Json(new
-                {
-                    success = false,
-                    data = errs,
-                    msg = "Please enter ticket's subject!",
-                });
-            }
-
-            if (model.RequesterId == null)
-            {
-                errs.Add(new ModelError
-                {
-                    Name = "Subject",
-                    Message = "Ticket's requester required!",
-                });
-                return Json(new
-                {
-                    success = false,
-                    data = errs,
-                    msg = "Please select requester!",
-                });
-            }
-
-            ticket.ScheduleStartDate = model.ScheduleStartDate != null
-                ? DateTime.ParseExact(model.ScheduleStartDate, ConstantUtil.DateTimeFormat, null)
-                : (DateTime?)null;
-            ticket.ScheduleEndDate = model.ScheduleEndDate != null
-                ? DateTime.ParseExact(model.ScheduleEndDate, ConstantUtil.DateTimeFormat, null)
-                : (DateTime?)null;
-
-            if (ticket.ScheduleStartDate.HasValue && ticket.ScheduleEndDate.HasValue)
-            {
-                if (DateTime.Compare((DateTime)ticket.ScheduleStartDate, (DateTime)ticket.ScheduleEndDate) > 0)
-                {
-                    errs.Add(new ModelError
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                     {
-                        Name = "ScheduleDate",
-                        Message = "Schedule start date must before schedule end date!",
-                    });
-                    return Json(new
-                    {
-                        success = false,
-                        data = errs,
-                        msg = "Please check schedule date again!"
-                    });
-                }
-            }
-
-            ticket.ActualStartDate = model.ActualStartDate != null
-                ? DateTime.ParseExact(model.ActualStartDate, ConstantUtil.DateTimeFormat, null)
-                : (DateTime?)null;
-            ticket.ActualEndDate = model.ActualEndDate != null
-                ? DateTime.ParseExact(model.ActualEndDate, ConstantUtil.DateTimeFormat, null)
-                : (DateTime?)null;
-
-            if (ticket.ActualStartDate.HasValue && ticket.ActualEndDate.HasValue)
-            {
-                if (DateTime.Compare((DateTime)ticket.ActualStartDate, (DateTime)ticket.ActualEndDate) > 0)
-                {
-                    errs.Add(new ModelError
-                    {
-                        Name = "ActualDate",
-                        Message = "Actual start date must before actual end date!",
-                    });
-                    return Json(new
-                    {
-                        success = false,
-                        data = errs,
-                        msg = "Please check actual date again!"
-                    });
-                }
-            }
-
-            ticket.ModifiedTime = DateTime.Now;
-            ticket.Subject = model.Subject.Trim();
-            if (model.Type != 0) ticket.Type = model.Type;
-            else ticket.Type = null;
-            ticket.Description = model.Description;
-            ticket.RequesterID = model.RequesterId;
-            ticket.Solution = model.Solution;
-            if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
-            else ticket.ImpactID = null;
-            ticket.ImpactDetail = model.ImpactDetail;
-            if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
-            else ticket.UrgencyID = null;
-            if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
-            else ticket.PriorityID = null;
-            if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
-            else ticket.CategoryID = null;
-
-            if (ticket.TechnicianID != model.TechnicianId)
-            {
-                ticket.TechnicianID = model.TechnicianId;
-                ticket.AssignedByID = User.Identity.GetUserId();
-                if ((ticket.Status == ConstantUtil.TicketStatus.New ||
-                    ticket.Status == ConstantUtil.TicketStatus.Unapproved) && model.TechnicianId != null)
-                {
-                    ticket.Status = ConstantUtil.TicketStatus.Assigned;
-                }
-                else if (ticket.Status == ConstantUtil.TicketStatus.Assigned && model.TechnicianId == null)
-                {
-                    ticket.Status = ConstantUtil.TicketStatus.New;
-                }
-            }
-
-            List<TicketAttachment> allTicketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID).ToList();
-            bool isDelete;
-            for (int i = 0; i < allTicketAttachments.Count(); i++)
-            {
-                isDelete = true;
-                if (allTicketAttachments[i].Type == ConstantUtil.TicketAttachmentType.Description)
-                {
-                    if (model.DescriptionAttachments != null && model.DescriptionAttachments.Count > 0)
-                    {
-                        for (int j = 0; j < model.DescriptionAttachments.Count; j++)
+                        return Json(new
                         {
-                            if (allTicketAttachments[i].ID == model.DescriptionAttachments[j].id)
+                            success = false,
+                            msg = error.ErrorMessage
+                        });
+                    }
+                }
+            }
+            else
+            {
+                Ticket ticket = _ticketService.GetTicketByID(model.Id);
+                ticket.ScheduleStartDate = model.ScheduleStartDate;
+                ticket.ScheduleEndDate = model.ScheduleEndDate;
+                ticket.ActualStartDate = model.ActualStartDate;
+                ticket.ActualEndDate = model.ActualEndDate;
+                ticket.ModifiedTime = DateTime.Now;
+                ticket.Subject = model.Subject.Trim();
+                if (model.Type != 0)
+                {
+                    ticket.Type = model.Type;
+                }
+                else
+                {
+                    ticket.Type = null;
+                }
+                ticket.Description = model.Description;
+                ticket.RequesterID = model.RequesterId;
+                ticket.Solution = model.Solution;
+                ticket.Tags = GeneralUtil.ConvertToFormatKeyword(model.Tags);
+                ticket.Note = model.Note;
+                if (model.ImpactId != 0)
+                {
+                    ticket.ImpactID = model.ImpactId;
+                }
+                else
+                {
+                    ticket.ImpactID = null;
+                }
+                ticket.ImpactDetail = model.ImpactDetail;
+                if (model.UrgencyId != 0)
+                {
+                    ticket.UrgencyID = model.UrgencyId;
+                }
+                else
+                {
+                    ticket.UrgencyID = null;
+                }
+                if (model.PriorityId != 0)
+                {
+                    ticket.PriorityID = model.PriorityId;
+                }
+                else
+                {
+                    ticket.PriorityID = null;
+                }
+                if (model.CategoryId != 0)
+                {
+                    ticket.CategoryID = model.CategoryId;
+                }
+                else
+                {
+                    ticket.CategoryID = null;
+                }
+
+                if (ticket.TechnicianID != model.TechnicianId)
+                {
+                    ticket.TechnicianID = model.TechnicianId;
+                    ticket.AssignedByID = User.Identity.GetUserId();
+                    if ((ticket.Status == ConstantUtil.TicketStatus.New ||
+                        ticket.Status == ConstantUtil.TicketStatus.Unapproved) && model.TechnicianId != null)
+                    {
+                        ticket.Status = ConstantUtil.TicketStatus.Assigned;
+                    }
+                    else if (ticket.Status == ConstantUtil.TicketStatus.Assigned && model.TechnicianId == null)
+                    {
+                        ticket.Status = ConstantUtil.TicketStatus.New;
+                    }
+                }
+
+                List<TicketAttachment> allTicketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID).ToList();
+                bool isDelete;
+                for (int i = 0; i < allTicketAttachments.Count(); i++)
+                {
+                    isDelete = true;
+                    if (allTicketAttachments[i].Type == ConstantUtil.TicketAttachmentType.Description)
+                    {
+                        if (model.DescriptionAttachments != null && model.DescriptionAttachments.Count > 0)
+                        {
+                            for (int j = 0; j < model.DescriptionAttachments.Count; j++)
                             {
-                                isDelete = false;
+                                if (allTicketAttachments[i].ID == model.DescriptionAttachments[j].id)
+                                {
+                                    isDelete = false;
+                                }
                             }
                         }
                     }
-                }
-                else if (allTicketAttachments[i].Type == ConstantUtil.TicketAttachmentType.Solution)
-                {
-                    if (model.SolutionAttachments != null && model.SolutionAttachments.Count > 0)
+                    else if (allTicketAttachments[i].Type == ConstantUtil.TicketAttachmentType.Solution)
                     {
-                        for (int j = 0; j < model.SolutionAttachments.Count; j++)
+                        if (model.SolutionAttachments != null && model.SolutionAttachments.Count > 0)
                         {
-                            if (allTicketAttachments[i].ID == model.SolutionAttachments[j].id)
+                            for (int j = 0; j < model.SolutionAttachments.Count; j++)
                             {
-                                isDelete = false;
+                                if (allTicketAttachments[i].ID == model.SolutionAttachments[j].id)
+                                {
+                                    isDelete = false;
+                                }
                             }
                         }
                     }
+                    if (isDelete) _ticketAttachmentService.DeleteAttachment(allTicketAttachments[i]);
                 }
-                if (isDelete) _ticketAttachmentService.DeleteAttachment(allTicketAttachments[i]);
-            }
 
-            try
-            {
-                _ticketService.UpdateTicket(ticket);
-                if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
+                bool result = _ticketService.UpdateTicket(ticket, User.Identity.GetUserId());
+                if (result)
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                    if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
+                    {
+                        result = _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
+                        if (!result)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                msg = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+                    }
+                    if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
+                    {
+                        result = _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                        if (!result)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                msg = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+                    }
+                    return Json(new
+                    {
+                        success = true
+                    });
                 }
-                if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
+                else
                 {
-                    _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                    return Json(new
+                    {
+                        success = false,
+                        msg = ConstantUtil.CommonError.DBExceptionError
+                    });
                 }
-            }
-            catch (DbUpdateException ex)
-            {
-                log.Error("An error has occured while update ticket.", ex);
-                return Json(new
-                {
-                    success = false,
-                    msg = ConstantUtil.CommonError.DBExceptionError
-                });
             }
 
             return Json(new
             {
-                success = true
+                success = false,
+                msg = ConstantUtil.CommonError.DBExceptionError
             });
         }
 
@@ -516,10 +454,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                             msg = "Ticket cannot be cancelled!"
                         });
                     }
-                    try
+
+                    int? status = ticket.Status;
+                    bool cancelResult = _ticketService.CancelTicket(ticket, User.Identity.GetUserId());
+                    if (cancelResult)
                     {
-                        int? status = ticket.Status;
-                        _ticketService.CancelTicket(ticket);
                         if (status == ConstantUtil.TicketStatus.Assigned)
                         {
                             AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
@@ -532,13 +471,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                             msg = "Ticket was cancelled successfully!"
                         });
                     }
-                    catch (Exception e)
+                    else
                     {
-                        log.Error("Cancel ticket error", e);
                         return Json(new
                         {
                             success = false,
-                            msg = "Some error occured! Please try again later!"
+                            msg = ConstantUtil.CommonError.DBExceptionError
                         });
                     }
                 }
@@ -547,7 +485,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     return Json(new
                     {
                         success = false,
-                        msg = "This ticket is unavailable"
+                        msg = ConstantUtil.CommonError.UnavailableTicket
                     });
                 }
             }
@@ -556,7 +494,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 return Json(new
                 {
                     success = false,
-                    msg = "This ticket is unavailable"
+                    msg = ConstantUtil.CommonError.UnavailableTicket
                 });
             }
         }
@@ -577,22 +515,22 @@ namespace TMS.Areas.HelpDesk.Controllers
                             msg = "Ticket cannot be closed!"
                         });
                     }
-                    try
+
+                    bool closeResult = _ticketService.CloseTicket(ticket, User.Identity.GetUserId());
+                    if (closeResult)
                     {
-                        _ticketService.CloseTicket(ticket);
                         return Json(new
                         {
                             success = true,
                             msg = "Ticket was closed successfully!"
                         });
                     }
-                    catch (Exception e)
+                    else
                     {
-                        log.Error("Close ticket error", e);
                         return Json(new
                         {
                             success = false,
-                            msg = "Some error occured! Please try again later!"
+                            msg = ConstantUtil.CommonError.DBExceptionError
                         });
                     }
                 }
@@ -601,7 +539,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     return Json(new
                     {
                         success = false,
-                        msg = "This ticket is unavailable"
+                        msg = ConstantUtil.CommonError.UnavailableTicket
                     });
                 }
             }
@@ -610,7 +548,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 return Json(new
                 {
                     success = false,
-                    msg = "This ticket is unavailable"
+                    msg = ConstantUtil.CommonError.UnavailableTicket
                 });
             }
         }
@@ -645,58 +583,36 @@ namespace TMS.Areas.HelpDesk.Controllers
                     tickets.Add(ticket);
                 }
             }
-            try
-            {
-                tickets.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));
-                Ticket newTicket = tickets[0];
-                for (int i = 1; i < tickets.Count; i++)
-                {
-                    Ticket oldTicket = tickets[i];
-                    if (oldTicket.Status != ConstantUtil.TicketStatus.New && oldTicket.Status != ConstantUtil.TicketStatus.Assigned)
-                    {
-                        return Json(new
-                        {
-                            success = false,
-                            msg = "There are some children tickets which cannot be merged! \nOnly New or Assigned children tickets can be merged!"
-                        });
-                    }
-                }
-                for (int i = 1; i < tickets.Count; i++)
-                {
-                    Ticket oldTicket = tickets[i];
-                    if (!string.IsNullOrWhiteSpace(newTicket.Description))
-                    {
-                        newTicket.Description += "\n\n[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
-                    }
-                    else
-                    {
-                        newTicket.Description = "[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
-                    }
-                    oldTicket.ModifiedTime = DateTime.Now;
-                    int? status = oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
-                    _ticketService.UpdateTicket(oldTicket);
-                    if (status == ConstantUtil.TicketStatus.Assigned)
-                    {
-                        AspNetUser technician = _userService.GetUserById(oldTicket.TechnicianID);
-                        Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(oldTicket, technician));
-                        thread.Start();
-                    }
-                }
-                newTicket.ModifiedTime = DateTime.Now;
-                _ticketService.UpdateTicket(newTicket);
 
+            tickets.Sort((x, y) => DateTime.Compare(x.CreatedTime, y.CreatedTime));
+            Ticket newTicket = tickets[0];
+            for (int i = 1; i < tickets.Count; i++)
+            {
+                Ticket oldTicket = tickets[i];
+                if (oldTicket.Status != ConstantUtil.TicketStatus.New && oldTicket.Status != ConstantUtil.TicketStatus.Assigned)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        msg = "There are some children tickets which cannot be merged! \nOnly New or Assigned children tickets can be merged!"
+                    });
+                }
+            }
+            bool mergeResult = _ticketService.MergeTicket(tickets, User.Identity.GetUserId());
+            if (mergeResult)
+            {
                 return Json(new
                 {
                     success = true,
-                    msg = string.Format("Tickets were merged into ticket #{0}!", newTicket.Code)
+                    msg = string.Format("Tickets were merged successfully into ticket #{0}!", newTicket.Code)
                 });
             }
-            catch
+            else
             {
                 return Json(new
                 {
                     success = false,
-                    msg = "Some error occured! Please try again later!"
+                    msg = ConstantUtil.CommonError.DBExceptionError
                 });
             }
         }
@@ -729,7 +645,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
                 else
                 {
-                    //Hide Canceled and Closed Tickets
+                    //Hide Cancelled and Closed Tickets
                     filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Cancelled);
                     filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Closed);
                 }
@@ -787,9 +703,9 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     s.Technician = "";
                 }
-                s.SolvedDate = item.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+                s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = ((TicketStatusEnum)item.Status).ToString();
-                s.ModifiedTime = item.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
+                s.ModifiedTimeString = item.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
                 tickets.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
@@ -841,10 +757,10 @@ namespace TMS.Areas.HelpDesk.Controllers
                         model.Impact = _impactService.GetImpactById(ticket.ImpactID.Value).Name;
                     }
                     model.ImpactDetail = ticket.ImpactDetail;
-                    model.ScheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-                    model.ScheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-                    model.ActualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
-                    model.ActualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "";
+                    model.ScheduleStartDateString = ticket.ScheduleStartDate.HasValue ? ticket.ScheduleStartDate.Value.ToString(ConstantUtil.DateTimeFormat) : "";
+                    model.ScheduleEndDateString = ticket.ScheduleEndDate.HasValue ? ticket.ScheduleEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "";
+                    model.ActualStartDateString = ticket.ActualStartDate.HasValue ? ticket.ActualStartDate.Value.ToString(ConstantUtil.DateTimeFormat) : "";
+                    model.ActualEndDateString = ticket.ActualEndDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "";
 
                     if (!string.IsNullOrEmpty(ticket.TechnicianID))
                     {
@@ -860,6 +776,9 @@ namespace TMS.Areas.HelpDesk.Controllers
                             }
                         }
                     }
+
+                    model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Note = ticket.Note;
                     return Json(new
                     {
                         success = true,
@@ -988,7 +907,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                                 ticket.TechnicianID = technicianId;
                                 ticket.Status = ConstantUtil.TicketStatus.Assigned;
                                 ticket.ModifiedTime = DateTime.Now;
-                                _ticketService.UpdateTicket(ticket);
+                                _ticketService.UpdateTicket(ticket, User.Identity.GetUserId());
                                 Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenAssignTicket(ticket, technician));
                                 thread.Start();
                                 return Json(new
@@ -1092,7 +1011,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 ID = m.ID,
                 Code = m.Code,
                 Subject = m.Subject,
-                Description = m.Description
+                Description = string.IsNullOrWhiteSpace(m.Description) ? "-" : m.Description
             });
 
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
@@ -1101,6 +1020,36 @@ namespace TMS.Areas.HelpDesk.Controllers
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = displayedList;
             return Json(rsModel, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetTags(string subject)
+        {
+            HashSet<string> stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            string[] lines = System.IO.File.ReadAllLines(Server.MapPath(@"~/Utils/stopwords.txt"));
+            foreach (string s in lines)
+            {
+                stopWords.Add(s); // Assuming that each line contains one stop word.
+            }
+
+            List<string> keywords = new List<string>();
+            subject = GeneralUtil.RemoveSpecialCharacters(subject);
+            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+            string words = regex.Replace(subject, " ");
+            string[] wordArr = words.Split(' ');
+            foreach (string word in wordArr)
+            {
+                string lowerWord = word.ToLower();
+                if (!stopWords.Contains(lowerWord))
+                {
+                    keywords.Add(lowerWord);
+                }
+            }
+
+            return Json(new
+            {
+                data = keywords
+            }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

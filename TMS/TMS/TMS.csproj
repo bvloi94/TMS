@@ -224,6 +224,7 @@
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Manager\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
+    <Compile Include="Areas\Technician\Controllers\HomeController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\Technician\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
@@ -322,6 +323,7 @@
     </Compile>
     <Compile Include="Schedulers\CheckToCloseTicketJob.cs" />
     <Compile Include="Schedulers\CheckOverdueTicketJob.cs" />
+    <Compile Include="Services\TicketHistoryService.cs" />
     <Compile Include="Services\PriorityMatrixService.cs" />
     <Compile Include="Services\SolutionService.cs" />
     <Compile Include="Services\TicketAttachmentService.cs" />
@@ -336,7 +338,7 @@
     <Compile Include="Services\BusinessRuleService.cs" />
     <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Services\UserRoleService.cs" />
-    <Compile Include="Utils\CustomAuthorizeAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\CustomAuthorizeAttribute.cs" />
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
@@ -345,10 +347,14 @@
     <Compile Include="Utils\PredicateBuilder.cs" />
     <Compile Include="Utils\SentenceUtil.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
-    <Compile Include="Utils\MaxFileSizeAttribute.cs" />
-    <Compile Include="Utils\ValidateDateSQLAttribute.cs" />
-    <Compile Include="Utils\ValidateDateAttribute.cs" />
-    <Compile Include="Utils\ImageFileAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\MaxFileSizeAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\CustomRequiredAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\PathFormatAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\TagFormatAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\ValidateDateAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\ValidateDateSQLAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\CompareValidateDateAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\ImageFileAttribute.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\BusinessRuleViewModel.cs" />
     <Compile Include="ViewModels\ChangPaswordViewModel.cs" />
@@ -365,9 +371,10 @@
     <Compile Include="ViewModels\ProfileTechnicianViewModel.cs" />
     <Compile Include="ViewModels\RecentTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
-    <Compile Include="ViewModels\RequesterTicketViewModel.cs" />
+    <Compile Include="ViewModels\BasicTicketViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
+    <Compile Include="ViewModels\TicketHistoryViewModel.cs" />
     <Compile Include="ViewModels\TicketSolveViewModel.cs" />
     <Compile Include="ViewModels\ProfileAdminViewModel.cs" />
     <Compile Include="ViewModels\SCItemViewModels.cs" />
@@ -397,6 +404,7 @@
     <Content Include="Content\custom-css\ticket-detail.css" />
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />
+    <Content Include="Content\custom-js\knowledgebase.js" />
     <Content Include="Content\custom-js\tms-dropdown.js" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\img\ajax-loader.gif" />
@@ -609,6 +617,8 @@
     <Content Include="Areas\Manager\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Manager\Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
+    <Content Include="Areas\Technician\Views\Shared\_TopLayout.cshtml" />
+    <Content Include="Areas\Technician\Views\Home\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -645,6 +655,7 @@
     <Content Include="Scripts\_references.js" />
     <Content Include="Uploads\Avatar\avatar_female.png" />
     <Content Include="Uploads\Avatar\avatar_male.png" />
+    <Content Include="Utils\stopwords.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -698,9 +709,11 @@
     <Content Include="Views\KnowledgeBase\Index.cshtml" />
     <Content Include="Views\FAQ\Detail.cshtml" />
     <Content Include="Views\Shared\KBLayout.cshtml" />
+    <Content Include="Views\Ticket\History.cshtml" />
     <Content Include="Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Views\Shared\_TopLayout.cshtml" />
     <Content Include="Views\Profile\ChangePassword.cshtml" />
+    <Content Include="Views\Ticket\TicketDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

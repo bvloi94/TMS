@@ -35,27 +35,23 @@
                 <form class="form-horizontal" role="form" id="form-edit-ticket" method="POST">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="Id" value="@Model.Id" />
-                    <div class="col-md-2 col-xs-1"></div>
-                    <div class="col-md-8 col-xs-10">
+                    <div class="col-md-offset-2 col-xs-offset-1 col-md-8 col-xs-10">
                         <div class="row form-group">
                             <div class="col-md-12 col-xs-12">
                                 <label class="control-label">SUBJECT <font color="red">*</font></label>
                             </div>
                             <div class="col-md-12 col-xs-12">
-                                <input type="text" class="form-control" name="Subject" placeholder="Subject" value="@Model.Subject" />
+                                @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", placeholder = "Subject" })
                                 <a href="javascript:void(0)" id="refer-older-ticket-link">Refer older tickets</a>
                             </div>
                         </div>
                         <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">STATUS</label>
-                                <div id="div-status">
-                                    <input type="hidden" name="statusId" value="@Model.StatusId" />
-                                </div>
+                                <div id="div-status"></div>
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">LAST MODIFIED</label>
-                                @*<input type="text" class="form-control" name="ModifiedTime" value="@Model.ModifiedTime" readonly />*@
                                 <div><label name="ModifiedTime" style="font-weight: normal;">@Model.ModifiedTime</label></div>
                             </div>
                         </div>
@@ -64,7 +60,7 @@
                                 <label class="control-label">DESCRIPTION</label>
                             </div>
                             <div class="col-md-12 col-xs-12">
-                                <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" rows="5">@Model.Description</textarea>
+                                @Html.TextAreaFor(m => m.Description, new { @class = "form-control textarea", placeholder = "Description", rows = "10" })
                             </div>
                             <div class="col-md-12 col-xs-12">
                                 <input class="form-control" type="file" id="descriptionFiles" name="descriptionFiles" multiple>
@@ -116,13 +112,13 @@
                             </div>
                         </div>
                         <div class="row form-group">
-                            <div class="col-md-8 col-xs-8">
+                            <div class="col-md-6 col-xs-6">
                                 <label class="control-label">IMPACT DETAIL</label>
-                                <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" rows="4">@Model.ImpactDetail</textarea>
+                                @Html.TextAreaFor(m => m.ImpactDetail, new { @class = "form-control", placeholder = "Impact Detail", rows = "4" })
                             </div>
-                            <div class="col-md-4 col-xs-4">
+                            <div class="col-md-6 col-xs-6">
                                 <label class="control-label">TYPE</label>
-                                <select class="form-control" name="Type" value="@Model.Type">
+                                <select class="form-control" name="Type">
                                     <option value="0">None</option>
                                     <option value="1">Request</option>
                                     <option value="2">Problem</option>
@@ -136,25 +132,24 @@
                         <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">SCHEDULE START DATE</label>
-                                <input type="text" class="form-control datetimep" name="ScheduleStartDate" value="@Model.ScheduleStartDate" />
+                                @Html.TextBoxFor(m => m.ScheduleStartDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">SCHEDULE END DATE</label>
-                                <input type="text" class="form-control datetimep" name="ScheduleEndDate" value="@Model.ScheduleEndDate" />
+                                @Html.TextBoxFor(m => m.ScheduleEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">ACTUAL START DATE</label>
-                                <input type="text" class="form-control datetimep" name="ActualStartDate" value="@Model.ActualStartDate" />
+                                @Html.TextBoxFor(m => m.ActualStartDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">ACTUAL END DATE</label>
-                                <input type="text" class="form-control datetimep" name="ActualEndDate" value="@Model.ActualEndDate" />
+                                @Html.TextBoxFor(m => m.ActualEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">CREATED BY</label>
                                 <input type="hidden" id="createdId" name="CreatedId" value="@Model.CreatedId">
                                 <input type="text" class="form-control" name="CreatedBy" id="createdBy" value="@Model.CreatedBy" readonly />
-                                @*<label style="font-weight: normal" class="control-label" id="createdBy" name="CreatedBy">@Model.CreatedBy</label>*@
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">CREATED DATE</label>
@@ -164,11 +159,10 @@
                                 <label class="control-label">SOLVED BY</label>
                                 <input type="hidden" id="solveId" name="solveId" value="@Model.SolvedId">
                                 <input type="text" class="form-control" name="SolvedBy" id="solveBy" value="@Model.CreatedBy" readonly />
-                                @*<label style="font-weight: normal" class="control-label" id="solveBy" name="SolvedBy">@Model.SolvedBy</label>*@
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">SOLVED DATE</label>
-                                <input type="text" class="form-control" name="SolvedDate" value="@Model.SolvedDate" readonly />
+                                @Html.TextBoxFor(m => m.SolvedDate, new { @class = "form-control", @readonly = true })
                             </div>
                         </div>
                         <div class="row form-group">
@@ -176,7 +170,7 @@
                                 <label class="control-label">SOLUTION</label>
                             </div>
                             <div class="col-md-12 col-xs-12">
-                                <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" rows="5">@Model.Solution</textarea>
+                                @Html.TextAreaFor(m => m.Solution, new { @class = "form-control textarea", placeholder = "Solution", rows = "10" })
                             </div>
                             <div class="col-md-12 col-xs-12">
                                 <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
@@ -191,7 +185,23 @@
                                         </div>
                                     }
                                 </div>
-
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">TAGS</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                @Html.TextBoxFor(m => m.Tags, new { @class = "form-control", id = "tags" })
+                                <a href="javascript:generateTags()">Generate tags</a>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">NOTE</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                @Html.TextAreaFor(m => m.Note, new { @class = "form-control textarea", placeholder = "Solution", rows = "5" })
                             </div>
                         </div>
                         <div class="row form-group" style="text-align: center;">
@@ -521,6 +531,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/helpdesk-manage-ticket")
     <script src="~/Content/Plugins/mark/jquery.mark.min.js"></script>
+    <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
     <script>
 
         var requesterTable = null;
@@ -532,77 +543,71 @@
                 });
 
 
-        $("[data-role=btn-update-ticket]")
-            .on("click",
-                function() {
-                    $("[data-role=btn-update-ticket]").prop('disabled', true);
-                    $("[data-role=btn-cancel]").prop("disabled", true);
-                    var formData = new FormData($("#form-edit-ticket")[0]);
-                    var dict = new Array();
-                    $(".attachments")
-                        .each(function(index) {
-                            dict.push({
-                                "id": $(".attachments")[index].getAttribute("data-id"),
-                                "name": $(".attachments")[index].textContent
-                            });
-                        });
-                    $.ajax({
-                        "url": "/HelpDesk/ManageTicket/UpdateTicket",
-                        "method": "POST",
-                        "data": formData,
-                        "success": function(data) {
-                            if (data.success) {
-                                noty({
-                                    text: "Ticket was updated successfully!",
-                                    layout: "topCenter",
-                                    type: "success",
-                                    timeout: 300,
-                                    callback: {
-                                        onClose: function() {
-                                            window.location.href = "/HelpDesk/ManageTicket";
-                                        }
-                                    }
-                                });
-                            } else {
-                                $("[data-role=btn-update-ticket]").prop('disabled', false);
-                                $("[data-role=btn-cancel]").prop("disabled", false);
-                                noty({
-                                    text: data.msg,
-                                    type: "error",
-                                    layout: "topRight",
-                                    timeout: 2000,
-                                });
-                                if (data.data != null) {
-                                    $("#form-edit-ticket [data-role=group-form-error]").html("");
-                                    for (var i = 0; i < data.data.length; i++) {
-                                        $("#form-edit-ticket [data-role=group-form-error]")
-                                            .append($("<p/>",
-                                            {
-                                                "html": $("<font/>",
-                                                {
-                                                    "color": "red",
-                                                    "html": "*" + data.data[i].Message
-                                                })
-                                            }));
-                                    }
-                                }
-                            }
-                        },
-                        contentType: false,
-                        processData: false,
-                        enctype: 'multipart/form-data',
-                        "error": function(e) {
-                            $("[data-role=btn-update-ticket]").prop('disabled', false);
-                            $("[data-role=btn-cancel]").prop("disabled", false);
-                            noty({
-                                text: "Some error occured. Please try again later!",
-                                type: "error",
-                                layout: "topRight",
-                                timeout: 2000
-                            });
-                        }
+        $("[data-role=btn-update-ticket]").on("click",function() {
+            $("[data-role=btn-update-ticket]").prop('disabled', true);
+            $("[data-role=btn-cancel]").prop("disabled", true);
+            var formData = new FormData($("#form-edit-ticket")[0]);
+            var dict = new Array();
+            $(".attachments")
+                .each(function(index) {
+                    dict.push({
+                        "id": $(".attachments")[index].getAttribute("data-id"),
+                        "name": $(".attachments")[index].textContent
                     });
                 });
+            $.ajax({
+                "url": "/HelpDesk/ManageTicket/UpdateTicket",
+                "method": "POST",
+                "data": formData,
+                "success": function(data) {
+                    if (data.success) {
+                        noty({
+                            text: "Ticket was updated successfully!",
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 300,
+                            callback: {
+                                onClose: function() {
+                                    window.location.href = "/HelpDesk/ManageTicket";
+                                }
+                            }
+                        });
+                    } else {
+                        $("[data-role=btn-update-ticket]").prop("disabled", false);
+                        $("[data-role=btn-cancel]").prop("disabled", false);
+                        noty({
+                            text: data.msg,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#form-edit-ticket [data-role=group-form-error]").html("");
+                        $("#form-edit-ticket [data-role=group-form-error]")
+                        .append($("<p/>",
+                        {
+                            "html": $("<font/>",
+                            {
+                                "color": "red",
+                                "html": "*" + data.msg
+                            })
+                        }));
+                    }
+                },
+                contentType: false,
+                processData: false,
+                enctype: 'multipart/form-data',
+                error: function(e) {
+                    $("[data-role=btn-update-ticket]").prop('disabled', false);
+                    $("[data-role=btn-cancel]").prop("disabled", false);
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
+                }
+            });
+        });
 
         function initDropdownControl() {
             initUrgencyDropdown({
@@ -660,6 +665,7 @@
             (@Model.StatusId != @ConstantUtil.TicketStatus.New &&
                 @Model.StatusId != @ConstantUtil.TicketStatus.Assigned)) {
                 $('[name="Subject"]').prop("readonly", true);
+                $('[name="Description"]').prop("readonly", true);
             }
 
             $("#div-status").html(getStatusLabel('@Model.Status'));
@@ -695,6 +701,7 @@
                 initDropdownControl();
                 loadEditData();
                 initOlderTicketsTable();
+                $("#tags").tagit();
             });
     </script>
 }

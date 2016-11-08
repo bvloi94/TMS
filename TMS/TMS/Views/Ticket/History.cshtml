@@ -1,0 +1,184 @@
+﻿@using TMS.Utils
+@using TMS.ViewModels
+@model IEnumerable<TicketHistoryViewModel>
+@{
+    ViewBag.Title = "Ticket #" + ViewBag.Code + " History";
+}
+@{
+    if (ViewBag.Role == ConstantUtil.UserRoleString.HelpDesk)
+    {
+        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    }
+    else if (ViewBag.Role == ConstantUtil.UserRoleString.Technician)
+    {
+        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    }
+}
+<style>
+    .subject {
+        font-weight: normal;
+        color: #4d4d4d;
+        font-size: 20px;
+        margin: 3px 0 0 5px;
+        padding: 10px 0px 0px 0px;
+        word-wrap: break-word;
+        word-break: break-word;
+        white-space: normal;
+    }
+
+    .info {
+        display: block;
+        font-size: 13px;
+        color: #7E9AB8;
+        line-height: 30px;
+    }
+
+        .info .priority, .info .requester {
+            float: left;
+        }
+
+    .sep-pipe {
+        float: left;
+        display: block;
+        height: 16px;
+        border-left: 1px solid #cacaca;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 7px;
+    }
+
+    .history-operation {
+        border-radius: 3px;
+        font-size: 14px;
+        color: #FFF;
+        text-align: center;
+        padding: 5px;
+        width: 110px;
+        display: block;
+        font-weight: bold;
+        white-space: normal;
+        vertical-align: top;
+    }
+
+    .history-time {
+        color: #555;
+        font-size: 14px;
+        padding-left: 5px;
+        width: 143px;
+        min-width: 143px;
+        vertical-align: top;
+    }
+
+    .action {
+        font-size: 14px;
+        line-height: 20px;
+        color: #666;
+        white-space: normal;
+        word-break: break-word;
+        word-wrap: break-word;
+        padding: 0px 10px;
+    }
+
+        .action p {
+            margin: 0px;
+        }
+
+    hr {
+        margin-top: 0px;
+    }
+
+    .btn-div {
+        text-align: center;
+        padding: 10px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box box-primary" style="padding-left: 10px">
+            <h1 class="subject"><i class="fa fa-file-text" aria-hidden="true"></i> @ViewBag.Subject</h1>
+            <div class="info">
+                <div class="priority">Priority: <b>@ViewBag.Priority</b></div>
+                <span class="sep-pipe"></span>
+                <div class="requester">
+                    Requested by <b>@ViewBag.Requester</b> on <b>@ViewBag.CreateTime</b>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <hr />
+            <table cellspacing="5" cellpadding="0" border="0" id="historyDetails">
+                <tbody style="display: table;">
+                    @foreach (TicketHistoryViewModel row in Model)
+                    {
+                        <tr style="display: table-row;">
+                            <td class="history-time">
+                                <div>@row.ActedDate</div>
+                            </td>
+                            <td style="display: table;">
+                                <span class="history-operation">@row.Type</span>
+                            </td>
+                            <td style="width: 75%">
+                                <div class="action">
+                                    <div>@Html.Raw(row.Action)</div>
+                                    <div>Performed by <b>@row.Performer</b></div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr><td colspan="4" height="10"></td></tr>
+                    }
+                </tbody>
+            </table>
+            <div class="btn-div">
+                @if (ViewBag.Role == ConstantUtil.UserRoleString.HelpDesk)
+                {
+                    <a href="/HelpDesk/ManageTicket" class="btn btn-flat btn-default">Back</a>
+                }
+                else if (ViewBag.Role == ConstantUtil.UserRoleString.Technician)
+                {
+                    <a href="/Technician/ManageTicket" class="btn btn-flat btn-default">Back</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            getLabel();
+        });
+
+        function getLabel() {
+            $(".history-operation").each(function (i, e) {
+                var val = $(e).html();
+                switch (val.toLowerCase()) {
+                    case 'created':
+                        $(e).css("background-color", "#85b145");
+                        break;
+                    case 'updated':
+                        $(e).css("background-color", "#ffaf23");
+                        break;
+                    case 'solved':
+                        $(e).css("background-color", "#67a0fc");
+                        break;
+                    case 'closed':
+                        $(e).css("background-color", "#0d700d");
+                        break;
+                    case 'merged':
+                        $(e).css("background-color", "#34ada5");
+                        break;
+                    case 'unapproved':
+                        $(e).css("background-color", "#ed3012");
+                        break;
+                    case 'cancelled':
+                    default:
+                        $(e).css("background-color", "#bac6ba");
+                        break;
+                }
+            });
+        }
+    </script>
+}
+
+
+

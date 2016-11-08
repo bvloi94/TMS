@@ -58,52 +58,6 @@
             list-style: none;
         }
 
-    .holder {
-        text-align: center;
-    }
-
-        .holder a {
-            font-size: 13px;
-            cursor: pointer;
-            color: #458dc2;
-            padding: 5px 15px;
-            border: solid 1px #bfbfbf;
-            border-right: none;
-        }
-
-            .holder a:last-of-type {
-                border-right: solid 1px #bfbfbf;
-            }
-
-            .holder a:hover {
-                color: #fff;
-                background-color: #3393d8;
-            }
-
-            .holder a.jp-current, a.jp-current:hover {
-                color: #fff;
-                background-color: #3393d8 !important;
-                font-weight: bold;
-            }
-
-            .holder a.jp-disabled, a.jp-disabled:hover {
-                color: #808080;
-                background-color: #e9e8e8 !important;
-            }
-
-            .holder a.jp-current, a.jp-current:hover, .holder a.jp-disabled, a.jp-disabled:hover {
-                cursor: default;
-                background: none;
-            }
-
-        .holder span {
-            font-size: 13px;
-            color: #161616;
-            padding: 5px 15px;
-            border: solid 1px #bfbfbf;
-            border-right: none;
-        }
-
     .keywords {
         margin-left: 0px;
         margin-bottom: 35px;
@@ -132,50 +86,41 @@
     <div class="span8 page-content">
         <div id="main-title" style="padding-left: 25px"></div>
         <ul id="all-articles" class="hidden">
-            @if (Model != null)
+            @if (Model != null && Model.Count() > 0)
             {
                 if (!string.IsNullOrEmpty(ViewBag.SearchKey))
                 {
-                    if (Model.Count() == 1)
-                    {
-                        <li style="text-align: center"><h4>There is 1 result matched keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
-                    }
-                    else
-                    {
-                        <li style="text-align: center"><h4>There are @Model.Count() results matched keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
-                    }
+                    <li><h2>Key Search: @ViewBag.SearchKey</h2></li>
+                    <li style="text-align: center"><h4>There are @Model.Count() result(s) matched keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
                 }
                 else if (!string.IsNullOrWhiteSpace(ViewBag.Category))
                 {
                     <li><h2>Category: @ViewBag.Category</h2></li>
-                    if (Model.Count() == 0)
-                    {
-                        <li style="text-align: center"><p><i>This category is empty.</i></p></li>
-                    }
+                }
+                else if (!string.IsNullOrWhiteSpace(ViewBag.Tag))
+                {
+                    <li><h2>Tag: @ViewBag.Tag</h2></li>
                 }
                 else
                 {
                     <li><h2>All articles</h2></li>
                 }
 
-                var count = 0;
-
                 foreach (KnowledgeBaseViewModel solution in Model)
                 {
-                    count++;
                     <li>
                         <article class="type-post format-standard hentry clearfix">
-                            <br /><h2 class="post-title"><a href="/FAQ/Detail?Path=@solution.Path">@solution.Subject</a></h2>
+                            <br /><h2 class="post-title"><a href="/FAQ/Detail/@solution.Path">@solution.Subject</a></h2>
                             <div class="post-meta clearfix">
                                 <span class="date">@solution.ModifiedTime</span>
                                 <span class="category" id="@solution.CategoryID" data-id="">
-                                    <a class="link-color" href="/FAQ?Category=@solution.Category">@solution.CategoryPath</a>
+                                    <a class="link-color" href="/FAQ/Category/@solution.Category">@solution.CategoryPath</a>
                                 </span>
                             </div>
-                            <div class="longContent" id="content-@count">@Html.Raw(solution.Content)</div>
-                            <a class="link-color" href="/FAQ/Detail?Path=@solution.Path">...See full solution</a>
+                            <div class="longContent">@Html.Raw(solution.Content)</div>
+                            <a class="link-color" href="/FAQ/Detail/@solution.Path">...See full solution</a>
                             <p>
-                                <ul class="keywords" id="keyword-@count">@Html.Raw(solution.Keyword)</ul>
+                                <ul class="keywords">@Html.Raw(solution.Keyword)</ul>
                             </p>
                         </article>
                     </li>
@@ -186,6 +131,10 @@
                 if (Request.Url.ToString().Contains("SearchKey"))
                 {
                     <li style="text-align: center"><h4>There is no result matched your keywords.</h4></li>
+                }
+                else
+                {
+                    <li style="text-align: center"><h4>There is no result.</h4></li>
                 }
             }
         </ul>
@@ -221,9 +170,9 @@
         });
 
         function setupPage() {
-            for (i = 1; i <= resultsNo; i++) {
-                loadKeywordToTags($("#keyword-" + i).text(), i);
-            }
+            $(".keywords").each(function (i, e) {
+                loadKeywordToTags($(e).html(), e);
+            });
 
             $("#all-articles").find('img').hide();
             $(".longContent").find('h1,h2,h3,h4,h5').css("font-size", "15px");
@@ -236,13 +185,13 @@
             });
         });
 
-        function loadKeywordToTags(keyword, id) {
+        function loadKeywordToTags(keyword, obj) {
             var keywordTags = (keyword).split(',');
-            $("#keyword-" + id).empty();
+            $(obj).empty();
             if (keywordTags[0] != "-") {
                 for (j = 0; j < keywordTags.length; j++) {
                     var key = keywordTags[j].replace(/"/g, '');
-                    $("#keyword-" + id).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
+                    $(obj).append('<li><div class="key-tags"><a href="/FAQ/Tags/' + key + ' ">' + key + '</a></div></li>');
                 }
             }
         }
@@ -299,7 +248,7 @@
                                     a_attr: {
                                         "data-id": dataItem.ID,
                                         "name": "Category",
-                                        "href": "/FAQ?Category=" + dataItem.Name,
+                                        "href": "/FAQ/Category/" + dataItem.Name,
                                         "class": "category-node"
                                     }
                                 };

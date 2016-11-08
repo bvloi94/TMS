@@ -6,11 +6,11 @@ namespace TMS.Utils
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class ValidateDateAttribute : ValidationAttribute
     {
-        private int IntervalYear { get; set; }
+        int _intervalYear;
 
         public ValidateDateAttribute(int intervalYear)
         {
-            IntervalYear = intervalYear;
+            _intervalYear = intervalYear;
         }
 
         public override bool IsValid(object value)
@@ -19,7 +19,7 @@ namespace TMS.Utils
 
             if (date.HasValue)
             {
-                if (date > DateTime.Now.AddYears(IntervalYear))
+                if (date > DateTime.Now.AddYears(_intervalYear))
                 {
                     return false;
                 }

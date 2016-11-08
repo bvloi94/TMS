@@ -75,11 +75,11 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <label class="control-label col-md-2">Keyword</label>
+                    <label class="control-label col-md-2">Keywords</label>
                     <div class="col-md-10" style="max-width: 704px;">
                         @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", id = "keyword" })
+                        <a href="javascript:generateKeywords()">Generate keywords</a>
                         @Html.ValidationMessageFor(m => m.Keyword, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -104,8 +104,6 @@
                         <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "KnowledgeBase"))">Cancel</a>
                     </div>
                 </div>
-
-
             }
         </div>
     </div>
@@ -113,6 +111,7 @@
 
 @section scripts{
     <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
+    <script src="~/Content/custom-js/knowledgebase.js"></script>
     <script>
         $(document)
             .ready(function() {
@@ -142,17 +141,6 @@
             .keyup(function() {
                 getPath();
             });
-
-        var getPath = function () {
-            $("#path")
-                    .val($("#subject-txt")
-                        .val()
-                        .trim()
-                        .toLowerCase()
-                        .replace(/\s/g, '-')
-                        .replace(/\-{2,}/g, '-')
-                        .replace(/[^\w-]+/g, ''));
-        }
 
 
         $(".attachment-delete")

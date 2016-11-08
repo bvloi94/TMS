@@ -15,14 +15,13 @@ namespace TMS.Models
     public partial class TicketHistory
     {
         public int ID { get; set; }
+        public int Type { get; set; }
         public string ActID { get; set; }
-        public string ActedID { get; set; }
         public string Action { get; set; }
         public Nullable<System.DateTime> ActedTime { get; set; }
         public int TicketID { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
-        public virtual AspNetUser AspNetUser1 { get; set; }
         public virtual Ticket Ticket { get; set; }
     }
 }

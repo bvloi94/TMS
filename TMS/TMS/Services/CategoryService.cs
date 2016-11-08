@@ -51,7 +51,7 @@ namespace TMS.Services
 
         public Category GetCategoryByName(string name)
         {
-            return _unitOfWork.CategoryRepository.Get(m => m.Name.Equals(name)).ElementAt(0);
+            return _unitOfWork.CategoryRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
         }
 
         public bool IsDuplicatedName(int? id, string name, int? parentId)

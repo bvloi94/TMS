@@ -163,6 +163,7 @@
         background-color: #e6e6e6;
         border-left: solid 5px #3393d8;
         color: #191919;
+        margin: 5px 0px;
     }
 </style>
 
@@ -175,13 +176,14 @@
 
                 </div>
             </div>
+
             <div class="questions col-md-9">
                 <div class="header-content col-md-12">
                     <div class="col-md-8">
                         <a class="btn btn-primary btn-flat" href="/KnowledgeBase/Create">
                             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
                         </a>
-                        <a href="javascript:void(0)" class="btn btn-flat btn-info" onclick="showSimilarTicketFrequencyModal();">Similar ticket frequency</a>
+                        <a href="javascript:void(0)" class="btn btn-flat btn-info" onclick="showFrequentlyAskedSubjects();">Frequently Asked Subjects</a>
                         <a class="btn btn-default btn-flat" id="delete-solutions" href="javascript:void{0}"><i class="fa fa-trash"></i></a>
                     </div>
                     <div class="box-tools pull-right col-md-4">
@@ -194,6 +196,7 @@
                 <div class="question-list col-md-12">
                 </div>
             </div>
+
             <div id="delete-modal" class="modal fade" role="dialog">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content">
@@ -215,18 +218,18 @@
     </div>
 </div>
 
-<div id="similar-ticket-frequency-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+<div id="frequently-asked-subjects-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Similar Ticket Frequency</h4>
+                <h4 class="modal-title">Frequently Asked Subjects</h4>
             </div>
             <div class="modal-body">
                 <div class="pull-right">
-                    <select id="similar-ticket-time-option-select">
+                    <select id="frequently-asked-subjects-time-option-select">
                         <option value="1">Today</option>
                         <option value="2">4 Days ago</option>
                         <option value="3" selected>This Week</option>
@@ -234,10 +237,10 @@
                         <option value="5">This Year</option>
                     </select>
                 </div>
-                <table class="table dataTable" id="similar-ticket-frequency-table">
+                <table class="table dataTable" id="frequently-asked-subjects-table">
                     <thead>
                         <tr>
-                            <th>Subject</th>
+                            <th>Tags</th>
                             <th>Frequency</th>
                             <th>Action</th>
                         </tr>
@@ -262,7 +265,7 @@
             notifyFlashMessage();
             showTreeViewModal();
             getSolutionsByActiveNode(null);
-            initSimilarTicketFrequencyTable();
+            initFrequentlyAskedSubjectsTable();
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -507,8 +510,8 @@
             data.instance.toggle_node(data.node);
         });
 
-        var initSimilarTicketFrequencyTable = function () {
-            $("#similar-ticket-frequency-table").dataTable({
+        var initFrequentlyAskedSubjectsTable = function () {
+            $("#frequently-asked-subjects-table").dataTable({
                 processing: true,
                 serverSide: true,
                 paging: true,
@@ -518,23 +521,24 @@
                 order: [[1, 'desc']],
                 lengthChange: false,
                 ajax: {
-                    url: "/KnowledgeBase/GetSimilarTicketFrequency",
+                    url: "/KnowledgeBase/GetFrequentlyAskedSubjects",
                     data: function (d) {
-                        d.timeOption = $("#similar-ticket-time-option-select").val()
+                        d.timeOption = $("#frequently-asked-subjects-time-option-select").val()
                     }
                 },
                 autoWidth: false,
                 columnDefs: [
                     {
                         "targets": 0,
-                        "width": "50%",
+                        "width": "60%",
                         "render": function (data, type, row) {
-                            return row.Subject;
+                            var content = '<p>' + row.Subject + '</p>';
+                            return content + loadKeywordToTags(row.Tags);
                         }
                     },
                     {
                         "targets": 1,
-                        "width": "40%",
+                        "width": "30%",
                         "render": function (data, type, row) {
                             var percent = parseInt(row.Count / sum * 100);
                             return '<div class="clearfix">'
@@ -550,24 +554,37 @@
                         "sortable": false,
                         "width": "10%",
                         "render": function (data, type, row) {
-                            return '<a href="/KnowledgeBase/Create?Subject=' + row.Subject + '" class="btn btn-flat btn-primary">Create Solution</a>';
+                            return '<a href="/KnowledgeBase/Create?Keyword=' + row.Tags + '" class="btn btn-flat btn-primary">Add Solution</a>';
                         }
                     }
                 ]
             });
         }
 
-        $('#similar-ticket-frequency-table').on('xhr.dt', function (e, settings, json, xhr) {
+        $('#frequently-asked-subjects-table').on('xhr.dt', function (e, settings, json, xhr) {
             sum = json.totalTicket;
         });
 
-        $("#similar-ticket-time-option-select").on("change", function () {
-            $("#similar-ticket-frequency-table").dataTable().api().ajax.reload();
+        $("#frequently-asked-subjects-time-option-select").on("change", function () {
+            $("#frequently-asked-subjects-table").dataTable().api().ajax.reload();
         });
 
-        var showSimilarTicketFrequencyModal = function () {
-            $("#similar-ticket-frequency-table").dataTable().api().ajax.reload();
-            $("#similar-ticket-frequency-modal").modal("show");
+        var showFrequentlyAskedSubjects = function () {
+            $("#frequently-asked-subjects-table").dataTable().api().ajax.reload();
+            $("#frequently-asked-subjects-modal").modal("show");
+        }
+
+        function loadKeywordToTags(keyword) {
+            var keywordTags = (keyword).split(',');
+            var content = '<ul class="keywords">';
+            for (j = 0; j < keywordTags.length; j++) {
+                if (keywordTags[j]) {
+                    var key = keywordTags[j].replace(/"/g, '');
+                    content += '<li><div class="key-tags"><a href="/FAQ/Tags/' + key + ' ">' + key + '</a></div></li>';
+                }
+            }
+            content += '</ul>';
+            return content;
         }
 
 

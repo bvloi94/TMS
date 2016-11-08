@@ -1,0 +1,333 @@
+﻿@using TMS.Utils;
+@using TMS.Models;
+@using TMS.ViewModels;
+@{
+    Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
+    ViewBag.Title = "Home";
+    var ticketList = ViewBag.TechnicianTicket;
+    var solutionList = ViewBag.SolutionList;
+}
+
+<style>
+    h3 {
+        margin-top: 0px;
+        padding-bottom: 10px;
+    }
+
+    h4 {
+        margin: 5px;
+    }
+
+    .no-pad-left {
+        padding: 15px 0px;
+    }
+
+    ul {
+        padding-left: 0px;
+    }
+
+    li {
+        list-style: none;
+        padding-left: 0px;
+    }
+
+    .table-ticket {
+        padding: 5px 0px;
+        border-bottom: solid 1px #cacaca;
+    }
+
+        .table-ticket:last-of-type {
+            border-bottom: none;
+        }
+
+    .text-white {
+        color: #ffffff !important;
+    }
+</style>
+
+<h3 class="text-purple">Welcome back, @ViewBag.LayoutName!</h3>
+
+<h4>Last 7 days</h4>
+<div class="row">
+    <div class="col-lg-3 col-sm-3 col-xs-6">
+        <div class="small-box bg-light-blue">
+            <div class="inner">
+                <h3 id="assigned-tickets-count">@ViewBag.AssignedTicketsNo</h3>
+                <p>Assigned Tickets</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-star"></i>
+            </div>
+            <a href="#assigned-tickets" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-sm-3 col-xs-6">
+        <div class="small-box bg-green">
+            <div class="inner">
+                <h3 id="solved-tickets-count">@ViewBag.SolvedTicketsNo</h3>
+                <p>Solved Tickets</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-check"></i>
+            </div>
+            <a href="#solved-tickets" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-sm-3 col-xs-6">
+        <div class="small-box bg-gray">
+            <div class="inner text-white">
+                <h3 id="closed-tickets-count">@ViewBag.ClosedTicketsNo</h3>
+                <p>Close Tickets</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-times"></i>
+            </div>
+            <a href="#closed-tickets" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <div class="col-lg-3 col-sm-3 col-xs-6">
+        <div class="small-box bg-teal">
+            <div class="inner">
+                <h3 id="new-solutions-count">@ViewBag.NewSolutionsNo</h3>
+                <p>New solutions</p>
+            </div>
+            <div class="icon">
+                <i class="fa fa-info"></i>
+            </div>
+            <a href="#new-solutions" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-4">
+
+    </div>
+    <div class="col-sm-8">
+        <div class="box box-solid" id="assigned-tickets">
+            <div class="box-header bg-light-blue">
+                <h4 style="padding-left: 5px"><i class="fa fa-tags"></i>&nbsp;&nbsp;Assigned Tickets</h4>
+            </div>
+            @if (ticketList != null)
+            {
+                if (ViewBag.SolvedTicketsNo > 0)
+                {
+                    <div class="box-body no-pad-left">
+                        @foreach (BasicTicketViewModel ticket in ticketList)
+                        {
+                            if (ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                            {
+                                <div class="col-sm-12 table-ticket">
+                                    <div class="col-lg-2 col-md-2 col-sm-3">
+                                        <span class="text-muted text-bold">#@ticket.Code</span>
+                                    </div>
+                                    <div class="col-lg-7 col-md-7 col-sm-5">
+                                        <p>
+                                            @if (ticket.Subject.Length > 60)
+                                            {
+                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-blue">
+                                                    @ticket.Subject.Substring(0, 59) ...
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-blue">
+                                                    @ticket.Subject
+                                                </a>
+                                            }
+                                        </p>
+                                        <p>
+                                            <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
+                                            Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
+                                        </p>
+                                    </div>
+                                    <div class="col-lg-3 col-md-3 col-sm-4">
+                                        <div class="text-center pull-right">
+                                            <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Date created</p>
+                                            <p class="text-blue">@ticket.CreatedTime</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="box-footer">
+                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View more >></a> </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="box-body" style="text-align: center; padding: 15px 20px">
+                        <span><i>There is no assigned ticket in last 7 days.</i></span>
+                    </div>
+                }
+            }
+        </div>
+        <div class="box box-solid" id="solved-tickets">
+            <div class="box-header bg-green">
+                <h4 style="padding-left: 5px"><i class="fa fa-tags"></i>&nbsp;&nbsp;You've solved these ticket in last 7 days</h4>
+            </div>
+            @if (ticketList != null)
+            {
+                if (ViewBag.SolvedTicketsNo > 0)
+                {
+                    <div class="box-body no-pad-left">
+                        @foreach (BasicTicketViewModel ticket in ticketList)
+                        {
+                            if (ticket.Status == ConstantUtil.TicketStatus.Solved)
+                            {
+                                <div class="col-sm-12 table-ticket">
+                                    <div class="col-lg-2 col-md-2 col-sm-3">
+                                        <span class="text-muted text-bold">#@ticket.Code</span>
+                                    </div>
+                                    <div class="col-lg-10 col-md-10 col-sm-9">
+                                        <p>
+                                            @if (ticket.Subject.Length > 60)
+                                            {
+                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-green">
+                                                    @ticket.Subject.Substring(0, 59) ...
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-green">
+                                                    @ticket.Subject
+                                                </a>
+                                            }
+                                        </p>
+                                        <p>
+                                            <i class="fa fa-check-square text-green"></i>&nbsp;&nbsp;
+                                            Solved by you in <span class="text-green text-bold">@ticket.CreatedTime</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="box-footer">
+                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View more >></a> </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="box-body" style="text-align: center; padding: 15px 20px">
+                        <span><i>There is no solved ticket in last 7 days.</i></span>
+                    </div>
+                }
+            }
+        </div>
+        <div class="box box-solid" id="closed-tickets">
+            <div class="box-header bg-gray">
+                <h4 style="padding-left: 5px"><i class="fa fa-tags"></i>&nbsp;&nbsp;Your tickets that are closed in last 7 days</h4>
+            </div>
+            @if (ticketList != null)
+            {
+                if (ViewBag.ClosedTicketsNo > 0)
+                {
+                    <div class="box-body no-pad-left">
+                        @foreach (BasicTicketViewModel ticket in ticketList)
+                        {
+                            if (ticket.Status == ConstantUtil.TicketStatus.Closed)
+                            {
+                                <div class="col-sm-12 table-ticket">
+                                    <div class="col-lg-2 col-md-2 col-sm-3">
+                                        <span class="text-muted text-bold">#@ticket.Code</span>
+                                    </div>
+                                    <div class="col-lg-10 col-md-10 col-sm-9">
+                                        <p>
+                                            @if (ticket.Subject.Length > 60)
+                                            {
+                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-muted">
+                                                    @ticket.Subject.Substring(0, 59) ...
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-muted">
+                                                    @ticket.Subject
+                                                </a>
+                                            }
+                                        </p>
+                                        <p>
+                                            <i class="fa fa-times text-muted"></i>&nbsp;&nbsp;
+                                            <span class="text-muted text-bold">@ticket.CreatedTime</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="box-footer">
+                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View more >></a> </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="box-body" style="text-align: center; padding: 15px 20px">
+                        <span><i>There is no ticket that has been closed in last 7 days.</i></span>
+                    </div>
+                }
+            }
+        </div>
+        <div class="box box-solid" id="new-solutions">
+            <div class="box-header bg-teal">
+                <h4 style="padding-left: 5px"><i class="fa fa-tags"></i>&nbsp;&nbsp;New solutions are created in last 7 days</h4>
+            </div>
+            @if (ticketList != null)
+            {
+                if (ViewBag.NewSolutionsNo > 0)
+                {
+                    <div class="box-body no-pad-left">
+                        @foreach (Solution solution in solutionList)
+                        {
+                            <div class="col-sm-12 table-ticket">
+                                <div class="col-lg-9 col-md-9 col-sm-8">
+                                    <p>
+                                        @if (solution.Subject.Length > 75)
+                                        {
+                                            <a href="/FAQ/Detail/@solution.Path" class="text-bold text-light-blue">
+                                                <i class="fa fa-check text-light-blue"></i>&nbsp;&nbsp;
+                                                @solution.Subject.Substring(0, 74) ...
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="/FAQ/Detail/@solution.Path" class="text-bold text-light-blue">
+                                                <i class="fa fa-check text-light-blue"></i>&nbsp;&nbsp;
+                                                @solution.Subject
+                                            </a>
+                                        }
+                                    </p>
+                                    <p>
+                                        <i class="fa fa-folder-open text-muted"></i>&nbsp;&nbsp; <span class="text-muted">Category: </span>
+                                        <span class="text-muted text-bold">&nbsp;@solution.Category.Name</span>
+                                    </p>
+                                </div>
+                                <div class="col-lg-3 col-md-3 col-sm-4">
+                                    <div class="pull-right text-center">
+                                        <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Last modified</p>
+                                        <span class="text-light-blue">@GeneralUtil.ShowDateTime(solution.ModifiedTime.Value)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="box-footer">
+                        <div class="col-sm-12"><a class="text-blue pull-right" href="/KnowledgeBase">View more >></a> </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="box-body" style="text-align: center; padding: 15px 20px">
+                        <span><i>There is no solution that has been created in last 7 days.</i></span>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+    </script>
+}

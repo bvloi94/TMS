@@ -31,6 +31,90 @@ namespace TMS.Utils
             return sb.ToString();
         }
 
+        public static string ConvertToFormatKeyword(string unformattedKeyword)
+        {
+            if (!string.IsNullOrWhiteSpace(unformattedKeyword))
+            {
+                string keyword = "";
+                string[] keywordArr = unformattedKeyword.Trim().ToLower().Split(',');
+                Array.Sort(keywordArr);
+                string delimeter = "";
+                foreach (string keywordItem in keywordArr)
+                {
+                    if (!string.IsNullOrWhiteSpace(keywordItem))
+                    {
+                        string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
+                        keyword += delimeter + '"' + keywordItemTmp + '"';
+                        delimeter = ",";
+                    }
+                }
+                return keyword;
+            }
+            return null;
+        }
+
+        public static string ConvertFormattedKeywordToView(string formattedKeyword)
+        {
+            if (!string.IsNullOrWhiteSpace(formattedKeyword))
+            {
+                return formattedKeyword.Replace("\"", "");
+            }
+            return "";
+        }
+
+        public static string GetTypeNameByType(int? type)
+        {
+            if (type.HasValue)
+            {
+                switch (type.Value)
+                {
+                    case ConstantUtil.TicketType.Request:
+                        return ConstantUtil.TicketTypeString.Request;
+                    case ConstantUtil.TicketType.Problem:
+                        return ConstantUtil.TicketTypeString.Problem;
+                    case ConstantUtil.TicketType.Change:
+                        return ConstantUtil.TicketTypeString.Change;
+                }
+            }
+            return "Unassigned";
+        }
+
+        public static string GetModeNameByMode(int mode)
+        {
+            switch (mode)
+            {
+                case ConstantUtil.TicketMode.Email:
+                    return ConstantUtil.TicketModeString.Email;
+                case ConstantUtil.TicketMode.PhoneCall:
+                    return ConstantUtil.TicketModeString.PhoneCall;
+                case ConstantUtil.TicketMode.WebForm:
+                default:
+                    return ConstantUtil.TicketModeString.WebForm;
+            }
+        }
+
+        public static string GetTicketHistoryTypeName(int type)
+        {
+            switch (type)
+            {
+                case ConstantUtil.TicketHistoryType.Created:
+                    return "Created";
+                case ConstantUtil.TicketHistoryType.Solved:
+                    return "Solved";
+                case ConstantUtil.TicketHistoryType.Cancelled:
+                    return "Cancelled";
+                case ConstantUtil.TicketHistoryType.Closed:
+                    return "Closed";
+                case ConstantUtil.TicketHistoryType.Merged:
+                    return "Merged";
+                case ConstantUtil.TicketHistoryType.Unapproved:
+                    return "Unapproved";
+                case ConstantUtil.TicketHistoryType.Updated:
+                default:
+                    return "Updated";
+            }
+        }
+
         public static string ShowDateTime(DateTime dateTime)
         {
             DateTime currentDateTime = DateTime.Now;
@@ -57,7 +141,7 @@ namespace TMS.Utils
                     }
                     else
                     {
-                        return hour == 1 ? hour + "An hour ago" : hour + " hours ago";
+                        return hour == 1 ? "An hour ago" : hour + " hours ago";
                     }
                 }
                 else
@@ -68,6 +152,17 @@ namespace TMS.Utils
             else
             {
                 return dateTime.ToString("MMM d, yyyy") + " at " + dateTime.ToShortTimeString();
+            }
+        }
+
+        public static string GetTicketMode(int mode)
+        {
+            switch (mode)
+            {
+                case 1: return ConstantUtil.TicketModeString.PhoneCall;
+                case 2: return ConstantUtil.TicketModeString.WebForm;
+                case 3: return ConstantUtil.TicketModeString.Email;
+                default: return "-";
             }
         }
     }

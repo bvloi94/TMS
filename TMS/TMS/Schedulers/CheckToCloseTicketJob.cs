@@ -48,7 +48,7 @@ namespace TMS.Schedulers
                         ticket.ModifiedTime = DateTime.Now;
                         try
                         {
-                            _ticketService.UpdateTicket(ticket);
+                            _ticketService.UpdateTicket(ticket, null);
                             AspNetUser requester = _userService.GetActiveUserById(ticket.RequesterID);
                             if (requester != null)
                             {
