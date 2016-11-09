@@ -138,6 +138,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                             });
                         }
                     }
+                    AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
+                    if (requester != null)
+                    {
+                        Thread thread = new Thread(() => EmailUtil.SendToRequesterWhenCreateTicket(ticket, requester));
+                        thread.Start();
+                    }
                 }
                 else
                 {
@@ -456,7 +462,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                         });
                     }
 
-                    int? status = ticket.Status;
+                    int status = ticket.Status;
                     bool cancelResult = _ticketService.CancelTicket(ticket, User.Identity.GetUserId());
                     if (cancelResult)
                     {
@@ -466,6 +472,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                             Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(ticket, technician));
                             thread.Start();
                         }
+
+                        AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
+                        if (requester != null)
+                        {
+                            Thread thread = new Thread(() => EmailUtil.SendToRequesterWhenCancelTicket(ticket, requester));
+                            thread.Start();
+                        }
+
                         return Json(new
                         {
                             success = true,

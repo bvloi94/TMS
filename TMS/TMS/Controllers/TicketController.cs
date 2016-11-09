@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using TMS.DAL;
@@ -707,7 +708,6 @@ namespace TMS.Controllers
         }
 
         [CustomAuthorize(Roles = "Helpdesk,Technician")]
-        [ValidateInput(false)]
         [HttpPost]
         public ActionResult SolveTicket(int? id, string solution, string command)
         {
@@ -737,24 +737,46 @@ namespace TMS.Controllers
 
                 ticket.ModifiedTime = DateTime.Now;
                 ticket.Solution = solution;
-                string message = "";
                 switch (command)
                 {
                     case "solveBtn":
                         ticket.SolveID = User.Identity.GetUserId();
                         ticket.SolvedDate = DateTime.Now;
-                        _ticketService.SolveTicket(ticket, User.Identity.GetUserId());
-                        message = "Ticket was solved!";
+                        bool solveResult = _ticketService.SolveTicket(ticket, User.Identity.GetUserId());
+                        if (solveResult)
+                        {
+                            AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
+                            if (requester != null)
+                            {
+                                Thread thread = new Thread(() => EmailUtil.SendToRequesterWhenSolveTicket(ticket, requester));
+                                thread.Start();
+                            }
+                            
+                            return Json(new
+                            {
+                                success = true,
+                                msg = "Ticket was solved!",
+                                userRole = userRole
+                            });
+                        }
                         break;
                     case "saveBtn":
-                        _ticketService.UpdateTicket(ticket, User.Identity.GetUserId());
-                        message = "Solution saved!";
+                        bool updateResult = _ticketService.UpdateTicket(ticket, User.Identity.GetUserId());
+                        if (updateResult)
+                        {
+                            return Json(new
+                            {
+                                success = true,
+                                msg = "Solution is saved!",
+                                userRole = userRole
+                            });
+                        }
                         break;
                 }
                 return Json(new
                 {
-                    success = true,
-                    msg = message,
+                    success = false,
+                    msg = ConstantUtil.CommonError.DBExceptionError,
                     userRole = userRole
                 });
             }

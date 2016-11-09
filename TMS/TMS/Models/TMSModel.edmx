@@ -144,6 +144,7 @@
           <Property Name="NotificationContent" Type="nvarchar" MaxLength="255" />
           <Property Name="BeNotifiedID" Type="nvarchar" MaxLength="128" />
           <Property Name="IsForHelpDesk" Type="bit" Nullable="false" />
+          <Property Name="IsRead" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Priority">
           <Key>
@@ -1041,6 +1042,7 @@
           <Property Name="NotificationContent" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="BeNotifiedID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="IsForHelpDesk" Type="Boolean" Nullable="false" />
+          <Property Name="IsRead" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_Notification_AspNetUsers" FromRole="Notification" ToRole="AspNetUser" />
           <NavigationProperty Name="Ticket" Relationship="TMSModel.FK_Notification_Ticket" FromRole="Notification" ToRole="Ticket" />
         </EntityType>
@@ -1641,6 +1643,7 @@
           <EntitySetMapping Name="Notifications">
             <EntityTypeMapping TypeName="TMSModel.Notification">
               <MappingFragment StoreEntitySet="Notification">
+                <ScalarProperty Name="IsRead" ColumnName="IsRead" />
                 <ScalarProperty Name="IsForHelpDesk" ColumnName="IsForHelpDesk" />
                 <ScalarProperty Name="BeNotifiedID" ColumnName="BeNotifiedID" />
                 <ScalarProperty Name="NotificationContent" ColumnName="NotificationContent" />

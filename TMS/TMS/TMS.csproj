@@ -535,6 +535,9 @@
     <Content Include="Content\skins\_all-skins.css" />
     <Content Include="Content\skins\_all-skins.min.css" />
     <Content Include="Content\login.css" />
+    <Content Include="EmailTemplates\CancelTicketRequesterTemplate.txt" />
+    <Content Include="EmailTemplates\CreateTicketRequesterTemplate.txt" />
+    <Content Include="EmailTemplates\SolveTicketRequesterTemplate.txt" />
     <Content Include="EmailTemplates\CloseTicketRequesterTemplate.txt" />
     <Content Include="EmailTemplates\AssignTicketTechnicianTemplate.txt" />
     <Content Include="EmailTemplates\OverdueTicketHelpdeskTemplate.txt" />

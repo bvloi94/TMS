@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using TMS.Models;
@@ -10,9 +7,6 @@ using TMS.ViewModels;
 using TMS.DAL;
 using System.IO;
 using TMS.Utils;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
 
 namespace TMS.Areas.Admin.Controllers
 {

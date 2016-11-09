@@ -20,6 +20,7 @@ namespace TMS.Models
         public string NotificationContent { get; set; }
         public string BeNotifiedID { get; set; }
         public bool IsForHelpDesk { get; set; }
+        public bool IsRead { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual Ticket Ticket { get; set; }
