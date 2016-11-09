@@ -23,6 +23,7 @@ namespace TMS.Controllers
             _ticketService = new TicketService(unitOfWork);
         }
 
+        [CustomAuthorize(Roles = "Requester")]
         public ActionResult Index()
         {
             var name = User.Identity.Name;
@@ -52,20 +53,6 @@ namespace TMS.Controllers
 
                 ViewBag.UserInfo = currentUser;
             }
-
-            return View();
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
 
             return View();
         }

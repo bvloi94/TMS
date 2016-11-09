@@ -99,7 +99,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                 if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
                 ticket.ImpactDetail = model.ImpactDetail;
                 if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
-                if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
+                if (model.PriorityId != 0)
+                {
+                    ticket.PriorityID = _ticketService.GetPriority(ticket.ImpactID, ticket.UrgencyID, model.PriorityId);
+                }
+                else
+                {
+                    ticket.PriorityID = _ticketService.GetPriority(ticket.ImpactID, ticket.UrgencyID, null);
+                }
                 if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
                 ticket.Tags = GeneralUtil.ConvertToFormatKeyword(model.Tags);
                 ticket.Note = model.Note;
@@ -137,6 +144,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                                 msg = ConstantUtil.CommonError.DBExceptionError
                             });
                         }
+                    }
+                    AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
+                    if (requester != null)
+                    {
+                        Thread thread = new Thread(() => EmailUtil.SendToRequesterWhenCreateTicket(ticket, requester));
+                        thread.Start();
                     }
                 }
                 else
@@ -326,11 +339,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
                 if (model.PriorityId != 0)
                 {
-                    ticket.PriorityID = model.PriorityId;
+                    ticket.PriorityID = _ticketService.GetPriority(ticket.ImpactID, ticket.UrgencyID, model.PriorityId);
                 }
                 else
                 {
-                    ticket.PriorityID = null;
+                    ticket.PriorityID = _ticketService.GetPriority(ticket.ImpactID, ticket.UrgencyID, null);
                 }
                 if (model.CategoryId != 0)
                 {
@@ -456,7 +469,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                         });
                     }
 
-                    int? status = ticket.Status;
+                    int status = ticket.Status;
                     bool cancelResult = _ticketService.CancelTicket(ticket, User.Identity.GetUserId());
                     if (cancelResult)
                     {
@@ -466,6 +479,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                             Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(ticket, technician));
                             thread.Start();
                         }
+
+                        AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
+                        if (requester != null)
+                        {
+                            Thread thread = new Thread(() => EmailUtil.SendToRequesterWhenCancelTicket(ticket, requester));
+                            thread.Start();
+                        }
+
                         return Json(new
                         {
                             success = true,
