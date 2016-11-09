@@ -11,11 +11,11 @@
                 <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Impact</button>
                 <table class="table dataTable" id="impact-table">
                     <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Action</th>
-                    </tr>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
@@ -38,12 +38,11 @@
                 <h4 class="modal-title">Impact</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal">
+                <div class="form-horizontal">
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="name-txt">
-                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -52,7 +51,12 @@
                             <textarea class="form-control" rows="3" placeholder="Description" id="description-txt"></textarea>
                         </div>
                     </div>
-                </form>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" id="create-btn" onclick="createImpact()">Save</button>
@@ -77,7 +81,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" id="yes-btn">Yes</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-            </div> 
+            </div>
         </div>
         <!-- /.modal-content -->
     </div>
@@ -142,57 +146,45 @@
         };
 
         var createImpact = function () {
-            var name = $("#name-txt").val();
-            if (name.trim() === "") {
-                $("#name-validation-message").html("Name is required!");
-                $("#name-validation-message").show();
-            } else if (name.trim().length < 4) {
-                $("#name-validation-message").html("Name must be longer than 4 characters!");
-                $("#name-validation-message").show();
-            } else {
-                $.ajax({
-                    url: "/Manager/ManageSC/CreateImpact",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        name: $("#name-txt").val(),
-                        description: $("#description-txt").val()
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            noty({
-                                text: data.message,
-                                layout: "topCenter",
-                                type: "success",
-                                timeout: 2000
-                            });
-                            $("#myModal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                noty({
-                                    text: data.message,
-                                    type: "error",
-                                    layout: "topRight",
-                                    timeout: 2000
-                                });
-                            } else {
-                                $("#name-validation-message").html(data.message);
-                                $("#name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
+            $.ajax({
+                url: "/Manager/ManageSC/CreateImpact",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    Name: $("#name-txt").val(),
+                    Description: $("#description-txt").val()
+                },
+                success: function (data) {
+                    if (data.success) {
                         noty({
-                            text: "Cannot connect to server!",
-                            layout: "topRight",
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#myModal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        $("#name-validation-message").html(data.message);
+                        $("#name-validation-message").show();
+                        noty({
+                            text: data.message,
                             type: "error",
+                            layout: "topRight",
                             timeout: 2000
                         });
                     }
-                });
-            }
-        };
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
+        }
 
         var getImpactDetail = function (id) {
             clearModal();
@@ -232,61 +224,46 @@
         };
 
         var editImpact = function (id) {
-            //jquery
-            var name = $("#name-txt").val();
-            if (name.trim() === "") {
-                $("#name-validation-message").html("Name is required");
-                $("#name-validation-message").show();
-            } else if (name.trim().length < 4) {
-                $("#name-validation-message").html("Name must be longer than 4 characters! ");
-                $("#name-validation-message").show();
-            } else {
-                //ajax syntax
-                $.ajax(
-                {
-                    url: "/Manager/ManageSC/EditImpact",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        id: id,
-                        name: $("#name-txt").val(),
-                        description: $("#description-txt").val()
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            noty({
-                                text: data.message,
-                                layout: "topCenter",
-                                type: "success",
-                                timeout: 2000
-                            });
-                            $("#myModal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                noty({
-                                    text: data.message,
-                                    type: "error",
-                                    layout: "topRight",
-                                    timeout: 2000
-                                });
-                            } else if (!data.error) {
-                                $("#name-validation-message").html(data.message);
-                                $("#name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
+            $.ajax({
+                url: "/Manager/ManageSC/EditImpact",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    id: id,
+                    name: $("#name-txt").val(),
+                    description: $("#description-txt").val()
+                },
+                success: function (data) {
+                    if (data.success) {
                         noty({
-                            text: "Cannot connect to server!",
-                            layout: "topRight",
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#myModal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        $("#name-validation-message").html(data.message);
+                        $("#name-validation-message").show();
+                        noty({
+                            text: data.message,
                             type: "error",
+                            layout: "topRight",
                             timeout: 2000
                         });
                     }
-                });
-            }
-        };
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
+        }
 
         var showDeleteModal = function (id) {
             $("#yes-btn").attr("onclick", "deleteImpact('" + id + "')");
