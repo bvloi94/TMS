@@ -99,7 +99,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                 if (model.ImpactId != 0) ticket.ImpactID = model.ImpactId;
                 ticket.ImpactDetail = model.ImpactDetail;
                 if (model.UrgencyId != 0) ticket.UrgencyID = model.UrgencyId;
-                if (model.PriorityId != 0) ticket.PriorityID = model.PriorityId;
+                if (model.PriorityId != 0)
+                {
+                    ticket.PriorityID = _ticketService.GetPriority(ticket.ImpactID, ticket.UrgencyID, model.PriorityId);
+                }
+                else
+                {
+                    ticket.PriorityID = _ticketService.GetPriority(ticket.ImpactID, ticket.UrgencyID, null);
+                }
                 if (model.CategoryId != 0) ticket.CategoryID = model.CategoryId;
                 ticket.Tags = GeneralUtil.ConvertToFormatKeyword(model.Tags);
                 ticket.Note = model.Note;
@@ -332,11 +339,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
                 if (model.PriorityId != 0)
                 {
-                    ticket.PriorityID = model.PriorityId;
+                    ticket.PriorityID = _ticketService.GetPriority(ticket.ImpactID, ticket.UrgencyID, model.PriorityId);
                 }
                 else
                 {
-                    ticket.PriorityID = null;
+                    ticket.PriorityID = _ticketService.GetPriority(ticket.ImpactID, ticket.UrgencyID, null);
                 }
                 if (model.CategoryId != 0)
                 {

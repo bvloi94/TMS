@@ -14,7 +14,6 @@
     {
         Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
     }
-
 }
 <style>
     .heading {
@@ -84,7 +83,7 @@
                         <div class="col-sm-2 labels">
                             <b>Solution: </b>
                         </div>
-                        <div class="col-sm-10">
+                        <div class="col-sm-10 pre-wrap">
                             @Html.DisplayFor(model => model.Solution)
                         </div>
                     </div>
@@ -150,9 +149,12 @@
                         <div class="col-sm-8">
                             @switch (Model.Mode)
                             {
-                                case 1: <span>@ConstantUtil.TicketModeString.PhoneCall </span>break;
-                                case 2: <span>@ConstantUtil.TicketModeString.WebForm </span>break;
-                                case 3: <span>@ConstantUtil.TicketModeString.Email </span>break;
+                                case ConstantUtil.TicketMode.PhoneCall: <span>@ConstantUtil.TicketModeString.PhoneCall </span>break;
+                                case ConstantUtil.TicketMode.WebForm: <span>@ConstantUtil.TicketModeString.WebForm </span>break;
+                                case ConstantUtil.TicketMode.Email: <span>@ConstantUtil.TicketModeString.Email </span>break;
+                                case ConstantUtil.TicketMode.SocialNetwork: <span>@ConstantUtil.TicketModeString.SocialNetwork </span>break;
+                                case ConstantUtil.TicketMode.Forum: <span>@ConstantUtil.TicketModeString.Forum </span>break;
+                                case ConstantUtil.TicketMode.Other: <span>@ConstantUtil.TicketModeString.Other </span>break;
                                 default: <span> - </span> break;
                             }
                         </div>
@@ -265,14 +267,38 @@
         </div>
     </div>
     <div class="col-sm-12 text-center">
-        @switch(UserRole)
+        @switch (UserRole)
         {
             case "TechnicianInCharge":
                 <a href="/Ticket/Solve/@Model.Id" class="btn btn-success btn-flat button"><i class="fa fa-check"></i>&nbsp;&nbsp;Solve</a>
                 <a href="/Technician/ManageTicket" class="btn btn-default btn-flat button"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
                 break;
             case "Helpdesk":
-                <a href="/Ticket/Solve/@Model.Id" class="btn btn-success btn-flat button"><i class="fa fa-check"></i>&nbsp;&nbsp;Solve</a>
+                <div class="btn-group dropup" id="action-div">
+                    <button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Action <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/HelpDesk/ManageTicket/EditTicket/@Model.Id">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/Ticket/History/@Model.Id">
+                                <i class="fa fa-history" aria-hidden="true"></i> Ticket History
+                            </a>
+                        </li>
+                        @if (Model.Status == "New")
+                        {
+                            <li>
+                                <a href="/Ticket/Solve/@Model.Id">
+                                    <i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
                 <a href="/Helpdesk/ManageTicket" class="btn btn-default btn-flat button"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
                 break;
             default:

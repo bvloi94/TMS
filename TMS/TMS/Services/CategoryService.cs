@@ -42,7 +42,7 @@ namespace TMS.Services
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory
                 && m.ParentID == categoryId);
         }
-        
+
         public IEnumerable<Category> GetItems(int subCategoryId)
         {
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.Item
@@ -54,44 +54,30 @@ namespace TMS.Services
             return _unitOfWork.CategoryRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).FirstOrDefault();
         }
 
-        public bool IsDuplicatedName(int? id, string name, int? parentId)
+        public bool IsDuplicatedName(int? id, string name)
         {
             if (id.HasValue)
             {
-                return _unitOfWork.CategoryRepository.Get(m => !m.ID.Equals(id.Value) && m.Name.ToLower().Equals(name.ToLower())
-                    && m.ParentID == parentId).Any();
+                return _unitOfWork.CategoryRepository.Get(m => !m.ID.Equals(id.Value)
+                && m.Name.ToLower().Equals(name.ToLower())).Any();
             }
             else
             {
-                return _unitOfWork.CategoryRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())
-                    && m.ParentID == parentId).Any();
+                return _unitOfWork.CategoryRepository.Get(m => m.Name.ToLower()
+                .Equals(name.ToLower())).Any();
             }
         }
 
-        public void AddCategory(Category category)
+        public bool AddCategory(Category category)
         {
-            try
-            {
-                _unitOfWork.CategoryRepository.Insert(category);
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.CategoryRepository.Insert(category);
+            return _unitOfWork.Commit();
         }
 
-        public void UpdateCategory(Category category)
+        public bool UpdateCategory(Category category)
         {
-            try
-            {
-                _unitOfWork.CategoryRepository.Update(category);
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.CategoryRepository.Update(category);
+            return _unitOfWork.Commit();
         }
 
         private IEnumerable<Category> GetChildrenCategories(int parentId)
@@ -108,12 +94,13 @@ namespace TMS.Services
                     return true;
                 }
             }
-            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any() 
+            return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any()
                 || _unitOfWork.SolutionRepository.Get(m => m.CategoryID == category.ID).Any();
         }
 
-        public void DeleteCategory(Category category)
+        public bool DeleteCategory(Category category)
         {
+            _unitOfWork.BeginTransaction();
             foreach (Category childCategory in GetChildrenCategories(category.ID).ToList())
             {
                 if (childCategory.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory)
@@ -126,7 +113,7 @@ namespace TMS.Services
                 _unitOfWork.CategoryRepository.Delete(childCategory);
             }
             _unitOfWork.CategoryRepository.Delete(category);
-            _unitOfWork.Commit();
+            return _unitOfWork.CommitTransaction();
         }
 
         public List<int> GetChildrenCategoriesIdList(int categoryId)

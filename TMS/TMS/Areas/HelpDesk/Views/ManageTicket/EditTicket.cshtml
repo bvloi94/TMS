@@ -81,9 +81,8 @@
                             <div class="col-md-12 col-xs-12">
                                 <label class="control-label">REQUESTER <font color="red">*</font></label>
                                 <input type="hidden" id="requesterId" name="RequesterId" value="@Model.RequesterId">
-                                <div class="requester-input-group">
-                                    <input class="form-control text-box single-line" id="requesterName" name="Requester" type="text" value="@Model.Requester" readonly>
-                                    <a class="input-group-addon" href="javascript:showRequester()"><img class="userslookup" src="~/Content/img/add-requester-icon.ico" /></a>
+                                <div class="requester-input-group" style="width: 100%">
+                                    <input class="form-control" id="requesterName" name="Requester" type="text" value="@Model.Requester" readonly>
                                 </div>
                             </div>
                         </div>
@@ -127,6 +126,8 @@
                                 <label class="control-label">MODE <font color="red">*</font></label>
                                 <select class="form-control" name="Mode">
                                     <option value="@ConstantUtil.TicketMode.PhoneCall">@ConstantUtil.TicketModeString.PhoneCall</option>
+                                    <option value="@ConstantUtil.TicketMode.WebForm">@ConstantUtil.TicketModeString.WebForm</option>
+                                    <option value="@ConstantUtil.TicketMode.Email">@ConstantUtil.TicketModeString.Email</option>
                                     <option value="@ConstantUtil.TicketMode.SocialNetwork">@ConstantUtil.TicketModeString.SocialNetwork</option>
                                     <option value="@ConstantUtil.TicketMode.Forum">@ConstantUtil.TicketModeString.Forum</option>
                                     <option value="@ConstantUtil.TicketMode.Other">@ConstantUtil.TicketModeString.Other</option>

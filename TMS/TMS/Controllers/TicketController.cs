@@ -397,7 +397,9 @@ namespace TMS.Controllers
                     AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
                     AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
 
-                    if (userRole.Name == "Technician" && currentUser.Id == ticket.TechnicianID)
+                    if (ticket.Status == ConstantUtil.TicketStatus.Assigned 
+                        && userRole.Name == "Technician" 
+                        && currentUser.Id == ticket.TechnicianID)
                     {
                         ViewBag.Role = "TechnicianInCharge";
                     }
@@ -457,7 +459,7 @@ namespace TMS.Controllers
 
                     if (string.IsNullOrWhiteSpace(solutionAttachment))
                     {
-                        descriptionAttachment = "None";
+                        solutionAttachment = "None";
                     }
 
                     model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;

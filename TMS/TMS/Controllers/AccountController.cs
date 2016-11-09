@@ -11,6 +11,7 @@ using TMS.Services;
 using TMS.ViewModels;
 using System.Web.Security;
 using TMS.Utils;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace TMS.Controllers
 {
@@ -503,21 +504,35 @@ namespace TMS.Controllers
             if (user != null)
             {
                 string password = GeneralUtil.GeneratePassword();
-                bool sendMailResult = await EmailUtil.ResendToUserWhenCreate(user.UserName, password, user.Fullname, user.Email);
-                if (sendMailResult)
+                string hashedPassword = UserManager.PasswordHasher.HashPassword(password);
+                user.PasswordHash = hashedPassword;
+                bool updatePasswordResult = _userService.EditUser(user);
+                if (updatePasswordResult)
                 {
-                    return Json(new
+                    bool sendMailResult = await EmailUtil.ResendToUserWhenCreate(user.UserName, password, user.Fullname, user.Email);
+                    if (sendMailResult)
                     {
-                        success = true,
-                        message = string.Format("Account info has been sent to {0}", user.Email)
-                    }, JsonRequestBehavior.AllowGet);
+                        return Json(new
+                        {
+                            success = true,
+                            message = string.Format("Account info has been sent to {0}", user.Email)
+                        }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Cannot send account info"
+                        }, JsonRequestBehavior.AllowGet);
+                    }
                 }
                 else
                 {
                     return Json(new
                     {
                         success = false,
-                        message = "Cannot send account info"
+                        message = ConstantUtil.CommonError.DBExceptionError
                     }, JsonRequestBehavior.AllowGet);
                 }
             }

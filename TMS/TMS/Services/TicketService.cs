@@ -896,6 +896,27 @@ namespace TMS.Services
             return (ticket == null) ? "" : ticket.Subject;
         }
 
+        public int? GetPriority(int? impactId, int? urgencyId, int? priorityId)
+        {
+            if (priorityId.HasValue)
+            {
+                return priorityId;
+            }
+            else
+            {
+                if (impactId.HasValue && urgencyId.HasValue)
+                {
+                    PriorityMatrixItem item = _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactId.Value
+                        && m.UrgencyID == urgencyId.Value).FirstOrDefault();
+                    if (item != null)
+                    {
+                        return item.PriorityID;
+                    }
+                }
+            }
+            return null;
+        }
+
         public TicketHistory GetUpdatedTicketHistory(Ticket oldTicket, Ticket newTicket, string actId)
         {
             TicketHistory result = new TicketHistory();
