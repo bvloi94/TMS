@@ -404,6 +404,7 @@
     <Content Include="Content\css\graph.css" />
     <Content Include="Content\css\select2.min.css" />
     <Content Include="Content\custom-css\admin.css" />
+    <Content Include="Content\custom-css\profile.css" />
     <Content Include="Content\custom-css\ticket-detail.css" />
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />

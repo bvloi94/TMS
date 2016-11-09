@@ -206,6 +206,7 @@ namespace TMS.Controllers
             AspNetUser technician = _userService.GetUserById(id);
             if (technician != null)
             {
+                ViewBag.UserRole = technician.AspNetRoles.FirstOrDefault().Name;
                 ViewBag.LayoutName = technician.Fullname;
                 ViewBag.LayoutAvatarURL = technician.AvatarURL;
             }

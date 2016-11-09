@@ -66,6 +66,13 @@ namespace TMS.Areas.Technician.Controllers
             return View();
         }
 
+        [HttpGet]
+        public ActionResult GetNotifications ()
+        {
+
+            return Json(new { });
+        }
+
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             string id = User.Identity.GetUserId();

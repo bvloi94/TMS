@@ -27,24 +27,31 @@ namespace TMS.Controllers
         {
             var name = User.Identity.Name;
             AspNetUser currentUser = _userService.GetUserById(User.Identity.GetUserId());
-            IEnumerable<Ticket> filteredListItems = _ticketService.GetRequesterTickets(User.Identity.GetUserId())
-                .Where(p => p.Status == ConstantUtil.TicketStatus.Solved).ToArray().OrderByDescending(m => m.SolvedDate);
-            if (filteredListItems.Count() > 0)
+            if (currentUser == null)
             {
-                IEnumerable<BasicTicketViewModel> ticketList = filteredListItems.Select(m => new BasicTicketViewModel
-                {
-                    Code = m.Code,
-                    ID = m.ID,
-                    Subject = m.Subject,
-                    Category = m.Category == null ? "-" : m.Category.Name,
-                    SolvedBy = m.SolveID == null ? "-" : _userService.GetUserById(m.SolveID).Fullname,
-                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
-                    SolvedTime = m.SolvedDate == null ? " - " : GeneralUtil.ShowDateTime(m.SolvedDate.Value) 
-                }).ToArray();
-                ViewBag.SolvedTicket = ticketList;
+                return RedirectToAction("Login", "Account");
             }
+            else
+            {
+                IEnumerable<Ticket> filteredListItems = _ticketService.GetRequesterTickets(User.Identity.GetUserId())
+                    .Where(p => p.Status == ConstantUtil.TicketStatus.Solved).ToArray().OrderByDescending(m => m.SolvedDate);
+                if (filteredListItems.Count() > 0)
+                {
+                    IEnumerable<BasicTicketViewModel> ticketList = filteredListItems.Select(m => new BasicTicketViewModel
+                    {
+                        Code = m.Code,
+                        ID = m.ID,
+                        Subject = m.Subject,
+                        Category = m.Category == null ? "-" : m.Category.Name,
+                        SolvedBy = m.SolveID == null ? "-" : _userService.GetUserById(m.SolveID).Fullname,
+                        CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                        SolvedTime = m.SolvedDate == null ? " - " : GeneralUtil.ShowDateTime(m.SolvedDate.Value)
+                    }).ToArray();
+                    ViewBag.SolvedTicket = ticketList;
+                }
 
-            ViewBag.UserInfo = currentUser;
+                ViewBag.UserInfo = currentUser;
+            }
 
             return View();
         }

@@ -78,28 +78,28 @@ namespace TMS.Controllers
                     ViewBag.Item1 = "System Config";
                     ViewBag.ItemLink2 = "/Admin/ManageUser/Admin";
                     ViewBag.Item2 = "Manage User";
-                    ViewBag.Profile = "#"; break;
+                    ViewBag.Profile = "/Admin/Profile"; break;
                 case "Technician":
                     ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/KnowledgeBase/Index";
                     ViewBag.Item1 = "Knowledge Base";
                     ViewBag.ItemLink2 = "/Technician/ManageTicket";
                     ViewBag.Item2 = "Ticket";
-                    ViewBag.Profile = "#"; break;
+                    ViewBag.Profile = "/Technician/Profile"; break;
                 case "Helpdesk":
                     ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/KnowledgeBase/Index";
                     ViewBag.Item1 = "Knowledge Base";
                     ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
                     ViewBag.Item2 = "Ticket";
-                    ViewBag.Profile = "#"; break;
+                    ViewBag.Profile = "/Helpdesk/Profile"; break;
                 case "Requester":
                     ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/FAQ/Index";
                     ViewBag.Item1 = "FAQ";
                     ViewBag.ItemLink2 = "/Ticket/Index";
                     ViewBag.Item2 = "Ticket";
-                    ViewBag.Profile = "#";
+                    ViewBag.Profile = "/Profile";
                     break;
                 default:
                     ViewBag.Home = "/FAQ/Index";
