@@ -10,4 +10,10 @@ namespace TMS.ViewModels
         public int Id { get; set; }
         public string Name { get; set; }
     }
+
+    public class ConditionViewModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }

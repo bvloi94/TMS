@@ -101,6 +101,19 @@ namespace TMS.Utils
             public const string Mode = "Mode";
         }
 
+        public class BusinessRuleCriteria
+        {
+            public const int Subject = 1;
+            public const int Description = 2;
+            public const int RequesterName = 3;
+            public const int Department = 4;
+            public const int Priority = 5;
+            public const int Impact = 6;
+            public const int Urgency = 7;
+            public const int Category = 8;
+            public const int Mode = 9;
+        }
+
         public class ConditionOfBusinessRuleCondition
         {
             public const int Is = 1;
