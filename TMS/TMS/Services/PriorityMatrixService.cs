@@ -29,32 +29,25 @@ namespace TMS.Services
             return _unitOfWork.PriorityMatrixItemRepository.Get();
         }
 
-        public void ChangePriorityMatrixItem(int impactID, int urgencyID, int? priorityID)
+        public bool ChangePriorityMatrixItem(int impactID, int urgencyID, int? priorityID)
         {
-            try
+            PriorityMatrixItem entity = _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactID && m.UrgencyID == urgencyID).FirstOrDefault();
+            if (entity != null)
             {
-                PriorityMatrixItem entity = _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactID && m.UrgencyID == urgencyID).FirstOrDefault();
-                if (entity != null)
-                {
-                    entity.PriorityID = priorityID;
-                    _unitOfWork.PriorityMatrixItemRepository.Update(entity);
-                }
-                else
-                {
-                    entity = new PriorityMatrixItem
-                    {
-                        ImpactID = impactID,
-                        UrgencyID = urgencyID,
-                        PriorityID = priorityID
-                    };
-                    _unitOfWork.PriorityMatrixItemRepository.Insert(entity);
-                }
-                _unitOfWork.Commit();
+                entity.PriorityID = priorityID;
+                _unitOfWork.PriorityMatrixItemRepository.Update(entity);
             }
-            catch
+            else
             {
-                throw;
+                entity = new PriorityMatrixItem
+                {
+                    ImpactID = impactID,
+                    UrgencyID = urgencyID,
+                    PriorityID = priorityID
+                };
+                _unitOfWork.PriorityMatrixItemRepository.Insert(entity);
             }
+            return _unitOfWork.Commit();
         }
     }
 }

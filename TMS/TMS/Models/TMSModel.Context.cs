@@ -36,6 +36,7 @@ namespace TMS.Models
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Impact> Impacts { get; set; }
+        public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<Priority> Priorities { get; set; }
         public virtual DbSet<PriorityMatrixItem> PriorityMatrixItems { get; set; }
         public virtual DbSet<Solution> Solutions { get; set; }

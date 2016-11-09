@@ -103,6 +103,11 @@ function initTicketTable() {
                     + '<i class="fa fa-history" aria-hidden="true"></i> Ticket History'
                     + '</a>'
                     + '</li>';
+                    var detail = '<li>'
+                    + '<a href="/Ticket/TicketDetail/' + row.Id + '">'
+                    + '<i class="fa fa-info-circle" aria-hidden="true"></i> Ticket Detail'
+                    + '</a>'
+                    + '</li>';
                     switch (row.Status) {
                         case "New":
                             links += '<li>'
@@ -111,6 +116,7 @@ function initTicketTable() {
                        + '</a>'
                        + '</li>'
                        + history
+                       + detail
                        + '<li>'
                        + '<a href="/Ticket/Solve/' + row.Id + '">'
                        + '<i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket'
@@ -129,6 +135,7 @@ function initTicketTable() {
                        + '</a>'
                        + '</li>'
                        + history
+                       + detail
                        + '<li>'
                        + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" data-ticket-id="' + row.Id + '">'
                        + '<i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket'
@@ -136,18 +143,19 @@ function initTicketTable() {
                        + '</li>';
                             break;
                         case "Solved":
-                            links += history;
+                            links += history + detail;
                             break;
                         case "Unapproved":
                             links += history
+                        + detail
                         + '<li><a href="javascript:void(0)"><strong>Reopen Ticket</strong></a></li>'
                         + '<li>'
-                        + '<a href="javascript:showCloseModal(this)" data-ticket-id="' + row.Id + '">'
+                        + '<a href="javascript:void(0)" onclick="showCloseModal(this)" data-ticket-id="' + row.Id + '">'
                         + '<i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket'
                         + '</a>'
                         + '</li>'
                         + '<li>'
-                        + '<a href="javascript:showReassignModal(this)" data-ticket-id="' + row.Id + '">'
+                        + '<a href="javascript:void(0)" onclick="showReassignModal(this)" data-ticket-id="' + row.Id + '">'
                         + '<i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Reassign'
                         + '</a>'
                         + '</li>'
@@ -158,10 +166,10 @@ function initTicketTable() {
                         + '</li>';
                             break;
                         case "Closed":
-                            links += history;
+                            links += history + detail;
                             break;
                         case "Cancelled":
-                            links += history;
+                            links += history + detail;
                             break;
                     }
                     var action = '<div class="btn-group">'
@@ -240,16 +248,6 @@ function initDropdownControl() {
     });
 }
 
-//$(document).on('click', '#see-more', function (event) {
-//    $(this).parent().trunk8('revert').append('<br/><a id="see-less" href="javascript:void{0}">See Less</a>');
-//    return false;
-//});
-
-//$(document).on('click', '#see-less', function (event) {
-//    $(this).parent().trunk8();
-//    return false;
-//});
-
 function openTicketDetailModal(ticketId) {
     $.ajax({
         url: '/Ticket/GetTicketDetail',
@@ -282,6 +280,7 @@ function openTicketDetailModal(ticketId) {
             $("#action-solve-btn").attr("href", "/Ticket/Solve/" + data.id);
             $("#action-edit-btn").attr("href", "/HelpDesk/ManageTicket/EditTicket/" + data.id);
             $("#action-history-btn").attr("href", "/Ticket/History/" + data.id);
+            $("#action-detail-btn").attr("href", "/Ticket/TicketDetail/" + data.id);
 
             if (!data.solution || data.solution == "-") {
                 $('#ticket-solution').text("This ticket is not solved yet.");
@@ -309,31 +308,31 @@ function openTicketDetailModal(ticketId) {
                 $('#action-solve-btn').show();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").show();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 2) {
                 $('#ticket-status').html(getStatusLabel('Assigned'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").show();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 3) {
                 $('#ticket-status').html(getStatusLabel('Solved'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 4) {
                 $('#ticket-status').html(getStatusLabel('Unapproved'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").show();
+                $(".reopen-li").show();
             } else if (data.status == 5) {
                 $('#ticket-status').html(getStatusLabel('Cancelled'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 6) {
                 $('#ticket-status').html(getStatusLabel('Closed'));
                 $('#action-solve-btn').hide();
@@ -358,7 +357,7 @@ function openTicketDetailModal(ticketId) {
             $('#ticket-solution, #ticket-description').trunk8({
                 tooltip: false,
                 lines: 3,
-                fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
+                fill: '&hellip; <a id="see-more" href="/Ticket/TicketDetail/' + data.id + '">See More</a>'
             });
         },
         failure: function (data) {

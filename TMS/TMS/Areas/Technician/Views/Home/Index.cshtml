@@ -110,7 +110,7 @@
             </div>
             @if (ticketList != null)
             {
-                if (ViewBag.SolvedTicketsNo > 0)
+                if (ViewBag.AssignedTicketsNo > 0)
                 {
                     <div class="box-body no-pad-left">
                         @foreach (BasicTicketViewModel ticket in ticketList)
@@ -152,7 +152,7 @@
                         }
                     </div>
                     <div class="box-footer">
-                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View more >></a> </div>
+                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View Ticket List</a> </div>
                     </div>
                 }
                 else
@@ -205,7 +205,7 @@
                         }
                     </div>
                     <div class="box-footer">
-                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View more >></a> </div>
+                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View Ticket List</a> </div>
                     </div>
                 }
                 else
@@ -258,7 +258,7 @@
                         }
                     </div>
                     <div class="box-footer">
-                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View more >></a> </div>
+                        <div class="col-sm-12"><a class="text-blue pull-right" href="/Technician/ManageTicket">View Ticket List</a> </div>
                     </div>
                 }
                 else
@@ -313,7 +313,7 @@
                         }
                     </div>
                     <div class="box-footer">
-                        <div class="col-sm-12"><a class="text-blue pull-right" href="/KnowledgeBase">View more >></a> </div>
+                        <div class="col-sm-12"><a class="text-blue pull-right" href="/KnowledgeBase">View Solution List</a> </div>
                     </div>
                 }
                 else

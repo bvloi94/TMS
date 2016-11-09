@@ -179,8 +179,8 @@
     <!-- ./wrapper -->
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/app")
-    @*@Scripts.Render("~/bundles/jqueryval")*@
     @RenderSection("scripts", required: false)
     <script>
         $(document).ready(function () {
@@ -189,10 +189,10 @@
                 format: 'd/m/Y'
             });
             notifyFlashMessage();
-            //$.validator.addMethod("date", function (value, element) {
-            //    Globalize.culture("en-GB");
-            //    return this.optional(element) || Globalize.parseDate(value) !== null;
-            //});
+            $.validator.addMethod("date", function (value, element) {
+                Globalize.culture("en-GB");
+                return this.optional(element) || Globalize.parseDate(value) !== null;
+            });
         });
     </script>
 </body>

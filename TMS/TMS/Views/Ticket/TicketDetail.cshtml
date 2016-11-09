@@ -1,59 +1,31 @@
 ﻿@model TMS.ViewModels.TicketViewModel
+@using TMS.Utils
 @{
     Layout = "~/Views/Shared/_TopLayout.cshtml";
-    ViewBag.Title = "Ticket #" + @Model.Code;
+    ViewBag.Title = @Model.Code + " - Ticket Detail ";
+    string UserRole = ViewBag.Role;
 }
 @{
-    if (ViewBag.Role == "Technician")
-    {
-        Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
-    }
-    else
+    if (ViewBag.Role == "Helpdesk")
     {
         Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
     }
-
+    else
+    {
+        Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
+    }
 }
 <style>
-    .nav-stacked > li {
-        border-bottom: 1px solid #f4f4f4;
-        margin: 0;
-    }
-
-    .editable {
-        display: block;
-        padding: 9.5px;
-        margin: 0 0 10px;
-        font-size: 14px;
-        line-height: 1.42857143;
-        word-wrap: break-word;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-
-    .solution-subject {
-        cursor: pointer;
-    }
-
-    .solution-content {
-        white-space: pre-wrap;
-    }
-
-    .timeline > li > .timeline-item {
-        margin-left: 0px;
-        margin-right: 0px;
-    }
-
-    h4, h5 {
-        color: #345aaa;
+    .heading {
+        padding: 5px 40px;
         font-weight: bold;
+        font-size: 18px;
     }
 
-    .header-content {
-        border-bottom: 1px solid #a6c6e9;
-        padding: 20px 0px 0px 30px;
-        margin-bottom: 5px;
-    }
+        .heading a:hover {
+            cursor: pointer;
+            background-color: transparent !important;
+        }
 
     .row-content {
         padding: 5px 0px;
@@ -63,35 +35,84 @@
         line-height: 20px;
     }
 
-    input, textarea {
-        max-width: 800px;
-    }
-
     .pre-wrap {
         white-space: pre-wrap;
     }
 
     .button {
-        text-align: center;
-    }
-
-    .border-button {
-        border-right: 1px solid #939393;
-    }
-
-    .row-button {
-        text-align: center;
-        margin-left: 15px;
-        width: 70px;
+        margin: 10px 5px;
+        width: 80px;
     }
 </style>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12" style="padding: 10px 55px; margin-top: 0px">
+        <h3>#@Model.Code - <span class="text-purple">@Model.Subject</span></h3>
+    </div>
+    <div class="col-sm-12">
         <div class="box box-solid">
-            <div class="box-body ticket-contents">
-                <div class="col-sm-12 header-content">
-                    <h4><i class="fa fa-info-circle"></i>  Detail</h4>
+            <div class="box-header bg-gray with-border heading">
+                <a class="text-uppercase" data-widget="collapse">Main Information</a>
+            </div>
+            <div class="box-body" style="display: block;">
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Subject: </b>
+                        </div>
+                        <div class="col-sm-10" id="Subject">@Html.DisplayFor(model => model.Subject)</div>
+                    </div>
                 </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Description: </b>
+                        </div>
+                        <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.Description)</div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Attachment: </b>
+                        </div>
+                        <div class="col-sm-10 pre-wrap">@Html.Raw(Model.DescriptionAttachmentsURL)</div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Solution: </b>
+                        </div>
+                        <div class="col-sm-10 pre-wrap">
+                            @Html.DisplayFor(model => model.Solution)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Attachment: </b>
+                        </div>
+                        <div class="col-sm-10 pre-wrap">@Html.Raw(Model.SolutionAttachmentsURL)</div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Solved by:  </b>
+                        </div>
+                        <div class="col-sm-10">@Html.DisplayFor(model => model.SolvedBy)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="box box-solid">
+            <div class="box-header bg-gray with-border heading">
+                <a class="text-uppercase" data-widget="collapse">Detail</a>
+            </div>
+            <div class="box-body" style="display: block;">
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-6 col-content ">
                         <div class="col-sm-4 labels">
@@ -103,7 +124,15 @@
                         <div class="col-sm-4 labels">
                             <b>Type: </b>
                         </div>
-                        <div class="col-sm-8">@Html.DisplayFor(model => model.Type)</div>
+                        <div class="col-sm-8">
+                            @switch (Model.Type)
+                            {
+                                case 1: <span>@ConstantUtil.TicketTypeString.Request </span>break;
+                                case 2: <span>@ConstantUtil.TicketTypeString.Problem </span>break;
+                                case 3: <span>@ConstantUtil.TicketTypeString.Change </span>break;
+                                default: <span> - </span> break;
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -117,7 +146,18 @@
                         <div class="col-sm-4 labels">
                             <b>Mode: </b>
                         </div>
-                        <div class="col-sm-8">@Html.DisplayFor(model => model.Mode)</div>
+                        <div class="col-sm-8">
+                            @switch (Model.Mode)
+                            {
+                                case ConstantUtil.TicketMode.PhoneCall: <span>@ConstantUtil.TicketModeString.PhoneCall </span>break;
+                                case ConstantUtil.TicketMode.WebForm: <span>@ConstantUtil.TicketModeString.WebForm </span>break;
+                                case ConstantUtil.TicketMode.Email: <span>@ConstantUtil.TicketModeString.Email </span>break;
+                                case ConstantUtil.TicketMode.SocialNetwork: <span>@ConstantUtil.TicketModeString.SocialNetwork </span>break;
+                                case ConstantUtil.TicketMode.Forum: <span>@ConstantUtil.TicketModeString.Forum </span>break;
+                                case ConstantUtil.TicketMode.Other: <span>@ConstantUtil.TicketModeString.Other </span>break;
+                                default: <span> - </span> break;
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -131,7 +171,17 @@
                         <div class="col-sm-4 labels">
                             <b>Status:  </b>
                         </div>
-                        <div class="col-sm-8">@Html.DisplayFor(model => model.Status)</div>
+                        <div class="col-sm-8">
+                            @switch (Model.Status)
+                            {
+                                case "New": <label class="label label-info">New</label> break;
+                                case "Assigned": <label class="label label-warning">Assigned</label> break;
+                                case "Solved": <label class="label label-success">Solved</label> break;
+                                case "Unapproved": <label class="label label-danger">Unapproved</label> break;
+                                case "Cancelled": <label class="label label-default">Cancelled</label> break;
+                                case "Closed": <label class="label label-default">Closed</label> break;
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -162,21 +212,27 @@
                         <div class="col-sm-8">@Html.DisplayFor(model => model.Priority)</div>
                     </div>
                 </div>
-                <div class="col-sm-12 header-content">
-                    <h4><i class="fa fa-clock-o"></i>  Date and time</h4>
-                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="box box-solid">
+            <div class="box-header bg-gray with-border heading">
+                <a class="text-uppercase" data-widget="collapse">Date & Time</a>
+            </div>
+            <div class="box-body" style="display: block;">
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-6">
                         <div class="col-sm-4 labels">
                             <b>Created date: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.CreatedTime)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.CreatedTimeString)</div>
                     </div>
                     <div class="col-sm-6">
                         <div class="col-sm-4 labels">
                             <b>Last modified date: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ModifiedTime)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ModifiedTimeString)</div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -184,13 +240,13 @@
                         <div class="col-sm-4 labels">
                             <b>Scheduled start time: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleStartDate)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleStartDateString)</div>
                     </div>
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
                             <b>Schedule end time: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleEndDate)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleEndDateString)</div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -198,69 +254,56 @@
                         <div class="col-sm-4 labels">
                             <b>Actual start time: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualStartDate)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualStartDateString)</div>
                     </div>
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
                             <b>Actual end time: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualEndDate)</div>
-                    </div>
-                </div>
-                <div class="col-sm-12 header-content">
-                    <h4><i class="fa fa-file-text"></i>  Information</h4>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Subject: </b>
-                        </div>
-                        <div class="col-sm-10" id="Subject">@Html.DisplayFor(model => model.Subject)</div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Description: </b>
-                        </div>
-                        <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.Description)</div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Attachment: </b>
-                        </div>
-                        <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.DescriptionAttachments)</div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Solved by:  </b>
-                        </div>
-                        <div class="col-sm-10">@Html.DisplayFor(model => model.SolvedBy)</div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Solution: </b>
-                        </div>
-                        <div class="col-sm-10">
-                            @Html.DisplayFor(model => model.Solution)
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Attachment: </b>
-                        </div>
-                        <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.SolutionAttachments)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualEndDateString)</div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="col-sm-12 text-center">
+        @switch (UserRole)
+        {
+            case "TechnicianInCharge":
+                <a href="/Ticket/Solve/@Model.Id" class="btn btn-success btn-flat button"><i class="fa fa-check"></i>&nbsp;&nbsp;Solve</a>
+                <a href="/Technician/ManageTicket" class="btn btn-default btn-flat button"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
+                break;
+            case "Helpdesk":
+                <div class="btn-group dropup" id="action-div">
+                    <button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Action <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/HelpDesk/ManageTicket/EditTicket/@Model.Id">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/Ticket/History/@Model.Id">
+                                <i class="fa fa-history" aria-hidden="true"></i> Ticket History
+                            </a>
+                        </li>
+                        @if (Model.Status == "New")
+                        {
+                            <li>
+                                <a href="/Ticket/Solve/@Model.Id">
+                                    <i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                <a href="/Helpdesk/ManageTicket" class="btn btn-default btn-flat button"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
+                break;
+            default:
+                <a href="/Technician/Home" class="btn btn-default btn-flat button"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
+                break;
+        }
     </div>
 </div>

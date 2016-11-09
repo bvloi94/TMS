@@ -1,10 +1,20 @@
 ﻿using System;
 using System.Text;
+using TMS.DAL;
+using TMS.Services;
 
 namespace TMS.Utils
 {
     public class GeneralUtil
     {
+        UnitOfWork _unitOfWork = new UnitOfWork();
+        TicketAttachmentService _ticketAttachmentService;
+
+        public GeneralUtil()
+        {
+            _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
+        }
+
         public static string GeneratePassword()
         {
             const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
@@ -88,9 +98,15 @@ namespace TMS.Utils
                 case ConstantUtil.TicketMode.PhoneCall:
                     return ConstantUtil.TicketModeString.PhoneCall;
                 case ConstantUtil.TicketMode.WebForm:
-                default:
                     return ConstantUtil.TicketModeString.WebForm;
+                case ConstantUtil.TicketMode.SocialNetwork:
+                    return ConstantUtil.TicketModeString.SocialNetwork;
+                case ConstantUtil.TicketMode.Forum:
+                    return ConstantUtil.TicketModeString.Forum;
+                case ConstantUtil.TicketMode.Other:
+                    return ConstantUtil.TicketModeString.Other;
             }
+            return "Unassigned";
         }
 
         public static string GetTicketHistoryTypeName(int type)
@@ -110,9 +126,9 @@ namespace TMS.Utils
                 case ConstantUtil.TicketHistoryType.Unapproved:
                     return "Unapproved";
                 case ConstantUtil.TicketHistoryType.Updated:
-                default:
                     return "Updated";
             }
+            return "Unassigned";
         }
 
         public static string ShowDateTime(DateTime dateTime)
@@ -165,5 +181,6 @@ namespace TMS.Utils
                 default: return "-";
             }
         }
+
     }
 }

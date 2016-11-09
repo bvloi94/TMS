@@ -127,6 +127,60 @@ namespace TMS.Utils
             }
         }
 
+        public static async void SendToRequesterWhenSolveTicket(Ticket ticket, AspNetUser requester)
+        {
+            string emailSubject = "[TMS] Solved Ticket Notification";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/SolveTicketRequesterTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", requester.Fullname);
+            emailMessage = emailMessage.Replace("$code", ticket.Code);
+            emailMessage = emailMessage.Replace("$subject", ticket.Subject);
+            emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
+            try
+            {
+                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send solved ticket notification email to {0} unsuccessfully!", requester.Fullname));
+            }
+        }
+
+        public static async void SendToRequesterWhenCreateTicket(Ticket ticket, AspNetUser requester)
+        {
+            string emailSubject = "[TMS] Created Ticket Notification";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CreateTicketRequesterTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", requester.Fullname);
+            emailMessage = emailMessage.Replace("$code", ticket.Code);
+            emailMessage = emailMessage.Replace("$subject", ticket.Subject);
+            emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
+            try
+            {
+                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send created ticket notification email to {0} unsuccessfully!", requester.Fullname));
+            }
+        }
+
+        public static async void SendToRequesterWhenCancelTicket(Ticket ticket, AspNetUser requester)
+        {
+            string emailSubject = "[TMS] Cancelled Ticket Notification";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/CancelTicketRequesterTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", requester.Fullname);
+            emailMessage = emailMessage.Replace("$code", ticket.Code);
+            emailMessage = emailMessage.Replace("$subject", ticket.Subject);
+            emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
+            try
+            {
+                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send cancelled ticket notification email to {0} unsuccessfully!", requester.Fullname));
+            }
+        }
+
         private static async Task SendEmail(string toEmailAddress, string emailSubject, string emailMessage)
         {
             try
@@ -207,6 +261,6 @@ namespace TMS.Utils
             }
             return mailList;
         }
-
+        
     }
 }

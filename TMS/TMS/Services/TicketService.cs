@@ -411,12 +411,58 @@ namespace TMS.Services
             return recentTickets;
         }
 
+        //send notification to requester
+        //send notification to helpdesk if requester create ticket 
+        //send notification to technician if ticket is assigned when creating
         public bool AddTicket(Ticket ticket)
         {
             string ticketCode = GenerateTicketCode();
             if (!string.IsNullOrWhiteSpace(ticketCode))
             {
                 ticket.Code = ticketCode;
+
+                //send notification to requester
+                Notification requesterNoti = new Notification();
+                requesterNoti.IsForHelpDesk = false;
+                requesterNoti.BeNotifiedID = ticket.RequesterID;
+                requesterNoti.NotificationContent = string.Format("Ticket #{0} was created successfully.", ticket.Code);
+                requesterNoti.NotifiedTime = DateTime.Now;
+                ticket.Notifications.Add(requesterNoti);
+
+                //send notification to technician if ticket is assigned when creating
+                if (ticket.Status == ConstantUtil.TicketStatus.Assigned && ticket.AssignedByID != null)
+                {
+                    AspNetUser ticketAssigner = _unitOfWork.AspNetUserRepository.GetByID(ticket.AssignedByID);
+                    if (ticketAssigner != null)
+                    {
+                        Notification technicianNoti = new Notification();
+                        technicianNoti.IsForHelpDesk = false;
+                        technicianNoti.BeNotifiedID = ticket.TechnicianID;
+                        technicianNoti.NotificationContent = string.Format("Ticket #{0} was assigned by {1}.", ticket.Code, ticketAssigner.Fullname);
+                        technicianNoti.NotifiedTime = DateTime.Now;
+                        ticket.Notifications.Add(technicianNoti);
+                    }
+                }
+
+                //send notification to helpdesk if requester create ticket 
+                if (ticket.CreatedID != null)
+                {
+                    AspNetUser ticketCreator = _unitOfWork.AspNetUserRepository.GetByID(ticket.CreatedID);
+                    if (ticketCreator != null)
+                    {
+                        string role = ticketCreator.AspNetRoles.FirstOrDefault().Name.ToLower();
+                        if (role.Equals("requester"))
+                        {
+                            Notification helpdeskNoti = new Notification();
+                            helpdeskNoti.IsForHelpDesk = true;
+                            helpdeskNoti.NotificationContent = string.Format("Ticket #{0} was created by {1}.", ticket.Code, ticketCreator.Fullname);
+                            helpdeskNoti.NotifiedTime = DateTime.Now;
+                            ticket.Notifications.Add(helpdeskNoti);
+                        }
+                    }
+                }
+                //end notification
+
                 //start ticket history
                 TicketHistory ticketHistory = new TicketHistory();
                 ticketHistory.ActID = ticket.CreatedID;
@@ -434,12 +480,73 @@ namespace TMS.Services
             }
         }
 
+        //send notification to technician when assigned
+        //send notification to technician when unassigned
         public bool UpdateTicket(Ticket ticket, string actId)
         {
             Ticket oldTicket = _unitOfWork.TicketRepository.DbSet.AsNoTracking().Where(m => m.ID == ticket.ID).FirstOrDefault();
             if (oldTicket != null)
             {
                 _unitOfWork.BeginTransaction();
+
+                //send notification to technician when assigned
+                if (oldTicket.Status == ConstantUtil.TicketStatus.New && ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                {
+                    AspNetUser ticketAssigner = _unitOfWork.AspNetUserRepository.GetByID(ticket.AssignedByID);
+                    if (ticketAssigner != null)
+                    {
+                        Notification technicianNoti = new Notification();
+                        technicianNoti.IsForHelpDesk = false;
+                        technicianNoti.TicketID = ticket.ID;
+                        technicianNoti.BeNotifiedID = ticket.TechnicianID;
+                        technicianNoti.NotificationContent = string.Format("Ticket #{0} was assigned by {1}", ticket.Code, ticketAssigner.Fullname);
+                        technicianNoti.NotifiedTime = DateTime.Now;
+                        _unitOfWork.NotificationRepository.Insert(technicianNoti);
+                    }
+                }
+                //send notification to technician when unassigned
+                else if (oldTicket.Status == ConstantUtil.TicketStatus.Assigned && ticket.Status == ConstantUtil.TicketStatus.New)
+                {
+                    AspNetUser ticketUnassigner = _unitOfWork.AspNetUserRepository.GetByID(actId);
+                    if (ticketUnassigner != null)
+                    {
+                        Notification technicianNoti = new Notification();
+                        technicianNoti.IsForHelpDesk = false;
+                        technicianNoti.TicketID = ticket.ID;
+                        technicianNoti.BeNotifiedID = oldTicket.TechnicianID;
+                        technicianNoti.NotificationContent = string.Format("Ticket #{0} was unassigned by {1}", ticket.Code, ticketUnassigner.Fullname);
+                        technicianNoti.NotifiedTime = DateTime.Now;
+                        _unitOfWork.NotificationRepository.Insert(technicianNoti);
+                    }
+                }
+                else if (oldTicket.Status == ConstantUtil.TicketStatus.Assigned && ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                {
+                    if (oldTicket.TechnicianID != ticket.TechnicianID)
+                    {
+                        AspNetUser ticketUnassigner = _unitOfWork.AspNetUserRepository.GetByID(actId);
+                        if (ticketUnassigner != null)
+                        {
+                            //send notification to old technician
+                            Notification oldTechnicianNoti = new Notification();
+                            oldTechnicianNoti.IsForHelpDesk = false;
+                            oldTechnicianNoti.TicketID = ticket.ID;
+                            oldTechnicianNoti.BeNotifiedID = oldTicket.TechnicianID;
+                            oldTechnicianNoti.NotificationContent = string.Format("Ticket #{0} was unassigned by {1}.", ticket.Code, ticketUnassigner.Fullname);
+                            oldTechnicianNoti.NotifiedTime = DateTime.Now;
+                            _unitOfWork.NotificationRepository.Insert(oldTechnicianNoti);
+                            //send notification to new technician
+                            Notification newTechnicianNoti = new Notification();
+                            newTechnicianNoti.IsForHelpDesk = false;
+                            newTechnicianNoti.TicketID = ticket.ID;
+                            newTechnicianNoti.BeNotifiedID = ticket.TechnicianID;
+                            newTechnicianNoti.NotificationContent = string.Format("Ticket #{0} was assigned by {1}.", ticket.Code, ticketUnassigner.Fullname);
+                            newTechnicianNoti.NotifiedTime = DateTime.Now;
+                            _unitOfWork.NotificationRepository.Insert(newTechnicianNoti);
+                        }
+                    }
+                }
+                //end notification
+
                 TicketHistory ticketHistory = GetUpdatedTicketHistory(oldTicket, ticket, actId);
                 if (ticketHistory != null)
                 {
@@ -454,27 +561,74 @@ namespace TMS.Services
             }
         }
 
+        //send notification to helpdesk when requester unapprove ticket
         public bool ApproveTicket(Ticket ticket, string actId)
         {
             ticket.Status = ConstantUtil.TicketStatus.Unapproved;
             ticket.ModifiedTime = DateTime.Now;
             _unitOfWork.BeginTransaction();
+
+            //send notification to helpdesk when requester unapprove ticket
+            AspNetUser ticketUnapprovedUser = _unitOfWork.AspNetUserRepository.GetByID(actId);
+            if (ticketUnapprovedUser != null)
+            {
+                Notification helpdeskNoti = new Notification();
+                helpdeskNoti.IsForHelpDesk = true;
+                helpdeskNoti.TicketID = ticket.ID;
+                helpdeskNoti.NotificationContent = string.Format("Ticket #{0} was unapproved by {1}", ticket.Code, ticketUnapprovedUser.Fullname);
+                helpdeskNoti.NotifiedTime = DateTime.Now;
+                _unitOfWork.NotificationRepository.Insert(helpdeskNoti);
+            }
+            //end notification
+
             //start ticket history
             TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.TicketID = ticket.ID;
             ticketHistory.ActID = actId;
             ticketHistory.ActedTime = DateTime.Now;
             ticketHistory.Type = ConstantUtil.TicketHistoryType.Unapproved;
             ticketHistory.Action = "OPERATION: APPROVE";
             _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
             //end ticket history
-            _unitOfWork.TicketRepository.Insert(ticket);
+            _unitOfWork.TicketRepository.Update(ticket);
             return _unitOfWork.CommitTransaction();
         }
 
+        //send notification to requester
+        //send notification to technician if ticket is assigned to him
         public bool CancelTicket(Ticket ticket, string actId)
         {
+            _unitOfWork.BeginTransaction();
+            int status = ticket.Status;
             ticket.Status = ConstantUtil.TicketStatus.Cancelled;
             ticket.ModifiedTime = DateTime.Now;
+
+            //send notification to requester
+            Notification requesterNoti = new Notification();
+            requesterNoti.IsForHelpDesk = false;
+            requesterNoti.TicketID = ticket.ID;
+            requesterNoti.BeNotifiedID = ticket.RequesterID;
+            requesterNoti.NotificationContent = string.Format("Ticket #{0} was cancelled.", ticket.Code);
+            requesterNoti.NotifiedTime = DateTime.Now;
+            _unitOfWork.NotificationRepository.Insert(requesterNoti);
+
+            //send notification to technician if ticket is assigned to him
+            AspNetUser ticketCancelledUser = _unitOfWork.AspNetUserRepository.GetByID(actId);
+            if (ticketCancelledUser != null)
+            {
+                if (status == ConstantUtil.TicketStatus.Assigned)
+                {
+                    Notification technicianNoti = new Notification();
+                    technicianNoti.IsForHelpDesk = false;
+                    technicianNoti.TicketID = ticket.ID;
+                    technicianNoti.BeNotifiedID = ticket.TechnicianID;
+                    technicianNoti.NotificationContent = string.Format("Ticket #{0} was cancelled by {1}.", ticket.Code, ticketCancelledUser.Fullname);
+                    technicianNoti.NotifiedTime = DateTime.Now;
+                    _unitOfWork.NotificationRepository.Insert(technicianNoti);
+                }
+            }
+            //end notification
+
             //start ticket history
             TicketHistory ticketHistory = new TicketHistory();
             ticketHistory.TicketID = ticket.ID;
@@ -483,16 +637,29 @@ namespace TMS.Services
             ticketHistory.Action = "OPERATION: CANCEL";
             ticketHistory.ActedTime = DateTime.Now;
             //end ticket history
+
             _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
+
             _unitOfWork.TicketRepository.Update(ticket);
             return _unitOfWork.CommitTransaction();
         }
 
+        //send notification to requester
         public bool SolveTicket(Ticket ticket, string actId)
         {
             ticket.Status = ConstantUtil.TicketStatus.Solved;
             ticket.ModifiedTime = DateTime.Now;
             _unitOfWork.BeginTransaction();
+
+            //send notification to requester
+            Notification requesterNoti = new Notification();
+            requesterNoti.IsForHelpDesk = false;
+            requesterNoti.TicketID = ticket.ID;
+            requesterNoti.BeNotifiedID = ticket.RequesterID;
+            requesterNoti.NotificationContent = string.Format("Ticket #{0} was solved.", ticket.Code);
+            requesterNoti.NotifiedTime = DateTime.Now;
+            _unitOfWork.NotificationRepository.Insert(requesterNoti);
+            //end notification
             //start ticket history
             TicketHistory ticketHistory = new TicketHistory();
             ticketHistory.TicketID = ticket.ID;
@@ -538,10 +705,23 @@ namespace TMS.Services
             return code;
         }
 
+        //send notification to requester
         public bool CloseTicket(Ticket ticket, string actId)
         {
             ticket.Status = ConstantUtil.TicketStatus.Closed;
             ticket.ModifiedTime = DateTime.Now;
+            _unitOfWork.BeginTransaction();
+
+            //send notification to requester
+            Notification requesterNoti = new Notification();
+            requesterNoti.IsForHelpDesk = false;
+            requesterNoti.TicketID = ticket.ID;
+            requesterNoti.BeNotifiedID = ticket.RequesterID;
+            requesterNoti.NotificationContent = string.Format("Ticket #{0} was closed.", ticket.Code);
+            requesterNoti.NotifiedTime = DateTime.Now;
+            _unitOfWork.NotificationRepository.Insert(requesterNoti);
+            //end notification
+
             //start ticket history
             TicketHistory ticketHistory = new TicketHistory();
             ticketHistory.TicketID = ticket.ID;
@@ -555,6 +735,8 @@ namespace TMS.Services
             return _unitOfWork.CommitTransaction();
         }
 
+        //send notification to technician
+        //send notification to requester
         public bool MergeTicket(List<Ticket> tickets, string actId)
         {
             UserService _userService = new UserService(_unitOfWork);
@@ -573,7 +755,8 @@ namespace TMS.Services
                     newTicket.Description = "[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
                 }
                 oldTicket.ModifiedTime = DateTime.Now;
-                int? status = oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
+                int status = oldTicket.Status;
+                oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
                 //start ticket history
                 TicketHistory oldTicketHistory = new TicketHistory();
                 oldTicketHistory.TicketID = oldTicket.ID;
@@ -584,14 +767,49 @@ namespace TMS.Services
                 //end ticket history
                 _unitOfWork.TicketHistoryRepository.Insert(oldTicketHistory);
                 _unitOfWork.TicketRepository.Update(oldTicket);
+
                 if (status == ConstantUtil.TicketStatus.Assigned)
                 {
+                    AspNetUser mergedUser = _userService.GetUserById(actId);
+                    if (mergedUser != null)
+                    {
+                        Notification technicianNoti = new Notification();
+                        technicianNoti.IsForHelpDesk = false;
+                        technicianNoti.TicketID = oldTicket.ID;
+                        technicianNoti.BeNotifiedID = oldTicket.TechnicianID;
+                        technicianNoti.NotificationContent = string.Format("Ticket #{0} was merged into ticket #{1} by {2}.", oldTicket.Code, newTicket.Code, mergedUser.Fullname);
+                        technicianNoti.NotifiedTime = DateTime.Now;
+                        _unitOfWork.NotificationRepository.Insert(technicianNoti);
+                    }
+
                     AspNetUser technician = _userService.GetUserById(oldTicket.TechnicianID);
                     Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenCancelTicket(oldTicket, technician));
                     thread.Start();
                 }
+
+                Notification requesterNoti = new Notification();
+                requesterNoti.IsForHelpDesk = false;
+                requesterNoti.TicketID = oldTicket.ID;
+                requesterNoti.BeNotifiedID = oldTicket.RequesterID;
+                requesterNoti.NotificationContent = string.Format("Ticket #{0} was merged into ticket #{1}.", oldTicket.Code, newTicket.Code);
+                requesterNoti.NotifiedTime = DateTime.Now;
+                _unitOfWork.NotificationRepository.Insert(requesterNoti);
             }
-            newTicket.ModifiedTime = DateTime.Now;
+
+            if (newTicket.Status == ConstantUtil.TicketStatus.Assigned)
+            {
+                AspNetUser mergedUser = _userService.GetUserById(actId);
+                if (mergedUser != null)
+                {
+                    Notification technicianNoti = new Notification();
+                    technicianNoti.IsForHelpDesk = false;
+                    technicianNoti.TicketID = newTicket.ID;
+                    technicianNoti.BeNotifiedID = newTicket.TechnicianID;
+                    technicianNoti.NotificationContent = string.Format("Ticket #{0} was merged by {1}.", newTicket.Code, mergedUser.Fullname);
+                    technicianNoti.NotifiedTime = DateTime.Now;
+                    _unitOfWork.NotificationRepository.Insert(technicianNoti);
+                }
+            }
             //start ticket history
             TicketHistory ticketHistory = new TicketHistory();
             ticketHistory.TicketID = newTicket.ID;
@@ -600,6 +818,7 @@ namespace TMS.Services
             ticketHistory.Action = "OPERATION: MERGE";
             ticketHistory.ActedTime = DateTime.Now;
             //end ticket history
+            newTicket.ModifiedTime = DateTime.Now;
             _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
             _unitOfWork.TicketRepository.Update(newTicket);
             return _unitOfWork.CommitTransaction();
@@ -677,6 +896,27 @@ namespace TMS.Services
             return (ticket == null) ? "" : ticket.Subject;
         }
 
+        public int? GetPriority(int? impactId, int? urgencyId, int? priorityId)
+        {
+            if (priorityId.HasValue)
+            {
+                return priorityId;
+            }
+            else
+            {
+                if (impactId.HasValue && urgencyId.HasValue)
+                {
+                    PriorityMatrixItem item = _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactId.Value
+                        && m.UrgencyID == urgencyId.Value).FirstOrDefault();
+                    if (item != null)
+                    {
+                        return item.PriorityID;
+                    }
+                }
+            }
+            return null;
+        }
+
         public TicketHistory GetUpdatedTicketHistory(Ticket oldTicket, Ticket newTicket, string actId)
         {
             TicketHistory result = new TicketHistory();
@@ -726,7 +966,7 @@ namespace TMS.Services
                     {
                         newImpactDetail = newTicket.ImpactDetail;
                     }
-                    sb.Append(string.Format("<p>Mode changed from <b>{0}</b> to <b>{1}</b></p>", oldImpactDetail, newImpactDetail));
+                    sb.Append(string.Format("<p>Impact Detail changed from <b>{0}</b> to <b>{1}</b></p>", oldImpactDetail, newImpactDetail));
                 }
             }
             //urgency
@@ -877,6 +1117,32 @@ namespace TMS.Services
                         newDate = newTicket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat);
                     }
                     sb.Append(string.Format(@"<p>Actual End Date changed from <b>{0}</b> to <b>{1}</b></p>", oldDate, newDate));
+                }
+            }
+            //technician
+            if (oldTicket.TechnicianID != null || newTicket.TechnicianID != null)
+            {
+                if (oldTicket.TechnicianID != newTicket.TechnicianID)
+                {
+                    string oldTechnicianString = "Unassigned";
+                    string newTechnicianString = "Unassigned";
+                    if (oldTicket.TechnicianID != null)
+                    {
+                        AspNetUser oldTechnician = _unitOfWork.AspNetUserRepository.GetByID(oldTicket.TechnicianID);
+                        if (oldTechnician != null)
+                        {
+                            oldTechnicianString = oldTechnician.Fullname;
+                        }
+                    }
+                    if (newTicket.TechnicianID != null)
+                    {
+                        AspNetUser newTechnician = _unitOfWork.AspNetUserRepository.GetByID(newTicket.TechnicianID);
+                        if (newTechnician != null)
+                        {
+                            newTechnicianString = newTechnician.Fullname;
+                        }
+                    }
+                    sb.Append(string.Format(@"<p>Technician changed from <b>{0}</b> to <b>{1}</b></p>", oldTechnicianString, newTechnicianString));
                 }
             }
             result.Action = sb.ToString();

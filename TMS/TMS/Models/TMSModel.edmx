@@ -134,6 +134,18 @@
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
         </EntityType>
+        <EntityType Name="Notification">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TicketID" Type="int" Nullable="false" />
+          <Property Name="NotifiedTime" Type="datetime" />
+          <Property Name="NotificationContent" Type="nvarchar" MaxLength="255" />
+          <Property Name="BeNotifiedID" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsForHelpDesk" Type="bit" Nullable="false" />
+          <Property Name="IsRead" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="Priority">
           <Key>
             <PropertyRef Name="ID" />
@@ -388,6 +400,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Notification_AspNetUsers">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="BeNotifiedID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_Ticket">
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="1" />
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ticket">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="TicketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_PriorityMatrixItem_Impact">
           <End Role="Impact" Type="Self.Impact" Multiplicity="1" />
           <End Role="PriorityMatrixItem" Type="Self.PriorityMatrixItem" Multiplicity="*" />
@@ -581,6 +617,7 @@
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Department" EntityType="Self.Department" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Impact" EntityType="Self.Impact" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Notification" EntityType="Self.Notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Priority" EntityType="Self.Priority" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PriorityMatrixItem" EntityType="Self.PriorityMatrixItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Solution" EntityType="Self.Solution" Schema="dbo" store:Type="Tables" />
@@ -636,6 +673,14 @@
           <AssociationSet Name="FK_KnowledgeBase_Category" Association="Self.FK_KnowledgeBase_Category">
             <End Role="Category" EntitySet="Category" />
             <End Role="Solution" EntitySet="Solution" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_AspNetUsers" Association="Self.FK_Notification_AspNetUsers">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="Notification" EntitySet="Notification" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_Ticket" Association="Self.FK_Notification_Ticket">
+            <End Role="Ticket" EntitySet="Ticket" />
+            <End Role="Notification" EntitySet="Notification" />
           </AssociationSet>
           <AssociationSet Name="FK_PriorityMatrixItem_Impact" Association="Self.FK_PriorityMatrixItem_Impact">
             <End Role="Impact" EntitySet="Impact" />
@@ -714,6 +759,7 @@
           <EntitySet Name="Categories" EntityType="TMSModel.Category" />
           <EntitySet Name="Departments" EntityType="TMSModel.Department" />
           <EntitySet Name="Impacts" EntityType="TMSModel.Impact" />
+          <EntitySet Name="Notifications" EntityType="TMSModel.Notification" />
           <EntitySet Name="Priorities" EntityType="TMSModel.Priority" />
           <EntitySet Name="PriorityMatrixItems" EntityType="TMSModel.PriorityMatrixItem" />
           <EntitySet Name="Solutions" EntityType="TMSModel.Solution" />
@@ -737,6 +783,10 @@
           <AssociationSet Name="FK_BusinessRuleNotification_AspNetUsers" Association="TMSModel.FK_BusinessRuleNotification_AspNetUsers">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="BusinessRuleNotification" EntitySet="BusinessRuleNotifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_AspNetUsers" Association="TMSModel.FK_Notification_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="Notification" EntitySet="Notifications" />
           </AssociationSet>
           <AssociationSet Name="FK_Ticket_AspNetUsers" Association="TMSModel.FK_Ticket_AspNetUsers">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
@@ -793,6 +843,10 @@
           <AssociationSet Name="FK_Ticket_Impact" Association="TMSModel.FK_Ticket_Impact">
             <End Role="Impact" EntitySet="Impacts" />
             <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_Ticket" Association="TMSModel.FK_Notification_Ticket">
+            <End Role="Ticket" EntitySet="Tickets" />
+            <End Role="Notification" EntitySet="Notifications" />
           </AssociationSet>
           <AssociationSet Name="FK_PriorityMatrixItem_Priority" Association="TMSModel.FK_PriorityMatrixItem_Priority">
             <End Role="Priority" EntitySet="Priorities" />
@@ -888,6 +942,7 @@
           <NavigationProperty Name="AspNetUserLogins" Relationship="TMSModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserLogin" />
           <NavigationProperty Name="Department" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="AspNetUser" ToRole="Department" />
           <NavigationProperty Name="BusinessRuleNotifications" Relationship="TMSModel.FK_BusinessRuleNotification_AspNetUsers" FromRole="AspNetUser" ToRole="BusinessRuleNotification" />
+          <NavigationProperty Name="Notifications" Relationship="TMSModel.FK_Notification_AspNetUsers" FromRole="AspNetUser" ToRole="Notification" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_AspNetUsers" FromRole="AspNetUser" ToRole="Ticket" />
           <NavigationProperty Name="Tickets1" Relationship="TMSModel.FK_Ticket_AspNetUsers1" FromRole="AspNetUser" ToRole="Ticket" />
           <NavigationProperty Name="Tickets2" Relationship="TMSModel.FK_Ticket_AspNetUsers2" FromRole="AspNetUser" ToRole="Ticket" />
@@ -977,6 +1032,20 @@
           <NavigationProperty Name="PriorityMatrixItems" Relationship="TMSModel.FK_PriorityMatrixItem_Impact" FromRole="Impact" ToRole="PriorityMatrixItem" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Impact" FromRole="Impact" ToRole="Ticket" />
         </EntityType>
+        <EntityType Name="Notification">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TicketID" Type="Int32" Nullable="false" />
+          <Property Name="NotifiedTime" Type="DateTime" Precision="3" />
+          <Property Name="NotificationContent" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="BeNotifiedID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsForHelpDesk" Type="Boolean" Nullable="false" />
+          <Property Name="IsRead" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_Notification_AspNetUsers" FromRole="Notification" ToRole="AspNetUser" />
+          <NavigationProperty Name="Ticket" Relationship="TMSModel.FK_Notification_Ticket" FromRole="Notification" ToRole="Ticket" />
+        </EntityType>
         <EntityType Name="Priority">
           <Key>
             <PropertyRef Name="ID" />
@@ -1063,6 +1132,7 @@
           <NavigationProperty Name="AspNetUser3" Relationship="TMSModel.FK_Ticket_AspNetUsers3" FromRole="Ticket" ToRole="AspNetUser" />
           <NavigationProperty Name="Category" Relationship="TMSModel.FK_Ticket_Category" FromRole="Ticket" ToRole="Category" />
           <NavigationProperty Name="Impact" Relationship="TMSModel.FK_Ticket_Impact" FromRole="Ticket" ToRole="Impact" />
+          <NavigationProperty Name="Notifications" Relationship="TMSModel.FK_Notification_Ticket" FromRole="Ticket" ToRole="Notification" />
           <NavigationProperty Name="Priority" Relationship="TMSModel.FK_Ticket_Priority" FromRole="Ticket" ToRole="Priority" />
           <NavigationProperty Name="Urgency" Relationship="TMSModel.FK_Ticket_Urgency" FromRole="Ticket" ToRole="Urgency" />
           <NavigationProperty Name="TicketAttachments" Relationship="TMSModel.FK_TicketAttachment_Ticket" FromRole="Ticket" ToRole="TicketAttachment" />
@@ -1151,6 +1221,18 @@
             </Principal>
             <Dependent Role="BusinessRuleNotification">
               <PropertyRef Name="ReceiverID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_AspNetUsers">
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="TMSModel.Notification" Role="Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="BeNotifiedID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1319,6 +1401,18 @@
             </Principal>
             <Dependent Role="Ticket">
               <PropertyRef Name="ImpactID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_Ticket">
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="1" />
+          <End Type="TMSModel.Notification" Role="Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ticket">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="TicketID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1542,6 +1636,19 @@
               <MappingFragment StoreEntitySet="Impact">
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Notifications">
+            <EntityTypeMapping TypeName="TMSModel.Notification">
+              <MappingFragment StoreEntitySet="Notification">
+                <ScalarProperty Name="IsRead" ColumnName="IsRead" />
+                <ScalarProperty Name="IsForHelpDesk" ColumnName="IsForHelpDesk" />
+                <ScalarProperty Name="BeNotifiedID" ColumnName="BeNotifiedID" />
+                <ScalarProperty Name="NotificationContent" ColumnName="NotificationContent" />
+                <ScalarProperty Name="NotifiedTime" ColumnName="NotifiedTime" />
+                <ScalarProperty Name="TicketID" ColumnName="TicketID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
