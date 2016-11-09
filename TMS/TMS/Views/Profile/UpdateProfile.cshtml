@@ -19,6 +19,10 @@
         background: transparent !important;
         border: solid 1px #ffffff !important;
     }
+
+    input[type=file] {
+         border: none !important;
+    }
     
         input:-webkit-autofill {
             -webkit-text-fill-color: #ffffff !important;
@@ -40,7 +44,7 @@
             <div class="row"><img src="@ViewBag.AvatarURL" class="img-circle" alt="Avatar Image" id="avatar-img" /></div>
             <div class="row text-center" style="padding-top: 20px">
                 <div class="col-sm-offset-3 col-sm-7">
-                    <input style="border: none !important" type="file" id="Avatar" name="Avatar" accept="image/gif, image/jpeg, image/png" onchange="readURL(this);" />
+                    <input type="file" id="Avatar" name="Avatar" accept="image/gif, image/jpeg, image/png" onchange="readURL(this);" />
                     @Html.ValidationMessageFor(m => m.Avatar, "", new { @class = "text-danger" })
                 </div>
             </div>

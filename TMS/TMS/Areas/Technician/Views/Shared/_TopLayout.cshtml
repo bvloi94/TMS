@@ -52,9 +52,7 @@
                                     <span class="label label-warning" id="notification-count"></span>
                                 </a>
                                 <ul class="dropdown-menu" style="width: 400px;">
-                                    @*<li class="header">You have 10 notifications</li>*@
                                     <li>
-                                        <!-- Inner Menu: contains the notifications -->
                                         <ul class="menu" id="notification-list">
                                             
                                         </ul>
@@ -80,7 +78,7 @@
                                     <!-- Menu Footer-->
                                     <li class="user-footer">
                                         <div class="pull-left">
-                                            <a href="/Profile" class="btn btn-default btn-flat">Profile</a>
+                                            <a href="/Technician/Profile" class="btn btn-default btn-flat">Profile</a>
                                         </div>
                                         <div class="pull-right">
                                             @using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
@@ -124,33 +122,3 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
-<script>
-    $(document).ready(function () {
-        loadNotification();
-        setTimeout(function () {
-            loadNotification(1);
-        }, 5000);
-    });
-
-    function loadNotification() {
-        $.ajax({
-            url: "/Notification/GetNotifications",
-            method: "GET",
-            success: function (data) {
-                var dataItems = data.data;
-                if (dataItems.length > 0) {
-                    $("#notification-count").text(dataItems.length);
-                    $("#notification-list").empty();
-                    for (i = 0; i < dataItems.length; i++) {
-                        $("#notification-list").append('<li><a class="text-purple" href="/Ticket/TicketDetail/' + dataItems[i].TicketId + '">'
-                            + '<div class="col-sm-12" style="word-wrap: break-word;"><i class="fa fa-tag"></i>&nbsp;&nbsp;' + dataItems[i].NotificationContent + '</div>'
-                            + '<div class="col-sm-12 text-muted" style="font-size:14px">' + dataItems[i].NotifiedTime +  '</div></a></li>');
-                    }
-                }
-                else {
-                    $("#notification-count").text('');
-                }
-            }
-        });
-    }
-</script>

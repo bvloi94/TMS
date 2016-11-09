@@ -39,30 +39,57 @@ namespace TMS.Controllers
         public ActionResult GetNotifications()
         {
             string id = User.Identity.GetUserId();
-            IEnumerable<NotificationViewModel> notificationList = _notificationService.GetUserNotifications(id).OrderByDescending(m => m.NotifiedTime)
-                .Select(m => new NotificationViewModel {
+            string userRole = _userService.GetUserById(id).AspNetRoles.FirstOrDefault().Name;
+            IEnumerable<NotificationViewModel> notificationList;
+            if (userRole == "Helpdesk")
+            {
+                notificationList = _notificationService.GetAll().OrderByDescending(m => m.NotifiedTime)
+                .Where(m => m.IsRead == false && m.IsForHelpDesk == true).Select(m => new NotificationViewModel
+                {
                     Id = m.ID,
                     TicketId = m.TicketID,
                     NotifiedTime = m.NotifiedTime.HasValue ? GeneralUtil.ShowDateTime(m.NotifiedTime.Value) : "-",
                     NotificationContent = m.NotificationContent
                 });
+            }
+            else
+            {
+                notificationList = _notificationService.GetUserNotifications(id).OrderByDescending(m => m.NotifiedTime)
+                .Where(m => m.IsRead == false).Select(m => new NotificationViewModel
+                {
+                    Id = m.ID,
+                    TicketId = m.TicketID,
+                    NotifiedTime = m.NotifiedTime.HasValue ? GeneralUtil.ShowDateTime(m.NotifiedTime.Value) : "-",
+                    NotificationContent = m.NotificationContent
+                });
+            }
 
             return Json(new
             {
-                data = notificationList
+                data = notificationList,
+                userRole = userRole
             }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
-        public ActionResult SetNotifications(int? id)
+        public ActionResult SetNotificationToRead(int? id)
         {
-            string UserID = User.Identity.GetUserId();
-            IEnumerable<Notification> notificationList = _notificationService.GetUserNotifications(UserID);
+            if (id.HasValue)
+            {
+                Notification notification = _notificationService.GetNotificationById(id.Value);
+                notification.IsRead = true;
+                _notificationService.EditNotification(notification);
+
+                return Json(new
+                {
+                    data = true,
+                });
+            }
 
             return Json(new
             {
-                data = notificationList.OrderByDescending(m => m.NotifiedTime)
-            }, JsonRequestBehavior.AllowGet);
+                data = false,
+            });
         }
     }
 }

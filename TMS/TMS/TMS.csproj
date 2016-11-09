@@ -412,6 +412,7 @@
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />
     <Content Include="Content\custom-js\knowledgebase.js" />
+    <Content Include="Content\custom-js\notification-menu-bar.js" />
     <Content Include="Content\custom-js\tms-dropdown.js" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\img\ajax-loader.gif" />

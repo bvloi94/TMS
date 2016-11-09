@@ -22,12 +22,17 @@ namespace TMS.Services
             return _unitOfWork.NotificationRepository.Get();
         }
 
+        public Notification GetNotificationById(int id)
+        {
+            return _unitOfWork.NotificationRepository.GetByID(id);
+        }
+
         public IEnumerable<Notification> GetUserNotifications(string id)
         {
             return _unitOfWork.NotificationRepository.Get().Where(m => m.BeNotifiedID == id);
         }
 
-        public bool EditSolution(Notification notification)
+        public bool EditNotification(Notification notification)
         {
             _unitOfWork.NotificationRepository.Update(notification);
             return _unitOfWork.Commit();
