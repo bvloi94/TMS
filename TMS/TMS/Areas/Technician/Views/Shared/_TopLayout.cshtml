@@ -11,6 +11,16 @@
     @Styles.Render("~/Content/datatables")
     @Scripts.Render("~/bundles/modernizr")
     <title>@ViewBag.Title</title>
+    <style>
+        #notification-list {
+           min-height: 300px;
+           max-height: 400px;
+        }
+        #notification-list li a{
+           white-space: pre-wrap;
+           height: 80px;
+        }
+    </style>
 </head>
 <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
 <body class="hold-transition skin-purple layout-top-nav">
@@ -39,20 +49,14 @@
                                 <!-- Menu toggle button -->
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     <i class="fa fa-bell-o"></i>
-                                    <span class="label label-warning">10</span>
+                                    <span class="label label-warning" id="notification-count"></span>
                                 </a>
-                                <ul class="dropdown-menu">
-                                    <li class="header">You have 10 notifications</li>
+                                <ul class="dropdown-menu" style="width: 400px;">
+                                    @*<li class="header">You have 10 notifications</li>*@
                                     <li>
                                         <!-- Inner Menu: contains the notifications -->
-                                        <ul class="menu">
-                                            <li>
-                                                <!-- start notification -->
-                                                <a href="#">
-                                                    <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                                                </a>
-                                            </li>
-                                            <!-- end notification -->
+                                        <ul class="menu" id="notification-list">
+                                            
                                         </ul>
                                     </li>
                                     <li class="footer"><a href="#">View all</a></li>
@@ -81,7 +85,7 @@
                                         <div class="pull-right">
                                             @using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
                                             {
-                                                @Html.AntiForgeryToken()
+                                            @Html.AntiForgeryToken()
                                             }
                                             <a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-default btn-flat">Sign out</a>
                                         </div>
@@ -120,3 +124,33 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
+<script>
+    $(document).ready(function () {
+        loadNotification();
+        setTimeout(function () {
+            loadNotification(1);
+        }, 5000);
+    });
+
+    function loadNotification() {
+        $.ajax({
+            url: "/Notification/GetNotifications",
+            method: "GET",
+            success: function (data) {
+                var dataItems = data.data;
+                if (dataItems.length > 0) {
+                    $("#notification-count").text(dataItems.length);
+                    $("#notification-list").empty();
+                    for (i = 0; i < dataItems.length; i++) {
+                        $("#notification-list").append('<li><a class="text-purple" href="/Ticket/TicketDetail/' + dataItems[i].TicketId + '">'
+                            + '<div class="col-sm-12" style="word-wrap: break-word;"><i class="fa fa-tag"></i>&nbsp;&nbsp;' + dataItems[i].NotificationContent + '</div>'
+                            + '<div class="col-sm-12 text-muted" style="font-size:14px">' + dataItems[i].NotifiedTime +  '</div></a></li>');
+                    }
+                }
+                else {
+                    $("#notification-count").text('');
+                }
+            }
+        });
+    }
+</script>

@@ -237,10 +237,12 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KnowledgeBaseController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Models\Notification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\SolutionAttachmentService.cs" />
     <Compile Include="Models\TMSModel.cs">
       <AutoGen>True</AutoGen>
@@ -368,6 +370,7 @@
     <Compile Include="ViewModels\KnowledgeBaseViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
+    <Compile Include="ViewModels\NotificationViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
     <Compile Include="ViewModels\ProfileManagerViewModel.cs" />
     <Compile Include="ViewModels\ProfileRequesterViewModel.cs" />
@@ -625,6 +628,7 @@
     <Content Include="Areas\Technician\Views\Home\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\Shared\_TopLayout.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -728,6 +732,7 @@
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
     <Folder Include="Content\Plugins\jquery.ui\images\" />
+    <Folder Include="Views\Notification\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

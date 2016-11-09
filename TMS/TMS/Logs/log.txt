@@ -180,3 +180,69 @@ ERROR 2016-11-09 13:28:35,636 JobManager             ExecuteAllJobs     - The Jo
 DEBUG 2016-11-09 13:28:35,637 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
 DEBUG 2016-11-09 13:28:35,637 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
 DEBUG 2016-11-09 13:28:35,641 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-11-09 14:22:57,910 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-09 14:23:01,960 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 14:23:01,961 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 14:23:01,962 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 14:23:01,962 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-09 14:23:01,963 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-09 14:23:01,964 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 14:23:01,965 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 14:23:01,968 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-11-09 14:32:20,416 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-09 14:32:20,582 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 14:32:20,583 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 14:32:20,583 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 14:32:20,584 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-09 14:32:20,584 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-09 14:32:20,585 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 14:32:20,586 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 14:32:20,588 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-11-09 15:05:17,452 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-09 15:05:18,350 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:05:18,352 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 15:05:18,353 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:05:18,353 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-09 15:05:18,354 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-09 15:05:18,355 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:05:18,356 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 15:05:18,359 JobManager             ExecuteAllJobs     - End Method
+ERROR 2016-11-09 15:06:17,821 EmailUtil              ailsUsingEAGetMail - Authentication failed because the remote party has closed the transport stream.
+DEBUG 2016-11-09 15:31:06,515 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-09 15:31:07,983 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:31:07,985 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 15:31:07,987 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:31:07,988 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-09 15:31:07,989 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-09 15:31:07,990 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:31:07,991 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 15:31:07,994 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-11-09 15:42:18,496 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-09 15:42:19,383 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:42:19,384 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 15:42:19,385 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:42:19,386 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-09 15:42:19,386 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-09 15:42:19,387 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:42:19,389 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 15:42:19,394 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-11-09 15:58:39,389 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-09 15:58:39,941 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:58:39,942 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 15:58:39,942 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:58:39,943 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-09 15:58:39,943 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-09 15:58:39,944 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 15:58:39,944 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 15:58:39,947 JobManager             ExecuteAllJobs     - End Method
+ERROR 2016-11-09 16:05:23,969 EmailUtil              ailsUsingEAGetMail - No such host is known
+DEBUG 2016-11-09 16:09:30,439 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-09 16:09:31,866 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 16:09:31,867 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 16:09:31,868 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 16:09:31,869 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-09 16:09:31,869 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-09 16:09:31,870 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-09 16:09:31,871 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-09 16:09:31,874 JobManager             ExecuteAllJobs     - End Method
+ERROR 2016-11-09 16:10:15,411 EmailUtil              ailsUsingEAGetMail - Authentication failed because the remote party has closed the transport stream.

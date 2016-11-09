@@ -18,12 +18,14 @@ namespace TMS.Areas.Technician.Controllers
         public UserService _userService { get; set; }
         public TicketService _ticketService { get; set; }
         public SolutionService _solutionService { get; set; }
+        public NotificationService _notificationService { get; set; }
 
         public HomeController()
         {
             _userService = new UserService(unitOfWork);
             _ticketService = new TicketService(unitOfWork);
             _solutionService = new SolutionService(unitOfWork);
+            _notificationService = new NotificationService(unitOfWork);
         }
 
         // GET: Technician/Home
@@ -64,13 +66,6 @@ namespace TMS.Areas.Technician.Controllers
             ViewBag.NewSolutionsNo = newSolutions;
 
             return View();
-        }
-
-        [HttpGet]
-        public ActionResult GetNotifications ()
-        {
-
-            return Json(new { });
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
