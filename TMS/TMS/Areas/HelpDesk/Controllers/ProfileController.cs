@@ -82,6 +82,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     helpDesk.AvatarURL = "/Uploads/Avatar/"+ fileName;
                 }
                 _userService.EditUser(helpDesk);
+                ViewBag.AvatarURL = helpDesk.AvatarURL;
                 return RedirectToAction("Index");
             }
 

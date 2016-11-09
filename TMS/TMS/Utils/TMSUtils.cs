@@ -21,6 +21,12 @@ namespace TMS.Utils
                     return ConstantUtil.TicketModeString.WebForm;
                 case ConstantUtil.TicketMode.Email:
                     return ConstantUtil.TicketModeString.Email;
+                case ConstantUtil.TicketMode.SocialNetwork:
+                    return ConstantUtil.TicketModeString.SocialNetwork;
+                case ConstantUtil.TicketMode.Forum:
+                    return ConstantUtil.TicketModeString.Forum;
+                case ConstantUtil.TicketMode.Other:
+                    return ConstantUtil.TicketModeString.Other;
                 default:
                     return "-";
             }

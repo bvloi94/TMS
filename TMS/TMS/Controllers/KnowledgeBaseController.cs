@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using log4net;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -13,14 +15,19 @@ using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
+    [CustomAuthorize(Roles = "Helpdesk,Technician")]
     public class KnowledgeBaseController : Controller
     {
+
+
         private UnitOfWork _unitOfWork = new UnitOfWork();
         private TicketService _ticketService;
         private UserService _userService;
         private SolutionService _solutionServices;
         private FileUploader _fileUploader;
         private CategoryService _categoryService;
+        private SolutionAttachmentService _solutionAttachmentService;
+
         public KnowledgeBaseController()
         {
             _ticketService = new TicketService(_unitOfWork);
@@ -28,12 +35,32 @@ namespace TMS.Controllers
             _solutionServices = new SolutionService(_unitOfWork);
             _fileUploader = new FileUploader();
             _categoryService = new CategoryService(_unitOfWork);
+            _solutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
         }
 
         // GET: KB
         public ActionResult Index()
         {
+            switch (UserRole())
+            {
+                case "Admin": ViewBag.Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; break;
+                case "Technician": ViewBag.Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml"; break;
+                case "Helpdesk": ViewBag.Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml"; break;
+                default: ViewBag.Layout = "~/Views/Shared/TMSRequesterLayout.cshtml"; break;
+            }
             return View();
+        }
+
+        public string UserRole()
+        {
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                return userRole.Name;
+            }
+
+            return "Guest";
         }
 
         [HttpGet]
@@ -58,14 +85,26 @@ namespace TMS.Controllers
                     KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
-                    model.Keyword = string.IsNullOrWhiteSpace(solution.Keyword)  ? "" : solution.Keyword.Replace("\"", "");
+                    model.Keyword = string.IsNullOrWhiteSpace(solution.Keyword) ? "" : solution.Keyword.Replace("\"", "");
                     model.CategoryID = solution.CategoryID;
                     model.Category = _categoryService.GetCategoryById(solution.CategoryID).Name;
                     model.Path = solution.Path;
+                    // Get SolutionAttachment By SolutionID
+                    IEnumerable<SolutionAttachment> attachments = _solutionAttachmentService.GetSolutionAttachmentBySolutionID(solution.ID);
+                    if (attachments != null)
+                    {
+                        model.SolutionAttachmentsList = new List<AttachmentViewModel>();
+                        foreach (var attachment in attachments)
+                        {
+                            var att = new AttachmentViewModel();
+                            att.id = attachment.ID;
+                            att.name = TMSUtils.GetMinimizedAttachmentName(attachment.Filename);
 
+                            model.SolutionAttachmentsList.Add(att);
+                        }
+                    }
                     ViewBag.ID = solution.ID;
                     ViewBag.SolutionAttachments = solution.SolutionAttachments;
-
                     return View(model);
                 }
                 else
@@ -80,83 +119,43 @@ namespace TMS.Controllers
         }
 
 
-        //   [Utils.Authorize(Roles = "Helpdesk")]
+        // [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(KnowledgeBaseViewModel model)
         {
             // Validate subject is null or empty.
-            if (string.IsNullOrWhiteSpace(model.Subject))
+            if (!string.IsNullOrWhiteSpace(model.Subject))
             {
-                ModelState.AddModelError("Subject", "Please input subject.");
-            }
-            // Subject != null or "".
-            else
-            {
-                var subject = model.Subject.Trim();
+                model.Subject = model.Subject.Trim();
                 // Check duplicate subject.
-                bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(null, subject);
+                bool isDuplicatedSubject = _solutionServices.IsDuplicatedSubject(null, model.Subject);
                 // Subject is duplicate.
-                if (isDuplicateSubject)
+                if (isDuplicatedSubject)
                 {
-                    ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", subject));
+                    ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", model.Subject));
                 }
             }
             // Check path is null or spacebar
-            if (string.IsNullOrWhiteSpace(model.Path))
+            if (!string.IsNullOrWhiteSpace(model.Path))
             {
-                ModelState.AddModelError("Path", "Please input path.");
-            }
-            // path != null
-            else
-            {
-                var path = model.Path.Trim();
+                model.Path = model.Path.Trim();
                 // Check duplicate path.
-                bool isDuplicatePath = _solutionServices.IsduplicatePath(null, path);
+                bool isDuplicatedPath = _solutionServices.IsDuplicatedPath(null, model.Path);
                 // Path is duplicate. 
-                if (isDuplicatePath)
+                if (isDuplicatedPath)
                 {
-                    ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
+                    ModelState.AddModelError("Path", string.Format("'{0}' have been used!", model.Path));
                 }
-                // Path can not allow "-" in begin or end string.
-                if (path.StartsWith("-") || path.EndsWith("-"))
-                {
-                    ModelState.AddModelError("Path", "Invalid path! (example: how-to-use-tms)");
-                }
-                // Path follow format a-z, 0-9 and separated by "-".
-                Match pathFormat = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
-                // False format path
-                if (!pathFormat.Success)
-                {
-                    ModelState.AddModelError("Path", "Path can not contain special characters and spaces! ");
-                }
-            }
-            // Keyword != null
-            if (model.Keyword != null)
-            {
-                //  Keyword follow format a-z, 0-9 and separated by comas (",").
-                Match keywordIsMatchFormat = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-, ]*$", RegexOptions.IgnoreCase);
-                // Keyword is not match format.
-                if (!keywordIsMatchFormat.Success)
-                {
-                    ModelState.AddModelError("Keyword", "Keyword only contain characters 'a-z', '0-9' and separated by commas! ");
-                }
-            }
-            // CategoryID == 0 (default) User is not choose category.
-            if (model.CategoryID == 0)
-            {
-                ModelState.AddModelError("CategoryID", "Please select topic! ");
             }
             // CategoryID != 0  user have selected category.
-            if (model.CategoryID != 0)
+            Category category = _categoryService.GetCategoryById(model.CategoryID);
+            // category != null
+            if (category != null)
             {
-                Category category = _categoryService.GetCategoryById(model.CategoryID);
-                // category != null
-                if (category != null)
-                {
-                    model.Category = category.Name;
-                }
+                model.Category = category.Name;
             }
+
             // ModelState is valid.
             if (ModelState.IsValid)
             {
@@ -176,23 +175,9 @@ namespace TMS.Controllers
                         solution.SolutionAttachments.Add(attachment);
                     }
                 }
+
                 // Keyword is null or whitespace
-                if (!string.IsNullOrWhiteSpace(model.Keyword))
-                {
-                    string keyword = "";
-                    string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
-                    string delimeter = "";
-                    foreach (string keywordItem in keywordArr)
-                    {
-                        if (!string.IsNullOrWhiteSpace(keywordItem))
-                        {
-                            string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
-                            keyword += delimeter + '"' + keywordItemTmp + '"';
-                            delimeter = ",";
-                        }
-                    }
-                    solution.Keyword = keyword;
-                }
+                solution.Keyword = GeneralUtil.ConvertToFormatKeyword(model.Keyword);
                 solution.Path = model.Path.Trim().ToLower();
                 solution.CreatedTime = DateTime.Now;
                 solution.ModifiedTime = DateTime.Now;
@@ -216,6 +201,7 @@ namespace TMS.Controllers
             return View(model);
         }
 
+        //   [CustomAuthorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int? id, KnowledgeBaseViewModel model)
@@ -223,71 +209,34 @@ namespace TMS.Controllers
             if (id.HasValue)
             {
                 // Validate subject is null or empty.
-                if (string.IsNullOrWhiteSpace(model.Subject))
+                if (!string.IsNullOrWhiteSpace(model.Subject))
                 {
-                    ModelState.AddModelError("Subject", "Please input subject.");
-                }
-                // Subject != null or "".
-                else
-                {
-                    var subject = model.Subject.Trim();
+                    model.Subject = model.Subject.Trim();
                     // Check duplicate subject.
-                    bool isDuplicateSubject = _solutionServices.IsDuplicateSubject(id.Value, subject);
+                    bool isDuplicatedSubject = _solutionServices.IsDuplicatedSubject(id.Value, model.Subject);
                     //   // Subject is duplicate.
-                    if (isDuplicateSubject)
+                    if (isDuplicatedSubject)
                     {
-                        ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", subject));
+                        ModelState.AddModelError("Subject", string.Format("'{0}' have been used!", model.Subject));
                     }
                 }
                 // Check path is null or spacebar.
-                if (string.IsNullOrWhiteSpace(model.Path))
+                if (!string.IsNullOrWhiteSpace(model.Path))
                 {
-                    ModelState.AddModelError("Path", "Please input path.");
-                }
-                // path != null
-                else
-                {
-                    var path = model.Path.Trim();
+                    model.Path = model.Path.Trim();
                     // check duplicate path.
-                    bool isDuplicatePath = _solutionServices.IsduplicatePath(id.Value, path);
+                    bool isDuplicatedPath = _solutionServices.IsDuplicatedPath(id.Value, model.Path);
                     // path is duplicate.
-                    if (isDuplicatePath)
+                    if (isDuplicatedPath)
                     {
-                        ModelState.AddModelError("Path", string.Format("'{0}' have been used!", path));
-                    }
-                    // Path can not allow "-" in begin or end string.
-                    if (path.StartsWith("-") || path.EndsWith("-"))
-                    {
-                        ModelState.AddModelError("Path", "Invalid path! (example: how-to-use-tms)");
-                    }
-                    // Path follow format a-z, 0-9 and separated by "-".
-                    Match pathFormat = Regex.Match(model.Path.Trim(), "^[a-z0-9-]*$", RegexOptions.IgnoreCase);
-                    // False format path.
-                    if (!pathFormat.Success)
-                    {
-                        ModelState.AddModelError("Path", "Path can not contain special characters and spaces! ");
+                        ModelState.AddModelError("Path", string.Format("'{0}' have been used!", model.Path));
                     }
                 }
-                // Keyword != null.
-                if (model.Keyword != null)
+                Category category = _categoryService.GetCategoryById(model.CategoryID);
+                // category != null
+                if (category != null)
                 {
-                    // Keyword follow format a-z, 0-9 and separated by comas (",").
-                    Match keywordIsMatchFormat = Regex.Match(model.Keyword.Trim(), "^[a-z0-9-, ]*$", RegexOptions.IgnoreCase);
-                    // Keyword is not match format.
-                    if (!keywordIsMatchFormat.Success)
-                    {
-                        ModelState.AddModelError("Keyword", "Keyword only contain characters 'a-z', '0-9' and separated by commas! ");
-                    }
-                }
-                // CategoryID == 0 (default) User is not choose category
-                if (model.CategoryID != 0)
-                {
-                    Category category = _categoryService.GetCategoryById(model.CategoryID);
-                    // category != null
-                    if (category != null)
-                    {
-                        model.Category = category.Name;
-                    }
+                    model.Category = category.Name;
                 }
                 // Get solution by id.
                 Solution solution = _solutionServices.GetSolutionById(id.Value);
@@ -299,23 +248,7 @@ namespace TMS.Controllers
                     {
                         solution.Subject = model.Subject.Trim();
                         solution.ContentText = model.Content;
-                        // Keyword is null or whitespace
-                        if (!string.IsNullOrWhiteSpace(model.Keyword))
-                        {
-                            string keyword = "";
-                            string[] keywordArr = model.Keyword.Trim().ToLower().Split(',');
-                            string delimeter = "";
-                            foreach (string keywordItem in keywordArr)
-                            {
-                                if (!string.IsNullOrWhiteSpace(keywordItem))
-                                {
-                                    string keywordItemTmp = keywordItem.Trim().Replace(" ", String.Empty);
-                                    keyword += delimeter + '"' + keywordItemTmp + '"';
-                                    delimeter = ",";
-                                }
-                            }
-                            solution.Keyword = keyword;
-                        }
+                        solution.Keyword = GeneralUtil.ConvertToFormatKeyword(model.Keyword);
                         solution.CategoryID = model.CategoryID;
                         solution.Path = model.Path.Trim().ToLower();
                         solution.ModifiedTime = DateTime.Now;
@@ -330,6 +263,24 @@ namespace TMS.Controllers
                                 attachment.Filename = file.FileName;
                                 solution.SolutionAttachments.Add(attachment);
                             }
+                        }
+                        // Get Solution Attachment By SolutionID
+                        List<SolutionAttachment> attachments = _solutionAttachmentService.GetSolutionAttachmentBySolutionID(solution.ID).ToList();
+                        bool isDelete;
+                        for (int i = 0; i < attachments.Count(); i++)
+                        {
+                            isDelete = true;
+                            if (model.SolutionAttachmentsList != null && model.SolutionAttachmentsList.Count > 0)
+                            {
+                                for (int j = 0; j < model.SolutionAttachmentsList.Count; j++)
+                                {
+                                    if (attachments[i].ID == model.SolutionAttachmentsList[j].id)
+                                    {
+                                        isDelete = false;
+                                    }
+                                }
+                            }
+                            if (isDelete) _solutionAttachmentService.DeleteAttachment(attachments[i]);
                         }
                         // Edit solution.
                         bool editResult = _solutionServices.EditSolution(solution);
@@ -364,48 +315,90 @@ namespace TMS.Controllers
             }
         }
 
+        ////   [CustomAuthorize(Roles = "Helpdesk")]
+        //[HttpPost]
+        //public ActionResult Delete(int[] selectedSolutions)
+        //{
+        //    if (selectedSolutions == null || selectedSolutions.Count() == 0)
+        //    {
+        //        return Json(new
+        //        {
+        //            success = false,
+        //            message = "Please choose at least 1 solution to delete!"
+        //        });
+        //    }
+        //    else
+        //    {
+        //        foreach (var solutionId in selectedSolutions)
+        //        {
+        //            Solution solution = _solutionServices.GetSolutionById(solutionId);
+        //            if (solution == null)
+        //            {
+        //                return Json(new
+        //                {
+        //                    success = false,
+        //                    message = "Delete solution unsuccessfully!"
+        //                });
+        //            }
+        //            else
+        //            {
+        //                bool resultDelete = _solutionServices.DeleteSolution(solution);
+        //                if (!resultDelete)
+        //                {
+        //                    return Json(new
+        //                    {
+        //                        success = false,
+        //                        message = ConstantUtil.CommonError.DBExceptionError
+        //                    });
+        //                }
+        //            }
+        //        }
+        //        return Json(new
+        //        {
+        //            success = true,
+        //            message = "Delete solution successfully!"
+        //        });
+        //    }
+        //}
+
+        //   [CustomAuthorize(Roles = "Helpdesk")]
+
         [HttpPost]
         public ActionResult Delete(int[] selectedSolutions)
         {
-            if (selectedSolutions.Length == 0)
+            if (selectedSolutions == null || selectedSolutions.Count() == 0)
             {
                 return Json(new
                 {
                     success = false,
-                    msg = "Please choose at least 1 solution to delete!"
+                    message = "Please choose at least 1 solution to delete!"
                 });
             }
-
-            List<Solution> solutionList = new List<Solution>();
-            try
+            else
             {
-                for (int i = 0; i < selectedSolutions.Length; i++)
+                bool resultDelete = _solutionServices.DeleteSolution(selectedSolutions);
+                if (!resultDelete)
                 {
-                    Solution solution = _solutionServices.GetSolutionById(selectedSolutions[i]);
-                    solutionList.Add(solution);
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
                 }
-
                 return Json(new
                 {
                     success = true,
-                    msg = ""
-                });
-            }
-            catch
-            {
-                return Json(new
-                {
-                    success = false,
-                    msg = "Some errors occured! Please try again later!"
+                    message = "Delete solution successfully!"
                 });
             }
         }
 
         [HttpGet]
-        public ActionResult GetSolutions(string key_search)
+        public ActionResult GetSolutionsByCategory(int? id, string key_search)
         {
-            IEnumerable<KnowledgeBaseViewModel> filteredListItems;
-            filteredListItems = _solutionServices.GetAllSolutions().Select(m => new KnowledgeBaseViewModel
+            string keywords = key_search;
+            IEnumerable<Solution> solutions = _solutionServices.GetAllSolutions();
+            IQueryable<KnowledgeBaseViewModel> filteredListItems = solutions.Select(m => new KnowledgeBaseViewModel
             {
                 ID = m.ID,
                 Subject = m.Subject,
@@ -417,96 +410,52 @@ namespace TMS.Controllers
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
-            }).ToArray();
+            }).AsQueryable();
 
-            if (!string.IsNullOrEmpty(key_search))
+            var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
+
+            if (!string.IsNullOrWhiteSpace(key_search))
             {
-                filteredListItems = filteredListItems.
-                        Where(p => p.Subject.ToLower().Contains(key_search.ToLower())
-                        || p.Keyword.ToLower().Contains(key_search.ToLower().Trim())); ;
+                keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                keywords = regex.Replace(keywords, " ");
+                string[] keywordArr = keywords.Split(' ');
+                foreach (string keyword in keywordArr)
+                {
+                    string keywordTemp = '"' + keyword + '"';
+                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordTemp.ToLower()));
+                }
+                predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                filteredListItems = filteredListItems.Where(predicate);
             }
 
+            if (id.HasValue)
+            {
+                List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
+                filteredListItems = filteredListItems.Where(m => m.CategoryID == id.Value
+                    || childrenCategoriesIdList.Contains(m.CategoryID));
+            }
             return Json(new
             {
-                data = filteredListItems
+                data = filteredListItems.OrderBy(m => m.Subject)
             }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public ActionResult GetSolutionsByCategory(int? id, string key_search)
-        {
-            if (id.HasValue)
-            {
-                IEnumerable<KnowledgeBaseViewModel> filteredListItems;
-                List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
-                filteredListItems = _solutionServices.GetAllSolutions()
-                    .Where(m => m.CategoryID == id.Value || childrenCategoriesIdList.Contains(m.CategoryID))
-                    .Select(m => new KnowledgeBaseViewModel
-                    {
-                        ID = m.ID,
-                        Subject = m.Subject,
-                        Category = m.Category.Name,
-                        CategoryID = m.Category.ID,
-                        CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                        Content = m.ContentText,
-                        Keyword = m.Keyword == null ? "-" : m.Keyword,
-                        Path = m.Path,
-                        CreatedTime = m.CreatedTime,
-                        ModifiedTime = m.ModifiedTime
-                    }).ToArray();
-
-                if (!string.IsNullOrEmpty(key_search))
-                {
-                    filteredListItems = filteredListItems.
-                        Where(p => p.Subject.ToLower().Contains(key_search.ToLower())
-                        || p.Keyword.ToLower().Contains(key_search.ToLower()));
-                }
-
-                return Json(new
-                {
-                    data = filteredListItems
-                }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                return Json(new
-                {
-                    success = false,
-                    error = true,
-                    msg = "Category does not exist!"
-                }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        [HttpGet]
-        public ActionResult GetSimilarTicketFrequency(JqueryDatatableParameterViewModel param, int? timeOption)
+        public ActionResult GetFrequentlyAskedSubjects(JqueryDatatableParameterViewModel param, int? timeOption)
         {
             if (!timeOption.HasValue)
             {
                 timeOption = ConstantUtil.TimeOption.ThisWeek;
             }
+            IEnumerable<Ticket> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
+            IEnumerable<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedSubjects(recentTickets);
 
-            IEnumerable<RecentTicketViewModel> recentTickets = _ticketService.GetSimilarTickets(_ticketService.GetRecentTickets(timeOption.Value));
-
-            IEnumerable<RecentTicketViewModel> filteredListItems = recentTickets;
+            IEnumerable<FrequentlyAskedTicketViewModel> filteredListItems = frequentlyAskedTickets;
             if (!string.IsNullOrEmpty(param.search["value"]))
             {
-                filteredListItems = filteredListItems.Where(p => p.Subject != null && (p.Subject.ToLower().Contains(param.search["value"].ToLower())));
+                filteredListItems = filteredListItems.Where(p => p.Tags != null && (p.Tags.ToLower().Contains(param.search["value"].ToLower())));
             }
-
-            //if (!string.IsNullOrWhiteSpace(keywords))
-            //{
-            //    keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
-            //    Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-            //    keywords = regex.Replace(keywords, " ");
-            //    string[] keywordArr = keywords.Split(' ');
-            //    var predicate = PredicateBuilder.False<Ticket>();
-            //    foreach (string keyword in keywordArr)
-            //    {
-            //        predicate = predicate.Or(p => p.Subject.ToLower().Contains(keyword.ToLower()));
-            //    }
-            //    filteredListItems = filteredListItems.Where(predicate);
-            //}
 
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
@@ -516,8 +465,8 @@ namespace TMS.Controllers
             {
                 case 0:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.Subject)
-                        : filteredListItems.OrderByDescending(p => p.Subject);
+                        ? filteredListItems.OrderBy(p => GetNumberOfTags(p.Tags))
+                        : filteredListItems.OrderByDescending(p => GetNumberOfTags(p.Tags));
                     break;
                 case 1:
                     filteredListItems = sortDirection == "asc"
@@ -526,19 +475,15 @@ namespace TMS.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new RecentTicketViewModel
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new FrequentlyAskedTicketViewModel
             {
-                Subject = m.Subject,
+                //Subject = _ticketService.GetSubjectByTags(m.Tags),
+                Tags = GeneralUtil.ConvertFormattedKeywordToView(m.Tags),
                 Count = m.Count
             });
 
-            //JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
-            //rsModel.draw = param.draw;
-            //rsModel.recordsTotal = displayedList.ToList().Count();
-            //rsModel.recordsFiltered = filteredListItems.Count();
-            //rsModel.data = displayedList;
             var totalTicket = 0;
-            foreach (RecentTicketViewModel ticket in recentTickets)
+            foreach (FrequentlyAskedTicketViewModel ticket in frequentlyAskedTickets)
             {
                 totalTicket += ticket.Count;
             }
@@ -551,6 +496,12 @@ namespace TMS.Controllers
                 data = displayedList,
                 totalTicket = totalTicket
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        private int GetNumberOfTags(string tags)
+        {
+            string[] tagArr = tags.Split(',');
+            return tagArr.Count();
         }
 
         [HttpGet]
@@ -566,6 +517,36 @@ namespace TMS.Controllers
             return Json(new
             {
                 data = list
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetKeywords(string subject)
+        {
+            HashSet<string> stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            string[] lines = System.IO.File.ReadAllLines(Server.MapPath(@"~/Utils/stopwords.txt"));
+            foreach (string s in lines)
+            {
+                stopWords.Add(s); // Assuming that each line contains one stop word.
+            }
+
+            List<string> keywords = new List<string>();
+            subject = GeneralUtil.RemoveSpecialCharacters(subject);
+            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+            string words = regex.Replace(subject, " ");
+            string[] wordArr = words.Split(' ');
+            foreach (string word in wordArr)
+            {
+                string lowerWord = word.ToLower();
+                if (!stopWords.Contains(lowerWord))
+                {
+                    keywords.Add(lowerWord);
+                }
+            }
+
+            return Json(new
+            {
+                data = keywords
             }, JsonRequestBehavior.AllowGet);
         }
 

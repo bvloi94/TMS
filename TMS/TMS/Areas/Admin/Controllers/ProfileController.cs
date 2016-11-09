@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using TMS.Models;
@@ -23,7 +20,6 @@ namespace TMS.Areas.Admin.Controllers
             _unitOfWork = new UnitOfWork();
             _userService = new UserService(_unitOfWork);
         }
-
         // GET: Admin/Profile
         [CustomAuthorize(Roles = "Admin")]
         [HttpGet]
@@ -92,9 +88,9 @@ namespace TMS.Areas.Admin.Controllers
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), admin.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    admin.AvatarURL = "/Uploads/Avatar/"+ fileName;
+                    admin.AvatarURL = "/Uploads/Avatar/" + fileName;
                 }
-               _userService.EditUser(admin);
+                _userService.EditUser(admin);
                 return RedirectToAction("Index");
             }
             ViewBag.username = admin.UserName;

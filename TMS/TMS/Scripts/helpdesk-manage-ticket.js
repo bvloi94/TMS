@@ -40,6 +40,7 @@ function initTicketTable() {
                 tooltip: false
             });
         },
+        autoWidth: false,
         columnDefs: [
         {
             "targets": [0],
@@ -51,14 +52,14 @@ function initTicketTable() {
              {
                  "targets": [1],
                  "render": function (data, type, row) {
-                     //var url = '@Url.Action("Edit","ManageTicket")?id=' + row.Id;
                      return $("<a/>",
                      {
                          "class": "ticket-subject",
                          "href": "javascript:openTicketDetailModal(" + row.Id + ")",
                          "html": row.Subject
                      })[0].outerHTML;
-                 }
+                 },
+                 "width": "40%"
              },
             {
                 "targets": [2],
@@ -78,7 +79,7 @@ function initTicketTable() {
                 "targets": [4],
                 "sortable": false,
                 "render": function (data, type, row) {
-                    return row.SolvedDate != "" ? row.SolvedDate : "-";
+                    return row.SolvedDateString;
                 }
             }, {
                 "targets": [5],
@@ -89,52 +90,65 @@ function initTicketTable() {
             {
                 "targets": [6],
                 "render": function (data, type, row) {
-                    return row.ModifiedTime != "" ? row.ModifiedTime : "-";
+                    return row.ModifiedTimeString;
                 }
             },
             {
                 "targets": [7],
                 "sortable": false,
                 "render": function (data, type, row) {
-                    var reopen = '';
-                    var action = '<div class="btn-group">'
-                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
-                        + 'Action <span class="caret"></span>'
-                        + '</button>'
-                        + '<ul class="dropdown-menu">'
-                        + '<li>'
-                        + '<a href="/HelpDesk/ManageTicket/EditTicket/' + row.Id + '">'
-                        + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
-                        + '</a>'
-                        + '</li>';
+                    var links = '';
+                    var history = '<li>'
+                    + '<a href="/Ticket/History/' + row.Id + '">'
+                    + '<i class="fa fa-history" aria-hidden="true"></i> Ticket History'
+                    + '</a>'
+                    + '</li>';
+                    var detail = '<li>'
+                    + '<a href="/Ticket/TicketDetail/' + row.Id + '">'
+                    + '<i class="fa fa-info-circle" aria-hidden="true"></i> Ticket Detail'
+                    + '</a>'
+                    + '</li>';
                     switch (row.Status) {
                         case "New":
-                            action += '<li>'
+                            links += '<li>'
+                       + '<a href="/HelpDesk/ManageTicket/EditTicket/' + row.Id + '">'
+                       + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
+                       + '</a>'
+                       + '</li>'
+                       + history
+                       + detail
+                       + '<li>'
                        + '<a href="/Ticket/Solve/' + row.Id + '">'
                        + '<i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket'
                        + '</a>'
                        + '</li>'
                        + '<li>'
-                       + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" id="action-cancel-btn" data-ticket-id="' + row.Id + '">'
+                       + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" data-ticket-id="' + row.Id + '">'
                        + '<i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket'
                        + '</a>'
                        + '</li>';
                             break;
                         case "Assigned":
-                            action += '<li>'
+                            links += '<li>'
+                       + '<a href="/HelpDesk/ManageTicket/EditTicket/' + row.Id + '">'
+                       + '<i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket'
+                       + '</a>'
+                       + '</li>'
+                       + history
+                       + detail
+                       + '<li>'
                        + '<a href="javascript:void(0)" data-role="btn-show-cancel-modal" data-ticket-id="' + row.Id + '">'
                        + '<i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket'
                        + '</a>'
                        + '</li>';
                             break;
                         case "Solved":
+                            links += history + detail;
                             break;
                         case "Unapproved":
-                            reopen += '<div class="btn-group" style="margin-left: 10px;">'
-                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
-                        + 'Reopen <span class="caret"></span>'
-                        + '</button>'
-                        + '<ul class="dropdown-menu">'
+                            links += history
+                        + detail
+                        + '<li><a href="javascript:void(0)"><strong>Reopen Ticket</strong></a></li>'
                         + '<li>'
                         + '<a href="javascript:void(0)" onclick="showCloseModal(this)" data-ticket-id="' + row.Id + '">'
                         + '<i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket'
@@ -149,108 +163,25 @@ function initTicketTable() {
                         + '<a href="/Ticket/Solve/' + row.Id + '">'
                         + '<i class="fa fa-commenting" aria-hidden="true"></i> Re-solve Ticket'
                         + '</a>'
-                        + '</li>'
-                        + '</ul>'
-                        + '</div>';
+                        + '</li>';
                             break;
                         case "Closed":
+                            links += history + detail;
                             break;
-                        case "Canceled":
+                        case "Cancelled":
+                            links += history + detail;
                             break;
                     }
+                    var action = '<div class="btn-group">'
+                        + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
+                        + 'Action <span class="caret"></span>'
+                        + '</button>'
+                        + '<ul class="dropdown-menu dropdown-menu-right">';
+                    action += links;
                     action += '</ul>'
                         + '</div>';
 
-                    return action + reopen;
-                    //var editBtn;
-                    //switch (row.Status) {
-                    //    case "Closed":
-                    //    case "Canceled":
-                    //    case "Solved":
-                    //        editBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-flat btn-default",
-                    //            "data-role": "btn-edit-ticket",
-                    //            "disabled": "disabled",
-                    //            "html": $("<i/>",
-                    //            {
-                    //                "class": "fa fa-pencil"
-                    //            }),
-                    //            "data-id": row.Id
-                    //        });
-                    //        break;
-                    //    case "New":
-                    //    case "Assigned":
-                    //    case "Unapproved":
-                    //        editBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default",
-                    //            "href": "/HelpDesk/ManageTicket/EditTicket?id=" + row.Id,
-                    //            "data-role": "btn-edit-ticket",
-                    //            "html": $("<i/>",
-                    //            {
-                    //                "class": "fa fa-pencil"
-                    //            }),
-                    //            "data-id": row.Id
-                    //        });
-                    //        break;
-                    //}
-
-                    //var solveBtn;
-                    //switch (row.Status) {
-                    //    case "Solved":
-                    //    case "Closed":
-                    //    case "Canceled":
-                    //        solveBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default margin-left10",
-                    //            //"data-role": "btn-show-solve-modal",
-                    //            "disabled": "disabled",
-                    //            "html": "Solve",
-                    //            "data-id": row.Id
-                    //        });
-                    //        break;
-                    //    case "New":
-                    //    case "Assigned":
-                    //    case "Unapproved":
-                    //        solveBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default margin-left10",
-                    //            "href": "/Ticket/Solve/" + row.Id,
-                    //            "html": "Solve",
-                    //            "data-id": row.Id
-                    //        });
-                    //        break;
-                    //}
-
-                    //var cancelBtn;
-                    //switch (row.Status) {
-                    //    case "Solved":
-                    //    case "Closed":
-                    //    case "Canceled":
-                    //    case "Unapproved":
-                    //        cancelBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default margin-left10",
-                    //            "data-role": "btn-show-cancel-modal",
-                    //            "html": "Cancel",
-                    //            "disabled": "disabled",
-                    //            "data-ticket-id": row.Id
-                    //        });
-                    //        break;
-                    //    case "New":
-                    //    case "Assigned":
-                    //        cancelBtn = $("<a/>",
-                    //        {
-                    //            "class": "btn btn-sm btn-default margin-left10",
-                    //            "data-role": "btn-show-cancel-modal",
-                    //            "html": "Cancel",
-                    //            "data-ticket-id": row.Id
-                    //        });
-                    //        break;
-                    //}
-
-                    //return ediBtn[0].outerHTML + solveBtn[0].outerHTML + cancelBtn[0].outerHTML;
+                    return action;
                 }
             }
         ],
@@ -317,16 +248,6 @@ function initDropdownControl() {
     });
 }
 
-//$(document).on('click', '#see-more', function (event) {
-//    $(this).parent().trunk8('revert').append('<br/><a id="see-less" href="javascript:void{0}">See Less</a>');
-//    return false;
-//});
-
-//$(document).on('click', '#see-less', function (event) {
-//    $(this).parent().trunk8();
-//    return false;
-//});
-
 function openTicketDetailModal(ticketId) {
     $.ajax({
         url: '/Ticket/GetTicketDetail',
@@ -337,7 +258,7 @@ function openTicketDetailModal(ticketId) {
         },
         success: function (data) {
             $('#ticket-subject').text(data.subject);
-            $('#ticket-description').text(data.description);
+            $('#ticket-description').html(data.description);
             $('#ticket-department').text(data.department);
             $('#ticket-technician').text(data.technician);
             $('#ticket-created-by').text(data.creater);
@@ -358,12 +279,14 @@ function openTicketDetailModal(ticketId) {
             $("#action-cancel-btn").attr("data-ticket-id", data.id);
             $("#action-solve-btn").attr("href", "/Ticket/Solve/" + data.id);
             $("#action-edit-btn").attr("href", "/HelpDesk/ManageTicket/EditTicket/" + data.id);
+            $("#action-history-btn").attr("href", "/Ticket/History/" + data.id);
+            $("#action-detail-btn").attr("href", "/Ticket/TicketDetail/" + data.id);
 
             if (!data.solution || data.solution == "-") {
                 $('#ticket-solution').text("This ticket is not solved yet.");
             }
             else {
-                $('#ticket-solution').text(data.solution);
+                $('#ticket-solution').html(data.solution);
             }
 
             $('#ticket-description-attachments').empty();
@@ -385,31 +308,31 @@ function openTicketDetailModal(ticketId) {
                 $('#action-solve-btn').show();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").show();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 2) {
                 $('#ticket-status').html(getStatusLabel('Assigned'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").show();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 3) {
                 $('#ticket-status').html(getStatusLabel('Solved'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 4) {
                 $('#ticket-status').html(getStatusLabel('Unapproved'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").show();
+                $(".reopen-li").show();
             } else if (data.status == 5) {
                 $('#ticket-status').html(getStatusLabel('Cancelled'));
                 $('#action-solve-btn').hide();
                 $("#action-edit-btn").show();
                 $("#action-cancel-btn").hide();
-                $("#reopen-div").hide();
+                $(".reopen-li").hide();
             } else if (data.status == 6) {
                 $('#ticket-status').html(getStatusLabel('Closed'));
                 $('#action-solve-btn').hide();
@@ -434,7 +357,7 @@ function openTicketDetailModal(ticketId) {
             $('#ticket-solution, #ticket-description').trunk8({
                 tooltip: false,
                 lines: 3,
-                fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
+                fill: '&hellip; <a id="see-more" href="/Ticket/TicketDetail/' + data.id + '">See More</a>'
             });
         },
         failure: function (data) {
@@ -442,8 +365,6 @@ function openTicketDetailModal(ticketId) {
         }
     });
 }
-
-
 
 $(document).ready(function () {
     setActiveTicketMenu();
@@ -497,7 +418,7 @@ $(document).ready(function () {
                 noty({
                     text: "Cannot connect to server!",
                     type: "error",
-                    layout: "topCenter",
+                    layout: "topRight",
                     timeout: 2000
                 });
             }
@@ -509,7 +430,7 @@ $(document).ready(function () {
             noty({
                 text: "Less than 2 tickets, can not merge!",
                 type: "error",
-                layout: "topCenter",
+                layout: "topRight",
                 timeout: 2000
             });
         } else {
@@ -542,7 +463,7 @@ $(document).ready(function () {
                     noty({
                         text: data.msg,
                         type: "error",
-                        layout: "topCenter",
+                        layout: "topRight",
                         timeout: 2000
                     });
                     $("#modal-merge-ticket").modal("hide");
@@ -557,7 +478,7 @@ $(document).ready(function () {
                 noty({
                     text: "Cannot connect to server!",
                     type: "error",
-                    layout: "topCenter",
+                    layout: "topRight",
                     timeout: 2000
                 });
             }
@@ -669,6 +590,10 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("*").tooltip({
+        disabled: true
+    });
 });
 
 $("#refer-older-ticket-link").click(function () {
@@ -730,7 +655,7 @@ var initOlderTicketsTable = function () {
                 "sortable": false,
                 "width": "45%",
                 "render": function (data, type, row) {
-                    return (row.Description == "") ? "-" : '<span class="description-text">' + row.Description + '</span>';
+                    return '<span class="description-text">' + row.Description + '</span>';
                 }
             },
             {
@@ -764,17 +689,24 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
         success: function (data) {
             if (data.success) {
                 var ticket = data.data;
-                $("[name='Subject']").val(ticket.Subject);
-                $("[name='Description']").val(ticket.Description);
+                $("[name='Subject']:not([readonly])").val(ticket.Subject);
+                $("[name='Description']:not([readonly])").val(ticket.Description);
                 if (ticket.Type != 0) {
                     $("[name='Type']").val(ticket.Type);
                 }
                 $("[name='ImpactDetail']").val(ticket.ImpactDetail);
-                $("[name='ScheduleStartDate']").val(ticket.ScheduleStartDate);
-                $("[name='ScheduleEndDate']").val(ticket.ScheduleEndDate);
-                $("[name='ActualStartDate']").val(ticket.ActualStartDate);
-                $("[name='ActualEndDate']").val(ticket.ActualEndDate);
+                $("[name='ScheduleStartDate']").val(ticket.ScheduleStartDateString);
+                $("[name='ScheduleEndDate']").val(ticket.ScheduleEndDateString);
+                $("[name='ActualStartDate']").val(ticket.ActualStartDateString);
+                $("[name='ActualEndDate']").val(ticket.ActualEndDateString);
                 $("[name='Solution']").val(ticket.Solution);
+                if (ticket.Tags) {
+                    var tags = ticket.Tags.split(',');
+                    for (i = 0; i < tags.length; i++) {
+                        $('#tags').tagit('createTag', tags[i]);
+                    }
+                }
+                $("[name='Note']").val(ticket.Solution);
 
                 if (ticket.UrgencyId != 0) {
                     loadInitDropdown('ddl-urgency', ticket.Urgency, ticket.UrgencyId);
@@ -857,4 +789,20 @@ var showReassignModal = function (obj) {
     $("#reassign-validation-message").hide();
     $("#modal-reassign-ticket").css("z-index", "1100");
     $("#modal-reassign-ticket").modal("show");
+}
+
+var generateTags = function () {
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetTags",
+        type: "GET",
+        dataType: "json",
+        data: {
+            subject: $("[name='Subject']").val()
+        },
+        success: function (data) {
+            for (i = 0; i < data.data.length; i++) {
+                $('#tags').tagit('createTag', data.data[i]);
+            }
+        }
+    });
 }

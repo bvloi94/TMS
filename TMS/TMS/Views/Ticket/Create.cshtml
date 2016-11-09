@@ -1,23 +1,18 @@
 ﻿@{
-    Layout = "~/Views/Shared/TMSRequesterLayout.cshtml";
+    Layout = "~/Views/Shared/_TopLayout.cshtml";
 }
-@model TMS.ViewModels.RequesterTicketViewModel
+@model TMS.ViewModels.BasicTicketViewModel
 @{
     ViewBag.Title = "Create ticket";
 }
 
 <style>
-    h4, h5 {
-        color: #345aaa;
-        font-weight: bold;
-    }
-
     .inputform {
         padding: 20px;
     }
 
     input, textarea, select {
-        max-width: 800px;
+        max-width: 900px;
     }
 
     .required {
@@ -34,6 +29,9 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-solid">
+            <div class="box-header with-border" style="padding: 0px 25px">
+                <h4 class="text-green" style="padding: 7px 0px">CREATE TICKET</h4>
+            </div>
             @using (Html.BeginForm("Create", "Ticket", FormMethod.Post, new { @id = "create-ticket-form", @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
             {
                 @Html.AntiForgeryToken()
@@ -58,7 +56,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-8" style="text-align: center" >
-                        <input type="button" id="saveBtn" value="Save" class="btn btn-primary btn-flat button" />
+                        <input type="button" id="saveBtn" value="Save" class="btn btn-success btn-flat button" />
                         <a class="btn btn-default btn-flat button" href="@(Url.Action("Index", "Ticket"))">Cancel</a>
                     </div>
                 </div>
@@ -86,7 +84,7 @@
                     else {
                         noty({
                             text: data.msg,
-                            layout: "topRight",
+                            layout: "topCenter",
                             type: "success",
                             timeout: 2500
                         });

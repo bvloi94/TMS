@@ -38,12 +38,11 @@
                 <h4 class="modal-title">Department</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal">
+                <div class="form-horizontal">
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="name-txt">
-                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -52,7 +51,13 @@
                             <textarea class="form-control" rows="3" placeholder="Description" id="description-txt"></textarea>
                         </div>
                     </div>
-                </form>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <p id="name-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" id="create-btn" onclick="createDepartment()">Save</button>
@@ -141,41 +146,44 @@
         }
 
         var createDepartment = function () {
-            var name = $("#name-txt").val();
-            if (name.trim() === "") {
-                $("#name-validation-message").html("Name is required!");
-                $("#name-validation-message").show();
-            } else if (name.trim().length < 4) {
-                $("#name-validation-message").html("Name must be longer than 4 characters!");
-                $("#name-validation-message").show();
-            } else {
-                $.ajax({
-                    url: "/Manager/Department/CreateDepartment",
-                    type: "POST",
-                    dataTpye: "JSON",
-                    data: {
-                        name: $("#name-txt").val(),
-                        description: $("#description-txt").val()
-                    },
-                    success: function(data) {
-                        if (data.success) {
-                            $.notify(data.message, "success");
-                            $("#myModal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                $.notify(data.message, "error");
-                            } else {
-                                $("#name-validation-message").html(data.message);
-                                $("#name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function() {
-                        $.notify("Cannot connect to server!", "error");
+            $.ajax({
+                url: "/Manager/Department/CreateDepartment",
+                type: "POST",
+                dataTpye: "JSON",
+                data: {
+                    Name: $("#name-txt").val(),
+                    Description: $("#description-txt").val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#myModal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        $("#name-validation-message").html(data.message);
+                        $("#name-validation-message").show();
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
-                });
-            }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
+                }
+            });
         }
 
         var getDepartmentDetail = function (id) {
@@ -195,57 +203,67 @@
                         $("#create-btn").attr("onclick", "editDepartment('" + id + "')");
                     } else {
                         if (data.error) {
-                            $.notify(data.message, "error");
+                            noty({
+                                text: data.message,
+                                type: "error",
+                                layout: "topRight",
+                                timeout: 2000
+                            });
                         }
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
                 }
             });
         }
 
         var editDepartment = function (id) {
-            //jquery
-            var name = $("#name-txt").val();
-            if (name.trim() === "") {
-                $("#name-validation-message").html("Name is required");
-                $("#name-validation-message").show();
-            } else if (name.trim().length < 4) {
-                $("#name-validation-message").html("Name must be longer than 4 characters! ");
-                $("#name-validation-message").show();
-            } else {
-                //ajax syntax
-                $.ajax(
-                {
-                    url: "/Manager/Department/EditDepartment",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        id: id,
-                        name: $("#name-txt").val(),
-                        description: $("#description-txt").val()
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            $.notify(data.message, "success");
-                            $("#myModal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                $.notify(data.message, "error");
-                            } else if (!data.error) {
-                                $("#name-validation-message").html(data.message);
-                                $("#name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
-                        $.notify("Cannot connect to server!", "error");
+            $.ajax({
+                url: "/Manager/Department/EditDepartment",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    id: id,
+                    Name: $("#name-txt").val(),
+                    Description: $("#description-txt").val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#myModal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        $("#name-validation-message").html(data.message);
+                        $("#name-validation-message").show();
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
-                });
-            }
-        };
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
+                }
+            });
+        }
 
         var showDeleteModal = function (id) {
             $("#yes-btn").attr("onclick", "deleteDepartment('" + id + "')");
@@ -260,16 +278,31 @@
                 data: { id: id },
                 success: function (data) {
                     if (data.success) {
-                        $.notify(data.message, "success");
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
                         $("#delete-modal").modal("hide");
                         reloadDataTable();
-                    } else if (!data.success) {
-                        $.notify(data.message, "error");
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                         $("#delete-modal").modal("hide");
                     }
                 },
                 error: function () {
-                    $.notify(data.message, "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
                 }
             });
 

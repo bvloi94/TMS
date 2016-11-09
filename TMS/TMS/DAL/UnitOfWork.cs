@@ -34,6 +34,7 @@ namespace TMS.DAL
         private GenericRepository<TicketAttachment> _ticketAttachmentRepository;
         private GenericRepository<TicketHistory> _ticketHistoryRepository;
         private GenericRepository<Urgency> _urgencyRepository;
+        private GenericRepository<Notification> _notificationRepository;
 
         public GenericRepository<Category> CategoryRepository
         {
@@ -262,6 +263,18 @@ namespace TMS.DAL
                     this._urgencyRepository = new GenericRepository<Urgency>(_context);
                 }
                 return _urgencyRepository;
+            }
+        }
+
+        public GenericRepository<Notification> NotificationRepository
+        {
+            get
+            {
+                if (this._notificationRepository == null)
+                {
+                    this._notificationRepository = new GenericRepository<Notification>(_context);
+                }
+                return _notificationRepository;
             }
         }
 

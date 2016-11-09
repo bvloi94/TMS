@@ -48,9 +48,9 @@
         <div class="search-area container">
             <h3 class="search-header">Have a Question?</h3>
             <p class="search-tag-line">If you have any question you can ask below or enter what you are looking for!</p>
-            <form id="search-form" class="search-form clearfix" method="get" action="#" autocomplete="off">
-                <input class="search-term required" type="text" id="search-solution" placeholder="Type your search terms here" />
-                <input class="search-btn" type="submit" value="Search" />
+            <form class="search-form clearfix" action="/FAQ/Index" method="GET">
+                <input class="search-term required" name="search" type="text" id="search-solution" placeholder="Type your search terms here" />
+                <input class="search-btn" id="btn-search-solution" type="submit" value="Search" />
                 <div id="search-error-container"></div>
             </form>
         </div>

@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Ticket Management";
 }
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
@@ -12,7 +12,7 @@
         width: 100% !important;
     }
 
-    #ticket-description-attachments a, #ticket-solution-attachments a  {
+    #ticket-description-attachments a, #ticket-solution-attachments a {
         margin: 2px 2px 2px 0px;
         display: inline-block;
     }
@@ -121,7 +121,7 @@
         <!-- /.modal-dialog -->
     </div>
 
-    <div id="detail-modal" class="modal fade" role="dialog">
+    <div id="detail-modal" class="modal" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -345,6 +345,16 @@
                                 </a>
                             </li>
                             <li>
+                                <a id="action-history-btn">
+                                    <i class="fa fa-history" aria-hidden="true"></i> Ticket History
+                                </a>
+                            </li>
+                            <li>
+                                <a id="action-detail-btn">
+                                    <i class="fa fa-info-circle" aria-hidden="true"></i> Ticket Detail
+                                </a>
+                            </li>
+                            <li>
                                 <a id="action-solve-btn">
                                     <i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket
                                 </a>
@@ -354,24 +364,22 @@
                                     <i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket
                                 </a>
                             </li>
-                        </ul>
-                    </div>
-                    <div class="btn-group dropup" id="reopen-div">
-                        <button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Reopen <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li>
+                            <li class="reopen-li"><a href="javascript:void(0)"><strong>Reopen Ticket</strong></a></li>
+                            <li class="reopen-li">
                                 <a href="javascript:void(0)" onclick="showCloseModal(this)" id="reopen-close-btn">
                                     <i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket
                                 </a>
                             </li>
-                            <li>
+                            <li class="reopen-li">
                                 <a href="javascript:void(0)" onclick="showReassignModal(this)" id="reopen-reassign-btn">
                                     <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Reassign
                                 </a>
                             </li>
-                            <li><a id="reopen-resolve-btn"><i class="fa fa-commenting" aria-hidden="true"></i> Re-solve Ticket</a></li>
+                            <li class="reopen-li">
+                                <a id="reopen-resolve-btn">
+                                    <i class="fa fa-commenting" aria-hidden="true"></i> Re-solve Ticket
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <button type="button" class="btn btn-default btn-flat" data-dismiss="modal">Close</button>
@@ -408,7 +416,7 @@
                         <option value="6">Closed</option>
                     </select>&nbsp;&nbsp;
                     <label>Search:</label>
-                    <input type="text" id="search-txt" placeholder="Subject"/>
+                    <input type="text" id="search-txt" placeholder="Subject" />
                 </div>
                 <table class="table" id="ticket-table">
                     <thead>

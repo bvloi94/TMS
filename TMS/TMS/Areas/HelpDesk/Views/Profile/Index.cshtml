@@ -2,13 +2,10 @@
 @model TMS.ViewModels.ProfileHelpdeskViewModel
 @{
     ViewBag.Title = "View Profile";
-    Layout = "~/Areas/Helpdesk/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/Helpdesk/Views/Shared/_TopLayout.cshtml";
 }
-<style>
-    .profileInfo label {
-        text-align: right;
-    }
-</style>
+<link rel="stylesheet" type="text/css" href="~/Content/custom-css/profile.css">
+
 
 <div class="form-horizontal">
     <div class="row">
@@ -96,6 +93,7 @@
                     <div class="form-group">
                         <div class="col-xs-offset-4 col-xs-8">
                             @Html.ActionLink("Update Profile", "UpdateProfile", null, new { @class = "btn btn-success" })
+                            @Html.ActionLink("Change Password", "ChangePassword", new { area = "" }, new { @class = "btn btn-success" })
                         </div>
                     </div>
                 </div>

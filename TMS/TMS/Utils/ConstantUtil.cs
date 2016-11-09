@@ -55,6 +55,9 @@ namespace TMS.Utils
             public const int PhoneCall = 1;
             public const int WebForm = 2;
             public const int Email = 3;
+            public const int SocialNetwork = 4;
+            public const int Forum = 5;
+            public const int Other = 6;
         }
 
         public class TicketModeString
@@ -62,9 +65,10 @@ namespace TMS.Utils
             public static readonly string PhoneCall = "Phone Call";
             public static readonly string WebForm = "Web Form";
             public static readonly string Email = "Email";
+            public static readonly string SocialNetwork = "Social Network";
+            public static readonly string Forum = "Forum";
+            public static readonly string Other = "Other";
         }
-
-
 
         public class TicketStatus
         {
@@ -78,8 +82,8 @@ namespace TMS.Utils
 
         public class ContactEmailInfo
         {
-            public static readonly string MailAddress = "huytcd16@gmail.com";
-            public static readonly string Password = "huydaivuong";
+            public static readonly string MailAddress = "tms.g4.hotro@gmail.com";
+            public static readonly string Password = "mdx4kISu";
         }
 
         public class TypeOfBusinessRuleCondition
@@ -169,5 +173,15 @@ namespace TMS.Utils
             public const string NameReplace = "....";
         }
 
+        public class TicketHistoryType
+        {
+            public const int Created = 1;
+            public const int Updated = 2;
+            public const int Solved = 3;
+            public const int Unapproved = 4;
+            public const int Cancelled = 5;
+            public const int Closed = 6;
+            public const int Merged = 7;
+        }
     }
 }

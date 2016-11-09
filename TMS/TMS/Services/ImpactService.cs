@@ -33,17 +33,10 @@ namespace TMS.Services
             }
         }
 
-        public void AddImpact(Impact impact)
+        public bool AddImpact(Impact impact)
         {
-            try
-            {
-                _unitOfWork.ImpactRepository.Insert(impact);
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.ImpactRepository.Insert(impact);
+            return _unitOfWork.Commit();
         }
 
         public Impact GetImpactById(int id)
@@ -51,36 +44,21 @@ namespace TMS.Services
             return _unitOfWork.ImpactRepository.GetByID(id);
         }
 
-        public void UpdateImpact(Impact impact)
+        public bool UpdateImpact(Impact impact)
         {
-            try
-            {
-                _unitOfWork.ImpactRepository.Update(impact);
-                _unitOfWork.Commit();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
+            _unitOfWork.ImpactRepository.Update(impact);
+            return _unitOfWork.Commit();
         }
 
-        public void DeleteImpact(Impact impact)
+        public bool DeleteImpact(Impact impact)
         {
-            try
+            _unitOfWork.BeginTransaction();
+            foreach (PriorityMatrixItem priorityMatrixItem in impact.PriorityMatrixItems.ToList())
             {
-                foreach (PriorityMatrixItem priorityMatrixItem in impact.PriorityMatrixItems.ToList())
-                {
-                    _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
-                }
-                _unitOfWork.ImpactRepository.Delete(impact);
-                _unitOfWork.Commit();
+                _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            _unitOfWork.ImpactRepository.Delete(impact);
+            return _unitOfWork.CommitTransaction();
         }
 
         public bool IsInUse(Impact impact)

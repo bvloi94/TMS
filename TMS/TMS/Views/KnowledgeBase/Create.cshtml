@@ -1,7 +1,17 @@
-﻿@model TMS.ViewModels.KnowledgeBaseViewModel
+﻿@using TMS.Utils
+@model TMS.ViewModels.KnowledgeBaseViewModel
 @{
-    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Create knowledge Base";
+}
+@{
+    if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.HelpDesk)
+    {
+        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    }
+    else if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.Technician)
+    {
+        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    }
 }
 <link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css" />
 <style>
@@ -17,13 +27,14 @@
     input, textarea, select, .select2 {
         max-width: 674px !important;
     }
+
     .select2 {
-        width: 674px !important;}
+        width: 674px !important;
+    }
 
     .required {
         color: #ff0000;
     }
-
 </style>
 
 <div class="row">
@@ -52,9 +63,10 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label col-md-2">Keyword</label>
+                    <label class="control-label col-md-2">Keywords</label>
                     <div class="col-md-10" style="max-width: 704px;">
                         @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", id = "keyword" })
+                        <a href="javascript:generateKeywords()">Generate keywords</a>
                         @Html.ValidationMessageFor(m => m.Keyword, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -85,6 +97,7 @@
 </div>
 @section scripts{
     <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
+    <script src="~/Content/custom-js/knowledgebase.js"></script>
     <script>
         $(document)
             .ready(function () {
@@ -105,20 +118,9 @@
                 }
             });
 
-        $("#subject-txt")
-            .keyup(function () {
-                getPath();
-            });
+        $("#subject-txt").keyup(function () {
+            getPath();
+        });
 
-        var getPath = function () {
-            $("#path")
-                    .val($("#subject-txt")
-                        .val()
-                        .trim()
-                        .toLowerCase()
-                        .replace(/\s/g, '-')
-                        .replace(/\-{2,}/g, '-')
-                        .replace(/[^\w-]+/g, ''));
-        }
     </script>
 }

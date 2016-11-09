@@ -61,13 +61,18 @@
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="category-name-txt">
-                            <p id="category-name-validation-message" class="text-danger" style="display: none"></p>
+
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Description</label>
                         <div class="col-sm-10">
                             <textarea class="form-control" rows="3" placeholder="Description" id="category-description-txt"></textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <p id="category-name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                 </form>
@@ -95,7 +100,6 @@
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="sub-category-name-txt">
-                            <p id="sub-category-name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -109,6 +113,11 @@
                         <div class="col-sm-10">
                             <select id="sub-category-category-dropdown" class="form-control"></select>
                             <p id="sub-category-category-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <p id="sub-category-name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                 </form>
@@ -136,7 +145,6 @@
                         <label class="col-sm-3 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control" placeholder="Name" id="item-name-txt">
-                            <p id="item-name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                     <div class="form-group">
@@ -150,6 +158,11 @@
                         <div class="col-sm-9">
                             <select id="item-sub-category-dropdown" class="form-control"></select>
                             <p id="item-sub-category-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <p id="item-name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
                 </form>
@@ -436,7 +449,12 @@
                     $('#sub-category-action-btn').attr('onclick', 'createSubCategory()');
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -458,7 +476,12 @@
                     $('#item-action-btn').attr('onclick', 'createItem()');
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -466,134 +489,136 @@
         var createCategory = function () {
             clearValidationError();
             var name = $("#category-name-txt").val();
-            var valid = true;
-            if (name.trim() === "") {
-                $("#category-name-validation-message").html("Name is required!");
-                $("#category-name-validation-message").show();
-                valid = false;
-            }
-            if (valid) {
-                $.ajax({
-                    url: "/Manager/ManageSC/CreateCategory",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        Name: $("#category-name-txt").val(),
-                        Description: $("#category-description-txt").val()
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            $.notify(data.message, "success");
-                            $("#category-modal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                $.notify(data.message, "error");
-                            } else {
-                                $("#category-name-validation-message").html(data.message);
-                                $("#category-name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
-                        $.notify("Cannot connect to server!", "error");
+            $.ajax({
+                url: "/Manager/ManageSC/CreateCategory",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    Name: $("#category-name-txt").val(),
+                    Description: $("#category-description-txt").val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#category-modal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#category-name-validation-message").html(data.message);
+                        $("#category-name-validation-message").show();
                     }
-                });
-            }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
         };
 
         var createSubCategory = function () {
             clearValidationError();
             var name = $("#sub-category-name-txt").val();
             var category = $("#sub-category-category-dropdown").val();
-            var valid = true;
-            if (name.trim() === "") {
-                $("#sub-category-name-validation-message").html("Name is required!");
-                $("#sub-category-name-validation-message").show();
-                valid = false;
-            }
-            if (category === "") {
-                $("#sub-category-category-validation-message").html("Category is required!");
-                $("#sub-category-category-validation-message").show();
-                valid = false;
-            }
 
-            if (valid) {
-                $.ajax({
-                    url: "/Manager/ManageSC/CreateSubCategory",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        Name: name,
-                        Description: $("#sub-category-description-txt").val(),
-                        ParentId: category
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            $.notify(data.message, "success");
-                            $("#sub-category-modal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                $.notify(data.message, "error");
-                            } else {
-                                $("#sub-category-name-validation-message").html(data.message);
-                                $("#sub-category-name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
-                        $.notify("Cannot connect to server!", "error");
+            $.ajax({
+                url: "/Manager/ManageSC/CreateSubCategory",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    Name: name,
+                    Description: $("#sub-category-description-txt").val(),
+                    ParentId: category
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#sub-category-modal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#sub-category-name-validation-message").html(data.message);
+                        $("#sub-category-name-validation-message").show();
                     }
-                });
-            }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
         };
 
         var createItem = function () {
             clearValidationError();
             var name = $("#item-name-txt").val();
             var sub_category = $("#item-sub-category-dropdown").val();
-            var valid = true;
-            if (name.trim() === "") {
-                $("#item-name-validation-message").html("Name is required!");
-                $("#item-name-validation-message").show();
-                valid = false;
-            }
-            if (sub_category === "") {
-                $("#item-sub-category-validation-message").html("Sub Category is required!");
-                $("#item-sub-category-validation-message").show();
-                valid = false;
-            }
 
-            if (valid) {
-                $.ajax({
-                    url: "/Manager/ManageSC/CreateItem",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        Name: name,
-                        Description: $("#item-description-txt").val(),
-                        ParentId: sub_category
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            $.notify(data.message, "success");
-                            $("#item-modal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                $.notify(data.message, "error");
-                            } else {
-                                $("#item-name-validation-message").html(data.message);
-                                $("#item-name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
-                        $.notify("Cannot connect to server!", "error");
+            $.ajax({
+                url: "/Manager/ManageSC/CreateItem",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    Name: name,
+                    Description: $("#item-description-txt").val(),
+                    ParentId: sub_category
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#item-modal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#item-name-validation-message").html(data.message);
+                        $("#item-name-validation-message").show();
                     }
-                });
-            }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
         };
 
         var showEditCategoryModal = function (id) {
@@ -613,12 +638,22 @@
                         $("#category-modal").modal('show');
                     } else {
                         if (data.error) {
-                            $.notify(data.message, "error");
+                            noty({
+                                text: data.message,
+                                type: "error",
+                                layout: "topRight",
+                                timeout: 2000
+                            });
                         }
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -646,11 +681,21 @@
                         $('#sub-category-action-btn').attr("onclick", "editSubCategory('" + id + "')");
                         $("#sub-category-modal").modal('show');
                     } else {
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -678,11 +723,21 @@
                         $('#item-action-btn').attr("onclick", "editItem('" + id + "')");
                         $("#item-modal").modal('show');
                     } else {
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
                 },
                 error: function () {
-                    $.notify("Cannot connect to server!", "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
                 }
             });
         };
@@ -690,137 +745,140 @@
         var editCategory = function (id) {
             clearValidationError();
             var name = $("#category-name-txt").val();
-            var valid = true;
-            if (name.trim() === "") {
-                $("#category-name-validation-message").html("Name is required!");
-                $("#category-name-validation-message").show();
-                valid = false;
-            }
-            if (valid) {
-                $.ajax({
-                    url: "/Manager/ManageSC/EditCategory",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        ID: id,
-                        Name: name,
-                        Description: $("#category-description-txt").val()
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            $.notify(data.message, "success");
-                            $("#category-modal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                $.notify(data.message, "error");
-                            } else {
-                                $("#category-name-validation-message").html(data.message);
-                                $("#category-name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
-                        $.notify("Cannot connect to server!", "error");
+
+            $.ajax({
+                url: "/Manager/ManageSC/EditCategory",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    ID: id,
+                    Name: name,
+                    Description: $("#category-description-txt").val()
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#category-modal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#category-name-validation-message").html(data.message);
+                        $("#category-name-validation-message").show();
                     }
-                });
-            }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
         };
 
         var editSubCategory = function (id) {
             clearValidationError();
             var name = $("#sub-category-name-txt").val();
             var category = $("#sub-category-category-dropdown").val();
-            var valid = true;
-            if (name.trim() === "") {
-                $("#sub-category-name-validation-message").html("Name is required!");
-                $("#sub-category-name-validation-message").show();
-                valid = false;
-            }
-            if (category === "") {
-                $("#sub-category-category-validation-message").html("Category is required!");
-                $("#sub-category-category-validation-message").show();
-                valid = false;
-            }
 
-            if (valid) {
-                $.ajax({
-                    url: "/Manager/ManageSC/EditSubCategory",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        ID: id,
-                        Name: name,
-                        Description: $("#sub-category-description-txt").val(),
-                        ParentId: category
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            $.notify(data.message, "success");
-                            $("#sub-category-modal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                $.notify(data.message, "error");
-                            } else {
-                                $("#sub-category-name-validation-message").html(data.message);
-                                $("#sub-category-name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
-                        $.notify("Cannot connect to server!", "error");
+            $.ajax({
+                url: "/Manager/ManageSC/EditSubCategory",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    ID: id,
+                    Name: name,
+                    Description: $("#sub-category-description-txt").val(),
+                    ParentId: category
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#sub-category-modal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#sub-category-name-validation-message").html(data.message);
+                        $("#sub-category-name-validation-message").show();
                     }
-                });
-            }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
         };
 
         var editItem = function (id) {
             clearValidationError();
             var name = $("#item-name-txt").val();
             var sub_category = $("#item-sub-category-dropdown").val();
-            var valid = true;
-            if (name.trim() === "") {
-                $("#item-name-validation-message").html("Name is required!");
-                $("#item-name-validation-message").show();
-                valid = false;
-            }
-            if (sub_category === "") {
-                $("#item-sub-category-validation-message").html("Sub Category is required!");
-                $("#item-sub-category-validation-message").show();
-                valid = false;
-            }
 
-            if (valid) {
-                $.ajax({
-                    url: "/Manager/ManageSC/EditItem",
-                    dataType: "json",
-                    type: "POST",
-                    data: {
-                        ID: id,
-                        Name: name,
-                        Description: $("#item-description-txt").val(),
-                        ParentId: sub_category
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            $.notify(data.message, "success");
-                            $("#item-modal").modal("hide");
-                            reloadDataTable();
-                        } else {
-                            if (data.error) {
-                                $.notify(data.message, "error");
-                            } else {
-                                $("#item-name-validation-message").html(data.message);
-                                $("#item-name-validation-message").show();
-                            }
-                        }
-                    },
-                    error: function () {
-                        $.notify("Cannot connect to server!", "error");
+            $.ajax({
+                url: "/Manager/ManageSC/EditItem",
+                dataType: "json",
+                type: "POST",
+                data: {
+                    ID: id,
+                    Name: name,
+                    Description: $("#item-description-txt").val(),
+                    ParentId: sub_category
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $("#item-modal").modal("hide");
+                        reloadDataTable();
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#item-name-validation-message").html(data.message);
+                        $("#item-name-validation-message").show();
                     }
-                });
-            }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
         };
 
         var showDeleteModal = function (id) {
@@ -838,20 +896,34 @@
                 },
                 success: function (data) {
                     if (data.success) {
-                        $.notify(data.message, "success");
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
                         $("#delete-modal").modal("hide");
                         reloadDataTable();
                     } else if (!data.success) {
-                        $.notify(data.message, "error");
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                         $("#delete-modal").modal("hide");
                     }
                 },
                 error: function () {
-                    $.notify(data.message, "error");
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
+                    });
                     $("#delete-modal").modal("hide");
                 }
             });
-
         };
 
         var showTreeViewModal = function () {

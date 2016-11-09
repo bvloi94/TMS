@@ -1,8 +1,8 @@
-﻿@model TMS.Models.Ticket
+﻿@using TMS.Utils
+@model TMS.Models.Ticket
 @{
-    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Ticket Management";
-
 }
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
 <style>
@@ -33,8 +33,7 @@
             <div class="box-body">
                 <form class="form-horizontal" role="form" id="form-new-ticket" method="POST" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
-                    <div class="col-md-2 col-xs-1"></div>
-                    <div class="col-md-8 col-xs-10">
+                    <div class="col-md-offset-2 col-xs-offset-1 col-md-8 col-xs-10">
                         <div class="row form-group">
                             <div class="col-md-12 col-xs-12">
                                 <label class="control-label">SUBJECT <font color="red">*</font></label>
@@ -49,7 +48,7 @@
                                 <label class="control-label">DESCRIPTION</label>
                             </div>
                             <div class="col-md-12 col-xs-12">
-                                <textarea class="form-control textarea" id="descriptionEditor" name="Description" placeholder="Description" rows="5"></textarea>
+                                @Html.TextAreaFor(m => m.Description, new { @class = "form-control textarea", placeholder = "Description", rows = "10" })
                             </div>
                             <div class="col-md-12 col-xs-12">
                                 <input class="form-control" type="file" id="descriptionFiles" name="descriptionFiles" multiple>
@@ -91,39 +90,49 @@
                         </div>
 
                         <div class="row form-group">
-                            <div class="col-md-8 col-xs-8">
+                            <div class="col-md-6 col-xs-6">
                                 <label class="control-label">IMPACT DETAIL</label>
-                                <textarea class="form-control" name="ImpactDetail" placeholder="Impact Detail" rows="4"></textarea>
+                                @Html.TextAreaFor(m => m.ImpactDetail, new { @class = "form-control", placeholder = "Impact Detail", rows = "4" })
                             </div>
-                            <div class="col-md-4 col-xs-4">
+                            <div class="col-md-6 col-xs-6">
                                 <label class="control-label">TYPE</label>
                                 <select class="form-control" name="Type">
-                                    <option value>None</option>
+                                    <option value="0">None</option>
                                     <option value="1">Request</option>
                                     <option value="2">Problem</option>
                                     <option value="3">Change</option>
                                 </select>
+                                <label class="control-label">MODE <font color="red">*</font></label>
+                                <select class="form-control" name="Mode">
+                                    <option value="@ConstantUtil.TicketMode.PhoneCall">@ConstantUtil.TicketModeString.PhoneCall</option>
+                                    <option value="@ConstantUtil.TicketMode.SocialNetwork">@ConstantUtil.TicketModeString.SocialNetwork</option>
+                                    <option value="@ConstantUtil.TicketMode.Forum">@ConstantUtil.TicketModeString.Forum</option>
+                                    <option value="@ConstantUtil.TicketMode.Other" selected>@ConstantUtil.TicketModeString.Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
                                 <label class="control-label">CATEGORY</label>
                                 <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
-
                             </div>
                         </div>
                         <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">SCHEDULE START DATE</label>
-                                <input type="text" class="form-control datetimep" name="ScheduleStartDate" />
+                                @Html.TextBoxFor(m => m.ScheduleStartDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.ToString(ConstantUtil.DateTimeFormat) })
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">SCHEDULE END DATE</label>
-                                <input type="text" class="form-control datetimep" name="ScheduleEndDate" />
+                                @Html.TextBoxFor(m => m.ScheduleEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.AddDays(+7).ToString(ConstantUtil.DateTimeFormat) })
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">ACTUAL START DATE</label>
-                                <input type="text" class="form-control datetimep" name="ActualStartDate" />
+                                @Html.TextBoxFor(m => m.ActualStartDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.ToString(ConstantUtil.DateTimeFormat) })
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">ACTUAL END DATE</label>
-                                <input type="text" class="form-control datetimep" name="ActualEndDate" />
+                                @Html.TextBoxFor(m => m.ActualEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.AddDays(+7).ToString(ConstantUtil.DateTimeFormat) })
                             </div>
                         </div>
                         <div class="row form-group">
@@ -131,10 +140,27 @@
                                 <label class="control-label">SOLUTION</label>
                             </div>
                             <div class="col-md-12 col-xs-12">
-                                <textarea class="form-control textarea" id="solutionEditor" name="Solution" placeholder="" rows="5"></textarea>
+                                @Html.TextAreaFor(m => m.Solution, new { @class = "form-control textarea", placeholder = "Solution", rows = "10" })
                             </div>
                             <div class="col-md-12 col-xs-12">
                                 <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">TAGS</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                <input type="text" name="Tags" id="tags" class="form-control" />
+                                <a href="javascript:generateTags()">Generate tags</a>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">NOTE</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                @Html.TextAreaFor(m => m.Note, new { @class = "form-control textarea", placeholder = "Note", rows = "5" })
                             </div>
                         </div>
                         <div class="row form-group" style="text-align: center;">
@@ -149,7 +175,6 @@
                     </div>
                     <div class="col-md-2 col-xs-1"></div>
                 </form>
-
             </div>
         </div>
     </div>
@@ -466,6 +491,7 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/helpdesk-manage-ticket")
     <script src="~/Content/Plugins/mark/jquery.mark.min.js"></script>
+    <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
     <script>
         var requesterTable = null;
 
@@ -497,73 +523,63 @@
         //$('#descriptionFiles').addEventListener('change', handleFileSelect, false);
 
 
-        $("[data-role=btn-submit-new-ticket]")
-            .on("click",
-                function () {
-                    $("[data-role=btn-submit-new-ticket]").prop("disabled", true);
-                    $("[data-role=btn-cancel]").prop("disabled", true);
-                    var formData = new FormData($('#form-new-ticket')[0]);
-                    //var token = $('input[name="__RequestVerificationToken"]', $("#form-new-ticket")).val();
-                    //formData.append('__RequestVerificationToken', token);
-                    //formData.append('descriptionFiles', $('input[type="file"][name="descriptionFiles"]')[0].files[0]);
-                    //var formData = $("#form-new-ticket").serialize();
-                    $.ajax({
-                        "url": "/HelpDesk/ManageTicket/AddNewTicket",
-                        "method": "POST",
-                        "data": formData,
-                        "success": function (data) {
-                            if (data.success) {
-                                noty({
-                                    text: "Ticket was created successfully!",
-                                    layout: "topCenter",
-                                    type: "success",
-                                    timeout: 300,
-                                    callback: {
-                                        onClose: function () {
-                                            window.location.href = "/HelpDesk/ManageTicket";
-                                        }
-                                    }
-                                });
-                            } else {
-                                $("[data-role=btn-submit-new-ticket]").prop("disabled", false);
-                                $("[data-role=btn-cancel]").prop("disabled", false);
-                                noty({
-                                    text: data.msg,
-                                    type: "error",
-                                    layout: "topRight",
-                                    timeout: 2000
-                                });
-                                if (data.data != null) {
-                                    $("#form-new-ticket [data-role=group-form-error]").html("");
-                                    for (var i = 0; i < data.data.length; i++) {
-                                        $("#form-new-ticket [data-role=group-form-error]")
-                                            .append($("<p/>",
-                                            {
-                                                "html": $("<font/>",
-                                                {
-                                                    "color": "red",
-                                                    "html": "*" + data.data[i].Message
-                                                })
-                                            }));
-                                    }
+        $("[data-role=btn-submit-new-ticket]").on("click", function () {
+            $("[data-role=btn-submit-new-ticket]").prop("disabled", true);
+            $("[data-role=btn-cancel]").prop("disabled", true);
+            var formData = new FormData($('#form-new-ticket')[0]);
+            $.ajax({
+                "url": "/HelpDesk/ManageTicket/AddNewTicket",
+                "method": "POST",
+                "data": formData,
+                "success": function (data) {
+                    if (data.success) {
+                        noty({
+                            text: "Ticket was created successfully!",
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 300,
+                            callback: {
+                                onClose: function () {
+                                    window.location.href = "/HelpDesk/ManageTicket";
                                 }
                             }
-                        },
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        error: function (e) {
-                            $("[data-role=btn-submit-new-ticket]").prop("disabled", false);
-                            $("[data-role=btn-cancel]").prop("disabled", false);
-                            noty({
-                                text: "Some error occured. Please try again later!",
-                                type: "error",
-                                layout: "topRight",
-                                timeout: 2000
-                            });
-                        }
+                        });
+                    } else {
+                        $("[data-role=btn-submit-new-ticket]").prop("disabled", false);
+                        $("[data-role=btn-cancel]").prop("disabled", false);
+                        noty({
+                            text: data.msg,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#form-new-ticket [data-role=group-form-error]").html("");
+                        $("#form-new-ticket [data-role=group-form-error]")
+                            .append($("<p/>",
+                            {
+                                "html": $("<font/>",
+                                {
+                                    "color": "red",
+                                    "html": "*" + data.msg
+                                })
+                            }));
+                    }
+                },
+                cache: false,
+                contentType: false,
+                processData: false,
+                error: function (e) {
+                    $("[data-role=btn-submit-new-ticket]").prop("disabled", false);
+                    $("[data-role=btn-cancel]").prop("disabled", false);
+                    noty({
+                        text: "Cannot connect to server",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
                     });
-                });
+                }
+            });
+        });
 
         function initDropdownControl() {
             initUrgencyDropdown({
@@ -637,6 +653,7 @@
                 requesterTable = initRequesterTable($("#requester-table"));
                 initOlderTicketsTable();
                 $(self._select2).parent().find(".select2-container").css('width', '');
+                $("#tags").tagit();
             });
     </script>
 }

@@ -329,58 +329,63 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateImpact()
+        public ActionResult CreateImpact(ImpactViewModel model)
         {
-            var name = Request["name"];
-            var description = Request["description"];
-            if (string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(model.Name))
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Please input name"
-                });
-            }
-            else
-            {
-                name = name.Trim();
-                bool isDuplicatedName = _impactService.IsDuplicatedName(null, name);
-                if (isDuplicatedName)
+                model.Name = model.Name.Trim();
+                bool isDuplicateName = _impactService.IsDuplicatedName(null, model.Name);
+                if (isDuplicateName)
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
-                        message = string.Format("'{0}' has already been used.", name)
+                        message = string.Format("'{0}' has already been used.", model.Name)
                     });
                 }
-                else
+            }
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
                 {
-                    Impact impact = new Impact();
-                    impact.Name = name;
-                    impact.Description = description;
-                    try
-                    {
-                        _impactService.AddImpact(impact);
-                        return Json(new
-                        {
-                            success = true,
-                            message = "Create impact successfully!"
-                        });
-                    }
-                    catch
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                     {
                         return Json(new
                         {
                             success = false,
-                            error = true,
-                            message = ConstantUtil.CommonError.DBExceptionError
+                            message = error.ErrorMessage
                         });
                     }
-
                 }
             }
-
+            else
+            {
+                Impact impact = new Impact();
+                impact.Name = model.Name.Trim();
+                impact.Description = model.Description;
+                bool resultInsert = _impactService.AddImpact(impact);
+                if (resultInsert)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create impact successfully!"
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
         }
 
         [HttpGet]
@@ -412,65 +417,71 @@ namespace TMS.Areas.Manager.Controllers
         [HttpPost]
         public ActionResult EditImpact(int? id, ImpactViewModel model)
         {
-
             if (id.HasValue)
             {
-                if (string.IsNullOrWhiteSpace(model.Name))
+                if (!string.IsNullOrWhiteSpace(model.Name))
                 {
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Please input name"
-                    });
-                }
-                else
-                {
-                    var name = model.Name.Trim();
-                    bool isDuplicatedName = _impactService.IsDuplicatedName(id, name);
-                    if (isDuplicatedName)
+                    model.Name = model.Name.Trim();
+                    bool isDuplicateName = _impactService.IsDuplicatedName(id, model.Name);
+                    if (isDuplicateName)
                     {
                         return Json(new
                         {
                             success = false,
-                            error = false,
-                            message = string.Format("'{0}' has already been used.", name)
+                            message = string.Format("'{0}' has already been used.", model.Name)
                         });
                     }
-                    else
+                }
+                if (!ModelState.IsValid)
+                {
+                    foreach (ModelState modelState in ViewData.ModelState.Values)
                     {
-                        Impact impact = _impactService.GetImpactById(id.Value);
-                        impact.Name = name;
-                        impact.Description = model.Description;
-                        try
-                        {
-                            _impactService.UpdateImpact(impact);
-                            return Json(new
-                            {
-                                success = true,
-                                message = "Update impact successfully!"
-                            });
-                        }
-                        catch (Exception)
+                        foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                         {
                             return Json(new
                             {
                                 success = false,
-                                error = true,
-                                message = ConstantUtil.CommonError.DBExceptionError
+                                message = error.ErrorMessage
                             });
                         }
-
-
                     }
                 }
+                else
+                {
+                    var name = model.Name.Trim();
+                    Impact impact = _impactService.GetImpactById(id.Value);
+                    impact.Name = name;
+                    impact.Description = model.Description;
+                    bool resultUpdate = _impactService.UpdateImpact(impact);
+                    if (resultUpdate)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Update impact successfully!"
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
+                }
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.DBExceptionError
+                });
             }
             else
             {
                 return Json(new
                 {
                     success = false,
-                    error = true,
-                    message = "Cannot update impact!"
+                    message = "Unavailable impact!"
                 });
             }
         }
@@ -484,107 +495,107 @@ namespace TMS.Areas.Manager.Controllers
                 {
                     success = false,
                     error = false,
-                    message = "Delete impact unsuccessfully!"
+                    message = "Unavailable impact."
                 });
             }
 
             Impact impact = _impactService.GetImpactById(id.Value);
-
             if (impact == null)
             {
                 return Json(new
                 {
                     success = false,
-                    error = true,
-                    message = "Delete impact unsuccessfully!"
+                    message = "Unavailable impact!"
                 });
             }
-
-            try
+            if (_impactService.IsInUse(impact))
             {
-                if (_impactService.IsInUse(impact))
+                return Json(new
                 {
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Impact is being used! Can not be deleted!"
-                    });
-                }
-                else
+                    success = false,
+                    message = "Impact is being used! Can not be deleted!"
+                });
+            }
+            else
+            {
+                bool resultDelete = _impactService.DeleteImpact(impact);
+                if (resultDelete)
                 {
-                    _impactService.DeleteImpact(impact);
                     return Json(new
                     {
                         success = true,
                         message = "Delete impact successfully!"
                     });
                 }
-            }
-            catch (Exception)
-            {
-                return Json(new
+                else
                 {
-                    success = false,
-                    error = true,
-                    message = ConstantUtil.CommonError.DBExceptionError
-                });
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
+                }
             }
-
         }
 
         [HttpPost]
-        public ActionResult CreatePriority()
+        public ActionResult CreatePriority(PriorityViewModel model)
         {
-            var name = Request["name"];
-            var description = Request["description"];
-            if (string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(model.Name))
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Please input name"
-                });
-            }
-            else
-            {
-                name = name.Trim();
-                bool isDuplicateName = _priorityService.IsDuplicateName(null, name);
+                model.Name = model.Name.Trim();
+                bool isDuplicateName = _priorityService.IsDuplicateName(null, model.Name);
                 if (isDuplicateName)
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
-                        message = string.Format("'{0}' has already been used. ", name)
+                        message = string.Format("'{0}' has already been used.", model.Name)
                     });
                 }
-                else
+            }
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
                 {
-                    Priority priority = new Priority();
-                    priority.Name = name;
-                    priority.Description = description;
-                    try
-                    {
-                        _priorityService.AddPriority(priority);
-                        return Json(new
-                        {
-                            success = true,
-                            message = "Create priority sucessfull!"
-                        });
-                    }
-                    catch (Exception)
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                     {
                         return Json(new
                         {
                             success = false,
-                            error = true,
-                            message = ConstantUtil.CommonError.DBExceptionError
+                            message = error.ErrorMessage
                         });
-
                     }
                 }
-
             }
+            else
+            {
+                Priority priority = new Priority();
+                priority.Name = model.Name.Trim();
+                priority.Description = model.Description;
+                bool resultInsert = _priorityService.AddPriority(priority);
+                if (resultInsert)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create priority sucessfull!"
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
         }
 
         [HttpGet]
@@ -613,56 +624,64 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateUrgency()
+        public ActionResult CreateUrgency(UrgencyViewModel model)
         {
-            var name = Request["name"];
-            var description = Request["description"];
-            if (string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(model.Name))
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Please input name."
-                });
-            }
-            else
-            {
-                name = name.Trim();
-                bool isDuplicatedName = _urgencyService.IsDuplicatedName(null, name);
-                if (isDuplicatedName)
+                model.Name = model.Name.Trim();
+                bool isDuplicateName = _urgencyService.IsDuplicatedName(null, model.Name);
+                if (isDuplicateName)
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
-                        message = string.Format("'{0}' has already been used.", name)
+                        message = string.Format("'{0}' has already been used.", model.Name)
                     });
                 }
-                else
+            }
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
                 {
-                    Urgency urgency = new Urgency();
-                    urgency.Name = name;
-                    urgency.Description = description;
-                    try
-                    {
-                        _urgencyService.AddUrgency(urgency);
-                        return Json(new
-                        {
-                            success = true,
-                            message = "Create urgency successfully!"
-                        });
-                    }
-                    catch
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                     {
                         return Json(new
                         {
                             success = false,
-                            error = true,
-                            message = ConstantUtil.CommonError.DBExceptionError
+                            message = error.ErrorMessage
                         });
                     }
                 }
             }
+            else
+            {
+                Urgency urgency = new Urgency();
+                urgency.Name = model.Name.Trim();
+                urgency.Description = model.Description;
+
+                bool resultInsert = _urgencyService.AddUrgency(urgency);
+                if (resultInsert)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create urgency successfully!"
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
         }
 
         [HttpGet]
@@ -695,61 +714,69 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (id.HasValue)
             {
-                if (string.IsNullOrWhiteSpace(model.Name))
+                if (!string.IsNullOrWhiteSpace(model.Name))
                 {
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Please input name."
-                    });
-                }
-                else
-                {
-                    var name = model.Name.Trim();
-                    bool isDuplicatedName = _urgencyService.IsDuplicatedName(id, name);
-                    if (isDuplicatedName)
+                    model.Name = model.Name.Trim();
+                    bool isDuplicateName = _urgencyService.IsDuplicatedName(id, model.Name);
+                    if (isDuplicateName)
                     {
                         return Json(new
                         {
                             success = false,
-                            error = false,
-                            message = String.Format("'{0}' has already been used.", name)
+                            message = string.Format("'{0}' has already been used.", model.Name)
                         });
                     }
-                    else
+                }
+                if (!ModelState.IsValid)
+                {
+                    foreach (ModelState modelState in ViewData.ModelState.Values)
                     {
-                        Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
-                        urgency.Name = name;
-                        urgency.Description = model.Description;
-                        try
-                        {
-                            _urgencyService.UpdateUrgency(urgency);
-                            return Json(new
-                            {
-                                success = true,
-                                message = "Update urgency successfully!"
-                            });
-                        }
-                        catch (Exception)
+                        foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                         {
                             return Json(new
                             {
                                 success = false,
-                                error = true,
-                                message = ConstantUtil.CommonError.DBExceptionError
+                                message = error.ErrorMessage
                             });
                         }
                     }
                 }
+                else
+                {
+                    Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
+                    urgency.Name = model.Name.Trim();
+                    urgency.Description = model.Description;
 
+                    bool resultUpdate = _urgencyService.UpdateUrgency(urgency);
+                    if (resultUpdate)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Update urgency successfully!"
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
+                }
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.DBExceptionError
+                });
             }
             else
             {
                 return Json(new
                 {
                     success = false,
-                    error = true,
-                    message = "Cannot update urgency!"
+                    message = "Unavailable urgency!"
                 });
             }
         }
@@ -759,54 +786,62 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (id.HasValue)
             {
-                if (string.IsNullOrWhiteSpace(model.Name))
+                if (!string.IsNullOrWhiteSpace(model.Name))
                 {
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Please input name."
-                    });
-                }
-                else
-                {
-                    var name = model.Name.Trim();
-                    bool isDuplicatedName = _priorityService.IsDuplicateName(id, name);
-                    if (isDuplicatedName)
+                    model.Name = model.Name.Trim();
+                    bool isDuplicateName = _priorityService.IsDuplicateName(id, model.Name);
+                    if (isDuplicateName)
                     {
                         return Json(new
                         {
                             success = false,
-                            error = false,
-                            message = string.Format("'{0}' has already been used.", name)
+                            message = string.Format("'{0}' has already been used.", model.Name)
                         });
                     }
-                    else
+                }
+                if (!ModelState.IsValid)
+                {
+                    foreach (ModelState modelState in ViewData.ModelState.Values)
                     {
-                        Priority priority = _priorityService.GetPriorityByID(id.Value);
-                        priority.Name = name;
-                        priority.Description = model.Description;
-                        try
-                        {
-                            _priorityService.UpdatePriority(priority);
-                            return Json(new
-                            {
-                                success = true,
-                                message = "Update priority successfully!"
-                            });
-                        }
-                        catch (Exception)
+                        foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                         {
                             return Json(new
                             {
                                 success = false,
-                                error = true,
-                                message = ConstantUtil.CommonError.DBExceptionError
+                                message = error.ErrorMessage
                             });
-
                         }
                     }
                 }
+                else
+                {
+                    Priority priority = _priorityService.GetPriorityByID(id.Value);
+                    priority.Name = model.Name.Trim();
+                    priority.Description = model.Description;
 
+                    bool resultUpdate = _priorityService.UpdatePriority(priority);
+                    if (resultUpdate)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Update priority successfully!"
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
+                }
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.DBExceptionError
+                });
             }
             else
             {
@@ -814,7 +849,7 @@ namespace TMS.Areas.Manager.Controllers
                 {
                     success = false,
                     error = true,
-                    message = "Cannot update priority!"
+                    message = "Unavailable priority!"
                 });
             }
         }
@@ -827,8 +862,7 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = "Delete priority unsuccessfully!"
+                    message = "Unavailable priority!"
                 });
             }
             Priority priority = _priorityService.GetPriorityByID(id.Value);
@@ -837,13 +871,11 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = true,
-                    message = "Delete priority unsuccessfully!"
+                    message = "Unavailable priority!"
                 });
             }
             else
             {
-
                 if (_priorityService.IsInUse(priority))
                 {
                     return Json(new
@@ -852,26 +884,24 @@ namespace TMS.Areas.Manager.Controllers
                         message = "Priority is being used! Can not be deleted!"
                     });
                 }
-                try
+
+                bool resultDelete = _priorityService.DeletePriority(priority);
+                if (resultDelete)
                 {
-                    _priorityService.DeletePriority(priority);
                     return Json(new
                     {
                         success = true,
                         message = "Delete priority successfully!"
                     });
                 }
-                catch (Exception)
+                else
                 {
                     return Json(new
                     {
                         success = false,
-                        error = true,
                         message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
-
-
             }
         }
 
@@ -883,8 +913,7 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = "Delete urgency unsuccessfully!"
+                    message = "Unavailable urgency!"
                 });
             }
             Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
@@ -893,8 +922,7 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = true,
-                    message = "Delete urgency unsuccessfully!"
+                    message = "Unavailable urgency!"
                 });
             }
             else
@@ -907,39 +935,52 @@ namespace TMS.Areas.Manager.Controllers
                         message = "Urgency is being used! Can not be deleted!"
                     });
                 }
-                try
+                bool resultDelete = _urgencyService.DeleteUrgency(urgency);
+                if (resultDelete)
                 {
-                    _urgencyService.DeleteUrgency(urgency);
                     return Json(new
                     {
                         success = true,
                         message = "Delete urgency successfully!"
                     });
                 }
-                catch (Exception)
+                else
                 {
                     return Json(new
                     {
                         success = false,
-                        error = true,
                         message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
+
             }
         }
 
         [HttpPost]
         public ActionResult CreateCategory(CategoryViewModel model)
         {
-            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name, null);
+            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name);
             if (isDuplicatedName)
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
                     message = string.Format("'{0}' has already been used.", model.Name)
                 });
+            }
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
+                {
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = error.ErrorMessage
+                        });
+                    }
+                }
             }
             else
             {
@@ -947,110 +988,169 @@ namespace TMS.Areas.Manager.Controllers
                 category.Name = model.Name;
                 category.Description = model.Description;
                 category.CategoryLevel = ConstantUtil.CategoryLevel.Category;
-                try
+
+                bool addResult = _categoryService.AddCategory(category);
+                if (addResult)
                 {
-                    _categoryService.AddCategory(category);
                     return Json(new
                     {
                         success = true,
                         message = "Create new category successfully!"
                     });
                 }
-                catch (Exception e)
+                else
                 {
-                    log.Error("Create category error.", e);
                     return Json(new
                     {
                         success = false,
-                        error = true,
                         message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
         }
 
         [HttpPost]
         public ActionResult CreateSubCategory(CategoryViewModel model)
         {
-            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name, model.ParentId);
+            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name);
             if (isDuplicatedName)
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
                     message = string.Format("'{0}' has already been used.", model.Name)
                 });
             }
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
+                {
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = error.ErrorMessage
+                        });
+                    }
+                }
+            }
             else
             {
-                Category category = new Category();
-                category.Name = model.Name;
-                category.Description = model.Description;
-                category.CategoryLevel = ConstantUtil.CategoryLevel.SubCategory;
-                category.ParentID = model.ParentId;
-                try
+                if (!model.ParentId.HasValue)
                 {
-                    _categoryService.AddCategory(category);
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Create new sub category successfully!"
-                    });
-                }
-                catch (Exception e)
-                {
-                    log.Error("Create sub category error.", e);
                     return Json(new
                     {
                         success = false,
-                        error = true,
-                        message = ConstantUtil.CommonError.DBExceptionError
+                        message = "Category is required!"
                     });
                 }
+                else
+                {
+                    Category category = new Category();
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    category.CategoryLevel = ConstantUtil.CategoryLevel.SubCategory;
+                    category.ParentID = model.ParentId;
+                    bool addResult = _categoryService.AddCategory(category);
+                    if (addResult)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Create new sub category successfully!"
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
+                }
             }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
         }
 
         [HttpPost]
         public ActionResult CreateItem(CategoryViewModel model)
         {
-            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name, model.ParentId);
+            bool isDuplicatedName = _categoryService.IsDuplicatedName(null, model.Name);
             if (isDuplicatedName)
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
                     message = string.Format("'{0}' has already been used.", model.Name)
                 });
             }
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
+                {
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = error.ErrorMessage
+                        });
+                    }
+                }
+            }
             else
             {
-                Category category = new Category();
-                category.Name = model.Name;
-                category.Description = model.Description;
-                category.CategoryLevel = ConstantUtil.CategoryLevel.Item;
-                category.ParentID = model.ParentId;
-                try
+                if (!model.ParentId.HasValue)
                 {
-                    _categoryService.AddCategory(category);
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Create new item successfully!"
-                    });
-                }
-                catch (Exception e)
-                {
-                    log.Error("Create item error.", e);
                     return Json(new
                     {
                         success = false,
-                        error = true,
-                        message = ConstantUtil.CommonError.DBExceptionError
+                        message = "Sub Category is required!"
                     });
                 }
+                else
+                {
+                    Category category = new Category();
+                    category.Name = model.Name;
+                    category.Description = model.Description;
+                    category.CategoryLevel = ConstantUtil.CategoryLevel.Item;
+                    category.ParentID = model.ParentId;
+
+                    bool addResult = _categoryService.AddCategory(category);
+                    if (addResult)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Create new item successfully!"
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
+                }
             }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
         }
 
         [HttpGet]
@@ -1142,49 +1242,73 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (model.ID.HasValue)
             {
-                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, null);
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name);
                 if (isDuplicatedName)
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
                         message = string.Format("'{0}' has already been used.", model.Name)
                     });
+                }
+                if (!ModelState.IsValid)
+                {
+                    foreach (ModelState modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = error.ErrorMessage
+                            });
+                        }
+                    }
                 }
                 else
                 {
                     Category category = _categoryService.GetCategoryById(model.ID.Value);
+                    if (category == null)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Unavailable Category!"
+                        });
+                    }
                     category.Name = model.Name;
                     category.Description = model.Description;
-                    try
+
+                    bool updateResult = _categoryService.UpdateCategory(category);
+                    if (updateResult)
                     {
-                        _categoryService.UpdateCategory(category);
                         return Json(new
                         {
                             success = true,
                             message = "Edit category successfully!"
                         });
                     }
-                    catch (Exception e)
+                    else
                     {
-                        log.Error("Edit category error.", e);
                         return Json(new
                         {
                             success = false,
-                            error = true,
                             message = ConstantUtil.CommonError.DBExceptionError
                         });
                     }
                 }
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.DBExceptionError
+                });
             }
             else
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = "Cannot get category detail!"
+                    message = "Unavailable category!"
                 });
             }
         }
@@ -1194,7 +1318,7 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (model.ID.HasValue)
             {
-                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, model.ParentId);
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name);
                 if (isDuplicatedName)
                 {
                     return Json(new
@@ -1204,40 +1328,76 @@ namespace TMS.Areas.Manager.Controllers
                         message = string.Format("'{0}' has already been used.", model.Name)
                     });
                 }
+                if (!ModelState.IsValid)
+                {
+                    foreach (ModelState modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = error.ErrorMessage
+                            });
+                        }
+                    }
+                }
                 else
                 {
-                    Category category = _categoryService.GetCategoryById(model.ID.Value);
-                    category.Name = model.Name;
-                    category.Description = model.Description;
-                    category.ParentID = model.ParentId;
-                    try
+                    if (!model.ParentId.HasValue)
                     {
-                        _categoryService.UpdateCategory(category);
-                        return Json(new
-                        {
-                            success = true,
-                            message = "Edit sub category successfully!"
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        log.Error("Edit sub category error.", e);
                         return Json(new
                         {
                             success = false,
-                            error = true,
-                            message = ConstantUtil.CommonError.DBExceptionError
+                            message = "Category is required!"
                         });
                     }
+                    else
+                    {
+                        Category category = _categoryService.GetCategoryById(model.ID.Value);
+                        if (category == null)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = "Unavailable Sub Category!"
+                            });
+                        }
+                        category.Name = model.Name;
+                        category.Description = model.Description;
+                        category.ParentID = model.ParentId;
+
+                        bool updateResult = _categoryService.UpdateCategory(category);
+                        if (updateResult)
+                        {
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Edit sub category successfully!"
+                            });
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+                    }
                 }
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.DBExceptionError
+                });
             }
             else
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = "Cannot get sub category detail!"
+                    message = "Unavailable Sub Category!"
                 });
             }
         }
@@ -1247,50 +1407,85 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (model.ID.HasValue)
             {
-                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name, model.ParentId);
+                bool isDuplicatedName = _categoryService.IsDuplicatedName(model.ID, model.Name);
                 if (isDuplicatedName)
                 {
                     return Json(new
                     {
                         success = false,
-                        error = false,
                         message = string.Format("'{0}' has already been used.", model.Name)
                     });
                 }
+                if (!ModelState.IsValid)
+                {
+                    foreach (ModelState modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = error.ErrorMessage
+                            });
+                        }
+                    }
+                }
                 else
                 {
-                    Category category = _categoryService.GetCategoryById(model.ID.Value);
-                    category.Name = model.Name;
-                    category.Description = model.Description;
-                    category.ParentID = model.ParentId;
-                    try
+                    if (!model.ParentId.HasValue)
                     {
-                        _categoryService.UpdateCategory(category);
-                        return Json(new
-                        {
-                            success = true,
-                            message = "Edit item successfully!"
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        log.Error("Edit item error.", e);
                         return Json(new
                         {
                             success = false,
-                            error = true,
-                            message = ConstantUtil.CommonError.DBExceptionError
+                            message = "Sub Category is required!"
                         });
                     }
+                    else
+                    {
+                        Category category = _categoryService.GetCategoryById(model.ID.Value);
+                        if (category == null)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = "Unavailable Item!"
+                            });
+                        }
+                        category.Name = model.Name;
+                        category.Description = model.Description;
+                        category.ParentID = model.ParentId;
+
+                        bool updateResult = _categoryService.UpdateCategory(category);
+                        if (updateResult)
+                        {
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Edit item successfully!"
+                            });
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+                    }
                 }
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.DBExceptionError
+                });
             }
             else
             {
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = "Cannot get sub category detail!"
+                    message = "Unavailable Item!"
                 });
             }
         }
@@ -1303,7 +1498,6 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = false,
                     message = "This category has been removed or not existed!"
                 });
             }
@@ -1313,7 +1507,6 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = true,
                     message = "This category has been removed or not existed!"
                 });
             }
@@ -1327,26 +1520,30 @@ namespace TMS.Areas.Manager.Controllers
                         message = "Category is being used! Can not be removed!"
                     });
                 }
-                try
+
+                bool deleteResult = _categoryService.DeleteCategory(category);
+                if (deleteResult)
                 {
-                    _categoryService.DeleteCategory(category);
                     return Json(new
                     {
                         success = true,
                         message = "Delete successfully!"
                     });
                 }
-                catch (Exception e)
+                else
                 {
-                    log.Error("Delete category error.", e);
                     return Json(new
                     {
                         success = false,
-                        error = true,
                         message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
         }
 
         [HttpPost]
@@ -1354,18 +1551,18 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (model.ImpactID.HasValue && model.UrgencyID.HasValue)
             {
-                try
+
+                bool changeResult = _priorityMatrixService.ChangePriorityMatrixItem(model.ImpactID.Value, model.UrgencyID.Value, model.PriorityID);
+                if (changeResult)
                 {
-                    _priorityMatrixService.ChangePriorityMatrixItem(model.ImpactID.Value, model.UrgencyID.Value, model.PriorityID);
                     return Json(new
                     {
                         success = true,
                         message = "Change priority matrix item successfully!"
                     });
                 }
-                catch (Exception e)
+                else
                 {
-                    log.Error("Change priority matrix item error", e);
                     return Json(new
                     {
                         success = false,

@@ -22,10 +22,10 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get();
         }
 
-        public void AddUser(AspNetUser user)
+        public bool AddUser(AspNetUser user)
         {
             _unitOfWork.AspNetUserRepository.Insert(user);
-            _unitOfWork.Commit();
+            return _unitOfWork.Commit();
         }
 
         public AspNetUser GetUserByUsername(string username)
@@ -52,25 +52,18 @@ namespace TMS.Services
                                                                  .Equals("requester")).Any();
         }
 
-        public void EditUser(AspNetUser user)
+        public bool EditUser(AspNetUser user)
         {
             _unitOfWork.AspNetUserRepository.Update(user);
-            _unitOfWork.Commit();
+            return _unitOfWork.Commit();
         }
 
-        public void RemoveUser(string id)
+        public bool RemoveUser(string id)
         {
             AspNetUser user = _unitOfWork.AspNetUserRepository.GetByID(id);
             user.IsActive = false;
             _unitOfWork.AspNetUserRepository.Update(user);
-            try
-            {
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
+            return _unitOfWork.Commit();
         }
 
         public AspNetUser GetUserByEmail(string email)
@@ -124,33 +117,23 @@ namespace TMS.Services
 
         public bool IsActive(string id)
         {
-            return _unitOfWork.AspNetUserRepository.Get(m => m.Id == id && m.IsActive == true).Count() > 0;
+            return _unitOfWork.AspNetUserRepository.Get(m => m.Id == id && m.IsActive == true).Any();
         }
 
         public bool ToggleStatus(AspNetUser user)
         {
             bool? status = user.IsActive;
-            bool isEnable;
             if (status == null || status == false)
             {
                 user.IsActive = true;
-                isEnable = true;
             }
             else
             {
                 user.IsActive = false;
-                isEnable = false;
             }
-            try
-            {
-                _unitOfWork.AspNetUserRepository.Update(user);
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
-            return isEnable;
+
+            _unitOfWork.AspNetUserRepository.Update(user);
+            return _unitOfWork.Commit();
         }
 
         public IEnumerable<AspNetUser> GetActiveTechnicians()

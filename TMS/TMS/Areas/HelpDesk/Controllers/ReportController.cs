@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using TMS.DAL;
@@ -60,35 +62,35 @@ namespace TMS.Areas.HelpDesk.Controllers
             // Type
             switch (type)
             {
-                // All Request 
+                // All Request : All ticket have type request
                 case ConstantUtil.TicketTypeValue.Request:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
                     break;
-                // All Problems
+                // All Problems: All ticket have type problem
                 case ConstantUtil.TicketTypeValue.Problem:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
                     break;
-                // All Request
+                // All Request:  All ticket have type change
                 case ConstantUtil.TicketTypeValue.Change:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
                     break;
-                // All pending requests
+                // All pending requests: All ticket have type request and have status != cancel and closed
                 case ConstantUtil.TicketTypeValue.PendingRequest:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
-                // All pending problems
+                // All pending problems: All ticket have type problems and have status != cancel and closed
                 case ConstantUtil.TicketTypeValue.PendingProblem:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
-                // All pending changes
+                // All pending changes: All ticket have type change and have status != cancel and closed
                 case ConstantUtil.TicketTypeValue.PendingChange:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
                     filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                     // Default All tickets
             }
@@ -110,7 +112,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 p.PriorityID == null ? "-" : _priorityService.GetPriorityByID((int) p.PriorityID).Name,
                 p.TechnicianID == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name
             });
-
 
             return Json(new
             {
@@ -154,20 +155,20 @@ namespace TMS.Areas.HelpDesk.Controllers
                 // All pending requests
                 case ConstantUtil.TicketTypeValue.PendingRequest:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Request);
-                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                 // All pending problems
                 case ConstantUtil.TicketTypeValue.PendingProblem:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Problem);
-                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                 // All pending changes
                 case ConstantUtil.TicketTypeValue.PendingChange:
                     filteredListItems = filteredListItems.Where(p => p.Type == ConstantUtil.TicketType.Change);
-                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled 
-                        && p.Status != ConstantUtil.TicketStatus.Cancelled);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled
+                        && p.Status != ConstantUtil.TicketStatus.Closed);
                     break;
                     // Default All tickets
             }
@@ -179,10 +180,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 // mode
                 case 0:
-                    foreach (TicketModeEnum mode in System.Enum.GetValues(typeof(TicketModeEnum)))
+                    foreach (var mode in typeof(ConstantUtil.TicketMode).GetFields())
                     {
-                        labels.Add(mode.ToString());
-                        var ticketModes = filteredListItems.Where(p => p.Mode == (int)mode);
+                        labels.Add(typeof(ConstantUtil.TicketModeString).GetField(mode.Name).GetValue(null).ToString());
+                        var ticketModes = filteredListItems.Where(p => p.Mode == (int)mode.GetValue(null));
                         data.Add(ticketModes.Count());
                     }
                     return Json(new
@@ -276,27 +277,30 @@ namespace TMS.Areas.HelpDesk.Controllers
                 // Department
                 case 5:
                     {
-                        IEnumerable<AspNetUser> listTechinicians = _userService.GetTechnicians();
+                        IEnumerable<AspNetUser> allTehnicians = _userService.GetTechnicians();
                         IEnumerable<Ticket> techinicianInteTickets = new List<Ticket>();
                         labels.Add("Unassigned");
                         data.Add(filteredListItems.Where(p => p.TechnicianID == null).Count());
-                        foreach (var techinician in listTechinicians)
+                        IEnumerable<Department> departments = _departmentService.GetAll();
+                        foreach (var department in departments)
                         {
-                            techinicianInteTickets = filteredListItems.Where(p => p.TechnicianID == techinician.Id);
-                            IEnumerable<Department> departments = _departmentService.GetAll();
-                            foreach (var department in departments)
+                            int ticketCount = 0;
+                            var listTechOfDepartment = allTehnicians.Where(p => p.DepartmentID == department.ID);
+                            // lay list technician co department la "department"
+                            foreach (var techinician in listTechOfDepartment)
                             {
-                                labels.Add(department.Name);
-                                listTechinicians = listTechinicians.Where(p => p.DepartmentID == department.ID);
-                                data.Add(listTechinicians.Count());
+                                // duyet list ticket theo technician ID 
+                                techinicianInteTickets = filteredListItems.Where(p => p.TechnicianID == techinician.Id);
+                                ticketCount += techinicianInteTickets.Count();
                             }
+                            labels.Add(department.Name);
+                            data.Add(ticketCount);
                         }
                         return Json(new
                         {
                             label = labels,
                             data = data
                         }, JsonRequestBehavior.AllowGet);
-
                     }
                 // Status
                 case 6:
@@ -317,6 +321,34 @@ namespace TMS.Areas.HelpDesk.Controllers
                     }
             }
             return null;
+        }
+
+        [HttpPost]
+        public FileContentResult Export(string GraphImage, string DataImage)
+        {
+            byte[] graphBytes = Convert.FromBase64String(GraphImage.Replace("data:image/png;base64,", String.Empty));
+            byte[] dataBytes = Convert.FromBase64String(DataImage.Replace("data:image/png;base64,", String.Empty));
+            List<byte[]> imagesByte = new List<byte[]>();
+            imagesByte.Add(graphBytes);
+            imagesByte.Add(dataBytes);
+
+            var content = PDFUtil.ReportContent(imagesByte);
+
+            string fileName = DateTime.Now.ToShortDateString().Replace("/", String.Empty) + "report.pdf";
+
+            Response.Buffer = false;
+            Response.Clear();
+            Response.ClearContent();
+            Response.ClearHeaders();
+            Response.AppendHeader("content-disposition", "attachment;filename=" + fileName);
+            Response.AppendHeader("Set-Cookie", "fileDownload=true; path=/");
+            Response.ContentType = "Application/pdf";
+
+            //Write the file content directly to the HTTP content output stream.    
+            Response.BinaryWrite(content);
+            Response.Flush();
+            Response.End();
+            return File(content, "application/pdf");
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

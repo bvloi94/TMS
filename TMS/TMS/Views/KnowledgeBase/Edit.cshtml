@@ -1,8 +1,18 @@
 ﻿@using TMS.Models
+@using TMS.Utils
 @model TMS.ViewModels.KnowledgeBaseViewModel
 @{
-    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
     ViewBag.Title = "Edit knowledge Base";
+}
+@{
+    if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.HelpDesk)
+    {
+        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    }
+    else if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.Technician)
+    {
+        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+    }
 }
 <link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css" />
 
@@ -51,18 +61,25 @@
                 <div class="form-group">
                     <label class="control-label col-md-2">Attach file</label>
                     <div class="col-md-10">
-                        <input type="file" name="SolutionAttachments" multiple class="form-control" placeholder="Drop file here" />
-                        @foreach (SolutionAttachment solutionAttachment in ViewBag.SolutionAttachments)
-                        {
-                            <span>@solutionAttachment.Filename</span>
-                        }
+                        <input class="form-control" type="file" id="SolutionAttachments" name="SolutionAttachments" multiple>
+                        <div style="height: auto; margin-top: 5px;">
+                            @for (int i = 0; i < Model.SolutionAttachmentsList.Count(); i++)
+                            {
+                                <div class="attachment-div" style="display: inline;">
+                                    @Html.HiddenFor(it => Model.SolutionAttachmentsList[i].id)
+                                    @Html.HiddenFor(it => Model.SolutionAttachmentsList[i].name)
+                                    <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.SolutionAttachmentsList[i].id">@Model.SolutionAttachmentsList[i].name</label>
+                                    <span class='attachment-delete'> x </span>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <label class="control-label col-md-2">Keyword</label>
+                    <label class="control-label col-md-2">Keywords</label>
                     <div class="col-md-10" style="max-width: 704px;">
                         @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", id = "keyword" })
+                        <a href="javascript:generateKeywords()">Generate keywords</a>
                         @Html.ValidationMessageFor(m => m.Keyword, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -87,8 +104,6 @@
                         <a class="btn btn-default btn-flat" href="@(Url.Action("Index", "KnowledgeBase"))">Cancel</a>
                     </div>
                 </div>
-
-
             }
         </div>
     </div>
@@ -96,6 +111,7 @@
 
 @section scripts{
     <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
+    <script src="~/Content/custom-js/knowledgebase.js"></script>
     <script>
         $(document)
             .ready(function() {
@@ -126,15 +142,15 @@
                 getPath();
             });
 
-        var getPath = function () {
-            $("#path")
-                    .val($("#subject-txt")
-                        .val()
-                        .trim()
-                        .toLowerCase()
-                        .replace(/\s/g, '-')
-                        .replace(/\-{2,}/g, '-')
-                        .replace(/[^\w-]+/g, ''));
-        }
+
+        $(".attachment-delete")
+        .on("click",
+            function () {
+                var inputs = $(this).parent().find(':input');
+                inputs.each(function (index, element) {
+                    element.value = "";
+                });
+                $(this).parent().addClass("hidden");
+            });
     </script>
 }
