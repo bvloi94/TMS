@@ -83,54 +83,56 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateDepartment()
+        public ActionResult CreateDepartment(DepartmentViewModel model)
         {
-            var name = Request["name"];
-            var description = Request["description"];
-            if (string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(model.Name))
             {
-                return Json(new
-                {
-                    success = false,
-                    message = "Please input name."
-                });
-            }
-            else
-            {
-                name = name.Trim();
-                bool isDuplicateName = _departmentService.IsDuplicateName(null, name);
+                model.Name = model.Name.Trim();
+                bool isDuplicateName = _departmentService.IsDuplicateName(null, model.Name);
                 if (isDuplicateName)
                 {
                     return Json(new
                     {
                         success = false,
-                        message = string.Format("'{0}' has already been used.", name)
+                        message = string.Format("'{0}' has already been used.", model.Name)
                     });
                 }
-                else
+            }
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
                 {
-                    Department department = new Department();
-                    department.Name = name;
-                    department.Description = description;
-                    try
-                    {
-                        _departmentService.AddDepartment(department);
-                        return Json(new
-                        {
-                            success = true,
-                            message = "Create department succesfully!"
-                        });
-                    }
-                    catch (Exception)
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                     {
                         return Json(new
                         {
                             success = false,
-                            message = ConstantUtil.CommonError.DBExceptionError
+                            message = error.ErrorMessage
                         });
                     }
                 }
             }
+            else
+            {
+                Department department = new Department();
+                department.Name = model.Name;
+                department.Description = model.Description;
+
+                bool addResult = _departmentService.AddDepartment(department);
+                if (addResult)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create department succesfully!"
+                    });
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
         }
 
         [HttpGet]
@@ -163,60 +165,70 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (id.HasValue)
             {
-                if (string.IsNullOrWhiteSpace(model.Name))
+                if (!string.IsNullOrWhiteSpace(model.Name))
                 {
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Please input name."
-                    });
-                }
-                else
-                {
-                    var name = model.Name.Trim();
-                    bool isDuplicatedName = _departmentService.IsDuplicateName(id, name);
-                    if (isDuplicatedName)
+                    model.Name = model.Name.Trim();
+                    bool isDuplicateName = _departmentService.IsDuplicateName(id, model.Name);
+                    if (isDuplicateName)
                     {
                         return Json(new
                         {
                             success = false,
-                            error = false,
-                            message = String.Format("'{0}' has already been used.", name)
+                            message = string.Format("'{0}' has already been used.", model.Name)
                         });
                     }
-                    else
+                }
+                if (!ModelState.IsValid)
+                {
+                    foreach (ModelState modelState in ViewData.ModelState.Values)
                     {
-                        Department department = _departmentService.GetDepartmentById(id.Value);
-                        department.Name = name;
-                        department.Description = model.Description;
-                        try
-                        {
-                            _departmentService.EditDepartment(department);
-                            return Json(new
-                            {
-                                success = true,
-                                message = "Update department successfully!"
-                            });
-                        }
-                        catch (Exception)
+                        foreach (System.Web.Mvc.ModelError error in modelState.Errors)
                         {
                             return Json(new
                             {
                                 success = false,
-                                message = ConstantUtil.CommonError.DBExceptionError
+                                message = error.ErrorMessage
                             });
                         }
-
                     }
                 }
+                else
+                {
+                    var name = model.Name.Trim();
+                    Department department = _departmentService.GetDepartmentById(id.Value);
+                    department.Name = name;
+                    department.Description = model.Description;
+
+                    bool resultEdit = _departmentService.EditDepartment(department);
+                    if (resultEdit)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Update department successfully!"
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
+                }
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.DBExceptionError
+                });
             }
             else
             {
                 return Json(new
                 {
                     success = false,
-                    error = true,
-                    message = "Cannot update department!"
+                    message = "Unavailable Department!"
                 });
             }
         }
@@ -229,8 +241,7 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = false,
-                    message = "Delete department unsuccessfully!"
+                    message = "Unavailable Department!"
                 });
             }
             Department department = _departmentService.GetDepartmentById(id.Value);
@@ -239,8 +250,7 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = true,
-                    message = "Delete department unsuccessfully!"
+                    message = "Unavailable Department!"
                 });
             }
             else
@@ -253,26 +263,23 @@ namespace TMS.Areas.Manager.Controllers
                         message = "Department is being used! Can not be deleted!"
                     });
                 }
-                try
+                bool resultDelete = _departmentService.DeleteDepartment(department);
+                if (resultDelete)
                 {
-                    _departmentService.DeleteDepartment(department);
                     return Json(new
                     {
                         success = true,
                         message = "Delete department successfully!"
                     });
                 }
-                catch (Exception)
+                else
                 {
                     return Json(new
                     {
                         success = false,
-                        error = true,
                         message = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
-
-
             }
         }
 

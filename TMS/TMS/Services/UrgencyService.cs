@@ -33,17 +33,10 @@ namespace TMS.Services
             }
         }
 
-        public void AddUrgency(Urgency urgency)
+        public bool AddUrgency(Urgency urgency)
         {
-            try
-            {
-                _unitOfWork.UrgencyRepository.Insert(urgency);
-                _unitOfWork.Commit();
-            }
-            catch
-            {
-                throw;
-            }
+            _unitOfWork.UrgencyRepository.Insert(urgency);
+            return _unitOfWork.Commit();
         }
 
         public Urgency GetUrgencyByID(int id)
@@ -51,19 +44,10 @@ namespace TMS.Services
             return _unitOfWork.UrgencyRepository.GetByID(id);
         }
 
-        public void UpdateUrgency(Urgency urgency)
+        public bool UpdateUrgency(Urgency urgency)
         {
-            try
-            {
-                _unitOfWork.UrgencyRepository.Update(urgency);
-                _unitOfWork.Commit();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
+            _unitOfWork.UrgencyRepository.Update(urgency);
+            return _unitOfWork.Commit();
         }
 
         public bool IsInUse(Urgency urgency)
@@ -71,22 +55,15 @@ namespace TMS.Services
             return _unitOfWork.TicketRepository.Get(m => m.UrgencyID == urgency.ID).Any();
         }
 
-        public void DeleteUrgency(Urgency urgency)
+        public bool DeleteUrgency(Urgency urgency)
         {
-            try
+            _unitOfWork.BeginTransaction();
+            foreach (PriorityMatrixItem priorityMatrixItem in urgency.PriorityMatrixItems.ToList())
             {
-                foreach (PriorityMatrixItem priorityMatrixItem in urgency.PriorityMatrixItems.ToList())
-                {
-                    _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
-                }
-                _unitOfWork.UrgencyRepository.Delete(urgency);
-                _unitOfWork.Commit();
+                _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
             }
-            catch (Exception)
-            {
-                throw;
-            }
-           
+            _unitOfWork.UrgencyRepository.Delete(urgency);
+            return _unitOfWork.CommitTransaction();
         }
     }
 }

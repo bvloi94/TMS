@@ -82,8 +82,8 @@ namespace TMS.Utils
 
         public class ContactEmailInfo
         {
-            public static readonly string MailAddress = "huytcd16@gmail.com";
-            public static readonly string Password = "huydaivuong";
+            public static readonly string MailAddress = "tms.g4.hotro@gmail.com";
+            public static readonly string Password = "mdx4kISu";
         }
 
         public class TypeOfBusinessRuleCondition

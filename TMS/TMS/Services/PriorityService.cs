@@ -34,19 +34,10 @@ namespace TMS.Services
             }
         }
 
-        public void AddPriority(Priority priority)
+        public bool AddPriority(Priority priority)
         {
-            try
-            {
-                _unitOfWork.PriorityRepository.Insert(priority);
-                _unitOfWork.Commit();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
+            _unitOfWork.PriorityRepository.Insert(priority);
+            return _unitOfWork.Commit();
         }
 
         public Priority GetPriorityByID(int id)
@@ -54,18 +45,10 @@ namespace TMS.Services
             return _unitOfWork.PriorityRepository.GetByID(id);
         }
 
-        public void UpdatePriority(Priority priority)
+        public bool UpdatePriority(Priority priority)
         {
-            try
-            {
-                _unitOfWork.PriorityRepository.Update(priority);
-                _unitOfWork.Commit();
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            _unitOfWork.PriorityRepository.Update(priority);
+            return _unitOfWork.Commit();
         }
 
         public bool IsInUse(Priority priority)
@@ -73,10 +56,15 @@ namespace TMS.Services
             return _unitOfWork.TicketRepository.Get(m => m.PriorityID == priority.ID).Any();
         }
 
-        public void DeletePriority(Priority priority)
+        public bool DeletePriority(Priority priority)
         {
-           _unitOfWork.PriorityRepository.Delete(priority);
-           _unitOfWork.Commit();
+            _unitOfWork.BeginTransaction();
+            foreach (PriorityMatrixItem priorityMatrixItem in priority.PriorityMatrixItems.ToList())
+            {
+                _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
+            }
+            _unitOfWork.PriorityRepository.Delete(priority);
+            return _unitOfWork.CommitTransaction();
         }
     }
 }

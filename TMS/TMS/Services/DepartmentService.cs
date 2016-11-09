@@ -26,10 +26,10 @@ namespace TMS.Services
             return _unitOfWork.DepartmentRepository.Get();
         }
 
-        public void AddDepartment(Department dep)
+        public bool AddDepartment(Department department)
         {
-            _unitOfWork.DepartmentRepository.Insert(dep);
-            _unitOfWork.Commit();
+            _unitOfWork.DepartmentRepository.Insert(department);
+            return _unitOfWork.Commit();
         }
 
         public Department GetDepartmentById(int id)
@@ -37,10 +37,10 @@ namespace TMS.Services
             return _unitOfWork.DepartmentRepository.GetByID(id);
         }
 
-        public void EditDepartment(Department department)
+        public bool EditDepartment(Department department)
         {
             _unitOfWork.DepartmentRepository.Update(department);
-            _unitOfWork.Commit();
+            return _unitOfWork.Commit();
         }
 
         public void RemoveDepartment(string id)
@@ -51,10 +51,10 @@ namespace TMS.Services
             _unitOfWork.Commit();
         }
 
-        public void DeleteDepartment(Department department)
+        public bool DeleteDepartment(Department department)
         {
             _unitOfWork.DepartmentRepository.Delete(department);
-            _unitOfWork.Commit();
+            return _unitOfWork.Commit();
         }
 
         public bool IsDuplicateName(int? id, string name)

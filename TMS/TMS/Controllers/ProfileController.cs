@@ -27,7 +27,7 @@ namespace TMS.Controllers
             _unitOfWork = new UnitOfWork();
             _userService = new UserService(_unitOfWork);
         }
-       
+
         public ProfileController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
@@ -58,7 +58,7 @@ namespace TMS.Controllers
             }
         }
 
-     
+
 
         // GET: Profile
         //[CustomAuthorize(Roles = "Requester")]
@@ -146,7 +146,7 @@ namespace TMS.Controllers
             return View("UpdateProfile", model);
         }
 
-        [CustomAuthorize(Roles = "Admin,Helpdesk,Technician,Requester")]
+        [CustomAuthorize(Roles = "Admin,Helpdesk,Technician,Requester,Manager")]
         public ActionResult ChangePassword()
         {
             string role = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name.ToLower();
@@ -155,7 +155,7 @@ namespace TMS.Controllers
         }
 
         // POST: /Manage/ChangePassword
-        [CustomAuthorize(Roles = "Admin,Helpdesk,Technician,Requester")]
+        [CustomAuthorize(Roles = "Admin,Helpdesk,Technician,Requester,Manager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
@@ -171,11 +171,13 @@ namespace TMS.Controllers
                 switch (role)
                 {
                     case "admin":
-                        return RedirectToAction("Index", "Profile", new { area = "Admin"});
+                        return RedirectToAction("Index", "Profile", new { area = "Admin" });
                     case "helpdesk":
                         return RedirectToAction("Index", "Profile", new { area = "Helpdesk" });
                     case "technician":
                         return RedirectToAction("Index", "Profile", new { area = "Technician" });
+                    case "manager":
+                        return RedirectToAction("Index", "Profile", new { area = "Manager" });
                     case "requester":
                         return RedirectToAction("Index");
                 }
@@ -196,6 +198,10 @@ namespace TMS.Controllers
                 else if (error.StartsWith("Name", StringComparison.InvariantCultureIgnoreCase))
                 {
                     ModelState.AddModelError("Username", error);
+                }
+                else
+                {
+                    ModelState.AddModelError("", error);
                 }
             }
         }
