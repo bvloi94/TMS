@@ -33,10 +33,12 @@ namespace TMS.Areas.HelpDesk.Controllers
             AspNetUser user = _userService.GetUserById(userId);
             ProfileHelpdeskViewModel model = new ProfileHelpdeskViewModel();
             model.FullName = user.Fullname;
+            model.Email = user.Email;
             model.Address = user.Address;
             model.DayOfBirth = user.Birthday;
             model.Gender = user.Gender;
             model.Phone = user.PhoneNumber;
+          
 
             ViewBag.Username = user.UserName;
             ViewBag.AvatarURL = user.AvatarURL;
@@ -50,10 +52,11 @@ namespace TMS.Areas.HelpDesk.Controllers
             AspNetUser user = _userService.GetUserById(userId);
             ProfileHelpdeskViewModel model = new ProfileHelpdeskViewModel();
             model.FullName = user.Fullname;
+            model.Email = user.Email;
             model.Phone = user.PhoneNumber;
             model.Address = user.Address;
             model.DayOfBirth = user.Birthday;
-            model.Gender = user.Gender;
+            model.Gender = user.Gender;           
 
             ViewBag.Username = user.UserName;
             ViewBag.AvatarURL = user.AvatarURL;
@@ -65,21 +68,26 @@ namespace TMS.Areas.HelpDesk.Controllers
         public ActionResult EditProfie(ProfileHelpdeskViewModel model)
         {
             string userId = User.Identity.GetUserId();
+            if (_userService.IsDuplicatedEmail(userId, model.Email))
+            {
+                ModelState.AddModelError("Email", String.Format("Email '{0}' is already taken.", model.Email));
+            }
             AspNetUser helpDesk = _userService.GetUserById(userId);
             if (ModelState.IsValid)
             {
                 helpDesk.Fullname = model.FullName;
+                helpDesk.Email = model.Email;
                 helpDesk.Birthday = model.DayOfBirth;
                 helpDesk.Address = model.Address;
                 helpDesk.PhoneNumber = model.Phone;
-                helpDesk.Gender = model.Gender;
+                helpDesk.Gender = model.Gender;               
                 // handle avatar
                 if (model.Avatar != null)
                 {
                     string fileName = model.Avatar.FileName.Replace(Path.GetFileNameWithoutExtension(model.Avatar.FileName), helpDesk.Id);
                     string filePath = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                     model.Avatar.SaveAs(filePath);
-                    helpDesk.AvatarURL = "/Uploads/Avatar/"+ fileName;
+                    helpDesk.AvatarURL = "/Uploads/Avatar/" + fileName;
                 }
                 _userService.EditUser(helpDesk);
                 ViewBag.AvatarURL = helpDesk.AvatarURL;
