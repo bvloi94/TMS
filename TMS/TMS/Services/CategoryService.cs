@@ -43,6 +43,11 @@ namespace TMS.Services
                 && m.ParentID == categoryId);
         }
 
+        public IEnumerable<Category> GetItems()
+        {
+            return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.Item);
+        }
+
         public IEnumerable<Category> GetItems(int subCategoryId)
         {
             return _unitOfWork.CategoryRepository.Get(m => m.CategoryLevel == ConstantUtil.CategoryLevel.Item

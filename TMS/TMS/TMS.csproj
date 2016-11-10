@@ -237,10 +237,12 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KnowledgeBaseController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Models\Notification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\SolutionAttachmentService.cs" />
     <Compile Include="Models\TMSModel.cs">
       <AutoGen>True</AutoGen>
@@ -362,12 +364,14 @@
     <Compile Include="ViewModels\BusinessRuleViewModel.cs" />
     <Compile Include="ViewModels\ChangPaswordViewModel.cs" />
     <Compile Include="ViewModels\CriteriaViewModel.cs" />
+    <Compile Include="ViewModels\DropdownViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
     <Compile Include="ViewModels\KnowledgeBaseViewModel.cs" />
     <Compile Include="ViewModels\ModelErrorViewModel.cs" />
     <Compile Include="ViewModels\DropdownTechnicianViewModel.cs" />
+    <Compile Include="ViewModels\NotificationViewModel.cs" />
     <Compile Include="ViewModels\PriorityMatrixItemViewModel.cs" />
     <Compile Include="ViewModels\ProfileManagerViewModel.cs" />
     <Compile Include="ViewModels\ProfileRequesterViewModel.cs" />
@@ -404,10 +408,12 @@
     <Content Include="Content\css\graph.css" />
     <Content Include="Content\css\select2.min.css" />
     <Content Include="Content\custom-css\admin.css" />
+    <Content Include="Content\custom-css\profile.css" />
     <Content Include="Content\custom-css\ticket-detail.css" />
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />
     <Content Include="Content\custom-js\knowledgebase.js" />
+    <Content Include="Content\custom-js\notification-menu-bar.js" />
     <Content Include="Content\custom-js\tms-dropdown.js" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\img\ajax-loader.gif" />
@@ -419,6 +425,7 @@
     <Content Include="Content\img\avatar5.png" />
     <Content Include="Content\img\boxed-bg.jpg" />
     <Content Include="Content\img\boxed-bg.png" />
+    <Content Include="Content\img\criteria-drop.png" />
     <Content Include="Content\img\default-50x50.gif" />
     <Content Include="Content\img\details_close.png" />
     <Content Include="Content\img\details_open.png" />
@@ -622,11 +629,14 @@
     <Content Include="Areas\Manager\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Manager\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Manager\Views\Profile\UpdateProfile.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BusinessRule\New1.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\BusinessRule\Edit.cshtml" />
     <Content Include="Areas\Technician\Views\Shared\_TopLayout.cshtml" />
     <Content Include="Areas\Technician\Views\Home\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\Shared\_TopLayout.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -730,6 +740,7 @@
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
     <Folder Include="Content\Plugins\jquery.ui\images\" />
+    <Folder Include="Views\Notification\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

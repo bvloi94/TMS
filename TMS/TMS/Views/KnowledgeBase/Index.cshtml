@@ -5,16 +5,17 @@
 @{
     if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.HelpDesk)
     {
-        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     }
     else if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.Technician)
     {
-        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
     }
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 
 <style>
+
     #custom-search-input {
         padding: 3px;
         border: solid 1px #E4E4E4;
@@ -170,23 +171,23 @@
 <div class="row">
     <div class="col-md-12">
         <div class="box box-solid">
-            <div class="left-menu col-md-3 menu-collapse">
+            <div class="left-menu col-xs-3 menu-collapse">
                 <div class="header"><h5>Topic</h5></div>
                 <div id="category-treeview-div">
 
                 </div>
             </div>
 
-            <div class="questions col-md-9">
-                <div class="header-content col-md-12">
-                    <div class="col-md-8">
+            <div class="questions col-xs-9">
+                <div class="header-content col-xs-12">
+                    <div class="col-md-8 col-xs-9">
                         <a class="btn btn-primary btn-flat" href="/KnowledgeBase/Create">
                             <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
                         </a>
                         <a href="javascript:void(0)" class="btn btn-flat btn-info" onclick="showFrequentlyAskedSubjects();">Frequently Asked Subjects</a>
                         <a class="btn btn-default btn-flat" id="delete-solutions" href="javascript:void{0}"><i class="fa fa-trash"></i></a>
                     </div>
-                    <div class="box-tools pull-right col-md-4">
+                    <div class="box-tools col-md-4 col-xs-3" style="text-align: right">
                         <div class="has-feedback">
                             <input type="text" id="key_search" class="form-control input" placeholder="Search solution..." />
                             <span class="glyphicon glyphicon-search form-control-feedback"></span>
