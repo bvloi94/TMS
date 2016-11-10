@@ -10,5 +10,6 @@ namespace TMS.ViewModels
         public int Id { get; set; }
         public string Subject { get; set; }
         public string ContentText { get; set; }
+        public string Path { get; set; }
     }
 }

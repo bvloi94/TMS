@@ -51,7 +51,7 @@ namespace TMS.Schedulers
                         ModifiedTime = DateTime.Now,
                         CreatedID = _userService.GetUserByEmail(requesterEmail).Id,
                         RequesterID = _userService.GetUserByEmail(requesterEmail).Id,
-                        Type = ConstantUtil.TicketMode.Email
+                        Mode = ConstantUtil.TicketMode.Email
                     };
                     Ticket handledTicket = _ticketService.ParseTicket(ticket);
 
@@ -70,6 +70,7 @@ namespace TMS.Schedulers
                             TicketAttachment ticketAttachment = new TicketAttachment();
                             ticketAttachment.Path = "/Uploads/Attachments/" + fileName;
                             ticketAttachment.Filename = att.Name;
+                            ticketAttachment.Type = ConstantUtil.TicketAttachmentType.Description;
                             handledTicket.TicketAttachments.Add(ticketAttachment);
                         }
                     }

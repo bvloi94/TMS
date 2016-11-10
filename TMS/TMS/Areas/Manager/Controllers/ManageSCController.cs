@@ -1527,7 +1527,7 @@ namespace TMS.Areas.Manager.Controllers
                     return Json(new
                     {
                         success = true,
-                        message = "Delete successfully!"
+                        message = "Delete category successfully!"
                     });
                 }
                 else
@@ -1539,11 +1539,6 @@ namespace TMS.Areas.Manager.Controllers
                     });
                 }
             }
-            return Json(new
-            {
-                success = false,
-                message = ConstantUtil.CommonError.DBExceptionError
-            });
         }
 
         [HttpPost]

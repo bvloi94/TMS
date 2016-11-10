@@ -338,7 +338,7 @@
                 serverSide: true,
                 paging: true,
                 sort: true,
-                "order": [[5, 'dsc']],
+                order: [[5, 'dsc']],
                 lengthChange: false,
                 filter: false,
                 drawCallback: function () {
@@ -408,8 +408,6 @@
                         },
                         "targets": 5
                     },
-
-
                     {
                         "render": function (data, type, row) {
                             var solveUrl = '/Ticket/Solve/' + row[6];

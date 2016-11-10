@@ -36,6 +36,7 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
+        [CustomAuthorize(Roles = "Helpdesk,Technician,Requester")]
         public ActionResult GetNotifications()
         {
             string id = User.Identity.GetUserId();

@@ -18,8 +18,6 @@ namespace TMS.Controllers
     [CustomAuthorize(Roles = "Helpdesk,Technician")]
     public class KnowledgeBaseController : Controller
     {
-
-
         private UnitOfWork _unitOfWork = new UnitOfWork();
         private TicketService _ticketService;
         private UserService _userService;
@@ -41,26 +39,7 @@ namespace TMS.Controllers
         // GET: KB
         public ActionResult Index()
         {
-            switch (UserRole())
-            {
-                case "Admin": ViewBag.Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; break;
-                case "Technician": ViewBag.Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml"; break;
-                case "Helpdesk": ViewBag.Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml"; break;
-                default: ViewBag.Layout = "~/Views/Shared/_TopLayout.cshtml"; break;
-            }
             return View();
-        }
-
-        public string UserRole()
-        {
-            AspNetRole userRole = null;
-            if (User.Identity.GetUserId() != null)
-            {
-                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
-                return userRole.Name;
-            }
-
-            return "Guest";
         }
 
         [HttpGet]
@@ -118,8 +97,6 @@ namespace TMS.Controllers
             }
         }
 
-
-        // [Utils.Authorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(KnowledgeBaseViewModel model)
@@ -201,7 +178,6 @@ namespace TMS.Controllers
             return View(model);
         }
 
-        //   [CustomAuthorize(Roles = "Helpdesk")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int? id, KnowledgeBaseViewModel model)
@@ -314,54 +290,6 @@ namespace TMS.Controllers
                 return HttpNotFound();
             }
         }
-
-        ////   [CustomAuthorize(Roles = "Helpdesk")]
-        //[HttpPost]
-        //public ActionResult Delete(int[] selectedSolutions)
-        //{
-        //    if (selectedSolutions == null || selectedSolutions.Count() == 0)
-        //    {
-        //        return Json(new
-        //        {
-        //            success = false,
-        //            message = "Please choose at least 1 solution to delete!"
-        //        });
-        //    }
-        //    else
-        //    {
-        //        foreach (var solutionId in selectedSolutions)
-        //        {
-        //            Solution solution = _solutionServices.GetSolutionById(solutionId);
-        //            if (solution == null)
-        //            {
-        //                return Json(new
-        //                {
-        //                    success = false,
-        //                    message = "Delete solution unsuccessfully!"
-        //                });
-        //            }
-        //            else
-        //            {
-        //                bool resultDelete = _solutionServices.DeleteSolution(solution);
-        //                if (!resultDelete)
-        //                {
-        //                    return Json(new
-        //                    {
-        //                        success = false,
-        //                        message = ConstantUtil.CommonError.DBExceptionError
-        //                    });
-        //                }
-        //            }
-        //        }
-        //        return Json(new
-        //        {
-        //            success = true,
-        //            message = "Delete solution successfully!"
-        //        });
-        //    }
-        //}
-
-        //   [CustomAuthorize(Roles = "Helpdesk")]
 
         [HttpPost]
         public ActionResult Delete(int[] selectedSolutions)
