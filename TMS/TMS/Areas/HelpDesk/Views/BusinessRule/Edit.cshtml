@@ -1,6 +1,7 @@
-﻿@model TMS.ViewModels.BusinessRuleViewModel
+﻿@using TMS.Utils
+@model TMS.ViewModels.BusinessRuleViewModel
 @{
-    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "BUSINESS RULES";
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
@@ -198,7 +199,7 @@
             <div class="box-body" style="padding: 15px 30px;">
                 <form class="form-horizontal" role="form" id="form-business-rules" method="POST" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" id="#brId" value="@Model.Id"/>
+                    <input type="hidden" id="brId" value="@Model.Id" />
                     <div class="row bottom-space">
                         <div class="col-md-6">
                             <label class="control-label">RULE NAME <font color="red">*</font></label>
@@ -221,16 +222,16 @@
                                 <!-- in this example the tree is populated from inline HTML -->
                                 <ul id="root" class="list-unstyled">
                                     @*<li>
-                                        <a>
-                                            <span><i class="fa fa-arrows draggable" style="color: #aaa;"></i></span>
-                                            <span id="rule_logic_0" class="logicalcss invisible">AND</span>
-                                            <span id="rule_criteria_0" class="fieldcss">-- Select criteria --</span>
-                                            <span id="rule_condition_0" class="operatorcss">-- Select condition --</span>
-                                            <span id="rule_value_0" class="valuecss"></span>
-                                            <span class="pull-right"><i id="rule_remove_0" class="fa fa-remove removecss" style="color: #aaa;"></i></span>
-                                            <span class="pull-right"><i id="rule_add_0" class="fa fa-plus addcss" style="color: #aaa;"></i></span>
-                                        </a>
-                                    </li>*@
+                                            <a>
+                                                <span><i class="fa fa-arrows draggable" style="color: #aaa;"></i></span>
+                                                <span id="rule_logic_0" class="logicalcss invisible">AND</span>
+                                                <span id="rule_criteria_0" class="fieldcss">-- Select criteria --</span>
+                                                <span id="rule_condition_0" class="operatorcss">-- Select condition --</span>
+                                                <span id="rule_value_0" class="valuecss"></span>
+                                                <span class="pull-right"><i id="rule_remove_0" class="fa fa-remove removecss" style="color: #aaa;"></i></span>
+                                                <span class="pull-right"><i id="rule_add_0" class="fa fa-plus addcss" style="color: #aaa;"></i></span>
+                                            </a>
+                                        </li>*@
                                 </ul>
                             </div>
                         </fieldset>
@@ -256,6 +257,13 @@
                                     <th width="50px">#</th>
                                     <th>Actions</th>
                                 </tr>
+                                @foreach (var item in Model.actionList)
+                                {
+                                    <tr class="actionSet" data-id='@item.Id' data-value='@item.Name'>
+                                        <td><i class="fa fa-trash remove-action"></i></td>
+                                        <td>@item.Mask</td>
+                                    </tr>;
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -384,16 +392,24 @@
                 var nodeText = '<span><i class=\"fa fa-arrows draggable\" style=\"color: #aaa;\"></i></span>' +
                     '<span id=\"rule_logic_' +
                     id +
-                    '\" class=\"logicalcss\">'+dt.LogicText+'</span>' +
+                    '\" class=\"logicalcss\">' +
+                    dt.LogicText +
+                    '</span>' +
                     '<span id=\"rule_criteria_' +
                     id +
-                    '\" class=\"fieldcss\">'+dt.CriteriaText+'</span>' +
+                    '\" class=\"fieldcss\">' +
+                    dt.CriteriaText +
+                    '</span>' +
                     '<span id=\"rule_condition_' +
                     id +
-                    '\" class=\"operatorcss\" >'+dt.ConditionText+'</span>' +
+                    '\" class=\"operatorcss\" >' +
+                    dt.ConditionText +
+                    '</span>' +
                     '<span id=\"rule_value_' +
                     id +
-                    '\"  class="valuecss">'+dt.Value+'</span>' +
+                    '\"  class="valuecss">' +
+                    dt.ValueMask +
+                    '</span>' +
                     '<span class=\"pull-right\"><i id=\"rule_remove_' +
                     id +
                     '\" class=\"fa fa-remove addcss\" style="color: #aaa;\"></i></span>' +
@@ -583,20 +599,32 @@
                                     return $("#" + inputId).val();
                                 }
                             });
+                            if (anchorTag.children[4].innerHTML != "") {
+                                var masks = anchorTag.children[4].innerHTML.split(", ");
+                                var values = tree.jstree().get_node(selectedId).data.Value.split(",");
+                                for (var i = 0; i < masks.length; i++) {
+                                    loadInitDropdown($("#" + inputId), masks[i], values[i]);
+                                }
+                            }
                             $("#" + inputId).select2("open");
-
+                            $("#" + inputId)
+                                .on("select2:close",
+                                    function() {
+                                        tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                        $('#tempSelectValue').remove();
+                                    });
                             $("#" + inputId)
                                 .change(function() {
                                     var a = $("#" + inputId).select2('data');
                                     var text = "";
                                     var val = "";
                                     if (a != null && a.length > 0) {
-                                        text = a[0].Name;
-                                        val = a[0].Id;
+                                        text = a[0].text;
+                                        val = a[0].id;
                                         if (a.length > 1)
                                             for (var i = 1; i < a.length; i++) {
-                                                text += ", " + a[i].Name;
-                                                val += "," + a[i].Id;
+                                                text += ", " + a[i].text;
+                                                val += "," + a[i].id;
                                             }
                                     }
                                     p[0].innerHTML = text;
@@ -633,25 +661,33 @@
                                     return $("#" + inputId).val();
                                 },
                                 criteria: criteria
-                                //initValues: tree.jstree().get_node(selectedId).data.Value?tree.jstree().get_node(selectedId).data.Value:""
                             });
-                            //var selectedValues = tree.jstree().get_node(selectedId).data.Value.split("")
+                            if (anchorTag.children[4].innerHTML != "") {
+                                var masks = anchorTag.children[4].innerHTML.split(", ");
+                                var values = tree.jstree().get_node(selectedId).data.Value.split(",");
+                                for (var i = 0; i < masks.length; i++) {
+                                    loadInitDropdown($("#" + inputId), masks[i], values[i]);
+                                }
+                            }
                             $("#" + inputId).select2("open");
-                            //$("#" + inputId).select2().val("1").trigger("change");
-                            //$("#" + inputId).select2('data', { id: '1', text: 'Hardware' });
-                            //$("#" + inputId).select2("val", "Requester 1");
+                            $("#" + inputId)
+                                .on("select2:close",
+                                    function() {
+                                        tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                        $('#tempSelectValue').remove();
+                                    });
                             $("#" + inputId)
                                 .change(function() {
                                     var a = $("#" + inputId).select2('data');
                                     var text = "";
                                     var val = "";
                                     if (a != null && a.length > 0) {
-                                        text = a[0].Name;
-                                        val = a[0].Id;
+                                        text = a[0].text;
+                                        val = a[0].id;
                                         if (a.length > 1)
                                             for (var i = 1; i < a.length; i++) {
-                                                text += ", " + a[i].Name;
-                                                val += "," + a[i].Id;
+                                                text += ", " + a[i].text;
+                                                val += "," + a[i].id;
                                             }
                                     }
                                     p[0].innerHTML = text;
@@ -802,10 +838,11 @@
                     $(this).closest('tr').remove();
                 });
 
-        //$(".remove-action")
-        //    .click(function() {
-        //        $(this).closest("tr").remove();
-        //    });
+        function loadInitDropdown(selector, text, value) {
+            var opt = new Option(text, value, true, true);
+            selector.append(opt);
+            selector.trigger("change");
+        }
 
         $("#updateBtn")
             .click(function() {
@@ -907,15 +944,21 @@
             {
                 <text>
                     if ('@item.ParentId' == id) {
-                        var createdId = tree.jstree(true).create_node(parentNode, { "data": {
-                            Logic:'@item.Logic',
-                            LogicText:'@item.LogicText',
-                            Criteria:'@item.Criteria',
-                            CriteriaText:'@item.CriteriaText',
-                            Condition: '@item.Condition',
-                            ConditionText: '@item.ConditionText',
-                            Value:  '@item.Value'
-                        } }, "last");
+                        var createdId = tree.jstree(true)
+                            .create_node(parentNode,
+                                {
+                                    "data": {
+                                        Logic: '@item.Logic',
+                                        LogicText: '@item.LogicText',
+                                        Criteria: '@item.Criteria',
+                                        CriteriaText: '@item.CriteriaText',
+                                        Condition: '@item.Condition',
+                                        ConditionText: '@item.ConditionText',
+                                        Value: '@item.Value',
+                                        ValueMask: '@item.ValueMask'
+                                    }
+                                },
+                                "last");
                         @*tree.jstree().get_node(createdId).data.Logic = @item.Logic;
                         tree.jstree().get_node(createdId).data.Criteria = @item.Criteria;
                         tree.jstree().get_node(createdId).data.Condition = @item.Condition;
@@ -930,6 +973,13 @@
 
         function initData() {
             addChildRule('#', '');
+            var selectedValues = [];
+            @foreach (var item in Model.technicianList)
+            {
+                <text>
+                    loadInitDropdown($("#ddl-technician"), '@item.Name', '@item.Id');
+                </text>
+            }
         }
 
         $(document)
@@ -940,4 +990,4 @@
                 initData();
             });
     </script>
-}
+} 

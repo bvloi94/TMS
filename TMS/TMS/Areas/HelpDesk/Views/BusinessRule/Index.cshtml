@@ -1,11 +1,17 @@
 ﻿@model TMS.Models.BusinessRule
 @{
-    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "BUSINESS RULES";
 }
 
 <style>
-    
+    #rules-table i {
+        cursor: pointer;
+    }
+
+        #rules-table i:hover {
+            background: #eee;
+        }
 </style>
 
 <div class="row">
@@ -15,9 +21,9 @@
                 <a class="btn bg-olive btn-flat" style="display: inline-block;" href='@Url.Action("New", "BusinessRule")'>
                     <i class="fa fa-plus" aria-hidden="true"></i> New Business Rules
                 </a>
-                <a class="btn bg-olive btn-flat margin-left10 disabled" style="display: inline-block;" data-role="btn-organize">
+                @*<a class="btn bg-olive btn-flat margin-left10 disabled" style="display: inline-block;" data-role="btn-organize">
                     Organize Business Rules
-                </a>
+                </a>*@
                 <table class="table" id="rules-table">
                     <thead>
                         <tr>
@@ -58,19 +64,18 @@
                     ajax: {
                         "url": "/HelpDesk/BusinessRule/LoadAll",
                         "type": "POST",
-                        "data": function(d) {
+                        "data": function (d) {
                         }
                     },
-                    drawCallback: function() {
+                    drawCallback: function () {
                     },
                     columnDefs: [
                         {
                             "targets": [0],
                             "sortable": false,
-                            "render": function(data, type, row) {
-                                //return '<input type="checkbox" data-role="cbo-rules" data-id="' +
-                                //    row.Id + '"/>';
-                                return '<i class="fa fa-edit edit-rule" data-id="' + row.Id + '"></i>';
+                            "render": function (data, type, row) {
+                                return '<input type="checkbox" data-role="cbo-rules" data-id="' +
+                                    row.Id + '"/>';
                             }
                         },
                         {
@@ -90,7 +95,7 @@
                             "targets": [3],
                             "sortable": false,
                             "render": function (data, type, row) {
-                                return "-";
+                                return '<i class="fa fa-edit edit-rule" data-id="' + row.Id + '"></i>';
                             }
                         }
                     ]
@@ -102,7 +107,7 @@
         });
 
         $(document)
-            .ready(function() {
+            .ready(function () {
                 setActiveTicketMenu();
                 initRulesTable();
             });

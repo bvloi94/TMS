@@ -502,6 +502,7 @@ function initRequesterDropdown(param) {
             return markup;
         }, // let our custom formatter work
         minimumInputLength: 0,
+        closeOnSelect: false,
         templateResult: formatt, // omitted for brevity, see the source of this page
         templateSelection: function (data) {
             return data.text;
@@ -555,6 +556,7 @@ function initConditionValueDropdown(param) {
             return markup;
         },
         minimumInputLength: 0,
+        closeOnSelect: false,
         templateResult: formatt,
         templateSelection: function (data) {
             return data.text;

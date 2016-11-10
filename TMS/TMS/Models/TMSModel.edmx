@@ -83,7 +83,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Type" Type="int" />
-          <Property Name="Criteria" Type="nvarchar" MaxLength="50" />
+          <Property Name="Criteria" Type="int" />
           <Property Name="Condition" Type="int" />
           <Property Name="Value" Type="nvarchar" MaxLength="100" />
           <Property Name="BusinessRuleID" Type="int" />
@@ -104,7 +104,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Action" Type="int" />
-          <Property Name="Value" Type="int" />
+          <Property Name="Value" Type="nvarchar" MaxLength="100" />
           <Property Name="BusinessRuleID" Type="int" />
         </EntityType>
         <EntityType Name="Category">
@@ -968,7 +968,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Type" Type="Int32" />
-          <Property Name="Criteria" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Criteria" Type="Int32" />
           <Property Name="Condition" Type="Int32" />
           <Property Name="Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="BusinessRuleID" Type="Int32" />
@@ -994,7 +994,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Action" Type="Int32" />
-          <Property Name="Value" Type="Int32" />
+          <Property Name="Value" Type="String" />
           <Property Name="BusinessRuleID" Type="Int32" />
           <NavigationProperty Name="BusinessRule" Relationship="TMSModel.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRuleTrigger" ToRole="BusinessRule" />
         </EntityType>

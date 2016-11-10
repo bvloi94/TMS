@@ -15,7 +15,7 @@ namespace TMS.ViewModels
         public string Actions { get; set; }
         public string Technicians { get; set; }
         public List<DropdownTechnicianViewModel> technicianList { get; set; }
-        public List<DropDownViewModel> actionList { get; set; }
+        public List<TriggerViewModel> actionList { get; set; }
     }
 
     public class Node
@@ -35,6 +35,7 @@ namespace TMS.ViewModels
         public int Condition { get; set; }
         public string ConditionText { get; set; }
         public string Value { get; set; }
+        public string ValueMask { get; set; }
         public string ParentId { get; set; }
     }
 }

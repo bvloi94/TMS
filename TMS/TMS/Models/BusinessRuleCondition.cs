@@ -22,7 +22,7 @@ namespace TMS.Models
     
         public int ID { get; set; }
         public Nullable<int> Type { get; set; }
-        public string Criteria { get; set; }
+        public Nullable<int> Criteria { get; set; }
         public Nullable<int> Condition { get; set; }
         public string Value { get; set; }
         public Nullable<int> BusinessRuleID { get; set; }
