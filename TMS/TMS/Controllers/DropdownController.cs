@@ -233,10 +233,10 @@ namespace TMS.Controllers
 
         public ActionResult LoadCriteriaDropdown(string query)
         {
-            List<CriteriaViewModel> criterias = TMSUtils.GetDefaultCritetia();
+            List<DropDownViewModel> criterias = TMSUtils.GetDefaultCritetia();
             if (query != null)
             {
-                List<CriteriaViewModel> result = new List<CriteriaViewModel>();
+                List<DropDownViewModel> result = new List<DropDownViewModel>();
                 foreach (var criteria in criterias)
                 {
                     if (criteria.Name.Contains(query)) result.Add(criteria);
@@ -248,8 +248,8 @@ namespace TMS.Controllers
 
         public ActionResult LoadConditionDropdown(string query, string criteria)
         {
-            List<ConditionViewModel> conditions = TMSUtils.GetDefaultCondition();
-            List<ConditionViewModel> result = new List<ConditionViewModel>();
+            List<DropDownViewModel> conditions = TMSUtils.GetDefaultCondition();
+            List<DropDownViewModel> result = new List<DropDownViewModel>();
             if (query == null) query = "";
             foreach (var condition in conditions)
             {

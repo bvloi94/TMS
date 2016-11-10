@@ -995,7 +995,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Action" Type="Int32" />
-          <Property Name="Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" />
           <Property Name="BusinessRuleID" Type="Int32" />
           <NavigationProperty Name="BusinessRule" Relationship="TMSModel.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRuleTrigger" ToRole="BusinessRule" />
         </EntityType>

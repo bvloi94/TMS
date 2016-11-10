@@ -58,7 +58,10 @@ namespace TMS.Services
                     IEnumerable<BusinessRuleTrigger> triggers = businessRule.BusinessRuleTriggers;
                     foreach (BusinessRuleTrigger trigger in triggers)
                     {
-
+                        switch (trigger.Action)
+                        {
+                                
+                        }
                     }
                 }
             }
@@ -126,7 +129,7 @@ namespace TMS.Services
             bool isSatisfied = false;
             switch (businessRuleCondition.Criteria)
             {
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.Subject:
+                case ConstantUtil.BusinessRuleCriteria.Subject:
                     switch (businessRuleCondition.Condition)
                     {
                         case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
@@ -167,7 +170,7 @@ namespace TMS.Services
                             break;
                     }
                     break;
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.Description:
+                case ConstantUtil.BusinessRuleCriteria.Description:
                     switch (businessRuleCondition.Condition)
                     {
                         case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
@@ -208,7 +211,7 @@ namespace TMS.Services
                             break;
                     }
                     break;
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.RequesterName:
+                case ConstantUtil.BusinessRuleCriteria.RequesterName:
                     AspNetUser requester = _unitOfWork.AspNetUserRepository.GetByID(handlingTicket.RequesterID);
                     if (requester != null)
                     {
@@ -230,7 +233,7 @@ namespace TMS.Services
                         }
                     }
                     break;
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.Department:
+                case ConstantUtil.BusinessRuleCriteria.Department:
                     AspNetUser technician = _unitOfWork.AspNetUserRepository.GetByID(handlingTicket.TechnicianID);
                     if (technician != null)
                     {
@@ -256,7 +259,7 @@ namespace TMS.Services
                         }
                     }
                     break;
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.Priority:
+                case ConstantUtil.BusinessRuleCriteria.Priority:
                     Priority priority = handlingTicket.Priority;
                     if (priority != null)
                     {
@@ -278,7 +281,7 @@ namespace TMS.Services
                         }
                     }
                     break;
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.Impact:
+                case ConstantUtil.BusinessRuleCriteria.Impact:
                     Impact impact = handlingTicket.Impact;
                     if (impact != null)
                     {
@@ -300,7 +303,7 @@ namespace TMS.Services
                         }
                     }
                     break;
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.Urgency:
+                case ConstantUtil.BusinessRuleCriteria.Urgency:
                     Urgency urgency = handlingTicket.Urgency;
                     if (urgency != null)
                     {
@@ -322,7 +325,7 @@ namespace TMS.Services
                         }
                     }
                     break;
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.Mode:
+                case ConstantUtil.BusinessRuleCriteria.Mode:
                     string mode = ConstantUtil.TicketModeString.WebForm;
                     if (handlingTicket.Mode == ConstantUtil.TicketMode.Email)
                     {
@@ -348,7 +351,7 @@ namespace TMS.Services
                             break;
                     }
                     break;
-                case ConstantUtil.CriteriaOfBusinessRuleCondition.Category:
+                case ConstantUtil.BusinessRuleCriteria.Category:
                     Category category = handlingTicket.Category;
                     if (category != null)
                     {
