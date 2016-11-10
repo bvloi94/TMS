@@ -23,7 +23,6 @@ namespace TMS.Controllers
         public ImpactService _impactService { get; set; }
         public CategoryService _categoryService { get; set; }
 
-
         public DropdownController()
         {
             var unitOfWork = new UnitOfWork();
@@ -35,7 +34,6 @@ namespace TMS.Controllers
             _impactService = new ImpactService(unitOfWork);
             _categoryService = new CategoryService(unitOfWork);
         }
-
 
         public ActionResult LoadUrgencyDropdown()
         {
@@ -126,7 +124,6 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
         public ActionResult LoadTechnicianDropdown(string ignore, string query, int? departmentId)
         {
             var js = new JavaScriptSerializer();

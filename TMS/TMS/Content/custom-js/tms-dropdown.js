@@ -285,7 +285,6 @@ function initTechnicianDropdown(param) {
         ajax: {
             url: "/dropdown/loadtechniciandropdown",
             dataType: "json",
-            type: "POST",
             data: function (params) {
                 var ajaxData = {
                     ignore: JSON.stringify(param.ignore()),

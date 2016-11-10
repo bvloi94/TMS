@@ -331,14 +331,7 @@ namespace TMS.Controllers
                         model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
                     }
 
-                    switch (ticket.Mode)
-                    {
-                        case ConstantUtil.TicketMode.PhoneCall: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
-                        case ConstantUtil.TicketMode.WebForm: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
-                        case ConstantUtil.TicketMode.Email: model.Mode = ConstantUtil.TicketModeString.Email; break;
-                        default: model.Mode = "-"; break;
-                    }
-
+                    model.Mode = GeneralUtil.GetModeNameByMode(ticket.Mode);
                     model.CreatedTime = GeneralUtil.ShowDateTime(ticket.CreatedTime);
                     model.SolvedTime = ticket.ModifiedTime.ToString("MMM d, yyyy hh:mm") ?? "-";
                     model.Category = ticket.Category == null ? " - " : ticket.Category.Name;
