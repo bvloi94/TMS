@@ -96,6 +96,7 @@
                                 <select class="form-control" name="TechnicianId" data-role="ddl-technician"></select>
                             </div>
                         </div>
+                        <div id="hidden-div"></div>
                         <div class="row form-group">
                             <div class="col-md-4 col-xs-4">
                                 <label class="control-label">IMPACT</label>
@@ -671,12 +672,15 @@
         }
 
         function loadEditData() {
-            if ((@Model.Mode != @ConstantUtil.TicketMode.PhoneCall) ||
-            (@Model.StatusId != @ConstantUtil.TicketStatus.New &&
-                @Model.StatusId != @ConstantUtil.TicketStatus.Assigned)) {
+            $("#hidden-div").empty();
+
+            if ((@Model.Mode == @ConstantUtil.TicketMode.WebForm) || (@Model.Mode == @ConstantUtil.TicketMode.Email)) {
                 $('[name="Subject"]').prop("readonly", true);
                 $('[name="Description"]').prop("readonly", true);
-            }
+                $('[name="descriptionFiles"]').prop("disabled", true);
+                $('[name="Mode"]').prop("disabled", true);
+                $('#hidden-div').append('<input type="hidden" name="Mode" value="@Model.Mode" />');
+            };
 
             $("#div-status").html(getStatusLabel('@Model.Status'));
             $("[name='Type']").val(@Model.Type);
@@ -687,6 +691,13 @@
             loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
             loadInitDropdown('ddl-department', '@(Model.DepartmentId == 0 ? "Chooose Department" :@Model.Department)', @Model.DepartmentId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
+
+            if ((@Model.StatusId != @ConstantUtil.TicketStatus.New) &&
+                (@Model.StatusId != @ConstantUtil.TicketStatus.Assigned)) {
+                $('[name="DepartmentId"]').prop('disabled', true);
+                $('[name="TechnicianId"]').prop('disabled', true);
+                $('#hidden-div').append('<input type="hidden" name="TechnicianId" value="@Model.TechnicianId" />');
+            }
         }
 
         $("[data-role='ddl-department']")

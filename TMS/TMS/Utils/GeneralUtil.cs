@@ -131,16 +131,54 @@ namespace TMS.Utils
             return "Unassigned";
         }
 
+        //public static string ShowDateTime(DateTime dateTime)
+        //{
+        //    DateTime currentDateTime = DateTime.Now;
+        //    int year = currentDateTime.Year - dateTime.Year;
+        //    int month = currentDateTime.Month - dateTime.Month;
+        //    int day = currentDateTime.Day - dateTime.Day;
+        //    int hour = currentDateTime.Hour - dateTime.Hour;
+        //    int minute = currentDateTime.Minute - dateTime.Minute;
+
+        //    if (day < 2 && year < 1 && month < 1)
+        //    {
+        //        if (day < 1)
+        //        {
+        //            if (hour < 1)
+        //            {
+        //                if (minute < 1)
+        //                {
+        //                    return "Just now";
+        //                }
+        //                else
+        //                {
+        //                    return minute == 1 ? "A minute ago" : minute + " minutes ago";
+        //                }
+        //            }
+        //            else
+        //            {
+        //                return hour == 1 ? "An hour ago" : hour + " hours ago";
+        //            }
+        //        }
+        //        else
+        //        {
+        //            return "Yesterday at " + dateTime.ToShortTimeString();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return dateTime.ToString("MMM d, yyyy") + " at " + dateTime.ToShortTimeString();
+        //    }
+        //}
+
         public static string ShowDateTime(DateTime dateTime)
         {
             DateTime currentDateTime = DateTime.Now;
-            int year = currentDateTime.Year - dateTime.Year;
-            int month = currentDateTime.Month - dateTime.Month;
-            int day = currentDateTime.Day - dateTime.Day;
-            int hour = currentDateTime.Hour - dateTime.Hour;
-            int minute = currentDateTime.Minute - dateTime.Minute;
+            int minute = (int)currentDateTime.Subtract(dateTime).TotalMinutes;
+            int hour = (int)(minute * 1.0) / 60;
+            int day = (int)(hour * 1.0) / 24;
 
-            if (day < 2 && year < 1 && month < 1)
+            if (day < 2)
             {
                 if (day < 1)
                 {
@@ -171,16 +209,16 @@ namespace TMS.Utils
             }
         }
 
-        public static string GetTicketMode(int mode)
-        {
-            switch (mode)
-            {
-                case 1: return ConstantUtil.TicketModeString.PhoneCall;
-                case 2: return ConstantUtil.TicketModeString.WebForm;
-                case 3: return ConstantUtil.TicketModeString.Email;
-                default: return "-";
-            }
-        }
+        //public static string GetTicketMode(int mode)
+        //{
+        //    switch (mode)
+        //    {
+        //        case 1: return ConstantUtil.TicketModeString.PhoneCall;
+        //        case 2: return ConstantUtil.TicketModeString.WebForm;
+        //        case 3: return ConstantUtil.TicketModeString.Email;
+        //        default: return "-";
+        //    }
+        //}
 
     }
 }

@@ -170,7 +170,7 @@ namespace TMS.Controllers
                 DescriptionAttachment = GetTicketAttachmentUrl(p.ID, ConstantUtil.TicketAttachmentType.Description),
                 SolutionAttachment = GetTicketAttachmentUrl(p.ID, ConstantUtil.TicketAttachmentType.Solution),
                 CreatedTime = GeneralUtil.ShowDateTime(p.CreatedTime),
-                Mode = GeneralUtil.GetTicketMode(p.Mode),
+                Mode = GeneralUtil.GetModeNameByMode(p.Mode),
                 Category = p.Category == null ? "-" : p.Category.Name
             }).ToArray();
 
@@ -495,8 +495,8 @@ namespace TMS.Controllers
             AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
             AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
             AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
-            String ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department = "-";
-            String createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
+            string ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department = "-";
+            string createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
 
             string userRole = null;
             if (User.Identity.GetUserId() != null)
@@ -506,7 +506,8 @@ namespace TMS.Controllers
 
             if (userRole == ConstantUtil.UserRoleString.Requester)
             {
-                if (ticket.Status <= 2)
+                if (ticket.Status == ConstantUtil.TicketStatus.New
+                    || ticket.Status == ConstantUtil.TicketStatus.Assigned)
                 {
                     solution = "-";
                 }
@@ -552,14 +553,8 @@ namespace TMS.Controllers
                 case 3: ticketType = ConstantUtil.TicketTypeString.Change; break;
                 default: ticketType = "-"; break;
             }
-
-            switch (ticket.Mode)
-            {
-                case 1: ticketMode = ConstantUtil.TicketModeString.PhoneCall; break;
-                case 2: ticketMode = ConstantUtil.TicketModeString.WebForm; break;
-                case 3: ticketMode = ConstantUtil.TicketModeString.Email; break;
-                default: ticketMode = "-"; break;
-            }
+            ticketType = GeneralUtil.GetTypeNameByType(ticket.Type);
+            ticketMode = GeneralUtil.GetModeNameByMode(ticket.Mode);
 
             ticketUrgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name;
             ticketPriority = ticket.Priority == null ? "-" : ticket.Priority.Name;
@@ -581,18 +576,7 @@ namespace TMS.Controllers
                 department = "-";
             }
 
-
-            string categoryPath = "-";
-            if (ticket.Category != null)
-            {
-                categoryPath = ticket.Category.Name;
-                Category parentCate = ticket.Category;
-                while (parentCate.ParentID != null)
-                {
-                    parentCate = _categoryService.GetCategoryById((int)parentCate.ParentID);
-                    categoryPath = parentCate.Name + "  >  " + categoryPath;
-                }
-            }
+            string categoryPath = _categoryService.GetCategoryPath(ticket.Category);
 
             return Json(new
             {
@@ -711,6 +695,7 @@ namespace TMS.Controllers
 
         [CustomAuthorize(Roles = "Helpdesk,Technician")]
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult SolveTicket(int? id, string solution, string command)
         {
             if (id.HasValue)
