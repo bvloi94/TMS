@@ -849,25 +849,31 @@ namespace TMS.Controllers
                 return Json(new
                 {
                     success = false,
-                    error = true,
                     msg = "No result!"
                 });
             }
-            List<Solution> result = solutions.ToList();
-            List<SolutionViewModel> data = new List<SolutionViewModel>();
-            foreach (var item in result)
+            IEnumerable<SolutionViewModel> result = solutions.Select(m => new SolutionViewModel
             {
-                SolutionViewModel model = new SolutionViewModel();
-                model.Id = item.ID;
-                model.Subject = item.Subject;
-                model.ContentText = item.ContentText;
-                data.Add(model);
-            }
+                Id = m.ID,
+                Subject = m.Subject,
+                ContentText = m.ContentText,
+                Path = Url.Action("Detail", "FAQ", new { path = m.Path }, protocol: Request.Url.Scheme /* This is the trick */)
+            });
+
+            //List<Solution> result = solutions.ToList();
+            //List<SolutionViewModel> data = new List<SolutionViewModel>();
+            //foreach (var item in result)
+            //{
+            //    SolutionViewModel model = new SolutionViewModel();
+            //    model.Id = item.ID;
+            //    model.Subject = item.Subject;
+            //    model.ContentText = item.ContentText;
+            //    data.Add(model);
+            //}
             return Json(new
             {
                 success = true,
-                data = data,
-                msg = "Search finished!"
+                data = result,
             });
         }
 

@@ -58,7 +58,8 @@ namespace TMS.Controllers
                 string[] keywordArr = search.Split(' ');
                 foreach (string keyword in keywordArr)
                 {
-                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keyword.ToLower()));
+                    string keywordSearch = '"' + keyword.ToLower() + '"';
+                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordSearch));
                 }
                 predicate = predicate.Or(p => p.Subject.ToLower().Contains(search.ToLower()));
                 model = model.Where(predicate);
