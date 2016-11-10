@@ -81,6 +81,12 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "requester");
         }
 
+        public IEnumerable<AspNetUser> SearchRequesters(string query)
+        {
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "requester"
+                                                        && (query == null || r.Fullname.Contains(query)));
+        }
+
         public IEnumerable<AspNetUser> GetHelpDesks()
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "helpdesk");
@@ -93,9 +99,10 @@ namespace TMS.Services
 
         public IEnumerable<AspNetUser> GetTechnicianByPattern(string query, int? departmentId)
         {
-            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician"
-                                     && r.DepartmentID == departmentId
-                                     && (query == null || r.Fullname.Contains(query)));
+            return _unitOfWork.AspNetUserRepository.Get(
+                    r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician"
+                         && (!departmentId.HasValue || departmentId == 0 || r.DepartmentID == departmentId)
+                         && (query == null || r.Fullname.Contains(query)));
         }
 
         public IEnumerable<AspNetUser> GetAdmins()

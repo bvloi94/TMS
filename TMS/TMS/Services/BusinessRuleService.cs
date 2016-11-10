@@ -8,7 +8,7 @@ using TMS.Utils;
 
 namespace TMS.Services
 {
-    public class BusinessRuleService 
+    public class BusinessRuleService
     {
         private readonly UnitOfWork _unitOfWork;
 
@@ -19,8 +19,77 @@ namespace TMS.Services
 
         public IEnumerable<BusinessRule> GetAll()
         {
-            return _unitOfWork.BusinessRuleRepository.Get();
+            return _unitOfWork.BusinessRuleRepository.Get(a => (bool) a.IsActive);
         }
 
+        public void RemoveAllRuleRelatedInfo(int businessRuleId)
+        {
+            var brConditions = this.GetAllBusinessRuleConditions(businessRuleId);
+            foreach (var con in brConditions)
+            {
+                _unitOfWork.BusinessRuleConditionRepository.Delete(con);
+
+            }
+            var brActions = this.GetAllBusinessRuleTrigger(businessRuleId);
+            foreach (var act in brActions)
+            {
+                _unitOfWork.BusinessRuleTriggerRepository.Delete(act);
+            }
+            var brNotifications = this.GetAllBusinessRuleNotifications(businessRuleId);
+            foreach (var act in brNotifications)
+            {
+                _unitOfWork.BusinessRuleTriggerRepository.Delete(act);
+
+            }
+        }
+
+        public BusinessRule GetById(int id)
+        {
+
+            return _unitOfWork.BusinessRuleRepository.GetByID(id);
+        }
+
+        public int AddNew(BusinessRule businessRule)
+        {
+            businessRule.IsActive = true;
+            _unitOfWork.BusinessRuleRepository.Insert(businessRule);
+            _unitOfWork.Commit();
+            return businessRule.ID;
+        }
+
+        public int AddCondition(BusinessRuleCondition condition)
+        {
+            _unitOfWork.BusinessRuleConditionRepository.Insert(condition);
+            _unitOfWork.Commit();
+            return condition.ID;
+        }
+
+        public IEnumerable<BusinessRuleCondition> GetAllBusinessRuleConditions(int businessRuleId)
+        {
+            return _unitOfWork.BusinessRuleConditionRepository.Get(a => a.BusinessRuleID == businessRuleId);
+        }
+
+        public void AddNotificationReciever(BusinessRuleNotification businessRuleNotification)
+        {
+            _unitOfWork.BusinessRuleNotificationRepository.Insert(businessRuleNotification);
+            _unitOfWork.Commit();
+        }
+
+        public IEnumerable<BusinessRuleNotification> GetAllBusinessRuleNotifications(int businessRuleId)
+        {
+            return _unitOfWork.BusinessRuleNotificationRepository.Get(a => a.BusinessRuleID == businessRuleId);
+        }
+
+
+        public void AddTrigger(BusinessRuleTrigger trigger)
+        {
+            _unitOfWork.BusinessRuleTriggerRepository.Insert(trigger);
+            _unitOfWork.Commit();
+        }
+
+        public IEnumerable<BusinessRuleTrigger> GetAllBusinessRuleTrigger(int businessRuleId)
+        {
+            return _unitOfWork.BusinessRuleTriggerRepository.Get(a => a.BusinessRuleID == businessRuleId);
+        }
     }
 }
