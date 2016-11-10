@@ -35,6 +35,9 @@
     background-color: #605ca8 !important;
 }
 
+.not-read {
+    background-color: #EDF2FA !important;
+}
 
 @media screen and (min-width: 768px) {
     .modal:before {
