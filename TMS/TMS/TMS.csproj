@@ -215,6 +215,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\HomeController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\Controllers\DepartmentController.cs" />
     <Compile Include="Areas\Manager\Controllers\ManageSCController.cs" />
@@ -637,6 +638,7 @@
     <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Shared\_TopLayout.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\Home\Index.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

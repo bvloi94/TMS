@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
     loadNotification();
-    setInterval(loadNotification, 500);
+    setInterval(loadNotification, 10000);
 });
 
 function loadNotification() {
