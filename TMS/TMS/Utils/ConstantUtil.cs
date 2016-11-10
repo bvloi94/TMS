@@ -94,15 +94,15 @@ namespace TMS.Utils
 
         public class CriteriaOfBusinessRuleCondition
         {
-            public const string Subject = "Subject";
-            public const string Description = "Description";
-            public const string RequesterName = "Requester Name";
-            public const string Department = "Department";
-            public const string Priority = "Priority";
-            public const string Impact = "Impact";
-            public const string Urgency = "Urgency";
-            public const string Category = "Category";
-            public const string Mode = "Mode";
+            public const int Subject = 1;
+            public const int Description = 2;
+            public const int RequesterName = 3;
+            public const int Department = 4;
+            public const int Priority = 5;
+            public const int Impact = 6;
+            public const int Urgency = 7;
+            public const int Category = 8;
+            public const int Mode = 9;
         }
 
         public class BusinessRuleCriteria

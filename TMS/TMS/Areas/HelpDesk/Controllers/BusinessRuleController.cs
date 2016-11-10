@@ -248,7 +248,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     BusinessRuleCondition condition = new BusinessRuleCondition();
                     condition.BusinessRuleID = businessRuleId;
                     condition.Type = tempRule.Logic.HasValue ? tempRule.Logic : 1;
-                    condition.Criteria = ""; // tempRule.Criteria TODO;
+                    condition.Criteria = tempRule.Criteria;
                     condition.Condition = tempRule.Condition;
                     condition.Value = tempRule.Value;
                     condition.BusinessRuleConditionID = Id;
