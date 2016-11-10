@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using LumiSoft.Net.Mime.vCard;
 using TMS.Services;
 using TMS.DAL;
 using TMS.Models;
@@ -122,17 +126,23 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult LoadTechnicianDropdown(string query, int? departmentId)
+        [HttpPost]
+        public ActionResult LoadTechnicianDropdown(string ignore, string query, int? departmentId)
         {
+            var js = new JavaScriptSerializer();
+            var ignoreItems = (object[])js.DeserializeObject(ignore);
+
             var result = new List<DropdownTechnicianViewModel>();
-            List<AspNetUser> queryResult = null;
-            if (!departmentId.HasValue)
-            {
-                queryResult = _userService.GetTechnicians().ToList();
-            }
-            else queryResult = _userService.GetTechnicianByPattern(query, departmentId).ToList();
+            List<AspNetUser> queryResult = _userService.GetTechnicianByPattern(query, departmentId).ToList();
             foreach (var tech in queryResult)
             {
+                if (ignoreItems != null && ignoreItems.Length > 0)
+                {
+                    if (ignoreItems.Any(a => (string)a == tech.Id))
+                    {
+                        continue;
+                    }
+                }
                 var technicianItem = new DropdownTechnicianViewModel
                 {
                     Id = tech.Id,
@@ -180,20 +190,337 @@ namespace TMS.Controllers
             }
         }
 
+        public ActionResult LoadCategoryDropdownByLevel(int level)
+        {
+            List<DropDownViewModel> result = new List<DropDownViewModel>();
+            IEnumerable<Category> categories = null;
+            switch (level)
+            {
+                case 1:
+                    categories = _categoryService.GetCategories();
+                    break;
+                case 2:
+                    categories = _categoryService.GetSubCategories();
+                    break;
+                case 3:
+                    categories = _categoryService.GetItems();
+                    break;
+            }
+            foreach (var cate in categories)
+            {
+                DropDownViewModel item = new DropDownViewModel();
+                item.Id = cate.ID;
+                item.Name = cate.Name;
+                var parentId = cate.ParentID;
+                while (parentId != null)
+                {
+                    Category parentCategory = _categoryService.GetCategoryById((int)parentId);
+                    item.Name = parentCategory.Name + " >> " + item.Name;
+                    parentId = parentCategory.ParentID;
+                }
+                result.Add(item);
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        public ActionResult LoadStatusDropdown()
+        {
+            return Json(TMSUtils.GetDefaultStatus(), JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult LoadActionDropdown()
+        {
+            return Json(TMSUtils.GetDefaultActions(), JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult LoadCriteriaDropdown(string query)
         {
-            List<string> criteriaProperties = TMSUtils.GetFieldsOfClass(new ConstantUtil.CriteriaOfBusinessRuleCondition());
+            List<CriteriaViewModel> criterias = TMSUtils.GetDefaultCritetia();
             if (query != null)
             {
-                List<string> result = new List<string>();
-                foreach (var criteria in criteriaProperties)
+                List<CriteriaViewModel> result = new List<CriteriaViewModel>();
+                foreach (var criteria in criterias)
                 {
-                    if (criteria.Contains(query)) result.Add(criteria);
+                    if (criteria.Name.Contains(query)) result.Add(criteria);
                 }
                 return Json(result, JsonRequestBehavior.AllowGet);
             }
-            return Json(criteriaProperties, JsonRequestBehavior.AllowGet);
+            return Json(criterias, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult LoadConditionDropdown(string query, string criteria)
+        {
+            List<ConditionViewModel> conditions = TMSUtils.GetDefaultCondition();
+            List<ConditionViewModel> result = new List<ConditionViewModel>();
+            if (query == null) query = "";
+            foreach (var condition in conditions)
+            {
+                if (condition.Name.Contains(query))
+                {
+                    if (criteria != "Subject" && criteria != "Description")
+                    {
+                        if (condition.Name == "is" || condition.Name == "is not")
+                        {
+                            result.Add(condition);
+                        }
+                    }
+                    else
+                    {
+                        result.Add(condition);
+                    }
+                }
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpPost]
+        public ActionResult LoadRequesterDropdown(string ignore, string query)
+        {
+            var js = new JavaScriptSerializer();
+            var ignoreItems = (object[])js.DeserializeObject(ignore);
+
+            var result = new List<DropdownTechnicianViewModel>();
+            List<AspNetUser> queryResult = _userService.SearchRequesters(query).ToList();
+            foreach (var tech in queryResult)
+            {
+                if (ignoreItems != null && ignoreItems.Length > 0)
+                {
+                    if (ignoreItems.Any(a => (string)a == tech.Id))
+                    {
+                        continue;
+                    }
+                }
+                var requesterItem = new DropdownTechnicianViewModel
+                {
+                    Id = tech.Id,
+                    Name = tech.Fullname,
+                    Email = tech.Email
+                };
+                result.Add(requesterItem);
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult LoadDepartmentConditionDropdown(string ignore, string query)
+        {
+            var js = new JavaScriptSerializer();
+            var ignoreItems = (object[])js.DeserializeObject(ignore);
+
+            var result = new List<DepartmentViewModel>();
+            var queryResult = _departmentService.GetAll();
+            foreach (var department in queryResult)
+            {
+                if (ignoreItems != null && ignoreItems.Length > 0)
+                {
+                    if (ignoreItems.Any(a => (string)a == department.ID.ToString()))
+                    {
+                        continue;
+                    }
+                }
+                var dep = new DepartmentViewModel
+                {
+                    Id = department.ID,
+                    Name = department.Name,
+                };
+                result.Add(dep);
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult LoadConditionValueDropdown(string ignore, string query, string criteria)
+        {
+            var js = new JavaScriptSerializer();
+            var ignoreItems = (object[])js.DeserializeObject(ignore);
+            var result = new List<DropDownViewModel>();
+            switch (criteria)
+            {
+                case "Department":
+                    var departmentResult = _departmentService.GetAll();
+                    foreach (var item in departmentResult)
+                    {
+                        if (ignoreItems != null && ignoreItems.Length > 0)
+                        {
+                            if (ignoreItems.Any(a => (string)a == item.ID.ToString()))
+                            {
+                                continue;
+                            }
+                        }
+                        var newItem = new DropDownViewModel
+                        {
+                            Id = item.ID,
+                            Name = item.Name,
+                        };
+                        result.Add(newItem);
+                    }
+                    break;
+                case "Priority":
+                    var priorityResult = _priorityService.GetAll();
+                    foreach (var item in priorityResult)
+                    {
+                        if (ignoreItems != null && ignoreItems.Length > 0)
+                        {
+                            if (ignoreItems.Any(a => (string)a == item.ID.ToString()))
+                            {
+                                continue;
+                            }
+                        }
+                        var newItem = new DropDownViewModel
+                        {
+                            Id = item.ID,
+                            Name = item.Name,
+                        };
+                        result.Add(newItem);
+                    }
+                    break;
+                case "Impact":
+                    var impactResult = _impactService.GetAll();
+                    foreach (var item in impactResult)
+                    {
+                        if (ignoreItems != null && ignoreItems.Length > 0)
+                        {
+                            if (ignoreItems.Any(a => (string)a == item.ID.ToString()))
+                            {
+                                continue;
+                            }
+                        }
+                        var newItem = new DropDownViewModel
+                        {
+                            Id = item.ID,
+                            Name = item.Name,
+                        };
+                        result.Add(newItem);
+                    }
+                    break;
+                case "Urgency":
+                    var urgencyResult = _urgencyService.GetAll().ToList();
+                    foreach (var item in urgencyResult)
+                    {
+                        if (ignoreItems != null && ignoreItems.Length > 0)
+                        {
+                            if (ignoreItems.Any(a => (string)a == item.ID.ToString()))
+                            {
+                                continue;
+                            }
+                        }
+                        var newItem = new DropDownViewModel
+                        {
+                            Id = item.ID,
+                            Name = item.Name,
+                        };
+                        result.Add(newItem);
+                    }
+                    break;
+                case "Category":
+                    var categoryResult = new List<CategoryViewModel>();
+                    addChildCates(ref categoryResult, 1, 0);
+                    foreach (var item in categoryResult)
+                    {
+                        var newItem = new DropDownViewModel
+                        {
+                            Id = item.ID,
+                            Name = item.Name,
+                        };
+                        result.Add(newItem);
+                    }
+                    break;
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult LoadConditionValueDropdownInit(string ids, string criteria)
+        {
+            var result = new List<DropDownViewModel>();
+            string[] idList = ids.Split(',');
+            if (idList.Length > 0)
+            {
+                switch (criteria)
+                {
+                    case "Department":
+                        foreach (var id in idList)
+                        {
+                            var item = _departmentService.GetDepartmentById(Int32.Parse(id));
+                            if (item != null)
+                            {
+                                var newItem = new DropDownViewModel
+                                {
+                                    Id = item.ID,
+                                    Name = item.Name,
+                                };
+
+                                result.Add(newItem);
+                            }
+                        }
+                        break;
+                    case "Priority":
+                        foreach (var id in idList)
+                        {
+                            var item = _priorityService.GetPriorityByID(Int32.Parse(id));
+                            if (item != null)
+                            {
+                                var newItem = new DropDownViewModel
+                                {
+                                    Id = item.ID,
+                                    Name = item.Name,
+                                };
+
+                                result.Add(newItem);
+                            }
+                        }
+                        break;
+                    case "Impact":
+                        foreach (var id in idList)
+                        {
+                            var item = _impactService.GetImpactById(Int32.Parse(id));
+                            if (item != null)
+                            {
+                                var newItem = new DropDownViewModel
+                                {
+                                    Id = item.ID,
+                                    Name = item.Name,
+                                };
+
+                                result.Add(newItem);
+                            }
+                        }
+                        break;
+                    case "Urgency":
+                        foreach (var id in idList)
+                        {
+                            var item = _urgencyService.GetUrgencyByID(Int32.Parse(id));
+                            if (item != null)
+                            {
+                                var newItem = new DropDownViewModel
+                                {
+                                    Id = item.ID,
+                                    Name = item.Name,
+                                };
+
+                                result.Add(newItem);
+                            }
+                        }
+                        break;
+                    case "Category":
+                        foreach (var id in idList)
+                        {
+                            var item = _categoryService.GetCategoryById(Int32.Parse(id));
+                            if (item != null)
+                            {
+                                var newItem = new DropDownViewModel
+                                {
+                                    Id = item.ID,
+                                    Name = item.Name,
+                                };
+
+                                result.Add(newItem);
+                            }
+                        }
+                        break;
+                }
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -7,11 +7,11 @@
 @{
     if (ViewBag.Role == ConstantUtil.UserRoleString.HelpDesk)
     {
-        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     }
     else if (ViewBag.Role == ConstantUtil.UserRoleString.Technician)
     {
-        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
     }
 }
 <style>

@@ -44,9 +44,9 @@ namespace TMS.Controllers
             switch (UserRole())
             {
                 case "Admin": ViewBag.Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; break;
-                case "Technician": ViewBag.Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml"; break;
-                case "Helpdesk": ViewBag.Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml"; break;
-                default: ViewBag.Layout = "~/Views/Shared/TMSRequesterLayout.cshtml"; break;
+                case "Technician": ViewBag.Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml"; break;
+                case "Helpdesk": ViewBag.Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml"; break;
+                default: ViewBag.Layout = "~/Views/Shared/_TopLayout.cshtml"; break;
             }
             return View();
         }

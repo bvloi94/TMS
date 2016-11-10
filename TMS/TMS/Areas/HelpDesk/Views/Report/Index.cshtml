@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Report";
 }
 <style type="text/css">
@@ -11,7 +11,7 @@
 
 <div class="row" id="graph-condition-div">
     <div class="col-xs-8">
-        <div class="box box-primary">
+        <div class="box box-solid">
             <div class="box-body" id="draw-graph">
                 <canvas id="pieChart" width="400" height="200"></canvas>
                 <div id="doughnut-legend"></div>
@@ -19,7 +19,7 @@
         </div>
     </div>
     <div class="col-xs-4">
-        <div class="box box-primary">
+        <div class="box box-solid">
             <div class="box-body">
                 <br />
                 <div class="form-horizontal">
@@ -81,7 +81,7 @@
 
 <div class="row" id="data-div">
     <div class="col-xs-12">
-        <div class="box box-primary">
+        <div class="box box-solid">
             <!-- /.box-header -->
             <div class="box-body">
                 <table class="table table-bordered table-hover" id="ticket-table-report">

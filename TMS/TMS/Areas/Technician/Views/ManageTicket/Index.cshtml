@@ -1,5 +1,5 @@
-﻿@{    
-    Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+﻿@{
+    Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Ticket List";
 }
 
@@ -18,7 +18,7 @@
         padding: 0px;
         margin-bottom: 20px;
     }
-    
+
     .modal-header {
         background-color: #3c8dbc;
     }
@@ -47,7 +47,7 @@
         .ticket-contents .box .box-body {
             padding: 5px 10px 5px 10px !important;
         }
-        
+
     .header-content {
         margin-right: 10px;
     }
@@ -65,8 +65,6 @@
     }
 
     .long-table-column {
-        min-width: 200px;
-        max-width: 300px;
     }
 </style>
 
@@ -75,23 +73,28 @@
         <div class="box box-solid">
             <div class="box-header"></div>
             <div class="box-body">
-                <div class="pull-right" style="margin-right: 20px">
-                    <label>Status:</label>
-                    <select id="filter-by-status">
-                        <option value="1">All</option>
-                        <option value="2">Assigned</option>
-                        <option value="3">Solved</option>
-                        <option value="4">Unapproved</option>
-                        <option value="5">Cancelled</option>
-                        <option value="6">Closed</option>
-                    </select>&nbsp;&nbsp;
-                    <label>Search:</label>
-                    <input type="text" id="search-txt" />
+                <div class="form-inline pull-right" style="margin-right: 20px">
+                    <div class="form-group">
+                        <label>Status: &nbsp;</label>
+                        <select class="form-control" id="filter-by-status">
+                            <option value="1">All</option>
+                            <option value="2">Assigned</option>
+                            <option value="3">Solved</option>
+                            <option value="4">Unapproved</option>
+                            <option value="5">Cancelled</option>
+                            <option value="6">Closed</option>
+                        </select>&nbsp;&nbsp;
+                    </div>
+                    <div class="form-group">
+                        <label>Search: &nbsp;</label>
+                        <input class="form-control" type="text" id="search-txt" />
+                    </div>
+
                 </div>
                 <table class="table" id="ticket-table">
                     <thead>
                         <tr>
-                            <th>Create Date</th>
+                            <th>Created Date</th>
                             <th>Requester</th>
                             <th class="long-table-column">Subject</th>
                             <th class="long-table-column">Solution</th>
@@ -338,7 +341,7 @@
                 "order": [[5, 'dsc']],
                 lengthChange: false,
                 filter: false,
-                drawCallback: function(){
+                drawCallback: function () {
                     $('#ticket-table .long-table-column').trunk8({
                         lines: 3,
                         tooltip: false
@@ -430,7 +433,7 @@
 
         $(document).ready(function () {
             initDataTable();
-            
+
         });
 
         $("#search-txt").keyup(function () {

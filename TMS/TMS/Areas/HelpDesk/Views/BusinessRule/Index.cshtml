@@ -1,6 +1,6 @@
 ﻿@model TMS.Models.BusinessRule
 @{
-    Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "BUSINESS RULES";
 }
 
@@ -68,8 +68,9 @@
                             "targets": [0],
                             "sortable": false,
                             "render": function(data, type, row) {
-                                return '<input type="checkbox" data-role="cbo-rules" data-id="' +
-                                    row.Id + '"/>';
+                                //return '<input type="checkbox" data-role="cbo-rules" data-id="' +
+                                //    row.Id + '"/>';
+                                return '<i class="fa fa-edit edit-rule" data-id="' + row.Id + '"></i>';
                             }
                         },
                         {
@@ -95,6 +96,10 @@
                     ]
                 });
         };
+
+        $('#rules-table').on('click', 'tr i.edit-rule', function (e) {
+            window.location.href = "/HelpDesk/BusinessRule/Edit/" + $(this)[0].getAttribute("data-id");
+        });
 
         $(document)
             .ready(function() {

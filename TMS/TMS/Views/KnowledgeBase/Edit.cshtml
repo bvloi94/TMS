@@ -2,16 +2,16 @@
 @using TMS.Utils
 @model TMS.ViewModels.KnowledgeBaseViewModel
 @{
-    ViewBag.Title = "Edit knowledge Base";
+    ViewBag.Title = "Edit Knowledge Base";
 }
 @{
     if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.HelpDesk)
     {
-        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     }
     else if (ViewBag.LayoutRole == ConstantUtil.UserRoleString.Technician)
     {
-        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
     }
 }
 <link rel="stylesheet" href="~/Content/Plugins/tagit/jquery.tagit.css" />

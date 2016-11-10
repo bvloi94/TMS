@@ -11,33 +11,26 @@
     @Styles.Render("~/Content/datatables")
     @Scripts.Render("~/bundles/modernizr")
     <title>@ViewBag.Title</title>
-    <style>
-        #notification-list {
-           min-height: 300px;
-           max-height: 400px;
-        }
-        #notification-list li a{
-           white-space: pre-wrap;
-           height: 80px;
-        }
-    </style>
 </head>
 <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
-<body class="hold-transition skin-purple layout-top-nav">
+<body class="hold-transition skin-blue layout-top-nav">
     <div class="wrapper">
         <header class="main-header">
             <nav class="navbar navbar-static-top">
-                <div class="container" style="min-width: 900px">
+                <div class="container" style="min-width: 1000px">
                     <div class="navbar-header">
-                        <a href="/Technician/Home" class="navbar-brand"><b>TMS</b></a>
+                        <a href="/Helpdesk/Home" class="navbar-brand"><b>TMS</b></a>
                     </div>
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                         <ul class="nav navbar-nav">
-                            <li class="@Html.Raw((controllerName == "ManageTicket") ? "active" : "")"><a href="/Technician/ManageTicket">Ticket</a></li>
+                            @RenderSection("SidebarMenu", false)
+                            <li class="@Html.Raw((controllerName == "ManageTicket") ? "active" : "")"><a href="/Helpdesk/ManageTicket">Ticket</a></li>
                             <li class="@Html.Raw((controllerName == "KnowledgeBase") ? "active" : "")"><a href="/KnowledgeBase">Knowledge Base</a></li>
-                            <li class="@Html.Raw((controllerName == "Profile") ? "active" : "")"><a href="/Technician/Profile">My profile</a></li>
+                            <li class="@Html.Raw((controllerName == "BusinessRule") ? "active" : "")"><a href="/Helpdesk/BusinessRule">Business Rules</a></li>
+                            <li class="@Html.Raw((controllerName == "Report") ? "active" : "")"><a href="/Helpdesk/Report">Report</a></li>
+                            <li class="@Html.Raw((controllerName == "Profile") ? "active" : "")"><a href="/Helpdesk/Profile">My profile</a></li>
                         </ul>
                     </div>
                     <!-- /.navbar-collapse -->
@@ -53,9 +46,7 @@
                                 </a>
                                 <ul class="dropdown-menu" style="width: 400px;">
                                     <li>
-                                        <ul class="menu" id="notification-list">
-                                            
-                                        </ul>
+                                        <ul class="menu" id="notification-list"></ul>
                                     </li>
                                     <li class="footer"><a href="#">View all</a></li>
                                 </ul>
@@ -78,12 +69,12 @@
                                     <!-- Menu Footer-->
                                     <li class="user-footer">
                                         <div class="pull-left">
-                                            <a href="/Technician/Profile" class="btn btn-default btn-flat">Profile</a>
+                                            <a href="/HelpDesk/Profile" class="btn btn-default btn-flat">Profile</a>
                                         </div>
                                         <div class="pull-right">
                                             @using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
                                             {
-                                            @Html.AntiForgeryToken()
+                                                @Html.AntiForgeryToken()
                                             }
                                             <a href="javascript:document.getElementById('logoutForm').submit()" class="btn btn-default btn-flat">Sign out</a>
                                         </div>
@@ -98,28 +89,31 @@
             </nav>
         </header>
         <!-- Full Width Column -->
-        <div class="content-wrapper bg-lighter-purple">
-            <div class="container" style="min-width: 900px; padding-top: 20px">
+        <div class="content-wrapper">
+            <div class="container" style="min-width: 1000px; padding-top: 20px">
                 @RenderBody()
                 <!-- /.content -->
             </div>
             <!-- /.container -->
         </div>
         <!-- /.content-wrapper -->
-        <footer class="main-footer bg-purple">
+        <footer class="main-footer bg-blue">
             <div class="pull-right hidden-xs">
                 <b>Version</b> 1.1.1
             </div>
-            <strong>Copyright &copy; 2016-2016 <a href="http://tms.com">Group 4</a>.</strong> All rights
+            <strong>Copyright &copy; 2016-2017 <a href="http://tms.com" style="color: #2a2a2a !important">Group 4</a>.</strong> All rights
             reserved.
         </footer>
     </div>
     <!-- ./wrapper -->
+    @RenderSection("InitModal", false)
+    @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/app")
     @Scripts.Render("~/bundles/datatables")
-    @RenderSection("scripts", required: false)
+    @RenderSection("InitScript", false)
+    @RenderSection("Scripts", false)
     <script src="~/Content/custom-js/notification-menu-bar.js"></script>
 </body>
 </html>
