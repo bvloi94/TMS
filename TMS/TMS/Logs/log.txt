@@ -429,3 +429,13 @@ DEBUG 2016-11-10 12:51:34,789 JobManager             ExecuteAllJobs     - The Jo
 DEBUG 2016-11-10 12:51:34,795 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
 DEBUG 2016-11-10 12:51:34,799 JobManager             ExecuteAllJobs     - End Method
 ERROR 2016-11-10 12:56:53,818 EmailUtil              ailsUsingEAGetMail - No such host is known
+DEBUG 2016-11-10 13:21:14,175 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-10 13:21:14,290 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-10 13:21:14,291 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-10 13:21:14,292 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-10 13:21:14,292 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-10 13:21:14,293 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-10 13:21:14,293 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-10 13:21:14,294 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-10 13:21:14,296 JobManager             ExecuteAllJobs     - End Method
+ERROR 2016-11-10 13:36:45,250 EmailUtil              ailsUsingEAGetMail - No such host is known
