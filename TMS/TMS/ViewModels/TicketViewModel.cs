@@ -18,7 +18,9 @@ namespace TMS.ViewModels
         public int Id { get; set; }
         [Required(ErrorMessage = "Ticket's subject is required!")]
         public string Subject { get; set; }
+        [AllowHtml]
         public string Description { get; set; }
+        [AllowHtml]
         public string Solution { get; set; }
         [Required(ErrorMessage = "Ticket's requester is required!")]
         public string RequesterId { get; set; }

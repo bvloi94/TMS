@@ -20,5 +20,7 @@ namespace TMS.ViewModels
         public Nullable<DateTime> DayOfBirth { get; set; }
         [ImageFile("jpg,jpeg,png,gif", ErrorMessage = "Please upload images with [jpg|jpeg|png|gif] extension.")]
         public HttpPostedFileBase Avatar { get; set; }
+        [Required(ErrorMessage = "Email is required.")]
+        public string Email { get; set; }
     }
 }

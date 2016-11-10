@@ -48,7 +48,6 @@
       <HintPath>..\packages\EAGetMail.4.6.0.3\lib\net45\EAGetMail45.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="itextsharp">
       <HintPath>..\packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -214,6 +213,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\HelpDesk\Controllers\HomeController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\Controllers\DepartmentController.cs" />
     <Compile Include="Areas\Manager\Controllers\ManageSCController.cs" />
@@ -239,6 +239,8 @@
     <Compile Include="Models\Notification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Services\NotificationService.cs" />
+    <Compile Include="Services\SolutionAttachmentService.cs" />
     <Compile Include="Models\TMSModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -321,9 +323,6 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Include="Schedulers\CheckToCloseTicketJob.cs" />
     <Compile Include="Schedulers\CheckOverdueTicketJob.cs" />
     <Compile Include="Services\NotificationService.cs" />
@@ -402,88 +401,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="404.html" />
-    <Content Include="App_Data\ASPNETDB.MDF" />
-    <Content Include="App_Data\aspnetdb_log.ldf">
-      <DependentUpon>ASPNETDB.MDF</DependentUpon>
-    </Content>
-    <Content Include="bin\Antlr3.Runtime.dll" />
-    <Content Include="bin\Antlr3.Runtime.pdb" />
-    <Content Include="bin\EAGetMail45.dll" />
-    <Content Include="bin\EntityFramework.dll" />
-    <Content Include="bin\EntityFramework.SqlServer.dll" />
-    <Content Include="bin\EntityFramework.SqlServer.xml" />
-    <Content Include="bin\EntityFramework.xml" />
-    <Content Include="bin\log4net.dll" />
-    <Content Include="bin\log4net.xml" />
-    <Content Include="bin\LumiSoft.Net.dll" />
-    <Content Include="bin\Microsoft.AI.Agent.Intercept.dll" />
-    <Content Include="bin\Microsoft.AI.DependencyCollector.dll" />
-    <Content Include="bin\Microsoft.AI.DependencyCollector.xml" />
-    <Content Include="bin\Microsoft.AI.PerfCounterCollector.dll" />
-    <Content Include="bin\Microsoft.AI.ServerTelemetryChannel.dll" />
-    <Content Include="bin\Microsoft.AI.ServerTelemetryChannel.xml" />
-    <Content Include="bin\Microsoft.AI.Web.dll" />
-    <Content Include="bin\Microsoft.AI.Web.xml" />
-    <Content Include="bin\Microsoft.AI.WindowsServer.dll" />
-    <Content Include="bin\Microsoft.AI.WindowsServer.xml" />
-    <Content Include="bin\Microsoft.ApplicationInsights.dll" />
-    <Content Include="bin\Microsoft.ApplicationInsights.xml" />
-    <Content Include="bin\Microsoft.AspNet.Identity.Core.dll" />
-    <Content Include="bin\Microsoft.AspNet.Identity.Core.xml" />
-    <Content Include="bin\Microsoft.AspNet.Identity.EntityFramework.dll" />
-    <Content Include="bin\Microsoft.AspNet.Identity.EntityFramework.xml" />
-    <Content Include="bin\Microsoft.AspNet.Identity.Owin.dll" />
-    <Content Include="bin\Microsoft.AspNet.Identity.Owin.xml" />
-    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll" />
-    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml" />
-    <Content Include="bin\Microsoft.Owin.dll" />
-    <Content Include="bin\Microsoft.Owin.Host.SystemWeb.dll" />
-    <Content Include="bin\Microsoft.Owin.Host.SystemWeb.xml" />
-    <Content Include="bin\Microsoft.Owin.Security.Cookies.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.Cookies.xml" />
-    <Content Include="bin\Microsoft.Owin.Security.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.Facebook.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.Facebook.xml" />
-    <Content Include="bin\Microsoft.Owin.Security.Google.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.Google.xml" />
-    <Content Include="bin\Microsoft.Owin.Security.MicrosoftAccount.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.MicrosoftAccount.xml" />
-    <Content Include="bin\Microsoft.Owin.Security.OAuth.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.OAuth.xml" />
-    <Content Include="bin\Microsoft.Owin.Security.Twitter.dll" />
-    <Content Include="bin\Microsoft.Owin.Security.Twitter.xml" />
-    <Content Include="bin\Microsoft.Owin.Security.xml" />
-    <Content Include="bin\Microsoft.Owin.xml" />
-    <Content Include="bin\Microsoft.Web.Infrastructure.dll" />
-    <Content Include="bin\Newtonsoft.Json.dll" />
-    <Content Include="bin\Newtonsoft.Json.xml" />
-    <Content Include="bin\Owin.dll" />
-    <Content Include="bin\roslyn\csc.exe" />
-    <Content Include="bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.dll" />
-    <Content Include="bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll" />
-    <Content Include="bin\roslyn\System.Collections.Immutable.dll" />
-    <Content Include="bin\roslyn\System.Reflection.Metadata.dll" />
-    <Content Include="bin\roslyn\vbc.exe" />
-    <Content Include="bin\roslyn\VBCSCompiler.exe" />
-    <Content Include="bin\System.Web.Helpers.dll" />
-    <Content Include="bin\System.Web.Helpers.xml" />
-    <Content Include="bin\System.Web.Mvc.dll" />
-    <Content Include="bin\System.Web.Mvc.xml" />
-    <Content Include="bin\System.Web.Optimization.dll" />
-    <Content Include="bin\System.Web.Optimization.xml" />
-    <Content Include="bin\System.Web.Razor.dll" />
-    <Content Include="bin\System.Web.Razor.xml" />
-    <Content Include="bin\System.Web.WebPages.Deployment.dll" />
-    <Content Include="bin\System.Web.WebPages.Deployment.xml" />
-    <Content Include="bin\System.Web.WebPages.dll" />
-    <Content Include="bin\System.Web.WebPages.Razor.dll" />
-    <Content Include="bin\System.Web.WebPages.Razor.xml" />
-    <Content Include="bin\System.Web.WebPages.xml" />
-    <Content Include="bin\TMS.dll" />
-    <Content Include="bin\TMS.pdb" />
-    <Content Include="bin\WebGrease.dll" />
     <Content Include="Content\AdminLTE.css" />
     <Content Include="Content\AdminLTE.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -657,11 +574,6 @@
       <DependentUpon>TMSModel.edmx</DependentUpon>
       <LastGenOutput>TMSModel.cs</LastGenOutput>
     </Content>
-    <Content Include="obj\Debug\TempPE\Models.TMSModel.cs.dll" />
-    <Content Include="obj\Debug\TempPE\Models.TMSModel.Designer.cs.dll" />
-    <Content Include="obj\Debug\TMS.csproj.FileListAbsolute.txt" />
-    <Content Include="obj\Debug\TMS.dll" />
-    <Content Include="obj\Debug\TMS.pdb" />
     <Content Include="Scripts\ai.0.22.19-build00125.js" />
     <Content Include="Scripts\ai.0.22.19-build00125.min.js" />
     <Content Include="Scripts\app.js" />
@@ -731,21 +643,7 @@
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Shared\_TopLayout.cshtml" />
-    <Content Include="Logs\log.txt.1" />
-    <Content Include="Logs\log.txt.2" />
-    <Content Include="Logs\log.txt.3" />
-    <Content Include="Logs\log.txt.4" />
-    <Content Include="Logs\log.txt.5" />
-    <Content Include="bin\ApplicationInsights.config" />
-    <Content Include="bin\roslyn\Microsoft.CSharp.Core.targets" />
-    <Content Include="bin\roslyn\Microsoft.VisualBasic.Core.targets" />
-    <Content Include="bin\roslyn\VBCSCompiler.exe.config" />
-    <Content Include="bin\TMS.dll.config" />
-    <Content Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <Content Include="obj\Debug\edmxResourcesToEmbed\Models\TMSModel.csdl" />
-    <Content Include="obj\Debug\edmxResourcesToEmbed\Models\TMSModel.msl" />
-    <Content Include="obj\Debug\edmxResourcesToEmbed\Models\TMSModel.ssdl" />
-    <Content Include="obj\Debug\TMS.csprojResolveAssemblyReference.cache" />
+    <Content Include="Areas\HelpDesk\Views\Home\Index.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -778,29 +676,6 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Uploads\Attachments\017f4ef0-aa5f-4976-9b19-f8616d7c14aa.jpg" />
-    <Content Include="Uploads\Attachments\171e3b54-dc91-4c6f-a32c-01b4c09d4cae.jpg" />
-    <Content Include="Uploads\Attachments\2161b7c9-9592-4bde-a7fc-eb725b08c1bc.txt" />
-    <Content Include="Uploads\Attachments\3f37f968-c102-4d12-99bf-b2a6ceddde2b.ico" />
-    <Content Include="Uploads\Attachments\48fe23e1-c34f-4f30-8c9c-f49e3506c6ba.html" />
-    <Content Include="Uploads\Attachments\532d355d-41d6-4bd3-8351-42f17994b251.ico" />
-    <Content Include="Uploads\Attachments\705acfd6-aa20-4947-bd6f-56c03d0330cd.ico" />
-    <Content Include="Uploads\Attachments\7a65b0e8-f9fb-43c0-b178-bccce6bd8efb.jpg" />
-    <Content Include="Uploads\Attachments\7a713783-677a-4339-8454-452ad8021226.ico" />
-    <Content Include="Uploads\Attachments\7c3dec41-7c40-42be-bf39-f3f38f32d934.jpg" />
-    <Content Include="Uploads\Attachments\8d9dddcd-5920-4b90-9ac7-d4781d2a124b.jpg" />
-    <Content Include="Uploads\Attachments\914ece9e-cd69-4ba6-9302-ffdc9d4f189f.ico" />
-    <Content Include="Uploads\Attachments\927b8f28-4f5a-421b-8543-3deef5dc5197.ico" />
-    <Content Include="Uploads\Attachments\99ca5ae2-6256-4220-bf97-1898d16a1e64.ico" />
-    <Content Include="Uploads\Attachments\a0af6a47-6d90-425b-ae10-0f0a4ebd3e0e.jpg" />
-    <Content Include="Uploads\Attachments\a7c958b8-b867-43d9-b27f-38b1a1782178.ico" />
-    <Content Include="Uploads\Attachments\c4d6bf41-5723-4721-8f4c-601d6f50b658.jpg" />
-    <Content Include="Uploads\Attachments\cb8c9968-3c05-47c7-b427-fed79e84b814.jpg" />
-    <Content Include="Uploads\Attachments\e218d5a1-5059-4b9a-9ec5-a01cb632b1fb.jpg" />
-    <Content Include="Uploads\Attachments\e4595e6d-4953-4ed6-97c6-d0b38840bf08.jpg" />
-    <Content Include="Uploads\Attachments\e92956ce-9f02-4c14-ba68-0ed3e8d7f5fc.jpg" />
-    <Content Include="Uploads\Attachments\e993d4cd-f724-474b-bde0-b8e108712293.jpg" />
-    <Content Include="Uploads\Attachments\ecdc90b2-dd15-42b1-9658-17d8e96ce456.ico" />
     <Content Include="Uploads\Avatar\avatar_female.png" />
     <Content Include="Uploads\Avatar\avatar_male.png" />
     <Content Include="Utils\stopwords.txt" />
@@ -864,6 +739,7 @@
     <Content Include="Views\Profile\UpdateProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Areas\HelpDesk\Models\" />
     <Folder Include="Areas\Manager\Models\" />
@@ -871,6 +747,7 @@
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
     <Folder Include="Content\Plugins\jquery.ui\images\" />
+    <Folder Include="Views\Notification\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

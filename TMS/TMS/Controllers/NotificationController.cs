@@ -36,6 +36,7 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
+        [CustomAuthorize(Roles = "Helpdesk,Technician,Requester")]
         public ActionResult GetNotifications()
         {
             string id = User.Identity.GetUserId();
@@ -44,24 +45,26 @@ namespace TMS.Controllers
             if (userRole == "Helpdesk")
             {
                 notificationList = _notificationService.GetAll().OrderByDescending(m => m.NotifiedTime)
-                .Where(m => m.IsRead == false && m.IsForHelpDesk == true).Select(m => new NotificationViewModel
+                .Where(m => m.IsForHelpDesk == true).Select(m => new NotificationViewModel
                 {
                     Id = m.ID,
                     TicketId = m.TicketID,
                     NotifiedTime = m.NotifiedTime.HasValue ? GeneralUtil.ShowDateTime(m.NotifiedTime.Value) : "-",
-                    NotificationContent = m.NotificationContent
-                });
+                    NotificationContent = m.NotificationContent,
+                    IsRead = m.IsRead
+                }).ToArray().Take(20);
             }
             else
             {
                 notificationList = _notificationService.GetUserNotifications(id).OrderByDescending(m => m.NotifiedTime)
-                .Where(m => m.IsRead == false).Select(m => new NotificationViewModel
+                .Select(m => new NotificationViewModel
                 {
                     Id = m.ID,
                     TicketId = m.TicketID,
                     NotifiedTime = m.NotifiedTime.HasValue ? GeneralUtil.ShowDateTime(m.NotifiedTime.Value) : "-",
-                    NotificationContent = m.NotificationContent
-                });
+                    NotificationContent = m.NotificationContent,
+                    IsRead = m.IsRead
+                }).ToArray().Take(20);
             }
 
             return Json(new

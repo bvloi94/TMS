@@ -202,6 +202,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.Mode = ticket.Mode;
                 if (ticket.Type.HasValue) model.Type = ticket.Type.Value;
                 model.Status = ((TicketStatusEnum)ticket.Status).ToString();
+                model.StatusId = ticket.Status;
                 if (ticket.CategoryID.HasValue)
                 {
                     model.CategoryId = ticket.CategoryID.Value;
@@ -406,7 +407,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 bool result = _ticketService.UpdateTicket(ticket, User.Identity.GetUserId());
                 if (result)
                 {
-                    if (model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
+                    if (model.DescriptionFiles != null && model.DescriptionFiles.ToList()[0] != null && model.DescriptionFiles.ToList().Count > 0)
                     {
                         result = _ticketAttachmentService.saveFile(ticket.ID, model.DescriptionFiles, ConstantUtil.TicketAttachmentType.Description);
                         if (!result)
@@ -418,7 +419,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             });
                         }
                     }
-                    if (model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
+                    if (model.SolutionFiles != null && model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
                     {
                         result = _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
                         if (!result)
@@ -701,8 +702,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                     break;
                 case 6:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.CreatedTime)
-                        : filteredListItems.OrderByDescending(p => p.CreatedTime);
+                        ? filteredListItems.OrderBy(p => p.ModifiedTime)
+                        : filteredListItems.OrderByDescending(p => p.ModifiedTime);
                     break;
             }
 
@@ -727,7 +728,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = ((TicketStatusEnum)item.Status).ToString();
-                s.ModifiedTimeString = item.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
+                s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 tickets.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
@@ -739,7 +740,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpGet]
-        public ActionResult LoadTicketById(int? id)
+        public ActionResult LoadTicketToRefer(int? id)
         {
             if (id.HasValue)
             {

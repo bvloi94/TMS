@@ -5,11 +5,11 @@
 @{
     if (ViewBag.Role == "Technician")
     {
-        Layout = "~/Areas/Technician/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/Technician/Views/Shared/_TopLayout.cshtml";
     }
     else
     {
-        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     }
 
 }
@@ -269,9 +269,7 @@
                 <div class="row" style="text-align: center;">
                     <div class="col-sm-12" style="padding: 0px">
                         <input type="button" id="solveBtn" class="btn btn-primary btn-flat row-button" value="Solve" name="command" />
-
                         <input type="button" id="saveBtn" class="btn btn-success btn-flat row-button" value="Save" name="command" />
-
                         @if (ViewBag.Role == "Technician")
                         {
                             @Html.Raw("<a class='btn btn-default btn-flat row-button' href='" + Url.Action("Index", "ManageTicket", new { Area = "Technician" }) + "'>Cancel</a>")
@@ -319,51 +317,52 @@
 
 @section scripts{
     <script>
-        $("#search-btn")
-            .on("click",
-                function () {
-                    $.ajax({
-                        "url": "/Ticket/SearchSolution/",
-                        "method": "POST",
-                        "data": {
-                            searchtxt: $("#solution-search").val()
-                        },
-                        "success": function (data) {
-                            if (data.success) {
-                                $('#result-list').empty();
-                                if (data.data.length == 0) {
-                                    $('#result-list').append('<li>No result.</li>');
-                                }
-                                $.each(data.data,
-                                    function (index, element) {
-                                        $('#result-list')
-                                            .append('<li><div class="timeline-item"><a class="time text-green solution-refer" href="javascript:insertURL('
-                                                //+ element.URL
-                                                + ')">Refer</a><h3 class="timeline-header no-border"><a class="solution-subject" data-id="'
-                                                + element.Id + '">' + element.Subject
-                                                + '</a></h3><div class="timeline-body" style="display:none;"><div contentEditable="true" class="solution-content editable"></div></div></div></li>');
-                                        //$('#result-list')
-                                        //        .append('<li><div class="timeline-item"><a class="time text-green solution-refer" href="javascript:insertURL('
-                                        //        //+ element.URL
-                                        //        + ')">Refer</a><h3 class="timeline-header no-border"><a class="solution-subject" data-id="'
-                                        //        + element.Id + '">' + element.Subject
-                                        //        + '</a></h3><div class="timeline-body" style="display:none;"><pre class="solution-content" style="font-weight: 600;"></pre></div></div></li>');
-
-                                    });
-                            } else {
-                                //
-                            }
-                        },
-                        "error": function (e) {
-                            noty({
-                                text: "Some error occured. Please try again later!",
-                                type: "error",
-                                layout: "topRight",
-                                timeout: 2000
-                            });
+        $("#search-btn").on("click", function () {
+            $.ajax({
+                "url": "/Ticket/SearchSolution/",
+                "method": "POST",
+                "data": {
+                    searchtxt: $("#solution-search").val()
+                },
+                "success": function (data) {
+                    if (data.success) {
+                        $('#result-list').empty();
+                        if (data.data.length == 0) {
+                            $('#result-list').append('<li>No result.</li>');
                         }
+                        $.each(data.data, function (index, element) {
+                            $('#result-list').append('<li><div class="timeline-item"><a class="time text-green solution-refer" href="javascript:insertURL(\''
+                                    + element.Path
+                                    + '\')">Refer</a><h3 class="timeline-header no-border"><a class="solution-subject" data-id="'
+                                    + element.Id + '">' + element.Subject
+                                    + '</a></h3><div class="timeline-body" style="display:none;"><div contentEditable="true" class="solution-content editable"></div></div></div></li>');
+                            //$('#result-list')
+                            //        .append('<li><div class="timeline-item"><a class="time text-green solution-refer" href="javascript:insertURL('
+                            //        //+ element.URL
+                            //        + ')">Refer</a><h3 class="timeline-header no-border"><a class="solution-subject" data-id="'
+                            //        + element.Id + '">' + element.Subject
+                            //        + '</a></h3><div class="timeline-body" style="display:none;"><pre class="solution-content" style="font-weight: 600;"></pre></div></div></li>');
+
+                        });
+                    } else {
+                        noty({
+                            text: data.msg,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                    }
+                },
+                "error": function (e) {
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2000
                     });
-                });
+                }
+            });
+        });
 
         $('#result-list').on('click', 'a[class="solution-subject"]', function (e) {
             var index = $(".solution-subject").index(this);
@@ -401,9 +400,7 @@
         });
 
         function insertURL(url) {
-            // blah blah
-            var messUrl = "http://tms.com/KB/1";
-            $("#new-solution").html($("#new-solution").val() + '&#13' + messUrl);
+            $("#new-solution").val($("#new-solution").val() + '\n' + url);
             noty({
                 text: 'Solution\'s link is inserted!',
                 layout: "topCenter",
@@ -418,7 +415,7 @@
             $("#search-btn").click();
         }
 
-        $("#solution-search").keyup(function(e) {
+        $("#solution-search").keyup(function (e) {
             $("#search-btn").click();
         });
 

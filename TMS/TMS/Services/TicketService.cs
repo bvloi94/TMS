@@ -767,6 +767,18 @@ namespace TMS.Services
                 oldTicketHistory.ActID = actId;
                 oldTicketHistory.Action = string.Format("Merged into ticket #{0}", newTicket.Code);
                 oldTicketHistory.ActedTime = DateTime.Now;
+                foreach (TicketAttachment ticketAttachment in oldTicket.TicketAttachments.ToList())
+                {
+                    if (ticketAttachment.Type == ConstantUtil.TicketAttachmentType.Description)
+                    {
+                        TicketAttachment newTicketAttachment = new TicketAttachment();
+                        newTicketAttachment.TicketID = newTicket.ID;
+                        newTicketAttachment.Filename = ticketAttachment.Filename;
+                        newTicketAttachment.Path = ticketAttachment.Path;
+                        newTicketAttachment.Type = ticketAttachment.Type;
+                        _unitOfWork.TicketAttachmentRepository.Insert(newTicketAttachment);
+                    }
+                }
                 //end ticket history
                 _unitOfWork.TicketHistoryRepository.Insert(oldTicketHistory);
                 _unitOfWork.TicketRepository.Update(oldTicket);

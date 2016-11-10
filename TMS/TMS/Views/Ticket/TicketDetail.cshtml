@@ -8,7 +8,7 @@
 @{
     if (ViewBag.Role == "Helpdesk")
     {
-        Layout = "~/Areas/HelpDesk/Views/Shared/_Layout.cshtml";
+        Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     }
     else
     {
@@ -67,7 +67,16 @@
                         <div class="col-sm-2 labels">
                             <b>Description: </b>
                         </div>
-                        <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.Description)</div>
+                        <div class="col-sm-10 pre-wrap">
+                            @if (!string.IsNullOrWhiteSpace(Model.Description))
+                            {
+                                @Html.DisplayFor(m => m.Description)
+                            }
+                            else
+                            {
+                                @:-
+                            }
+                        </div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content ">
@@ -84,7 +93,14 @@
                             <b>Solution: </b>
                         </div>
                         <div class="col-sm-10 pre-wrap">
-                            @Html.DisplayFor(model => model.Solution)
+                            @if (!string.IsNullOrWhiteSpace(Model.Solution))
+                            {
+                                @Html.DisplayFor(m => m.Solution)
+                            }
+                            else
+                            {
+                                <span style="font-style: italic;">This ticket is not solved yet</span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -271,7 +287,7 @@
         {
             case "TechnicianInCharge":
                 <a href="/Ticket/Solve/@Model.Id" class="btn btn-success btn-flat button"><i class="fa fa-check"></i>&nbsp;&nbsp;Solve</a>
-                <a href="/Technician/ManageTicket" class="btn btn-default btn-flat button"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
+                <a href="/Technician/ManageTicket" class="btn btn-default btn-flat button">Back</a>
                 break;
             case "Helpdesk":
                 <div class="btn-group dropup" id="action-div">
@@ -299,10 +315,10 @@
                         }
                     </ul>
                 </div>
-                <a href="/Helpdesk/ManageTicket" class="btn btn-default btn-flat button"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
+                <a href="/Helpdesk/ManageTicket" class="btn btn-default btn-flat button">Back</a>
                 break;
             default:
-                <a href="/Technician/Home" class="btn btn-default btn-flat button"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back</a>
+                <a href="/Technician/Home" class="btn btn-default btn-flat button">Back</a>
                 break;
         }
     </div>
