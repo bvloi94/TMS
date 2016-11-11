@@ -48,7 +48,7 @@
       <HintPath>..\packages\EAGetMail.4.6.0.3\lib\net45\EAGetMail45.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="itextsharp">
+    <Reference Include="itextsharp, Version=5.5.10.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -225,6 +225,8 @@
     <Compile Include="Areas\Manager\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
+	<Compile Include="Areas\Technician\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Technician\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
@@ -240,8 +242,6 @@
     <Compile Include="Models\Notification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Services\NotificationService.cs" />
-    <Compile Include="Services\SolutionAttachmentService.cs" />
     <Compile Include="Models\TMSModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -324,9 +324,6 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
-    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Include="Schedulers\CheckToCloseTicketJob.cs" />
     <Compile Include="Schedulers\CheckOverdueTicketJob.cs" />
     <Compile Include="Services\NotificationService.cs" />
@@ -608,6 +605,9 @@
     <Content Include="Areas\Technician\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Technician\Views\ManageTicket\Index.cshtml" />
     <Content Include="Areas\Technician\Views\ManageTicket\Solve.cshtml" />
+    <Content Include="Areas\Technician\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateHelpDesk.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditHelpDesk.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Technician.cshtml" />

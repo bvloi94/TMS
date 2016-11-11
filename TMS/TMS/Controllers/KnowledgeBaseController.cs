@@ -426,6 +426,60 @@ namespace TMS.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult GetTicketsByTags(JqueryDatatableParameterViewModel param, int? timeOption, string tags)
+        {
+            if (!timeOption.HasValue)
+            {
+                timeOption = ConstantUtil.TimeOption.ThisWeek;
+            }
+            IEnumerable<Ticket> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
+
+            IQueryable<Ticket> filteredListItems = recentTickets.Select(m => new Ticket
+            {
+                Subject = m.Subject,
+                Tags = m.Tags
+            }).AsQueryable();
+
+            var predicate = PredicateBuilder.False<Ticket>();
+
+            if (!string.IsNullOrEmpty(tags))
+            {
+                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                tags = regex.Replace(tags, " ");
+                string[] tagsArr = tags.Split(',');
+                foreach (string tagItem in tagsArr)
+                {
+                    string tagItemTemp = '"' + tagItem.ToLower() + '"';
+                    predicate = predicate.Or(p => p.Tags.ToLower().Contains(tagItemTemp));
+                }
+                filteredListItems = filteredListItems.Where(predicate);
+            }
+
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortDirection = param.order[0]["dir"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Subject)
+                        : filteredListItems.OrderByDescending(p => p.Subject);
+                    break;
+            }
+
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+
+            return Json(new
+            {
+                draw = param.draw,
+                recordsTotal = displayedList.ToList().Count(),
+                recordsFiltered = filteredListItems.Count(),
+                data = displayedList,
+            }, JsonRequestBehavior.AllowGet);
+        }
+
         private int GetNumberOfTags(string tags)
         {
             string[] tagArr = tags.Split(',');
