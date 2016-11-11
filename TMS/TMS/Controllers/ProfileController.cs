@@ -179,7 +179,7 @@ namespace TMS.Controllers
                     case "manager":
                         return RedirectToAction("Index", "Profile", new { area = "Manager" });
                     case "requester":
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", "Profile");
                 }
             }
             AddErrors(result);
