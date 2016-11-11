@@ -126,7 +126,6 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
         public ActionResult LoadTechnicianDropdown(string ignore, string query, int? departmentId)
         {
             var js = new JavaScriptSerializer();
