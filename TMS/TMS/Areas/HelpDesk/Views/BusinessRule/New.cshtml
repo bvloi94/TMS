@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 
 <style>
-     .select2-container--default .select2-selection--single, .select2-selection .select2-selection--single {
+    .select2-container--default .select2-selection--single, .select2-selection .select2-selection--single {
         padding: 0px 0px !important;
     }
 
@@ -15,7 +15,7 @@
             margin-top: 0px;
         }
 
-     .select2-container--default .select2-selection--single, select {
+    .select2-container--default .select2-selection--single, select {
         height: 24px !important;
         background: none;
     }
@@ -33,9 +33,9 @@
         color: #f7f5f5;
     }
 
-     #criteriaeditordiv .select2-container--default .select2-selection--single {
-         border: none;
-     }
+    #criteriaeditordiv .select2-container--default .select2-selection--single {
+        border: none;
+    }
 
 
     label {
@@ -195,10 +195,10 @@
             <div class="box-header with-border">
                 <h4 class="box-title">New Business Rule</h4>
             </div>
-            <div class="box-body"style="padding: 15px 30px;" >
+            <div class="box-body" style="padding: 15px 30px;">
                 <form class="form-horizontal" role="form" id="form-business-rules" method="POST" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
-                    <div class="row bottom-space" >
+                    <div class="row bottom-space">
                         <div class="col-md-6">
                             <label class="control-label">RULE NAME <font color="red">*</font></label>
                             <input id="rule-name" type="text" class="form-control" name="Name" />
@@ -287,25 +287,24 @@
 
         $(document)
             .click(".logicalcss",
-                function () {
+                function() {
                     if ($(this).innerHTML == "AND") {
                         $(this).innerHTML = "OR";
                     } else $(this).innerHTML = "AND";
                 });
 
 
-
         function initDropdownControl() {
             initTechnicianDropdown({
                 control: $("[data-role=ddl-technician]"),
-                ignore: function () {
+                ignore: function() {
                     return $("[data-role=ddl-technician]").val();
                 }
             });
 
             initActionDropdown({
                 control: $("#rule-action"),
-                ignore: function () {
+                ignore: function() {
                 }
             });
 
@@ -326,12 +325,14 @@
                 ]
             });
 
-        $('#jstree').on("changed.jstree", function (e, data) {
-            console.log(data.selected);
-        });
+        $('#jstree')
+            .on("changed.jstree",
+                function(e, data) {
+                    console.log(data.selected);
+                });
         tree
             .on('copy_node.jstree',
-                function (e, data) {
+                function(e, data) {
                     //data.node.data = $.extend(true, {}, data.original.data);
                     //var id = data.node.id.split('_').pop();
                     //var nodeText = "";
@@ -339,37 +340,49 @@
                     //tree.jstree().set_text(data.node.id, nodeText);
                 })
             .on('cut.jstree',
-                function (e, data) {
+                function(e, data) {
                     //
                 })
             .on('paste.jstree',
-                function (e, data) {
+                function(e, data) {
                 })
             .on('move_node.jstree',
-                function (e, data) {
+                function(e, data) {
                     //
                 });
 
         tree.bind("redraw.jstree",
-            function (event, data) {
+            function(event, data) {
                 //alert("redraw");
             });
 
         tree.bind("loaded.jstree",
-            function (event, data) {
+            function(event, data) {
                 //alert("TREE IS LOADED");
             });
 
         tree.bind('create_node.jstree',
-            function (e, data) {
+            function(e, data) {
                 var id = data.node.id.split('_').pop();
                 var nodeText = '<span><i class=\"fa fa-arrows draggable\" style=\"color: #aaa;\"></i></span>' +
-                        '<span id=\"rule_logic_' + id + '\" class=\"logicalcss\">AND</span>' +
-                        '<span id=\"rule_criteria_' + id + '\" class=\"fieldcss\">-- Select criteria --</span>' +
-                        '<span id=\"rule_condition_' + id + '\" class=\"operatorcss\" >-- Select condition --</span>' +
-                        '<span id=\"rule_value_' + id + '\"  class="valuecss"></span>' +
-                        '<span class=\"pull-right\"><i id=\"rule_remove_' + id + '\" class=\"fa fa-remove addcss\" style="color: #aaa;\"></i></span>' +
-                        '<span class=\"pull-right\"><i id=\"rule_add_' + id + '\" class=\"fa fa-plus removecss\" style="color: #aaa;\"></i></span>';
+                    '<span id=\"rule_logic_' +
+                    id +
+                    '\" class=\"logicalcss\">AND</span>' +
+                    '<span id=\"rule_criteria_' +
+                    id +
+                    '\" class=\"fieldcss\">-- Select criteria --</span>' +
+                    '<span id=\"rule_condition_' +
+                    id +
+                    '\" class=\"operatorcss\" >-- Select condition --</span>' +
+                    '<span id=\"rule_value_' +
+                    id +
+                    '\"  class="valuecss"></span>' +
+                    '<span class=\"pull-right\"><i id=\"rule_remove_' +
+                    id +
+                    '\" class=\"fa fa-remove addcss\" style="color: #aaa;\"></i></span>' +
+                    '<span class=\"pull-right\"><i id=\"rule_add_' +
+                    id +
+                    '\" class=\"fa fa-plus removecss\" style="color: #aaa;\"></i></span>';
                 tree.jstree().set_text(data.node.id, nodeText);
                 //if (tree.jstree().is_closed(data.node.parent)) {
                 //    tree.jstree().open_node(data.node.parent);
@@ -379,9 +392,8 @@
             });
 
 
-
         tree.bind("select_node.jstree",
-            function (event, data) {
+            function(event, data) {
                 var evt = window.event || event;
                 //var button = evt.which || evt.button;
                 //if (button != 1 && (typeof button != "undefined")) return false;
@@ -408,7 +420,8 @@
                 }
 
                 if (clickedId.indexOf("rule_remove") != -1) {
-                    var treeData = tree.jstree(true).get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
+                    var treeData = tree.jstree(true)
+                        .get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
                     if (treeData.length > 1) {
                         var deleted = tree.jstree(true).delete_node(data.node);
                         //var firstNodeId = treeData[0]["id"];
@@ -424,6 +437,7 @@
                     var inputId = clickedId + '_inp';
                     var p = $("#" + clickedId);
                     p.addClass('list-open');
+                    //anchorTag.children[2].className += ' list-open';
                     $('#rulecriteria_fs')
                         .append('<div id="tempSelectCriteria" class="tempDiv select-sublinks-single" style="top:' +
                             p[0].offsetTop +
@@ -434,7 +448,7 @@
                             '"></select></div>');
                     initCriteriaDropdown({
                         control: $("#" + inputId),
-                        ignore: function () {
+                        ignore: function() {
                             return [];
                         }
                     });
@@ -443,7 +457,7 @@
                     $("#" + inputId).select2("open");
                     $("#" + inputId)
                         .on("change",
-                            function () {
+                            function() {
                                 anchorTag.children[2].innerHTML = $("#" + inputId).text();
                                 tree.jstree().get_node(selectedId).data.Criteria = $("#" + inputId).val();
                                 anchorTag.children[3].innerHTML = "-- Select condition --";
@@ -451,12 +465,13 @@
                                 tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
                                 $('.tempDiv').remove();
                             });
-                    $("#" + inputId)
-                        .on("blur",
-                            function () {
-                                $("#" + inputId).select2("close");
-                                $('.tempDiv').remove();
-                            });
+
+                    //$("#" + inputId)
+                    //    .on("blur",
+                    //        function () {
+                    //            $("#" + inputId).select2("close");
+                    //            $('.tempDiv').remove();
+                    //        });
                 }
 
                 if (clickedId.indexOf("rule_condition") != -1) {
@@ -478,7 +493,7 @@
                         initConditionDropdown({
                             control: $("#" + inputId),
                             criteria: criteria,
-                            ignore: function () {
+                            ignore: function() {
                                 return [];
                             }
                         });
@@ -488,7 +503,7 @@
 
                         $("#" + inputId)
                             .on("change",
-                                function () {
+                                function() {
                                     anchorTag.children[3].innerHTML = $("#" + inputId).text();
                                     tree.jstree().get_node(selectedId).data.Condition = $("#" + inputId).val();
                                     anchorTag.children[4].innerHTML = "";
@@ -497,7 +512,7 @@
                                 });
                         $("#" + inputId)
                             .on("blur",
-                                function () {
+                                function() {
                                     $("#" + inputId).select2("close");
                                     $('.tempDiv').remove();
                                 });
@@ -516,126 +531,141 @@
                         var inputId = clickedId + '_inp';
                         var p = $("#" + clickedId);
                         switch (criteria) {
-                            case "Subject":
-                            case "Description":
-                                $('#rulecriteria_fs')
-                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                        p[0].offsetTop +
-                                        'px; left:' +
-                                        p[0].offsetLeft +
-                                        'px; "><input style="width:200px; font-size: 14px;" id="' +
-                                        inputId +
-                                        '"></input></div>');
-                                if (tree.jstree().get_node(selectedId).data.Value)
-                                    $("#" + inputId).val(tree.jstree().get_node(selectedId).data.Value);
-                                $("#" + inputId).focus();
-                                $("#" + inputId)
-                                    .focusout(function () {
-                                        anchorTag.children[4].innerHTML = $("#" + inputId)[0].value;
-                                        tree.jstree().get_node(selectedId).data.Value = $("#" + inputId)[0].value;
+                        case "Subject":
+                        case "Description":
+                            $('#rulecriteria_fs')
+                                .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+                                    p[0].offsetTop +
+                                    'px; left:' +
+                                    p[0].offsetLeft +
+                                    'px; "><input style="width:200px; font-size: 14px;" id="' +
+                                    inputId +
+                                    '"></input></div>');
+                            if (tree.jstree().get_node(selectedId).data.Value)
+                                $("#" + inputId).val(tree.jstree().get_node(selectedId).data.Value);
+                            $("#" + inputId).focus();
+                            $("#" + inputId)
+                                .focusout(function() {
+                                    anchorTag.children[4].innerHTML = $("#" + inputId)[0].value;
+                                    tree.jstree().get_node(selectedId).data.Value = $("#" + inputId)[0].value;
+                                    tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                    $('#tempSelectValue').remove();
+                                });
+                            break;
+                        case "Requester Name":
+                            var top = p[0].offsetTop + 24;
+                            $('#rulecriteria_fs')
+                                .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+                                    top +
+                                    'px; left:' +
+                                    p[0].offsetLeft +
+                                    'px; "><select multiple="multiple" id="' +
+                                    inputId +
+                                    '"></select></div>');
+                            initRequesterDropdown({
+                                control: $("#" + inputId),
+                                ignore: function() {
+                                    return $("#" + inputId).val();
+                                }
+                            });
+                            if (anchorTag.children[4].innerHTML != "") {
+                                var masks = anchorTag.children[4].innerHTML.split(", ");
+                                var values = tree.jstree().get_node(selectedId).data.Value.split(",");
+                                for (var i = 0; i < masks.length; i++) {
+                                    loadInitDropdown($("#" + inputId), masks[i], values[i]);
+                                }
+                            }
+                            $("#" + inputId).select2("open");
+                            $("#" + inputId)
+                                .on("select2:close",
+                                    function() {
                                         tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
                                         $('#tempSelectValue').remove();
                                     });
-                                break;
-                            case "Requester Name":
-                                var top = p[0].offsetTop + 24;
-                                $('#rulecriteria_fs')
-                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                        top +
-                                        'px; left:' +
-                                        p[0].offsetLeft +
-                                        'px; "><select multiple="multiple" id="' +
-                                        inputId +
-                                        '"></select></div>');
-                                initRequesterDropdown({
-                                    control: $("#" + inputId),
-                                    ignore: function () {
-                                        return $("#" + inputId).val();
-                                    }
-                                });
-                                $("#" + inputId).select2("open");
 
-                                $("#" + inputId)
-                                    .change(function () {
-                                        var a = $("#" + inputId).select2('data');
-                                        var text = "";
-                                        var val = "";
-                                        if (a != null && a.length > 0) {
-                                            text = a[0].Name;
-                                            val = a[0].Id;
-                                            if (a.length > 1)
-                                                for (var i = 1; i < a.length; i++) {
-                                                    text += ", " + a[i].Name;
-                                                    val += "," + a[i].Id;
-                                                }
-                                        }
-                                        p[0].innerHTML = text;
-                                        anchorTag.children[4].innerHTML = text;
-                                        tree.jstree().get_node(selectedId).data.Value = val;
-                                        //tree.jstree().get_node(selectedId).data.ValueText = text;
-                                    });
-                                $("#" + inputId)
-                                    .on("select2-blur",
-                                        function () {
-                                            alert("grr");
-                                            //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                            //$('#tempSelectValue').remove();
-                                        });
-                                break;
-                            case "Department":
-                            case "Priority":
-                            case "Impact":
-                            case "Urgency":
-                            case "Category":
-                            case "Mode":
-                                var top = p[0].offsetTop + 24;
-                                $('#rulecriteria_fs')
-                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                        top +
-                                        'px; left:' +
-                                        p[0].offsetLeft +
-                                        'px; "><select multiple="multiple" id="' +
-                                        inputId +
-                                        '"></select></div>');
-                                initConditionValueDropdown({
-                                    control: $("#" + inputId),
-                                    ignore: function () {
-                                        return $("#" + inputId).val();
-                                    },
-                                    criteria: criteria
-                                    //initValues: tree.jstree().get_node(selectedId).data.Value?tree.jstree().get_node(selectedId).data.Value:""
+                            $("#" + inputId)
+                                .change(function() {
+                                    var a = $("#" + inputId).select2('data');
+                                    var text = "";
+                                    var val = "";
+                                    if (a != null && a.length > 0) {
+                                        text = a[0].text;
+                                        val = a[0].id;
+                                        if (a.length > 1)
+                                            for (var i = 1; i < a.length; i++) {
+                                                text += ", " + a[i].text;
+                                                val += "," + a[i].id;
+                                            }
+                                    }
+                                    p[0].innerHTML = text;
+                                    anchorTag.children[4].innerHTML = text;
+                                    tree.jstree().get_node(selectedId).data.Value = val;
+                                    //tree.jstree().get_node(selectedId).data.ValueText = text;
                                 });
-                                //var selectedValues = tree.jstree().get_node(selectedId).data.Value.split("")
-                                $("#" + inputId).select2("open");
-                                //$("#" + inputId).select2().val("1").trigger("change");
-                                //$("#" + inputId).select2('data', { id: '1', text: 'Hardware' });
-                                //$("#" + inputId).select2("val", "Requester 1");
-                                $("#" + inputId)
-                                    .change(function () {
-                                        var a = $("#" + inputId).select2('data');
-                                        var text = "";
-                                        var val = "";
-                                        if (a != null && a.length > 0) {
-                                            text = a[0].Name;
-                                            val = a[0].Id;
-                                            if (a.length > 1)
-                                                for (var i = 1; i < a.length; i++) {
-                                                    text += ", " + a[i].Name;
-                                                    val += "," + a[i].Id;
-                                                }
-                                        }
-                                        p[0].innerHTML = text;
-                                        anchorTag.children[4].innerHTML = text;
-                                        tree.jstree().get_node(selectedId).data.Value = val;
+                            break;
+                        case "Department":
+                        case "Priority":
+                        case "Impact":
+                        case "Urgency":
+                        case "Category":
+                        case "Mode":
+                            var top = p[0].offsetTop + 24;
+                            $('#rulecriteria_fs')
+                                .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+                                    top +
+                                    'px; left:' +
+                                    p[0].offsetLeft +
+                                    'px; "><select multiple="multiple" id="' +
+                                    inputId +
+                                    '"></select></div>');
+                            initConditionValueDropdown({
+                                control: $("#" + inputId),
+                                ignore: function() {
+                                    return $("#" + inputId).val();
+                                },
+                                criteria: criteria
+                            });
+                            if (anchorTag.children[4].innerHTML != "") {
+                                var masks = anchorTag.children[4].innerHTML.split(", ");
+                                var values = tree.jstree().get_node(selectedId).data.Value.split(",");
+                                for (var i = 0; i < masks.length; i++) {
+                                    loadInitDropdown($("#" + inputId), masks[i], values[i]);
+                                }
+                            }
+                            $("#" + inputId).select2("open");
+                            $("#" + inputId)
+                                .on("select2:close",
+                                    function() {
+                                        tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                        $('#tempSelectValue').remove();
                                     });
-                                $("#" + inputId)
-                                    .on("select2-blur",
-                                        function () {
-                                            alert("grr");
-                                            //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                            //$('#tempSelectValue').remove();
-                                        });
-                                break;
+
+                            $("#" + inputId)
+                                .change(function() {
+                                    var a = $("#" + inputId).select2('data');
+                                    var text = "";
+                                    var val = "";
+                                    if (a != null && a.length > 0) {
+                                        text = a[0].Name;
+                                        val = a[0].Id;
+                                        if (a.length > 1)
+                                            for (var i = 1; i < a.length; i++) {
+                                                text += ", " + a[i].Name;
+                                                val += "," + a[i].Id;
+                                            }
+                                    }
+                                    p[0].innerHTML = text;
+                                    anchorTag.children[4].innerHTML = text;
+                                    tree.jstree().get_node(selectedId).data.Value = val;
+                                });
+                            $("#" + inputId)
+                                .on("select2-blur",
+                                    function() {
+                                        alert("grr");
+                                        //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                        //$('#tempSelectValue').remove();
+                                    });
+                            break;
                         }
                     }
 
@@ -657,107 +687,128 @@
             });
 
         $(document)
-            .bind("dnd_start.vakata",
-                function (e, data) {
+            .on('click',
+                function(e) {
+                    if (e.target.id != 'ok') {
+                        // you clicked something else
+                    }
+                });
 
+        $(document)
+            .bind("dnd_start.vakata",
+                function(e, data) {
+                    $('#tempSelectValue').remove();
                 })
             .bind("dnd_move.vakata",
-                function (e, data) {
+                function(e, data) {
 
                 })
             .bind("dnd_stop.vakata",
-                function (e, data) {
+                function(e, data) {
                     //
                 });
 
         function onSelectBRActionChange() {
             switch ($("#rule-action").val()) {
-                case "1":
-                    initTechnicianDropdown({
-                        control: $("#rule-action-select"),
-                        ignore: function () {
-                            return [];
-                        }
-                    });
-                    break;
-                case "2":
-                    initDepartmentDropdown({
-                        control: $("#rule-action-select"),
-                        ignore: function () {
-                            return [];
-                        }
-                    });
-                    break;
-                case "3":
-                    initCategoryDropdownByLevel({
-                        control: $("#rule-action-select"),
-                        ignore: function () {
-                            return [];
-                        },
-                        level: 1
-                    });
-                    break;
-                case "4":
-                    initCategoryDropdownByLevel({
-                        control: $("#rule-action-select"),
-                        ignore: function () {
-                            return [];
-                        },
-                        level: 2
-                    });
-                    break;
-                case "5":
-                    initCategoryDropdownByLevel({
-                        control: $("#rule-action-select"),
-                        ignore: function () {
-                            return [];
-                        },
-                        level: 3
-                    });
-                    break;
-                case "6":
-                    initPriorityDropdown({
-                        control: $("#rule-action-select"),
-                        ignore: function () {
-                            return [];
-                        }
-                    });
-                    break;
-                case "7":
-                    initStatusDropdown({
-                        control: $("#rule-action-select"),
-                        ignore: function () {
-                            return [];
-                        }
-                    });
-                    break;
-                default:
+            case "1":
+                initTechnicianDropdown({
+                    control: $("#rule-action-select"),
+                    ignore: function() {
+                        return [];
+                    }
+                });
+                break;
+            case "2":
+                initDepartmentDropdown({
+                    control: $("#rule-action-select"),
+                    ignore: function() {
+                        return [];
+                    }
+                });
+                break;
+            case "3":
+                initCategoryDropdownByLevel({
+                    control: $("#rule-action-select"),
+                    ignore: function() {
+                        return [];
+                    },
+                    level: 1
+                });
+                break;
+            case "4":
+                initCategoryDropdownByLevel({
+                    control: $("#rule-action-select"),
+                    ignore: function() {
+                        return [];
+                    },
+                    level: 2
+                });
+                break;
+            case "5":
+                initCategoryDropdownByLevel({
+                    control: $("#rule-action-select"),
+                    ignore: function() {
+                        return [];
+                    },
+                    level: 3
+                });
+                break;
+            case "6":
+                initPriorityDropdown({
+                    control: $("#rule-action-select"),
+                    ignore: function() {
+                        return [];
+                    }
+                });
+                break;
+            case "7":
+                initStatusDropdown({
+                    control: $("#rule-action-select"),
+                    ignore: function() {
+                        return [];
+                    }
+                });
+                break;
+            default:
             }
         }
 
         $("#rule-action-select")
-            .click(function () {
+            .click(function() {
 
             });
 
         $("#add-action")
-            .click(function () {
+            .click(function() {
                 if ($("#rule-action").text() == "") alert("Please choose action.");
                 else if ($("#rule-action-select").text() == "") alert("Please set value for action.");
                 else {
-                    var actionSet = $("#rule-action").select2('data')[0].text + ' \"' + $("#rule-action-select").select2('data')[0].text + '\"';
+                    var actionSet = $("#rule-action").select2('data')[0].text +
+                        ' \"' +
+                        $("#rule-action-select").select2('data')[0].text +
+                        '\"';
                     var actionKey = $("#rule-action").val();
                     var actionValue = $("#rule-action-select").val();
-                    $('#action-table tr:last').after('<tr class="actionSet" data-id=' + actionKey + ' data-value=' + actionValue + '><td><i class="fa fa-trash remove-action"></i></td><td>' + actionSet + '</td></tr>');
+                    $('#action-table tr:last')
+                        .after('<tr class="actionSet" data-id=' +
+                            actionKey +
+                            ' data-value=' +
+                            actionValue +
+                            '><td><i class="fa fa-trash remove-action"></i></td><td>' +
+                            actionSet +
+                            '</td></tr>');
                     $("#rule-action").select2('val', "");
                     $("#rule-action-select").select2('val', "");
                     $("#rule-action-select").select2('destroy');
                 }
             });
 
-        $('#action-table').on('click', 'tr i.remove-action', function (e) {
-            $(this).closest('tr').remove();
-        });
+        $('#action-table')
+            .on('click',
+                'tr i.remove-action',
+                function(e) {
+                    $(this).closest('tr').remove();
+                });
 
         //$(".remove-action")
         //    .click(function() {
@@ -765,7 +816,7 @@
         //    });
 
         $("#saveBtn")
-            .click(function () {
+            .click(function() {
                 $("#saveBtn").prop("disabled", true);
                 $("#cancelBtn").prop("disabled", true);
 
@@ -795,7 +846,7 @@
                 // rule
                 if ($("#enableRule").prop('checked') == true) {
                     treeData = tree.jstree(true)
-                       .get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
+                        .get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
                     for (var i = 0; i < treeData.length; i++) {
                         delete treeData[i].text;
                         delete treeData[i].icon;
@@ -805,7 +856,7 @@
                 //action
                 var actionSet = [];
                 $(".actionSet")
-                    .each(function (index, element) {
+                    .each(function(index, element) {
                         var actionId = element.getAttribute("data-id");
                         var actionValue = element.getAttribute("data-value");
                         actionSet.push({ id: actionId, value: actionValue });
@@ -821,7 +872,7 @@
                         Actions: JSON.stringify(actionSet),
                         Technicians: JSON.stringify(ruleTechnicians)
                     },
-                    "success": function (data) {
+                    "success": function(data) {
                         if (data.success) {
                             noty({
                                 text: "New business rule is created successfully!",
@@ -829,7 +880,7 @@
                                 type: "success",
                                 timeout: 300,
                                 callback: {
-                                    onClose: function () {
+                                    onClose: function() {
                                         window.location.href = "/HelpDesk/BusinessRule/";
                                     }
                                 }
@@ -845,7 +896,7 @@
                             });
                         }
                     },
-                    "error": function () {
+                    "error": function() {
                         $("#saveBtn").prop("disabled", false);
                         $("#cancelBtn").prop("disabled", false);
                         noty({
@@ -859,7 +910,7 @@
             });
 
         $(document)
-            .ready(function () {
+            .ready(function() {
                 setActiveTicketMenu();
                 initDropdownControl();
             });

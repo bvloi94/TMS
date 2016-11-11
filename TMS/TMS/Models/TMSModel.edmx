@@ -76,6 +76,7 @@
           <Property Name="Name" Type="nvarchar" MaxLength="100" />
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
           <Property Name="IsActive" Type="bit" />
+          <Property Name="EnableRule" Type="bit" />
         </EntityType>
         <EntityType Name="BusinessRuleCondition">
           <Key>
@@ -83,7 +84,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Type" Type="int" />
-          <Property Name="Criteria" Type="nvarchar" MaxLength="50" />
+          <Property Name="Criteria" Type="int" />
           <Property Name="Condition" Type="int" />
           <Property Name="Value" Type="nvarchar" MaxLength="100" />
           <Property Name="BusinessRuleID" Type="int" />
@@ -104,7 +105,7 @@
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Action" Type="int" />
-          <Property Name="Value" Type="int" />
+          <Property Name="Value" Type="nvarchar" MaxLength="100" />
           <Property Name="BusinessRuleID" Type="int" />
         </EntityType>
         <EntityType Name="Category">
@@ -124,7 +125,6 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
-          <Property Name="IsActive" Type="bit" />
         </EntityType>
         <EntityType Name="Impact">
           <Key>
@@ -153,7 +153,7 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
-          <Property Name="PriorityLevel" Type="int" />
+          <Property Name="Color" Type="nvarchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="PriorityMatrixItem">
           <Key>
@@ -958,6 +958,7 @@
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="IsActive" Type="Boolean" />
+          <Property Name="EnableRule" Type="Boolean" />
           <NavigationProperty Name="BusinessRuleConditions" Relationship="TMSModel.FK_BusinessRuleCondition_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleCondition" />
           <NavigationProperty Name="BusinessRuleNotifications" Relationship="TMSModel.FK_BusinessRuleNotification_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleNotification" />
           <NavigationProperty Name="BusinessRuleTriggers" Relationship="TMSModel.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRule" ToRole="BusinessRuleTrigger" />
@@ -968,7 +969,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Type" Type="Int32" />
-          <Property Name="Criteria" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Criteria" Type="Int32" />
           <Property Name="Condition" Type="Int32" />
           <Property Name="Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="BusinessRuleID" Type="Int32" />
@@ -994,7 +995,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Action" Type="Int32" />
-          <Property Name="Value" Type="Int32" />
+          <Property Name="Value" Type="String" />
           <Property Name="BusinessRuleID" Type="Int32" />
           <NavigationProperty Name="BusinessRule" Relationship="TMSModel.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRuleTrigger" ToRole="BusinessRule" />
         </EntityType>
@@ -1019,7 +1020,6 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="IsActive" Type="Boolean" />
           <NavigationProperty Name="AspNetUsers" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="Department" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="Impact">
@@ -1053,7 +1053,7 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="PriorityLevel" Type="Int32" />
+          <Property Name="Color" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="PriorityMatrixItems" Relationship="TMSModel.FK_PriorityMatrixItem_Priority" FromRole="Priority" ToRole="PriorityMatrixItem" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Priority" FromRole="Priority" ToRole="Ticket" />
         </EntityType>
@@ -1570,6 +1570,7 @@
           <EntitySetMapping Name="BusinessRules">
             <EntityTypeMapping TypeName="TMSModel.BusinessRule">
               <MappingFragment StoreEntitySet="BusinessRule">
+                <ScalarProperty Name="EnableRule" ColumnName="EnableRule" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -1624,7 +1625,6 @@
           <EntitySetMapping Name="Departments">
             <EntityTypeMapping TypeName="TMSModel.Department">
               <MappingFragment StoreEntitySet="Department">
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
@@ -1656,7 +1656,7 @@
           <EntitySetMapping Name="Priorities">
             <EntityTypeMapping TypeName="TMSModel.Priority">
               <MappingFragment StoreEntitySet="Priority">
-                <ScalarProperty Name="PriorityLevel" ColumnName="PriorityLevel" />
+                <ScalarProperty Name="Color" ColumnName="Color" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ID" ColumnName="ID" />

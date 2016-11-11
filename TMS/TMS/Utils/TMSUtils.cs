@@ -78,33 +78,33 @@ namespace TMS.Utils
             return fileName;
         }
 
-        public static List<CriteriaViewModel> GetDefaultCritetia()
-        {
-            List<CriteriaViewModel> criteriaList = new List<CriteriaViewModel>();
-            FieldInfo[] fields = (new ConstantUtil.BusinessRuleCriteria()).GetType().GetFields();
-            foreach (var field in fields)
-            {
-                CriteriaViewModel crit = new CriteriaViewModel();
-                crit.Id = (int)field.GetValue(null);
-                crit.Name = AddSpacesToSentence(field.Name);
-                criteriaList.Add(crit);
-            }
-            return criteriaList;
-        }
+        //public static List<CriteriaViewModel> GetDefaultCritetia()
+        //{
+        //    List<CriteriaViewModel> criteriaList = new List<CriteriaViewModel>();
+        //    FieldInfo[] fields = (new ConstantUtil.BusinessRuleCriteria()).GetType().GetFields();
+        //    foreach (var field in fields)
+        //    {
+        //        CriteriaViewModel crit = new CriteriaViewModel();
+        //        crit.Id = (int)field.GetValue(null);
+        //        crit.Name = AddSpacesToSentence(field.Name);
+        //        criteriaList.Add(crit);
+        //    }
+        //    return criteriaList;
+        //}
 
-        public static List<ConditionViewModel> GetDefaultCondition()
-        {
-            List<ConditionViewModel> conditionList = new List<ConditionViewModel>();
-            FieldInfo[] fields = (new ConstantUtil.ConditionOfBusinessRuleCondition()).GetType().GetFields();
-            foreach (var field in fields)
-            {
-                ConditionViewModel con = new ConditionViewModel();
-                con.Id = (int)field.GetValue(null);
-                con.Name = AddSpacesToSentence(field.Name).ToLower();
-                conditionList.Add(con);
-            }
-            return conditionList;
-        }
+        //public static List<ConditionViewModel> GetDefaultCondition()
+        //{
+        //    List<ConditionViewModel> conditionList = new List<ConditionViewModel>();
+        //    FieldInfo[] fields = (new ConstantUtil.ConditionOfBusinessRuleCondition()).GetType().GetFields();
+        //    foreach (var field in fields)
+        //    {
+        //        ConditionViewModel con = new ConditionViewModel();
+        //        con.Id = (int)field.GetValue(null);
+        //        con.Name = AddSpacesToSentence(field.Name).ToLower();
+        //        conditionList.Add(con);
+        //    }
+        //    return conditionList;
+        //}
 
         public static string AddSpacesToSentence(string text)
         {
@@ -119,6 +119,33 @@ namespace TMS.Utils
                 newText.Append(text[i]);
             }
             return newText.ToString();
+        }
+
+        public static List<DropDownViewModel> GetDefaultCritetia()
+        {
+            List<DropDownViewModel> list = new List<DropDownViewModel>();
+            list.Add((new DropDownViewModel(1, "Subject")));
+            list.Add((new DropDownViewModel(2, "Description")));
+            list.Add((new DropDownViewModel(3, "Requester Name")));
+            list.Add((new DropDownViewModel(4, "Department")));
+            list.Add((new DropDownViewModel(5, "Priority")));
+            list.Add((new DropDownViewModel(6, "Impact")));
+            list.Add((new DropDownViewModel(7, "Urgency")));
+            list.Add((new DropDownViewModel(8, "Category")));
+            list.Add((new DropDownViewModel(9, "Mode")));
+            return list;
+        }
+
+        public static List<DropDownViewModel> GetDefaultCondition()
+        {
+            List<DropDownViewModel> list = new List<DropDownViewModel>();
+            list.Add((new DropDownViewModel(1, "is")));
+            list.Add((new DropDownViewModel(2, "is not")));
+            list.Add((new DropDownViewModel(3, "begins with")));
+            list.Add((new DropDownViewModel(4, "ends with")));
+            list.Add((new DropDownViewModel(5, "contains")));
+            list.Add((new DropDownViewModel(6, "does not contain")));
+            return list;
         }
 
         public static List<DropDownViewModel> GetDefaultStatus()

@@ -6,112 +6,85 @@
 }
 <link rel="stylesheet" type="text/css" href="~/Content/custom-css/profile.css">
 
-
-<div class="form-horizontal">
-    <div class="row">
-        <div class="col-xs-8">
-            <div class="box box-primary">
-                <div class="box-body large-text-container profileInfo">
-                    <br />
-                    <!--Username-->
-                    <div class="form-group">
-                        <label class="col-sm-offset-2 col-sm-3">Username</label>
-                        <div class="col-sm-7">
-                            @ViewBag.Username
-                        </div>
-                    </div>
-                    <!--Email-->
-                    <div class="form-group">
-                        <label class="col-sm-offset-2 col-sm-3">Email</label>
-                        <div class="col-sm-7">
-                            @Model.Email
-                        </div>
-                    </div>
-                    <!--Fullname-->
-                    <div class="form-group">
-                        <label class="col-sm-offset-2 col-sm-3">Fullname</label>
-                        <div class="col-sm-7">
-                            @Model.FullName
-                        </div>
-                    </div>
-                    <!--Birthday-->
-                    <div class="form-group">
-                        <label class="col-sm-offset-2 col-sm-3 ">Birthday</label>
-                        <div class="col-sm-7">
-                            @if (Model.DayOfBirth.HasValue)
-                            {
-                                @Model.DayOfBirth.Value.ToString("dd/MM/yyyy")
-                            }
-                            else
-                            {
-                                <span>-</span>
-                            }
-                        </div>
-                    </div>
-                    <!--Adrress-->
-                    <div class="form-group">
-                        <label class="col-sm-offset-2 col-sm-3">Address</label>
-                        <div class="col-sm-7">
-                            @if (!Model.Address.IsNullOrWhiteSpace())
-                            {
-                                @Model.Address
-                            }
-                            else
-                            { <span>-</span>}
-                        </div>
-                    </div>
-                    <!--Phone-->
-                    <div class="form-group">
-                        <label class="col-sm-offset-2 col-sm-3">Phone</label>
-                        <div class="col-sm-7">
-                            @if (!Model.Phone.IsNullOrWhiteSpace())
-                            {
-                                <span>@Model.Phone</span>
-                            }
-                            else
-                            {
-                                <span>-</span>
-                            }
-                        </div>
-                    </div>
-                    <!--Gender-->
-                    <div class="form-group">
-                        <label class="col-sm-offset-2 col-sm-3 ">Gender</label>
-                        <div class="col-sm-7">
-                            @if (Model.Gender.HasValue)
-                            {
-                                if (Model.Gender.Value)
-                                {
-                                    <p>Male</p>
-                                }
-                                else
-                                {
-                                    <p>Female</p>
-                                }
-                            }
-                            else
-                            {
-                                <span>-</span>
-                            }
-                        </div>
-                    </div>
-                    <!--Btn Update profile-->
-                    <div class="form-group">
-                        <div class="col-xs-offset-4 col-xs-8">
-                            @Html.ActionLink("Update Profile", "UpdateProfile", null, new { @class = "btn btn-success" })
-                            @Html.ActionLink("Change Password", "ChangePassword", new { area = "" }, new { @class = "btn btn-success" })
-                        </div>
-                    </div>
-                </div>
+<div class="row" style="padding-top: 15px">
+    <div class="col-sm-5 text-center">
+        <div class="row"><img src="@ViewBag.AvatarURL" class="img-circle" alt="Avatar Image" id="avatar-img" /></div>
+        <div class="row" style="padding-top: 20px">
+            @Html.ActionLink("Update Profile", "UpdateProfile", null, new { @class = "btn btn-transparent btn-flat" })
+            @Html.ActionLink("Change Password", "ChangePassword", new { area = "" }, new { @class = "btn btn-transparent btn-flat" })
+        </div>
+    </div>
+    <div class="col-sm-7" id="profile">
+        <div class="row">
+            <div class="col-md-3 col-sm-4"><span class="profile-label">Username</span></div>
+            <div class="col-md-9 col-sm-8"><span class="profile-info">@ViewBag.Username</span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-4"><span class="profile-label">Email</span></div>
+            <div class="col-md-9 col-sm-8"><span class="profile-info">@Model.Email</span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-4"><span class="profile-label">Fullname</span></div>
+            <div class="col-md-9 col-sm-8"><span class="profile-info">@Model.FullName</span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-4"><span class="profile-label">Address</span></div>
+            <div class="col-md-9 col-sm-8">
+                @if (!string.IsNullOrWhiteSpace(Model.Address))
+                {
+                    <span class="profile-info">@Model.Address </span>
+                }
+                else
+                {
+                    <span class="profile-info"> - </span>
+                }
             </div>
         </div>
-        <div class="col-xs-4">
-            <div class="box box-primary">
-                <div class="box-body" style="text-align: center">
-                    <span class="lead"><strong>Avatar</strong></span>
-                    <br />
-                    <img src="@ViewBag.AvatarURL" class="profile-avatar" alt="Avatar Image" id="avatar-img" />
-                </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-4"><span class="profile-label">Phone Number</span></div>
+            <div class="col-md-9 col-sm-8">
+                @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                {
+                    <span class="profile-info">@Model.Phone</span>
+                }
+                else
+                {
+                    <span class="profile-info"> - </span>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-4"><span class="profile-label">Birthday</span></div>
+            <div class="col-md-9 col-sm-8">
+                @if (Model.DayOfBirth.HasValue)
+                {
+                    <span class="profile-info">@Model.DayOfBirth.Value.ToString("MMMM dd, yyyy")</span>
+                }
+                else
+                {
+                    <span class="profile-info"> - </span>
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-sm-4"><span class="profile-label">Gender</span></div>
+            <div class="col-md-9 col-sm-8">
+
+                @if (Model.Gender.HasValue)
+                {
+                    if (Model.Gender.Value)
+                    {
+                        <span class="profile-info">Male</span>
+                    }
+                    else
+                    {
+                        <span class="profile-info">Female</span>
+                    }
+                }
+                else
+                {
+                    <span class="profile-info"> - </span>
+                }
             </div>
         </div>
     </div>
