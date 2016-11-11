@@ -2,6 +2,13 @@
     ViewBag.Title = "Priority";
     Layout = "~/Areas/Manager/Views/Shared/_Layout.cshtml";
 }
+<link rel="stylesheet" href="~/Content/css/spectrum.css" />
+<style>
+    td > canvas {
+        vertical-align: middle;
+        margin-right: 10px;
+    }
+</style>
 
 <div class="row">
     <div class="col-xs-12">
@@ -16,6 +23,9 @@
                             </th>
                             <th>
                                 Description
+                            </th>
+                            <th>
+                                Color
                             </th>
                             <th>
                             </th>
@@ -47,7 +57,12 @@
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="name-txt">
-
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Color&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="color-txt">
                         </div>
                     </div>
                     <div class="form-group">
@@ -97,7 +112,17 @@
 @Styles.Render("~/Content/datatables")
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
+    <script src="~/Content/js/spectrum.js"></script>
     <script>
+        $(document).ready(function () {
+            $("#color-txt").spectrum({
+                preferredFormat: "hex",
+                showInput: true,
+                showPalette: true,
+                palette: [["red", "rgba(0, 255, 0, .5)", "rgb(0, 0, 255)"]]
+            });
+        });
+
         $("#priority-table")
             .DataTable({
                 processing: true,
@@ -125,10 +150,16 @@
                     },
                     {
                         "render": function (data, type, row) {
+                            return '<canvas id="priority-color" width="15" height="15" style="background: ' + row[3] + ';"></canvas>' + row[3];
+                        },
+                        "targets": 2
+                    },
+                    {
+                        "render": function (data, type, row) {
                             return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getPriorityDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
                                    '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                         },
-                        "targets": 2
+                        "targets": 3
                     }
                 ]
             });
@@ -156,8 +187,9 @@
                 dataType: "json",
                 type: "POST",
                 data: {
-                    name: $("#name-txt").val(),
-                    description: $("#description-txt").val()
+                    Name: $("#name-txt").val(),
+                    Description: $("#description-txt").val(),
+                    Color: $("#color-txt").val()
                 },
                 success: function (data) {
                     if (data.success) {
@@ -235,8 +267,9 @@
                 type: "POST",
                 data: {
                     id: id,
-                    name: $("#name-txt").val(),
-                    description: $("#description-txt").val()
+                    Name: $("#name-txt").val(),
+                    Description: $("#description-txt").val(),
+                    Color: $("#color-txt").val()
                 },
                 success: function (data) {
                     if (data.success) {
@@ -311,6 +344,5 @@
                 }
             });
         };
-
     </script>
 }

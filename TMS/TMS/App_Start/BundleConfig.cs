@@ -9,7 +9,8 @@ namespace TMS
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-2.2.3.min.js"));
+                        "~/Scripts/jquery-2.2.3.min.js",
+                        "~/Scripts/jquery-ui.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/chart").Include(
                         "~/Content/js/chart.min.js"));
@@ -29,13 +30,13 @@ namespace TMS
             bundles.Add(new ScriptBundle("~/bundles/app").Include(
                 "~/Scripts/app.js",
                 "~/Scripts/main.js",
-                "~/Scripts/jquery-ui.min.js",
                 "~/Content/js/jquery.noty.packaged.js",
                 "~/Scripts/notify.min.js",
                 "~/Content/js/select2.min.js",
                 "~/Content/js/jquery.truncate.js",
                 "~/Content/js/trunk8.min.js",
                 "~/Content/js/jPages.min.js",
+                "~/Content/js/spectrum.js",
                 "~/Content/custom-js/tms-dropdown.js",
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
                 "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js",
@@ -58,7 +59,8 @@ namespace TMS
                       "~/Content/Plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css",
                       "~/Content/Plugins/datetimepicker/jquery.datetimepicker.css",
                       "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.css",
-                      "~/Content/Plugins/tagit/jquery.tagit.css"));
+                      "~/Content/Plugins/tagit/jquery.tagit.css",
+                      "~/Content/css/spectrum.css"));
             // Datatable
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
                 "~/Content/Plugins/datatables/js/jquery.dataTables.min.js",
