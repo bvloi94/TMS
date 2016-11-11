@@ -428,7 +428,7 @@ namespace TMS.Services
                 Notification requesterNoti = new Notification();
                 requesterNoti.IsForHelpDesk = false;
                 requesterNoti.BeNotifiedID = ticket.RequesterID;
-                requesterNoti.NotificationContent = string.Format("Ticket #{0} was created successfully.", ticket.Code);
+                requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created successfully.", ticket.Subject, ticket.Code);
                 requesterNoti.NotifiedTime = DateTime.Now;
                 ticket.Notifications.Add(requesterNoti);
 
@@ -441,7 +441,7 @@ namespace TMS.Services
                         Notification technicianNoti = new Notification();
                         technicianNoti.IsForHelpDesk = false;
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
-                        technicianNoti.NotificationContent = string.Format("Ticket #{0} was assigned by {1}.", ticket.Code, ticketAssigner.Fullname);
+                        technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         ticket.Notifications.Add(technicianNoti);
                     }
@@ -458,7 +458,7 @@ namespace TMS.Services
                         {
                             Notification helpdeskNoti = new Notification();
                             helpdeskNoti.IsForHelpDesk = true;
-                            helpdeskNoti.NotificationContent = string.Format("Ticket #{0} was created by {1}.", ticket.Code, ticketCreator.Fullname);
+                            helpdeskNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created by {2}.", ticket.Subject, ticket.Code, ticketCreator.Fullname);
                             helpdeskNoti.NotifiedTime = DateTime.Now;
                             ticket.Notifications.Add(helpdeskNoti);
                         }
@@ -502,7 +502,7 @@ namespace TMS.Services
                         technicianNoti.IsForHelpDesk = false;
                         technicianNoti.TicketID = ticket.ID;
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
-                        technicianNoti.NotificationContent = string.Format("Ticket #{0} was assigned by {1}", ticket.Code, ticketAssigner.Fullname);
+                        technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -517,7 +517,7 @@ namespace TMS.Services
                         technicianNoti.IsForHelpDesk = false;
                         technicianNoti.TicketID = ticket.ID;
                         technicianNoti.BeNotifiedID = oldTicket.TechnicianID;
-                        technicianNoti.NotificationContent = string.Format("Ticket #{0} was unassigned by {1}", ticket.Code, ticketUnassigner.Fullname);
+                        technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -534,7 +534,7 @@ namespace TMS.Services
                             oldTechnicianNoti.IsForHelpDesk = false;
                             oldTechnicianNoti.TicketID = ticket.ID;
                             oldTechnicianNoti.BeNotifiedID = oldTicket.TechnicianID;
-                            oldTechnicianNoti.NotificationContent = string.Format("Ticket #{0} was unassigned by {1}.", ticket.Code, ticketUnassigner.Fullname);
+                            oldTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                             oldTechnicianNoti.NotifiedTime = DateTime.Now;
                             _unitOfWork.NotificationRepository.Insert(oldTechnicianNoti);
                             //send notification to new technician
@@ -542,7 +542,7 @@ namespace TMS.Services
                             newTechnicianNoti.IsForHelpDesk = false;
                             newTechnicianNoti.TicketID = ticket.ID;
                             newTechnicianNoti.BeNotifiedID = ticket.TechnicianID;
-                            newTechnicianNoti.NotificationContent = string.Format("Ticket #{0} was assigned by {1}.", ticket.Code, ticketUnassigner.Fullname);
+                            newTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                             newTechnicianNoti.NotifiedTime = DateTime.Now;
                             _unitOfWork.NotificationRepository.Insert(newTechnicianNoti);
                         }
@@ -578,7 +578,7 @@ namespace TMS.Services
                 Notification helpdeskNoti = new Notification();
                 helpdeskNoti.IsForHelpDesk = true;
                 helpdeskNoti.TicketID = ticket.ID;
-                helpdeskNoti.NotificationContent = string.Format("Ticket #{0} was unapproved by {1}", ticket.Code, ticketUnapprovedUser.Fullname);
+                helpdeskNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unapproved by {2}", ticket.Subject, ticket.Code, ticketUnapprovedUser.Fullname);
                 helpdeskNoti.NotifiedTime = DateTime.Now;
                 _unitOfWork.NotificationRepository.Insert(helpdeskNoti);
             }
@@ -611,7 +611,7 @@ namespace TMS.Services
             requesterNoti.IsForHelpDesk = false;
             requesterNoti.TicketID = ticket.ID;
             requesterNoti.BeNotifiedID = ticket.RequesterID;
-            requesterNoti.NotificationContent = string.Format("Ticket #{0} was cancelled.", ticket.Code);
+            requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was cancelled.", ticket.Subject, ticket.Code);
             requesterNoti.NotifiedTime = DateTime.Now;
             _unitOfWork.NotificationRepository.Insert(requesterNoti);
 
@@ -625,7 +625,7 @@ namespace TMS.Services
                     technicianNoti.IsForHelpDesk = false;
                     technicianNoti.TicketID = ticket.ID;
                     technicianNoti.BeNotifiedID = ticket.TechnicianID;
-                    technicianNoti.NotificationContent = string.Format("Ticket #{0} was cancelled by {1}.", ticket.Code, ticketCancelledUser.Fullname);
+                    technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was cancelled by {2}.", ticket.Subject, ticket.Code, ticketCancelledUser.Fullname);
                     technicianNoti.NotifiedTime = DateTime.Now;
                     _unitOfWork.NotificationRepository.Insert(technicianNoti);
                 }
@@ -659,7 +659,7 @@ namespace TMS.Services
             requesterNoti.IsForHelpDesk = false;
             requesterNoti.TicketID = ticket.ID;
             requesterNoti.BeNotifiedID = ticket.RequesterID;
-            requesterNoti.NotificationContent = string.Format("Ticket #{0} was solved.", ticket.Code);
+            requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was solved.", ticket.Subject, ticket.Code);
             requesterNoti.NotifiedTime = DateTime.Now;
             _unitOfWork.NotificationRepository.Insert(requesterNoti);
             //end notification
@@ -720,7 +720,7 @@ namespace TMS.Services
             requesterNoti.IsForHelpDesk = false;
             requesterNoti.TicketID = ticket.ID;
             requesterNoti.BeNotifiedID = ticket.RequesterID;
-            requesterNoti.NotificationContent = string.Format("Ticket #{0} was closed.", ticket.Code);
+            requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was closed.", ticket.Subject, ticket.Code);
             requesterNoti.NotifiedTime = DateTime.Now;
             _unitOfWork.NotificationRepository.Insert(requesterNoti);
             //end notification
@@ -751,11 +751,11 @@ namespace TMS.Services
                 Ticket oldTicket = tickets[i];
                 if (!string.IsNullOrWhiteSpace(newTicket.Description))
                 {
-                    newTicket.Description += "\n\n[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
+                    newTicket.Description += string.Format("\n\n[Merged from ticket '{0}' (#{1})]:\n", oldTicket.Subject, oldTicket.Code) + oldTicket.Description;
                 }
                 else
                 {
-                    newTicket.Description = "[Merged from ticket #" + oldTicket.Code + "]:\n" + oldTicket.Description;
+                    newTicket.Description = string.Format("[Merged from ticket '{0}' (#{1})]:\n", oldTicket.Subject, oldTicket.Code) + oldTicket.Description;
                 }
                 oldTicket.ModifiedTime = DateTime.Now;
                 int status = oldTicket.Status;
@@ -765,7 +765,7 @@ namespace TMS.Services
                 oldTicketHistory.TicketID = oldTicket.ID;
                 oldTicketHistory.Type = ConstantUtil.TicketHistoryType.Merged;
                 oldTicketHistory.ActID = actId;
-                oldTicketHistory.Action = string.Format("Merged into ticket #{0}", newTicket.Code);
+                oldTicketHistory.Action = string.Format("Merged into ticket '{0}'[#{1}]", newTicket.Subject, newTicket.Code);
                 oldTicketHistory.ActedTime = DateTime.Now;
                 foreach (TicketAttachment ticketAttachment in oldTicket.TicketAttachments.ToList())
                 {

@@ -48,6 +48,7 @@
       <HintPath>..\packages\EAGetMail.4.6.0.3\lib\net45\EAGetMail45.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="itextsharp, Version=5.5.10.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -239,8 +240,6 @@
     <Compile Include="Models\Notification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Services\NotificationService.cs" />
-    <Compile Include="Services\SolutionAttachmentService.cs" />
     <Compile Include="Models\TMSModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
