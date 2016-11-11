@@ -9,11 +9,6 @@ $(window).on('resize', function () {
         lines: 2,
         tooltip: false
     });
-    //$('#ticket-description #ticket-solution').trunk8({
-    //    lines: 3,
-    //    tooltip: false,
-    //    fill: '&hellip; <a id="see-more" href="javascript:void{0}">See More</a>'
-    //});
 });
 
 function initTicketTable() {
@@ -256,7 +251,7 @@ function openTicketDetailModal(ticketId) {
         },
         success: function (data) {
             $('#ticket-subject').text(data.subject);
-            $('#ticket-description').html(data.description);
+            //$('#ticket-description').text(data.description);
             $('#ticket-department').text(data.department);
             $('#ticket-technician').text(data.technician);
             $('#ticket-created-by').text(data.creater);
@@ -280,11 +275,12 @@ function openTicketDetailModal(ticketId) {
             $("#action-history-btn").attr("href", "/Ticket/History/" + data.id);
             $("#action-detail-btn").attr("href", "/Ticket/TicketDetail/" + data.id);
 
+            var solution = "";
             if (!data.solution || data.solution == "-") {
-                $('#ticket-solution').text("This ticket is not solved yet.");
+                solution = "This ticket is not solved yet.";
             }
             else {
-                $('#ticket-solution').html(data.solution);
+                solution = data.solution;
             }
 
             $('#ticket-description-attachments').empty();
@@ -344,11 +340,18 @@ function openTicketDetailModal(ticketId) {
             $('#ticket-solveUser').text(data.solveUser);
 
             $('#detail-modal').modal("show");
-            $('#ticket-solution, #ticket-description').trunk8({
+            $('#ticket-description').trunk8({
                 tooltip: false,
                 lines: 6,
                 fill: '&hellip; <a id="see-more" href="/Ticket/TicketDetail/' + data.id + '">See More</a>'
             });
+            $('#ticket-description').trunk8("update", data.description);
+            $('#ticket-solution').trunk8({
+                tooltip: false,
+                lines: 6,
+                fill: '&hellip; <a id="see-more" href="/Ticket/TicketDetail/' + data.id + '">See More</a>'
+            });
+            $('#ticket-solution').trunk8("update", solution);
         },
         failure: function (data) {
             alert(data.d);
