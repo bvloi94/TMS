@@ -23,6 +23,11 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         public BusinessRuleService _businessRuleService { get; set; }
         public UserService _userService { get; set; }
+        public DepartmentService _departmentService { get; set; }
+        public UrgencyService _urgencyService { get; set; }
+        public PriorityService _priorityService { get; set; }
+        public ImpactService _impactService { get; set; }
+        public CategoryService _categoryService { get; set; }
 
         private UnitOfWork unitOfWork = new UnitOfWork();
 
@@ -30,6 +35,11 @@ namespace TMS.Areas.HelpDesk.Controllers
         {
             _businessRuleService = new BusinessRuleService(unitOfWork);
             _userService = new UserService(unitOfWork);
+            _departmentService = new DepartmentService(unitOfWork);
+            _urgencyService = new UrgencyService(unitOfWork);
+            _priorityService = new PriorityService(unitOfWork);
+            _impactService = new ImpactService(unitOfWork);
+            _categoryService = new CategoryService(unitOfWork);
         }
 
         public ActionResult Index()
@@ -55,7 +65,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             brModel.Id = br.ID;
             brModel.Name = br.Name;
             brModel.Description = br.Description;
-            
+
             // Load all rules
             List<Rule> ruleList = new List<Rule>();
             var conditionList = _businessRuleService.GetAllBusinessRuleConditions(brId);
@@ -64,25 +74,138 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Rule rule = new Rule();
                 rule.Id = con.ID.ToString();
                 rule.Logic = con.Type;
-                rule.LogicText = (con.Type == 2) ? "OR" : "AND";
+                rule.LogicText = (con.Type == ConstantUtil.TypeOfBusinessRuleCondition.Or) ? "OR" : "AND";
                 rule.Condition = Convert.ToInt32(con.Condition);
-                rule.ConditionText = TMSUtils.GetDefaultCondition()[Convert.ToInt32(con.Condition)].Name;
-                // rule.Criteria = 1; TODO
-                //rule.CriteriaText = TMSUtils.GetDefaultCritetia()[Convert.ToInt32(con.Criteria)].Name;
+                rule.ConditionText = TMSUtils.GetDefaultCondition()[Convert.ToInt32(con.Condition) - 1].Name;
+                rule.Criteria = Convert.ToInt32(con.Criteria);
+                rule.CriteriaText = TMSUtils.GetDefaultCritetia()[Convert.ToInt32(con.Criteria) - 1].Name;
                 rule.Value = con.Value;
+                if (rule.Value == null)
+                {
+                    rule.ValueMask = "";
+                }
+                else
+                    if (rule.Criteria == ConstantUtil.BusinessRuleCriteria.Subject || rule.Criteria == ConstantUtil.BusinessRuleCriteria.Description)
+                {
+                    rule.ValueMask = con.Value;
+                }
+                else
+                {
+                    string[] list = rule.Value.Split(',');
+                    switch (rule.Criteria)
+                    {
+                        case ConstantUtil.BusinessRuleCriteria.RequesterName:
+                            rule.ValueMask = _userService.GetUserById(list[0]).Fullname;
+                            if (list.Length > 1)
+                            {
+                                for (int i = 0; i < list.Length; i++)
+                                {
+                                    rule.ValueMask += ", " + _userService.GetUserById(list[i]).Fullname;
+                                }
+                            }
+                            break;
+                        case ConstantUtil.BusinessRuleCriteria.Department:
+                            rule.ValueMask = _departmentService.GetDepartmentById(Convert.ToInt32(list[0])).Name;
+                            if (list.Length > 1)
+                            {
+                                for (int i = 0; i < list.Length; i++)
+                                {
+                                    rule.ValueMask += ", " + _departmentService.GetDepartmentById(Convert.ToInt32(list[i])).Name;
+                                }
+                            }
+                            break;
+                        case ConstantUtil.BusinessRuleCriteria.Priority:
+                            rule.ValueMask = _priorityService.GetPriorityByID(Convert.ToInt32(list[0])).Name;
+                            if (list.Length > 1)
+                            {
+                                for (int i = 0; i < list.Length; i++)
+                                {
+                                    rule.ValueMask += ", " + _priorityService.GetPriorityByID(Convert.ToInt32(list[i])).Name;
+                                }
+                            }
+                            break;
+                        case ConstantUtil.BusinessRuleCriteria.Impact:
+                            rule.ValueMask = _impactService.GetImpactById(Convert.ToInt32(list[0])).Name;
+                            if (list.Length > 1)
+                            {
+                                for (int i = 0; i < list.Length; i++)
+                                {
+                                    rule.ValueMask += ", " + _impactService.GetImpactById(Convert.ToInt32(list[i])).Name;
+                                }
+                            }
+                            break;
+                        case ConstantUtil.BusinessRuleCriteria.Urgency:
+                            rule.ValueMask = _urgencyService.GetUrgencyByID(Convert.ToInt32(list[0])).Name;
+                            if (list.Length > 1)
+                            {
+                                for (int i = 0; i < list.Length; i++)
+                                {
+                                    rule.ValueMask += ", " + _urgencyService.GetUrgencyByID(Convert.ToInt32(list[i])).Name;
+                                }
+                            }
+                            break;
+                        case ConstantUtil.BusinessRuleCriteria.Category:
+                            rule.ValueMask = _categoryService.GetCategoryById(Convert.ToInt32(list[0])).Name;
+                            if (list.Length > 1)
+                            {
+                                for (int i = 0; i < list.Length; i++)
+                                {
+                                    rule.ValueMask += ", " + _categoryService.GetCategoryById(Convert.ToInt32(list[i])).Name;
+                                }
+                            }
+                            break;
+                    }
+                }
                 rule.ParentId = con.BusinessRuleConditionID.ToString();
                 ruleList.Add(rule);
             }
             brModel.Rules = ruleList;
 
             //Load all action
-            var actionList = new List<DropDownViewModel>();
+            var actionList = new List<TriggerViewModel>();
             var brTriggers = _businessRuleService.GetAllBusinessRuleTrigger(brId);
             foreach (var no in brTriggers)
             {
-                DropDownViewModel item = new DropDownViewModel();
+                TriggerViewModel item = new TriggerViewModel();
                 item.Id = no.Action;
-                item.Name = no.Value.ToString(); //TODO
+                item.Name = no.Value;
+                switch (no.Action)
+                {
+                    case ConstantUtil.BusinessRuleTrigger.AssignToTechnician:
+                        item.Mask =
+                            TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.AssignToTechnician - 1].Name;
+                        item.Mask += " \"" + _userService.GetUserById(no.Value).Fullname + "\"";
+                        break;
+                    case ConstantUtil.BusinessRuleTrigger.ChangeStatusTo:
+                        item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.ChangeStatusTo - 1].Name;
+                        item.Mask += " \"" + TMSUtils.GetDefaultStatus()[Convert.ToInt32(no.Value) - 1].Name + "\"";
+                        break;
+                    case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
+                    case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
+                    case ConstantUtil.BusinessRuleTrigger.MoveToItem:
+                        Category cate = _categoryService.GetCategoryById(Convert.ToInt32(no.Value));
+                        var mask = cate.Name;
+                        int level = (int)cate.CategoryLevel;
+                        int parentId;
+                        item.Mask = TMSUtils.GetDefaultActions()[level + 1].Name;
+                        while (level > 1)
+                        {
+                            parentId = (int)cate.ParentID;
+                            cate = _categoryService.GetCategoryById(parentId);
+                            mask = cate.Name + " >> " + mask;
+                            level--;
+                        }
+                        item.Mask += " \"" + mask + "\"";
+                        break;
+                    case ConstantUtil.BusinessRuleTrigger.PlaceInDepartment:
+                        item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.PlaceInDepartment - 1].Name;
+                        item.Mask += " \"" + _departmentService.GetDepartmentById(Convert.ToInt32(no.Value)).Name + "\"";
+                        break;
+                    case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
+                        item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.SetPriorityAs - 1].Name;
+                        item.Mask += " \"" + _priorityService.GetPriorityByID(Convert.ToInt32(no.Value)).Name + "\"";
+                        break;
+                }
                 actionList.Add(item);
             }
             brModel.actionList = actionList;
@@ -114,6 +237,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             businessRule.Name = name.Trim();
             businessRule.Description = description;
+            businessRule.IsActive = true;
 
             // Add new business rule to database
             int businessRuleId = _businessRuleService.AddNew(businessRule);
@@ -133,7 +257,18 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Rule tempRule = js.ConvertToType<Rule>(rule["data"]);
                 tempRule.Id = (string)rule["id"];
                 tempRule.ParentId = (string)rule["parent"];
-                ruleList.Add(tempRule);
+                if (tempRule.Condition != 0 && tempRule.Criteria != 0 && tempRule.Value != null)
+                {
+                    ruleList.Add(tempRule);
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        msg = "The rule have not finish yet. Please fill in!"
+                    });
+                }
             }
 
             // Add condition to database
@@ -147,7 +282,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 BusinessRuleTrigger trigger = new BusinessRuleTrigger();
                 trigger.BusinessRuleID = businessRuleId;
                 trigger.Action = Convert.ToInt32(action["id"]);
-                // trigger.Value = (string) action["value"]; // TODO
+                trigger.Value = (string)action["value"];
                 _businessRuleService.AddTrigger(trigger);
             }
 
@@ -180,9 +315,17 @@ namespace TMS.Areas.HelpDesk.Controllers
         {
             unitOfWork.BeginTransaction();
 
-            // Add new business rule to database
+            // Update new business rule to database
             int businessRuleId = brId;
+            BusinessRule br = new BusinessRule();
+            br.ID = brId;
+            br.Name = name;
+            br.Description = description;
+            br.IsActive = true;
+
+            _businessRuleService.UpdateBusinessRule(br);
             _businessRuleService.RemoveAllRuleRelatedInfo(brId);
+
             //enable rule checkbox TODO
 
             // Get conditions
@@ -210,7 +353,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 BusinessRuleTrigger trigger = new BusinessRuleTrigger();
                 trigger.BusinessRuleID = businessRuleId;
                 trigger.Action = Convert.ToInt32(action["id"]);
-                // trigger.Value = (string) action["value"]; // TODO
+                trigger.Value = (string)action["value"];
                 _businessRuleService.AddTrigger(trigger);
             }
 
@@ -247,13 +390,13 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     BusinessRuleCondition condition = new BusinessRuleCondition();
                     condition.BusinessRuleID = businessRuleId;
-                    condition.Type = tempRule.Logic.HasValue ? tempRule.Logic : 1;
-                    condition.Criteria = ""; // tempRule.Criteria TODO;
+                    condition.Type = tempRule.Logic.HasValue ? tempRule.Logic : ConstantUtil.TypeOfBusinessRuleCondition.And;
+                    condition.Criteria = tempRule.Criteria;
                     condition.Condition = tempRule.Condition;
                     condition.Value = tempRule.Value;
                     condition.BusinessRuleConditionID = Id;
                     condition.BusinessRuleConditionLevel = level;
-                    AddConditionsToDB(index+1, level+1, businessRuleId, _businessRuleService.AddCondition(condition), tempRule.Id, ruleList);
+                    AddConditionsToDB(index + 1, level + 1, businessRuleId, _businessRuleService.AddCondition(condition), tempRule.Id, ruleList);
                 }
             }
         }

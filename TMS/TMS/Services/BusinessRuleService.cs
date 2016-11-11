@@ -17,6 +17,13 @@ namespace TMS.Services
             _unitOfWork = unitOfWork;
         }
 
+        public bool UpdateBusinessRule(BusinessRule businessRule)
+        {
+            _unitOfWork.BusinessRuleRepository.Update(businessRule);
+            return _unitOfWork.Commit();
+        }
+
+
         public IEnumerable<BusinessRule> GetAll()
         {
             return _unitOfWork.BusinessRuleRepository.Get(a => (bool) a.IsActive);
@@ -27,18 +34,18 @@ namespace TMS.Services
             var brConditions = this.GetAllBusinessRuleConditions(businessRuleId);
             foreach (var con in brConditions)
             {
-                _unitOfWork.BusinessRuleConditionRepository.Delete(con);
+                _unitOfWork.BusinessRuleConditionRepository.Delete(con.ID);
 
             }
             var brActions = this.GetAllBusinessRuleTrigger(businessRuleId);
             foreach (var act in brActions)
             {
-                _unitOfWork.BusinessRuleTriggerRepository.Delete(act);
+                _unitOfWork.BusinessRuleTriggerRepository.Delete(act.ID);
             }
             var brNotifications = this.GetAllBusinessRuleNotifications(businessRuleId);
             foreach (var act in brNotifications)
             {
-                _unitOfWork.BusinessRuleTriggerRepository.Delete(act);
+                _unitOfWork.BusinessRuleNotificationRepository.Delete(act.ID);
 
             }
         }
@@ -66,7 +73,8 @@ namespace TMS.Services
 
         public IEnumerable<BusinessRuleCondition> GetAllBusinessRuleConditions(int businessRuleId)
         {
-            return _unitOfWork.BusinessRuleConditionRepository.Get(a => a.BusinessRuleID == businessRuleId);
+            IEnumerable<BusinessRuleCondition> cons = _unitOfWork.BusinessRuleConditionRepository.Get();
+            return cons.Where(a => a.BusinessRuleID == businessRuleId);
         }
 
         public void AddNotificationReciever(BusinessRuleNotification businessRuleNotification)

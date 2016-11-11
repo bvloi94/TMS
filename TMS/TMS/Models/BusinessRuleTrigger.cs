@@ -16,7 +16,7 @@ namespace TMS.Models
     {
         public int ID { get; set; }
         public Nullable<int> Action { get; set; }
-        public Nullable<int> Value { get; set; }
+        public string Value { get; set; }
         public Nullable<int> BusinessRuleID { get; set; }
     
         public virtual BusinessRule BusinessRule { get; set; }

@@ -48,9 +48,7 @@
       <HintPath>..\packages\EAGetMail.4.6.0.3\lib\net45\EAGetMail45.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="itextsharp, Version=5.5.10.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.10\lib\itextsharp.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
@@ -225,9 +223,7 @@
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
     <Compile Include="Areas\Manager\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
-    <Compile Include="Areas\Technician\Controllers\HomeController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
-    <Compile Include="Areas\Technician\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
@@ -329,13 +325,15 @@
     </Compile>
     <Compile Include="Schedulers\CheckToCloseTicketJob.cs" />
     <Compile Include="Schedulers\CheckOverdueTicketJob.cs" />
-    <Compile Include="Services\TicketHistoryService.cs" />
+    <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\PriorityMatrixService.cs" />
+    <Compile Include="Services\SolutionAttachmentService.cs" />
     <Compile Include="Services\SolutionService.cs" />
     <Compile Include="Services\TicketAttachmentService.cs" />
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\ImpactService.cs" />
     <Compile Include="Services\PriorityService.cs" />
+    <Compile Include="Services\TicketHistoryService.cs" />
     <Compile Include="Services\UrgencyService.cs" />
     <Compile Include="Schedulers\Job.cs" />
     <Compile Include="Schedulers\JobManager.cs" />
@@ -344,7 +342,6 @@
     <Compile Include="Services\BusinessRuleService.cs" />
     <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Services\UserRoleService.cs" />
-    <Compile Include="Utils\ValidateAttribute\CustomAuthorizeAttribute.cs" />
     <Compile Include="Utils\ConstantUtil.cs" />
     <Compile Include="Utils\GeneralUtil.cs" />
     <Compile Include="Utils\EmailUtil.cs" />
@@ -353,18 +350,21 @@
     <Compile Include="Utils\PredicateBuilder.cs" />
     <Compile Include="Utils\SentenceUtil.cs" />
     <Compile Include="Utils\TMSUtils.cs" />
-    <Compile Include="Utils\ValidateAttribute\MaxFileSizeAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\CompareValidateDateAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\CustomAuthorizeAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\CustomRequiredAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\ImageFileAttribute.cs" />
+    <Compile Include="Utils\ValidateAttribute\MaxFileSizeAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\PathFormatAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\TagFormatAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\ValidateDateSQLAttribute.cs" />
-    <Compile Include="Utils\ValidateAttribute\CompareValidateDateAttribute.cs" />
-    <Compile Include="Utils\ValidateAttribute\ImageFileAttribute.cs" />
+    <Compile Include="ViewModels\BasicTicketViewModel.cs" />
     <Compile Include="ViewModels\CategoryViewModel.cs" />
     <Compile Include="ViewModels\BusinessRuleViewModel.cs" />
     <Compile Include="ViewModels\ChangPaswordViewModel.cs" />
     <Compile Include="ViewModels\CriteriaViewModel.cs" />
+    <Compile Include="ViewModels\TriggerViewModel.cs" />
     <Compile Include="ViewModels\DropdownViewModel.cs" />
     <Compile Include="ViewModels\DepartmentViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
@@ -379,7 +379,6 @@
     <Compile Include="ViewModels\ProfileTechnicianViewModel.cs" />
     <Compile Include="ViewModels\RecentTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
-    <Compile Include="ViewModels\BasicTicketViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
     <Compile Include="ViewModels\TicketHistoryViewModel.cs" />
@@ -409,7 +408,7 @@
     <Content Include="Content\css\graph.css" />
     <Content Include="Content\css\select2.min.css" />
     <Content Include="Content\custom-css\admin.css" />
-    <Content Include="Content\custom-css\profile.css" />
+    <Content Include="Content\custom-css\Profile.css" />
     <Content Include="Content\custom-css\ticket-detail.css" />
     <Content Include="Content\custom-css\tms.css" />
     <Content Include="Content\custom-css\tms-dropdown.css" />
@@ -426,12 +425,20 @@
     <Content Include="Content\img\avatar5.png" />
     <Content Include="Content\img\boxed-bg.jpg" />
     <Content Include="Content\img\boxed-bg.png" />
+    <Content Include="Content\img\credit\american-express.png" />
+    <Content Include="Content\img\credit\cirrus.png" />
+    <Content Include="Content\img\credit\mastercard.png" />
+    <Content Include="Content\img\credit\mestro.png" />
+    <Content Include="Content\img\credit\paypal.png" />
+    <Content Include="Content\img\credit\paypal2.png" />
+    <Content Include="Content\img\credit\visa.png" />
     <Content Include="Content\img\criteria-drop.png" />
     <Content Include="Content\img\default-50x50.gif" />
     <Content Include="Content\img\details_close.png" />
     <Content Include="Content\img\details_open.png" />
     <Content Include="Content\img\icons.png" />
     <Content Include="Content\img\loading.gif" />
+    <Content Include="Content\img\login.jpg" />
     <Content Include="Content\img\page403.png" />
     <Content Include="Content\img\photo1.png" />
     <Content Include="Content\img\photo2.png" />
@@ -446,6 +453,7 @@
     <Content Include="Content\img\user6-128x128.jpg" />
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
+    <Content Include="Content\js\jPages.min.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\html2canvas.js" />
@@ -544,17 +552,18 @@
     <Content Include="Content\skins\_all-skins.min.css" />
     <Content Include="Content\login.css" />
     <Content Include="EmailTemplates\CancelTicketRequesterTemplate.txt" />
-    <Content Include="EmailTemplates\CreateTicketRequesterTemplate.txt" />
-    <Content Include="EmailTemplates\SolveTicketRequesterTemplate.txt" />
     <Content Include="EmailTemplates\CloseTicketRequesterTemplate.txt" />
     <Content Include="EmailTemplates\AssignTicketTechnicianTemplate.txt" />
+    <Content Include="EmailTemplates\CreateTicketRequesterTemplate.txt" />
     <Content Include="EmailTemplates\OverdueTicketHelpdeskTemplate.txt" />
     <Content Include="EmailTemplates\CancelTicketTechnicianTemplate.txt" />
     <Content Include="EmailTemplates\CreateRequesterEmailTemplate.txt" />
+    <Content Include="EmailTemplates\SolveTicketRequesterTemplate.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Logs\log.txt" />
     <Content Include="Models\TMSModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>TMSModel.edmx</DependentUpon>
@@ -633,10 +642,6 @@
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New1.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\Edit.cshtml" />
-    <Content Include="Areas\Technician\Views\Shared\_TopLayout.cshtml" />
-    <Content Include="Areas\Technician\Views\Home\Index.cshtml" />
-    <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
-    <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Shared\_TopLayout.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Home\Index.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
@@ -728,10 +733,10 @@
     <Content Include="Views\FAQ\Detail.cshtml" />
     <Content Include="Views\Shared\KBLayout.cshtml" />
     <Content Include="Views\Ticket\History.cshtml" />
-    <Content Include="Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Views\Shared\_TopLayout.cshtml" />
-    <Content Include="Views\Profile\ChangePassword.cshtml" />
     <Content Include="Views\Ticket\TicketDetail.cshtml" />
+    <Content Include="Views\Profile\ChangePassword.cshtml" />
+    <Content Include="Views\Profile\UpdateProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

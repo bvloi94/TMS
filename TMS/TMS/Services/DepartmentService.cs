@@ -18,7 +18,7 @@ namespace TMS.Services
 
         public IEnumerable<Department> GetAll()
         {
-            return _unitOfWork.DepartmentRepository.Get(a => (bool)a.IsActive);
+            return _unitOfWork.DepartmentRepository.Get();
         }
 
         public IEnumerable<Department> GetAllDepartment()
@@ -43,12 +43,11 @@ namespace TMS.Services
             return _unitOfWork.Commit();
         }
 
-        public void RemoveDepartment(string id)
+        public bool RemoveDepartment(string id)
         {
             Department dep = _unitOfWork.DepartmentRepository.GetByID(id);
-            dep.IsActive = false;
-            _unitOfWork.DepartmentRepository.Update(dep);
-            _unitOfWork.Commit();
+            _unitOfWork.DepartmentRepository.Delete(dep);
+            return _unitOfWork.Commit();
         }
 
         public bool DeleteDepartment(Department department)
