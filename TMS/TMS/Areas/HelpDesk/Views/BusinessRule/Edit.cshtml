@@ -603,7 +603,7 @@
                                 var masks = anchorTag.children[4].innerHTML.split(", ");
                                 var values = tree.jstree().get_node(selectedId).data.Value.split(",");
                                 for (var i = 0; i < masks.length; i++) {
-                                    loadInitDropdown($("#" + inputId), masks[i], values[i]);
+                                    initDropdown($("#" + inputId), masks[i], values[i]);
                                 }
                             }
                             $("#" + inputId).select2("open");
@@ -666,7 +666,7 @@
                                 var masks = anchorTag.children[4].innerHTML.split(", ");
                                 var values = tree.jstree().get_node(selectedId).data.Value.split(",");
                                 for (var i = 0; i < masks.length; i++) {
-                                    loadInitDropdown($("#" + inputId), masks[i], values[i]);
+                                    initDropdown($("#" + inputId), masks[i], values[i]);
                                 }
                             }
                             $("#" + inputId).select2("open");
@@ -838,12 +838,6 @@
                     $(this).closest('tr').remove();
                 });
 
-        function loadInitDropdown(selector, text, value) {
-            var opt = new Option(text, value, true, true);
-            selector.append(opt);
-            selector.trigger("change");
-        }
-
         $("#updateBtn")
             .click(function() {
                 $("#updateBtn").prop("disabled", true);
@@ -977,7 +971,7 @@
             @foreach (var item in Model.technicianList)
             {
                 <text>
-                    loadInitDropdown($("#ddl-technician"), '@item.Name', '@item.Id');
+                    initDropdown($("#ddl-technician"), '@item.Name', '@item.Id');
                 </text>
             }
         }
