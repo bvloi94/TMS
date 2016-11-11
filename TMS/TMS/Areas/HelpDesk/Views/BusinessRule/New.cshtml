@@ -564,15 +564,16 @@
                                     '"></select></div>');
                             initRequesterDropdown({
                                 control: $("#" + inputId),
-                                ignore: function() {
-                                    return $("#" + inputId).val();
+                                ignore: function () {
+                                    return [];
+                                    //return $("#" + inputId).val();
                                 }
                             });
                             if (anchorTag.children[4].innerHTML != "") {
                                 var masks = anchorTag.children[4].innerHTML.split(", ");
                                 var values = tree.jstree().get_node(selectedId).data.Value.split(",");
                                 for (var i = 0; i < masks.length; i++) {
-                                    loadInitDropdown($("#" + inputId), masks[i], values[i]);
+                                    initDropdown($("#" + inputId), masks[i], values[i]);
                                 }
                             }
                             $("#" + inputId).select2("open");
@@ -629,7 +630,7 @@
                                 var masks = anchorTag.children[4].innerHTML.split(", ");
                                 var values = tree.jstree().get_node(selectedId).data.Value.split(",");
                                 for (var i = 0; i < masks.length; i++) {
-                                    loadInitDropdown($("#" + inputId), masks[i], values[i]);
+                                    initDropdown($("#" + inputId), masks[i], values[i]);
                                 }
                             }
                             $("#" + inputId).select2("open");
@@ -780,8 +781,8 @@
 
         $("#add-action")
             .click(function() {
-                if ($("#rule-action").text() == "") alert("Please choose action.");
-                else if ($("#rule-action-select").text() == "") alert("Please set value for action.");
+                if ($("#rule-action").val() == null) alert("Please choose action.");
+                else if ($("#rule-action-select").val() == null) alert("Please set value for action.");
                 else {
                     var actionSet = $("#rule-action").select2('data')[0].text +
                         ' \"' +
@@ -797,8 +798,9 @@
                             '><td><i class="fa fa-trash remove-action"></i></td><td>' +
                             actionSet +
                             '</td></tr>');
-                    $("#rule-action").select2('val', "");
-                    $("#rule-action-select").select2('val', "");
+                    $("#rule-action").select2('val', '');
+                    $("#rule-action-select").select2('val', '');
+                    $("#rule-action-select").children().remove();
                     $("#rule-action-select").select2('destroy');
                 }
             });

@@ -272,7 +272,6 @@ namespace TMS.Controllers
         }
 
 
-        [HttpPost]
         public ActionResult LoadRequesterDropdown(string ignore, string query)
         {
             var js = new JavaScriptSerializer();
@@ -300,7 +299,6 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
         public ActionResult LoadDepartmentConditionDropdown(string ignore, string query)
         {
             var js = new JavaScriptSerializer();

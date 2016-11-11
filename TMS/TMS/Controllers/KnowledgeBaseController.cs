@@ -435,13 +435,13 @@ namespace TMS.Controllers
             }
             IEnumerable<Ticket> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
 
-            IQueryable<Ticket> filteredListItems = recentTickets.Select(m => new Ticket
+            IQueryable<TicketViewModel> filteredListItems = recentTickets.Select(m => new TicketViewModel
             {
                 Subject = m.Subject,
-                Tags = m.Tags
+                Tags = m.Tags == null ? "" : m.Tags
             }).AsQueryable();
 
-            var predicate = PredicateBuilder.False<Ticket>();
+            var predicate = PredicateBuilder.False<TicketViewModel>();
 
             if (!string.IsNullOrEmpty(tags))
             {
@@ -450,8 +450,8 @@ namespace TMS.Controllers
                 string[] tagsArr = tags.Split(',');
                 foreach (string tagItem in tagsArr)
                 {
-                    string tagItemTemp = '"' + tagItem.ToLower() + '"';
-                    predicate = predicate.Or(p => p.Tags.ToLower().Contains(tagItemTemp));
+                    string tagItemTemp = '"' + tagItem + '"';
+                    predicate = predicate.And(p => p.Tags.ToLower().Contains(tagItemTemp.ToLower()));
                 }
                 filteredListItems = filteredListItems.Where(predicate);
             }
@@ -469,7 +469,7 @@ namespace TMS.Controllers
                     break;
             }
 
-            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            var displayedList = filteredListItems.ToList().Skip(param.start).Take(param.length);
 
             return Json(new
             {
