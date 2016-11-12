@@ -72,6 +72,12 @@ function loadInitDropdown(selector, text, value) {
     $("[data-role='" + selector + "']:not([disabled])").trigger("change");
 }
 
+function initDropdown(selector, text, value) {
+    var opt = new Option(text, value, true, true);
+    selector.append(opt);
+    selector.trigger("change");
+}
+
 function initRequesterTable(selector) {
     return selector.dataTable({
         processing: true,

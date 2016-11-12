@@ -204,7 +204,8 @@ namespace TMS.Areas.Manager.Controllers
             {
                 p.ID,
                 p.Name,
-                p.Description
+                p.Description,
+                p.Color
             }.ToArray());
 
             return Json(new
@@ -573,6 +574,7 @@ namespace TMS.Areas.Manager.Controllers
                 Priority priority = new Priority();
                 priority.Name = model.Name.Trim();
                 priority.Description = model.Description;
+                priority.Color = model.Color;
                 bool resultInsert = _priorityService.AddPriority(priority);
                 if (resultInsert)
                 {
@@ -818,6 +820,7 @@ namespace TMS.Areas.Manager.Controllers
                     Priority priority = _priorityService.GetPriorityByID(id.Value);
                     priority.Name = model.Name.Trim();
                     priority.Description = model.Description;
+                    priority.Color = model.Color;
 
                     bool resultUpdate = _priorityService.UpdatePriority(priority);
                     if (resultUpdate)

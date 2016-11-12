@@ -226,6 +226,7 @@
     <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
     <Compile Include="Areas\Technician\Controllers\HomeController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
+	<Compile Include="Areas\Technician\Controllers\HomeController.cs" />
     <Compile Include="Areas\Technician\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
@@ -408,6 +409,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\css\graph.css" />
     <Content Include="Content\css\select2.min.css" />
+    <Content Include="Content\css\spectrum.css" />
     <Content Include="Content\custom-css\admin.css" />
     <Content Include="Content\custom-css\Profile.css" />
     <Content Include="Content\custom-css\ticket-detail.css" />
@@ -455,6 +457,7 @@
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\jPages.min.js" />
+    <Content Include="Content\js\spectrum.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\html2canvas.js" />
@@ -605,6 +608,9 @@
     <Content Include="Areas\Technician\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Technician\Views\ManageTicket\Index.cshtml" />
     <Content Include="Areas\Technician\Views\ManageTicket\Solve.cshtml" />
+    <Content Include="Areas\Technician\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Technician\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\Technician\Views\Profile\UpdateProfile.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateHelpDesk.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\EditHelpDesk.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Technician.cshtml" />
@@ -640,7 +646,6 @@
     <Content Include="Areas\Manager\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Manager\Views\Profile\Index.cshtml" />
     <Content Include="Areas\Manager\Views\Profile\UpdateProfile.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\BusinessRule\New1.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\New.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Shared\_TopLayout.cshtml" />
