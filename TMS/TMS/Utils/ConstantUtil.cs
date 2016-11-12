@@ -182,6 +182,7 @@ namespace TMS.Utils
             public const int Cancelled = 5;
             public const int Closed = 6;
             public const int Merged = 7;
+            public const int Reassigned = 8;
         }
 
         public class BusinessRuleTrigger

@@ -99,24 +99,21 @@
     <script src="~/Content/Plugins/tagit/tag-it.min.js"></script>
     <script src="~/Content/custom-js/knowledgebase.js"></script>
     <script>
-        $(document)
-            .ready(function () {
-                $('#content-area').wysihtml5();
-                $("#keyword").tagit();
-                initCategoryDropdown({
-                    control: $("[data-role=ddl-category]"),
-                    ignore: function () {
-                        return [];
-                    },
-                });
-                loadInitDropdown('ddl-category', "--Choose Topic--", "");
-                @if (Model != null) {
-                    if (Model.CategoryID != 0 && Model.Category != null)
-                    {
-                        <text>loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');</text>
-                    }
-                }
+        $(document).ready(function () {
+            $('#content-area').wysihtml5();
+            $("#keyword").tagit();
+            initCategoryDropdown({
+                control: $("[data-role=ddl-category]"),
+                ignore: function () {
+                    return [];
+                },
             });
+            loadInitDropdown('ddl-category', "--Choose Topic--", "");
+            @if (Model.CategoryID != 0 && Model.Category != null)
+            {
+                 <text>loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');</text>
+            }
+        });
 
         $("#subject-txt").keyup(function () {
             getPath();

@@ -315,7 +315,7 @@ namespace TMS.Controllers
 
                     model.ID = ticket.ID;
                     model.Subject = ticket.Subject;
-                    model.Description = ticket.Description == null ? "-" : ticket.Description;
+                    model.Description = ticket.Description == null ? "-" : ticket.Description.Trim();
                     model.CreatedBy = creater.Fullname;
                     model.SolvedBy = solver == null ? "-" : solver.Fullname;
                     model.Status = ticket.Status;
@@ -328,7 +328,7 @@ namespace TMS.Controllers
                     }
                     else
                     {
-                        model.Solution = ticket.Solution == null ? "-" : ticket.Solution;
+                        model.Solution = ticket.Solution == null ? "-" : ticket.Solution.Trim();
                     }
 
                     model.Mode = GeneralUtil.GetModeNameByMode(ticket.Mode);
@@ -406,9 +406,9 @@ namespace TMS.Controllers
                     model.Id = ticket.ID;
                     model.Code = ticket.Code;
                     model.Subject = ticket.Subject;
-                    model.Description = ticket.Description;
+                    model.Description = ticket.Description == null ? "-" : ticket.Description.Trim();
                     model.Mode = ticket.Mode;
-                    model.Type = ticket.Type == null ? 0 : ticket.Type.Value;
+                    model.Type = ticket.Type.HasValue ? ticket.Type.Value : 0;
 
                     switch (ticket.Status)
                     {
@@ -469,7 +469,7 @@ namespace TMS.Controllers
                     model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
                     model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
                     model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
-                    model.Solution = ticket.Solution;
+                    model.Solution = ticket.Solution == null ? string.Empty : ticket.Solution.Trim();
                     model.DescriptionAttachmentsURL = descriptionAttachment;
                     model.SolutionAttachmentsURL = solutionAttachment;
                     model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;

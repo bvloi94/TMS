@@ -127,6 +127,8 @@ namespace TMS.Utils
                     return "Unapproved";
                 case ConstantUtil.TicketHistoryType.Updated:
                     return "Updated";
+                case ConstantUtil.TicketHistoryType.Reassigned:
+                    return "Reassigned";
             }
             return "Unassigned";
         }

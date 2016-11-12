@@ -60,7 +60,7 @@ namespace TMS.Services
                     {
                         switch (trigger.Action)
                         {
-                                
+
                         }
                     }
                 }
@@ -738,6 +738,40 @@ namespace TMS.Services
             return _unitOfWork.CommitTransaction();
         }
 
+        //send notification to requester
+        public bool ReassignTicket(Ticket ticket, string actId)
+        {
+            ticket.Status = ConstantUtil.TicketStatus.Assigned;
+            ticket.ModifiedTime = DateTime.Now;
+            _unitOfWork.BeginTransaction();
+
+            AspNetUser reassignUser = _unitOfWork.AspNetUserRepository.GetByID(actId);
+            if (reassignUser != null)
+            {
+                //send notification to technician
+                Notification technicianNoti = new Notification();
+                technicianNoti.IsForHelpDesk = false;
+                technicianNoti.TicketID = ticket.ID;
+                technicianNoti.BeNotifiedID = ticket.TechnicianID;
+                technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was reassigned by {2}.", ticket.Subject, ticket.Code, reassignUser.Fullname);
+                technicianNoti.NotifiedTime = DateTime.Now;
+                _unitOfWork.NotificationRepository.Insert(technicianNoti);
+                //end notification
+            }
+
+            //start ticket history
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.TicketID = ticket.ID;
+            ticketHistory.Type = ConstantUtil.TicketHistoryType.Reassigned;
+            ticketHistory.ActID = actId;
+            ticketHistory.Action = "OPERATION: REASSIGN";
+            ticketHistory.ActedTime = DateTime.Now;
+            //end ticket history
+            _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
+            _unitOfWork.TicketRepository.Update(ticket);
+            return _unitOfWork.CommitTransaction();
+        }
+
         //send notification to technician
         //send notification to requester
         public bool MergeTicket(List<Ticket> tickets, string actId)
@@ -853,11 +887,12 @@ namespace TMS.Services
 
         public IEnumerable<FrequentlyAskedTicketViewModel> GetFrequentlyAskedSubjects(IEnumerable<Ticket> tickets)
         {
-            IEnumerable<FrequentlyAskedTicketViewModel> results = tickets.Where(m => m.Tags != null && m.Tags.Trim() != string.Empty).GroupBy(m => m.Tags).Select(m => new FrequentlyAskedTicketViewModel
-            {
-                Tags = m.Key,
-                Count = m.Count()
-            }).OrderByDescending(m => m.Count);
+            IEnumerable<FrequentlyAskedTicketViewModel> results = tickets.Where(m => m.Tags != null && m.Tags.Trim() != string.Empty)
+                .GroupBy(m => m.Tags).Select(m => new FrequentlyAskedTicketViewModel
+                {
+                    Tags = m.Key,
+                    Count = m.Count()
+                }).OrderByDescending(m => m.Count);
 
             //tickets = tickets.OrderByDescending(m => m.Subject.Length);
             //List<RecentTicketViewModel> result = new List<RecentTicketViewModel>();

@@ -25,6 +25,7 @@ namespace TMS.Controllers
         private FileUploader _fileUploader;
         private CategoryService _categoryService;
         private SolutionAttachmentService _solutionAttachmentService;
+        private TicketAttachmentService _ticketAttachmentService;
 
         public KnowledgeBaseController()
         {
@@ -34,6 +35,7 @@ namespace TMS.Controllers
             _fileUploader = new FileUploader();
             _categoryService = new CategoryService(_unitOfWork);
             _solutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
+            _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
         }
 
         // GET: KB
@@ -44,8 +46,24 @@ namespace TMS.Controllers
 
         [HttpGet]
         [ActionName("Create")]
-        public ActionResult CreateGet(KnowledgeBaseViewModel model)
+        public ActionResult CreateGet(int? id)
         {
+            KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
+            if (id.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
+                {
+                    model.Subject = ticket.Subject;
+                    model.Keyword = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Content = ticket.Solution;
+                    model.CategoryID = ticket.CategoryID.HasValue ? ticket.CategoryID.Value : 0;
+                    if (ticket.Category != null)
+                    {
+                        model.Category = ticket.Category.Name;
+                    }
+                }
+            }
             ModelState.Clear();
             return View(model);
         }
@@ -380,10 +398,10 @@ namespace TMS.Controllers
             IEnumerable<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedSubjects(recentTickets);
 
             IEnumerable<FrequentlyAskedTicketViewModel> filteredListItems = frequentlyAskedTickets;
-            if (!string.IsNullOrEmpty(param.search["value"]))
-            {
-                filteredListItems = filteredListItems.Where(p => p.Tags != null && (p.Tags.ToLower().Contains(param.search["value"].ToLower())));
-            }
+            //if (!string.IsNullOrEmpty(param.search["value"]))
+            //{
+            //    filteredListItems = filteredListItems.Where(p => p.Tags != null && (p.Tags.ToLower().Contains(param.search["value"].ToLower())));
+            //}
 
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
@@ -437,23 +455,26 @@ namespace TMS.Controllers
 
             IQueryable<TicketViewModel> filteredListItems = recentTickets.Select(m => new TicketViewModel
             {
+                Id = m.ID,
                 Subject = m.Subject,
                 Tags = m.Tags == null ? "" : m.Tags
             }).AsQueryable();
 
-            var predicate = PredicateBuilder.False<TicketViewModel>();
+            var predicate = PredicateBuilder.True<TicketViewModel>();
 
             if (!string.IsNullOrEmpty(tags))
             {
-                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                tags = regex.Replace(tags, " ");
-                string[] tagsArr = tags.Split(',');
-                foreach (string tagItem in tagsArr)
-                {
-                    string tagItemTemp = '"' + tagItem + '"';
-                    predicate = predicate.And(p => p.Tags.ToLower().Contains(tagItemTemp.ToLower()));
-                }
-                filteredListItems = filteredListItems.Where(predicate);
+                tags = GeneralUtil.ConvertToFormatKeyword(tags);
+                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                //tags = regex.Replace(tags, " ");
+                //string[] tagsArr = tags.Split(',');
+                //foreach (string tagItem in tagsArr)
+                //{
+                //    string tagItemTemp = '"' + tagItem + '"';
+                //    predicate = predicate.And(p => p.Tags.ToLower().Contains(tagItemTemp.ToLower()));
+                //}
+                //filteredListItems = filteredListItems.Where(predicate);
+                filteredListItems = filteredListItems.Where(m => m.Tags == tags);
             }
 
             // Sort.

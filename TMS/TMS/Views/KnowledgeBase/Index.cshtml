@@ -265,15 +265,6 @@
                 <h4 class="modal-title">Tickets List</h4>
             </div>
             <div class="modal-body">
-                <div class="pull-right">
-                    <select id="frequently-asked-subjects-time-option-select">
-                        <option value="1">Today</option>
-                        <option value="2">4 Days ago</option>
-                        <option value="3" selected>This Week</option>
-                        <option value="4">This Month</option>
-                        <option value="5">This Year</option>
-                    </select>
-                </div>
                 <table class="table dataTable" id="tickets-by-tags-table">
                     <thead>
                         <tr>
@@ -653,17 +644,17 @@
                 columnDefs: [
                     {
                         "targets": 0,
-                        "width": "60%",
+                        "width": "40%",
                         "render": function (data, type, row) {
-                            return row.Subject; 
+                            return row.Subject;
                         }
                     },
                     {
                         "targets": 1,
-                        "width": "30%",
+                        "width": "50%",
+                        "sortable": false,
                         "render": function (data, type, row) {
-                            //return loadKeywordToTags(row.Tags);
-                            return row.Tags;
+                            return loadKeywordToTags(row.Tags);
                         }
                     },
                     {
@@ -671,7 +662,8 @@
                         "sortable": false,
                         "width": "10%",
                         "render": function (data, type, row) {
-                            return '<a href="/KnowledgeBase/Create?Subject=' + row.Subject + '" class="btn btn-flat btn-primary">Add Solution</a>';
+                            //return '<a href="/KnowledgeBase/Create?Subject=' + row.Subject + '" class="btn btn-flat btn-primary">Add Solution</a>';
+                            return '<a href="/KnowledgeBase/Create/' + row.Id + '" class="btn btn-flat btn-primary">Add Solution</a>';
                         }
                     }
                 ]
