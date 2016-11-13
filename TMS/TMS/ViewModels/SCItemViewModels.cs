@@ -31,5 +31,7 @@ namespace TMS.ViewModels
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name length is between 2 and 100 characters")]
         public string Name { get; set; }
         public string Description { get; set; }
+        [Required(ErrorMessage = "Color is required!")]
+        public string Color { get; set; }
     }
 }

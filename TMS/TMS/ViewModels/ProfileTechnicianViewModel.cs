@@ -23,7 +23,7 @@ namespace TMS.ViewModels
         public Nullable<DateTime> Birthday { get; set; }
         public string Address { get; set; }
         public Nullable<bool> Gender { get; set; }
-        [Required(ErrorMessage = "Please choose department!")]
+        // [Required(ErrorMessage = "Please choose department!")]
         public int? DepartmentID { get; set; }
         public string DepartmentName { get; set; }
     }

@@ -408,6 +408,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\css\graph.css" />
     <Content Include="Content\css\select2.min.css" />
+    <Content Include="Content\css\spectrum.css" />
     <Content Include="Content\custom-css\admin.css" />
     <Content Include="Content\custom-css\Profile.css" />
     <Content Include="Content\custom-css\ticket-detail.css" />
@@ -455,6 +456,7 @@
     <Content Include="Content\img\user7-128x128.jpg" />
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\jPages.min.js" />
+    <Content Include="Content\js\spectrum.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\html2canvas.js" />
