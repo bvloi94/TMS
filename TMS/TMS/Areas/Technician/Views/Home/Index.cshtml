@@ -6,6 +6,7 @@
     ViewBag.Title = "Home";
     var ticketList = ViewBag.TechnicianTicket;
     var solutionList = ViewBag.SolutionList;
+    var incomingTickets = ViewBag.IncomingTickets;
 }
 
 <style>
@@ -101,7 +102,45 @@
 
 <div class="row">
     <div class="col-sm-4">
-
+        <div class="box box-solid">
+            <div class="box-header bg-red-active">
+                <h4><i class="fa fa-tags"></i>&nbsp;&nbsp;These tickets need your attention</h4>
+            </div>
+            @if (incomingTickets != null)
+            {
+                <div class="box-body">
+                    @foreach (BasicTicketViewModel ticket in incomingTickets)
+                    {
+                        <div class="col-sm-12 table-ticket">
+                            <p>
+                                <span class="text-muted text-bold">#@ticket.Code&nbsp;</span>
+                                @if (ticket.Subject.Length > 90)
+                                {
+                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                        @ticket.Subject.Substring(0, 89) ...
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                        @ticket.Subject
+                                    </a>
+                                }
+                            </p>
+                            <p>
+                                <span class="text-orange text-bold"><i class="fa fa-clock-o"></i>&nbsp; Deadline: </span><span class="text-red text-bold">@ticket.ScheduleEndTime</span> 
+                            </p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="box-footer text-center">
+                    <i>There is no urgent ticket at this moment.</i>
+                </div>
+            }
+        </div>  
     </div>
     <div class="col-sm-8">
         <div class="box box-solid" id="assigned-tickets">
@@ -142,7 +181,7 @@
                                         </p>
                                     </div>
                                     <div class="col-lg-3 col-md-3 col-sm-4">
-                                        <div class="text-center pull-right">
+                                        <div class="text-right pull-right">
                                             <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Date created</p>
                                             <p class="text-blue">@ticket.CreatedTime</p>
                                         </div>
@@ -304,7 +343,7 @@
                                     </p>
                                 </div>
                                 <div class="col-lg-3 col-md-3 col-sm-4">
-                                    <div class="pull-right text-center">
+                                    <div class="pull-right text-right">
                                         <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Last modified</p>
                                         <span class="text-light-blue">@GeneralUtil.ShowDateTime(solution.ModifiedTime.Value)</span>
                                     </div>

@@ -50,7 +50,7 @@ namespace TMS.Controllers
                     Id = m.ID,
                     TicketId = m.TicketID,
                     NotifiedTime = m.NotifiedTime.HasValue ? GeneralUtil.ShowDateTime(m.NotifiedTime.Value) : "-",
-                    NotificationContent = m.NotificationContent,
+                    NotificationContent = TruncateContent(m.NotificationContent),
                     IsRead = m.IsRead
                 }).ToArray().Take(20);
             }
@@ -62,7 +62,7 @@ namespace TMS.Controllers
                     Id = m.ID,
                     TicketId = m.TicketID,
                     NotifiedTime = m.NotifiedTime.HasValue ? GeneralUtil.ShowDateTime(m.NotifiedTime.Value) : "-",
-                    NotificationContent = m.NotificationContent,
+                    NotificationContent = TruncateContent(m.NotificationContent),
                     IsRead = m.IsRead
                 }).ToArray().Take(20);
             }
@@ -93,6 +93,19 @@ namespace TMS.Controllers
             {
                 data = false,
             });
+        }
+
+        public string TruncateContent (string Content)
+        {
+            if (Content.Length > 70)
+            {
+                int position = Content.IndexOf("'[#TK");
+                int length = Content.Length - position;
+                string truncateSubject = Content.Substring(0, 65);
+                string keptContent = Content.Substring(position, length);
+                return string.Concat(truncateSubject, "... ", keptContent);
+            }
+            return Content;
         }
     }
 }

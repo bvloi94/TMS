@@ -1,5 +1,276 @@
-﻿@{
+﻿@using TMS.Utils;
+@using TMS.Models;
+@using TMS.ViewModels;
+@{
     Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Help Desk";
+    IEnumerable<BasicTicketViewModel> newTickets = ViewBag.NewRequestersTickets;
+    IEnumerable<BasicTicketViewModel> newTicketsLast7Days = ViewBag.NewRequestersTicketsLast7Days;
+    var newTicketsPercentage = newTicketsLast7Days.Count() * 100 / newTickets.Count();
+    IEnumerable<BasicTicketViewModel> unapprovedTickets = ViewBag.UnapprovedTickets;
 }
+<link rel="stylesheet" href="~/Content/css/graph.css" />
+<style>
+    h3 {
+        margin-top: 0px;
+        padding-bottom: 10px;
+    }
 
+    h4 {
+        margin: 5px;
+    }
+
+    .no-pad-left {
+        padding: 15px 0px;
+    }
+
+    ul {
+        padding-left: 0px;
+    }
+
+    li {
+        list-style: none;
+        padding-left: 0px;
+    }
+
+    .table-ticket {
+        padding: 5px 0px;
+        border-bottom: solid 1px #cacaca;
+    }
+
+        .table-ticket:last-of-type {
+            border-bottom: none;
+        }
+
+    .text-white {
+        color: #ffffff !important;
+    }
+
+    .ticket-lists {
+        max-height: 355px;
+        overflow-y: auto;
+    }
+</style>
+
+<h3 class="text-purple">Welcome back, @ViewBag.LayoutName!</h3>
+
+<div class="row">
+    <div class="col-sm-4">
+        <div class="info-box bg-aqua">
+            <span class="info-box-icon"><i class="fa fa-star"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">New Requesters' tickets</span>
+                <span class="info-box-number">@newTickets.Count()</span>
+                <div class="progress">
+                    <div class="progress-bar" style="width: @newTicketsPercentage%"></div>
+                </div>
+                <span class="progress-description">@newTicketsLast7Days.Count() New in last 7 Days</span>
+            </div>
+        </div>
+        <div class="info-box bg-red">
+            <span class="info-box-icon"><i class="fa fa-warning"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Unapproved tickets</span>
+                <span class="info-box-number">@unapprovedTickets.Count()</span>
+            </div>
+        </div>
+        <div class="box box-solid ticket-graph">
+            <div class="box-header with-border">
+                <span class="box-title">Tickets by Status</span>
+            </div>
+            <div class="box-body" id="draw-graph">
+                <canvas id="pieChart" width="300" height="300"></canvas>
+                <div id="doughnut-legend"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="box box-solid">
+            <div class="box-header bg-light-blue">
+                <span class="box-title" style="padding-left: 5px"><i class="fa fa-tags"></i>&nbsp;&nbsp;New Tickets</span>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool text-white" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button type="button" class="btn btn-box-tool text-white" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            @if (newTickets.Count() > 0)
+            {
+            <div class="box-body no-padding ticket-lists">
+                @foreach (BasicTicketViewModel ticket in newTickets)
+                    {
+                    <div class="col-sm-12 table-ticket">
+                        <div class="col-lg-2 col-md-2 col-sm-3">
+                            <span class="text-muted text-bold">#@ticket.Code</span>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-5">
+                            <p>
+                                @if (ticket.Subject.Length > 60)
+                                        {
+                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                        @ticket.Subject.Substring(0, 59) ...
+                                    </a>
+                                        }
+                                        else
+                                        {
+                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                        @ticket.Subject
+                                    </a>
+                                        }
+                            </p>
+                            <p>
+                                <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
+                                Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
+                            </p>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-4">
+                            <div class="text-right pull-right">
+                                <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Date created</p>
+                                <p class="text-blue">@ticket.CreatedTime</p>
+                            </div>
+                        </div>
+                    </div>
+                    }
+            </div>
+            <div class="box-footer">
+                <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
+            </div>
+            }
+            else
+            {
+            <div class="box-body" style="text-align: center; padding: 15px 20px">
+                <span><i>There is no new ticket in last 7 days.</i></span>
+            </div>
+            }
+        </div>
+        <div class="box box-solid" id="unapproved-tickets">
+            <div class="box-header bg-red">
+                <span class="box-title" style="padding-left: 5px"><i class="fa fa-tags"></i>&nbsp;&nbsp;Unapproved Tickets</span>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool text-white" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button type="button" class="btn btn-box-tool text-white" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            @if (unapprovedTickets.Count() > 0)
+            {
+            <div class="box-body no-padding ticket-lists">
+                @foreach (BasicTicketViewModel ticket in unapprovedTickets)
+                    {
+                    <div class="col-sm-12 table-ticket">
+                        <div class="col-lg-2 col-md-2 col-sm-3">
+                            <span class="text-muted text-bold">#@ticket.Code</span>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-5">
+                            <p>
+                                @if (ticket.Subject.Length > 60)
+                                    {
+                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                        @ticket.Subject.Substring(0, 59) ...
+                                    </a>
+                                    }
+                                    else
+                                    {
+                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                        @ticket.Subject
+                                    </a>
+                                    }
+                            </p>
+                            <p>
+                                <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
+                                Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
+                            </p>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-4">
+                            <div class="text-right pull-right">
+                                <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Last modified</p>
+                                <p class="text-muted text-bold">@ticket.ModifiedTime</p>
+                            </div>
+                        </div>
+                    </div>
+                    }
+            </div>
+            <div class="box-footer">
+                <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
+            </div>
+            }
+            else
+            {
+            <div class="box-body" style="text-align: center; padding: 15px 20px">
+                <span><i>There is no unapproved ticket in last 7 days.</i></span>
+            </div>
+            }
+        </div>
+
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/chart")
+    <script src="~/Content/js/html2canvas.js"></script>
+    <script src="~/Content/Plugins/jquerydownload/jquery.fileDownload.js"></script>
+    <script>
+        var defaultColors = [
+            "#00C0EF", "#F39C12", "#00A65A", "#DD4B39", "#A1A1A1", "#757575"
+        ];
+
+        $(document).ready(function () {
+            ProcessGraph();
+        });
+
+        function ProcessGraph() {
+            $.ajax({
+                "url": "/HelpDesk/Report/DrawGraph",
+                "method": "POST",
+                "data": {
+                    type: 0,
+                    by: 6,
+                },
+                "success": function (data) {
+                    drawChart(data.label, data.data)
+                }
+            });
+        }
+
+        function drawChart(chartLabels, chartData) {
+            var numberOfData = 0;
+            for (i = 0; i < chartData.length; i++) {
+                numberOfData += chartData[i];
+            }
+
+            if (numberOfData == 0) {
+                $('#pieChart').replaceWith('<div id="pieChart"><center><h2>No data</h2></center></div>');
+                return;
+            }
+            var colors = [];
+            for (var i = 0; i < chartLabels.length; i++) {
+                colors[i] = defaultColors[i];
+            }
+
+            $('#pieChart').replaceWith('<canvas id="pieChart"></canvas>');
+            var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+            var options = {
+                legend: false,
+                elements: {
+                    arc: {
+                        borderWidth: 0
+                    }
+                }
+            }
+            var data = {
+                labels: chartLabels, // labels format: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+                datasets: [
+                    {
+                        data: chartData, // data format: [12, 19, 3, 5, 2, 3]
+                        backgroundColor: colors
+                    }
+                ]
+            }
+            var pieChart = new Chart(pieChartCanvas,
+            {
+                type: "doughnut",
+                data: data,
+                options: options
+            });
+            $("#doughnut-legend").html(pieChart.generateLegend());
+
+        }
+    </script>
+}

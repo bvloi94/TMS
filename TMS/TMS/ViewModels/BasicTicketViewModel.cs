@@ -23,6 +23,10 @@ namespace TMS.ViewModels
         public string ModifiedTime { get; set; }
         public string CreatedTime { get; set; }
         public string SolvedTime { get; set; }
+        public string ScheduleStartTime { get; set; }
+        public string ScheduleEndTime { get; set; }
+        public string ActualStartTime { get; set; }
+        public string ActualEndTime { get; set; }
         public string Solution { get; set; }
         public string SolutionAttachment { get; set; }
         public string SolvedBy { get; set; }
