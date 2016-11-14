@@ -141,7 +141,8 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="TicketID" Type="int" Nullable="false" />
           <Property Name="NotifiedTime" Type="datetime" />
-          <Property Name="NotificationContent" Type="nvarchar" MaxLength="255" />
+          <Property Name="ActionType" Type="int" Nullable="false" />
+          <Property Name="ActID" Type="nvarchar" MaxLength="128" />
           <Property Name="BeNotifiedID" Type="nvarchar" MaxLength="128" />
           <Property Name="IsForHelpDesk" Type="bit" Nullable="false" />
           <Property Name="IsRead" Type="bit" Nullable="false" />
@@ -410,6 +411,18 @@
             </Principal>
             <Dependent Role="Notification">
               <PropertyRef Name="BeNotifiedID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_AspNetUsers1">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
+          <End Role="Notification" Type="Self.Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="ActID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -691,6 +704,10 @@
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="Notification" EntitySet="Notification" />
           </AssociationSet>
+          <AssociationSet Name="FK_Notification_AspNetUsers1" Association="Self.FK_Notification_AspNetUsers1">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="Notification" EntitySet="Notification" />
+          </AssociationSet>
           <AssociationSet Name="FK_Notification_Ticket" Association="Self.FK_Notification_Ticket">
             <End Role="Ticket" EntitySet="Ticket" />
             <End Role="Notification" EntitySet="Notification" />
@@ -802,6 +819,10 @@
             <End Role="BusinessRuleNotification" EntitySet="BusinessRuleNotifications" />
           </AssociationSet>
           <AssociationSet Name="FK_Notification_AspNetUsers" Association="TMSModel.FK_Notification_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="Notification" EntitySet="Notifications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Notification_AspNetUsers1" Association="TMSModel.FK_Notification_AspNetUsers1">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
             <End Role="Notification" EntitySet="Notifications" />
           </AssociationSet>
@@ -964,6 +985,7 @@
           <NavigationProperty Name="Department" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="AspNetUser" ToRole="Department" />
           <NavigationProperty Name="BusinessRuleNotifications" Relationship="TMSModel.FK_BusinessRuleNotification_AspNetUsers" FromRole="AspNetUser" ToRole="BusinessRuleNotification" />
           <NavigationProperty Name="Notifications" Relationship="TMSModel.FK_Notification_AspNetUsers" FromRole="AspNetUser" ToRole="Notification" />
+          <NavigationProperty Name="Notifications1" Relationship="TMSModel.FK_Notification_AspNetUsers1" FromRole="AspNetUser" ToRole="Notification" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_AspNetUsers" FromRole="AspNetUser" ToRole="Ticket" />
           <NavigationProperty Name="Tickets1" Relationship="TMSModel.FK_Ticket_AspNetUsers1" FromRole="AspNetUser" ToRole="Ticket" />
           <NavigationProperty Name="Tickets2" Relationship="TMSModel.FK_Ticket_AspNetUsers2" FromRole="AspNetUser" ToRole="Ticket" />
@@ -1060,11 +1082,13 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TicketID" Type="Int32" Nullable="false" />
           <Property Name="NotifiedTime" Type="DateTime" Precision="3" />
-          <Property Name="NotificationContent" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ActionType" Type="Int32" Nullable="false" />
+          <Property Name="ActID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="BeNotifiedID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="IsForHelpDesk" Type="Boolean" Nullable="false" />
           <Property Name="IsRead" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_Notification_AspNetUsers" FromRole="Notification" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser1" Relationship="TMSModel.FK_Notification_AspNetUsers1" FromRole="Notification" ToRole="AspNetUser" />
           <NavigationProperty Name="Ticket" Relationship="TMSModel.FK_Notification_Ticket" FromRole="Notification" ToRole="Ticket" />
         </EntityType>
         <EntityType Name="Priority">
@@ -1257,6 +1281,18 @@
             </Principal>
             <Dependent Role="Notification">
               <PropertyRef Name="BeNotifiedID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Notification_AspNetUsers1">
+          <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+          <End Type="TMSModel.Notification" Role="Notification" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Notification">
+              <PropertyRef Name="ActID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1682,7 +1718,8 @@
                 <ScalarProperty Name="IsRead" ColumnName="IsRead" />
                 <ScalarProperty Name="IsForHelpDesk" ColumnName="IsForHelpDesk" />
                 <ScalarProperty Name="BeNotifiedID" ColumnName="BeNotifiedID" />
-                <ScalarProperty Name="NotificationContent" ColumnName="NotificationContent" />
+                <ScalarProperty Name="ActID" ColumnName="ActID" />
+                <ScalarProperty Name="ActionType" ColumnName="ActionType" />
                 <ScalarProperty Name="NotifiedTime" ColumnName="NotifiedTime" />
                 <ScalarProperty Name="TicketID" ColumnName="TicketID" />
                 <ScalarProperty Name="ID" ColumnName="ID" />

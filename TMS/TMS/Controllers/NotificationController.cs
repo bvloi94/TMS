@@ -50,7 +50,7 @@ namespace TMS.Controllers
                     Id = m.ID,
                     TicketId = m.TicketID,
                     NotifiedTime = m.NotifiedTime.HasValue ? GeneralUtil.ShowDateTime(m.NotifiedTime.Value) : "-",
-                    NotificationContent = m.NotificationContent,
+                    NotificationContent = _notificationService.GetNotificationContent(m.TicketID, m.ActionType, m.ActID),
                     IsRead = m.IsRead
                 }).ToArray().Take(20);
             }
@@ -62,7 +62,7 @@ namespace TMS.Controllers
                     Id = m.ID,
                     TicketId = m.TicketID,
                     NotifiedTime = m.NotifiedTime.HasValue ? GeneralUtil.ShowDateTime(m.NotifiedTime.Value) : "-",
-                    NotificationContent = m.NotificationContent,
+                    NotificationContent = _notificationService.GetNotificationContent(m.TicketID, m.ActionType, m.ActID),
                     IsRead = m.IsRead
                 }).ToArray().Take(20);
             }
