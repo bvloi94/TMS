@@ -404,6 +404,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\css\graph.css" />
+    <Content Include="Content\css\select2.css" />
     <Content Include="Content\css\select2.min.css" />
     <Content Include="Content\css\spectrum.css" />
     <Content Include="Content\custom-css\admin.css" />
@@ -454,6 +455,7 @@
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\jPages.min.js" />
     <Content Include="Content\js\spectrum.js" />
+    <Content Include="Content\js\select2.full.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\html2canvas.js" />
@@ -551,6 +553,7 @@
     <Content Include="Content\skins\_all-skins.css" />
     <Content Include="Content\skins\_all-skins.min.css" />
     <Content Include="Content\login.css" />
+    <Content Include="EmailTemplates\BusinessRuleAppliedTemplate.txt" />
     <Content Include="EmailTemplates\CancelTicketRequesterTemplate.txt" />
     <Content Include="EmailTemplates\CloseTicketRequesterTemplate.txt" />
     <Content Include="EmailTemplates\AssignTicketTechnicianTemplate.txt" />

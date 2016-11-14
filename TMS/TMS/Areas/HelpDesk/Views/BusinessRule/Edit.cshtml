@@ -596,7 +596,7 @@
                             initRequesterDropdown({
                                 control: $("#" + inputId),
                                 ignore: function() {
-                                    return $("#" + inputId).val();
+                                    return []; //$("#" + inputId).val();
                                 }
                             });
                             if (anchorTag.children[4].innerHTML != "") {

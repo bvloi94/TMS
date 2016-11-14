@@ -93,7 +93,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             rule.ValueMask = _userService.GetUserById(list[0]).Fullname;
                             if (list.Length > 1)
                             {
-                                for (int i = 0; i < list.Length; i++)
+                                for (int i = 1; i < list.Length; i++)
                                 {
                                     rule.ValueMask += ", " + _userService.GetUserById(list[i]).Fullname;
                                 }
@@ -103,7 +103,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             rule.ValueMask = _departmentService.GetDepartmentById(Convert.ToInt32(list[0])).Name;
                             if (list.Length > 1)
                             {
-                                for (int i = 0; i < list.Length; i++)
+                                for (int i = 1; i < list.Length; i++)
                                 {
                                     rule.ValueMask += ", " + _departmentService.GetDepartmentById(Convert.ToInt32(list[i])).Name;
                                 }
@@ -113,7 +113,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             rule.ValueMask = _priorityService.GetPriorityByID(Convert.ToInt32(list[0])).Name;
                             if (list.Length > 1)
                             {
-                                for (int i = 0; i < list.Length; i++)
+                                for (int i = 1; i < list.Length; i++)
                                 {
                                     rule.ValueMask += ", " + _priorityService.GetPriorityByID(Convert.ToInt32(list[i])).Name;
                                 }
@@ -123,7 +123,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             rule.ValueMask = _impactService.GetImpactById(Convert.ToInt32(list[0])).Name;
                             if (list.Length > 1)
                             {
-                                for (int i = 0; i < list.Length; i++)
+                                for (int i = 1; i < list.Length; i++)
                                 {
                                     rule.ValueMask += ", " + _impactService.GetImpactById(Convert.ToInt32(list[i])).Name;
                                 }
@@ -133,7 +133,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             rule.ValueMask = _urgencyService.GetUrgencyByID(Convert.ToInt32(list[0])).Name;
                             if (list.Length > 1)
                             {
-                                for (int i = 0; i < list.Length; i++)
+                                for (int i = 1; i < list.Length; i++)
                                 {
                                     rule.ValueMask += ", " + _urgencyService.GetUrgencyByID(Convert.ToInt32(list[i])).Name;
                                 }
@@ -143,7 +143,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             rule.ValueMask = _categoryService.GetCategoryById(Convert.ToInt32(list[0])).Name;
                             if (list.Length > 1)
                             {
-                                for (int i = 0; i < list.Length; i++)
+                                for (int i = 1; i < list.Length; i++)
                                 {
                                     rule.ValueMask += ", " + _categoryService.GetCategoryById(Convert.ToInt32(list[i])).Name;
                                 }
