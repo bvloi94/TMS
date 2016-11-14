@@ -698,7 +698,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     case "240":
                     case "720":
                     case "1440":
-                        filteredListItems = queriedResult.Where(p => (DateTime.Now - p.CreatedTime).Minutes == Int32.Parse(createdFilter));
+                        filteredListItems = queriedResult.Where(p => (DateTime.Now - p.CreatedTime).TotalMinutes == Int32.Parse(createdFilter));
                         break;
                     case "today":
                         filteredListItems = queriedResult.Where(p => p.CreatedTime.Date == DateTime.Today);
@@ -707,12 +707,28 @@ namespace TMS.Areas.HelpDesk.Controllers
                         filteredListItems = queriedResult.Where(p => p.CreatedTime.Date == DateTime.Today.AddDays(-1));
                         break;
                     case "week":
-                        filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date <= p.CreatedTime.Date
-                        && p.CreatedTime.Date <= p.CreatedTime.Date.AddDays(DayOfWeek.Sunday - DateTime.Now.DayOfWeek).Date);
+                        if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
+                        {
+                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(-6).Date <= p.CreatedTime.Date
+                            && p.CreatedTime.Date <= DateTime.Now.Date);
+                        }
+                        else
+                        {
+                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date <= p.CreatedTime.Date
+                            && p.CreatedTime.Date <= DateTime.Now.Date.AddDays(DayOfWeek.Sunday - DateTime.Now.DayOfWeek + 7).Date);
+                        }
                         break;
                     case "last_week":
-                        filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek - 7).Date <= p.CreatedTime.Date
-                       && p.CreatedTime.Date <= DateTime.Now.AddDays(DayOfWeek.Sunday - DateTime.Now.DayOfWeek - 7).Date);
+                        if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
+                        {
+                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(-13).Date <= p.CreatedTime.Date
+                            && p.CreatedTime.Date <= DateTime.Now.AddDays(-7).Date);
+                        }
+                        else
+                        {
+                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek - 7).Date <= p.CreatedTime.Date
+                            && p.CreatedTime.Date <= DateTime.Now.AddDays(DayOfWeek.Sunday - DateTime.Now.DayOfWeek).Date);
+                        }
                         break;
                     case "month":
                         filteredListItems = queriedResult.Where(p => p.CreatedTime.Month == DateTime.Now.Month
