@@ -40,7 +40,7 @@
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-solid">
-            @using (Html.BeginForm("Create", "KnowledgeBase", FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data" }))
+            @using (Html.BeginForm("Create", "KnowledgeBase", FormMethod.Post, new { @class = "form-horizontal inputform", role = "form", enctype = "multipart/form-data", onsubmit = "return checkUploadFile();" }))
             {
                 @Html.AntiForgeryToken()
                 <div class="form-group">

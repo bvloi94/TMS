@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Web;
 using TMS.Class;
 using TMS.DAL;
-using TMS.Enumerator;
 using TMS.Models;
 using TMS.Utils;
 using TMS.ViewModels;
@@ -652,7 +650,7 @@ namespace TMS.Services
                 _unitOfWork.BeginTransaction();
 
                 //send notification to technician when assigned
-                if (oldTicket.Status == ConstantUtil.TicketStatus.New && ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                if (oldTicket.Status == ConstantUtil.TicketStatus.Open && ticket.Status == ConstantUtil.TicketStatus.Assigned)
                 {
                     AspNetUser ticketAssigner = _unitOfWork.AspNetUserRepository.GetByID(actId);
                     if (ticketAssigner != null)
@@ -669,7 +667,7 @@ namespace TMS.Services
                     }
                 }
                 //send notification to technician when unassigned
-                else if (oldTicket.Status == ConstantUtil.TicketStatus.Assigned && ticket.Status == ConstantUtil.TicketStatus.New)
+                else if (oldTicket.Status == ConstantUtil.TicketStatus.Assigned && ticket.Status == ConstantUtil.TicketStatus.Open)
                 {
                     AspNetUser ticketUnassigner = _unitOfWork.AspNetUserRepository.GetByID(actId);
                     if (ticketUnassigner != null)
@@ -1179,7 +1177,7 @@ namespace TMS.Services
             //status
             if (oldTicket.Status != newTicket.Status)
             {
-                sb.Append(string.Format(@"<p>Status changed from <b>{0}</b> to <b>{1}</b></p>", (TicketStatusEnum)oldTicket.Status, (TicketStatusEnum)newTicket.Status));
+                sb.Append(string.Format(@"<p>Status changed from <b>{0}</b> to <b>{1}</b></p>", GeneralUtil.GetTicketStatusByID(oldTicket.Status), GeneralUtil.GetTicketStatusByID(newTicket.Status)));
             }
             //impact
             if (oldTicket.ImpactID != null || newTicket.ImpactID != null)

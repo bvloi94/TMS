@@ -183,8 +183,8 @@ namespace TMS.Controllers
             {
                 switch (filterItem)
                 {
-                    case "New":
-                        filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.New);
+                    case "Open":
+                        filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Open);
                         break;
                     case "Assigned":
                         filteredListItems = filteredListItems.Where(p => p.Status == ConstantUtil.TicketStatus.Assigned);
@@ -263,7 +263,7 @@ namespace TMS.Controllers
 
                     ticket.Subject = model.Subject;
                     ticket.Description = model.Description;
-                    ticket.Status = ConstantUtil.TicketStatus.New;
+                    ticket.Status = ConstantUtil.TicketStatus.Open;
                     ticket.CreatedID = User.Identity.GetUserId();
                     ticket.RequesterID = User.Identity.GetUserId();
                     ticket.Mode = ConstantUtil.TicketMode.WebForm;
@@ -322,7 +322,7 @@ namespace TMS.Controllers
                     model.Code = ticket.Code;
                     model.UnapproveReason = ticket.UnapproveReason == null ? "" : ticket.UnapproveReason;
 
-                    if (ticket.Status == ConstantUtil.TicketStatus.New || ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                    if (ticket.Status == ConstantUtil.TicketStatus.Open || ticket.Status == ConstantUtil.TicketStatus.Assigned)
                     {
                         model.Solution = "-";
                     }
@@ -428,7 +428,7 @@ namespace TMS.Controllers
 
                     switch (ticket.Status)
                     {
-                        case ConstantUtil.TicketStatus.New: model.Status = "New"; break;
+                        case ConstantUtil.TicketStatus.Open: model.Status = "Open"; break;
                         case ConstantUtil.TicketStatus.Assigned: model.Status = "Assigned"; break;
                         case ConstantUtil.TicketStatus.Solved: model.Status = "Solved"; break;
                         case ConstantUtil.TicketStatus.Unapproved: model.Status = "Unapproved"; break;
@@ -515,7 +515,7 @@ namespace TMS.Controllers
 
             if (userRole == ConstantUtil.UserRoleString.Requester)
             {
-                if (ticket.Status == ConstantUtil.TicketStatus.New
+                if (ticket.Status == ConstantUtil.TicketStatus.Open
                     || ticket.Status == ConstantUtil.TicketStatus.Assigned)
                 {
                     solution = "-";
@@ -657,7 +657,7 @@ namespace TMS.Controllers
                     else if (userRole.Id == ConstantUtil.UserRole.HelpDesk.ToString())
                     {
                         ViewBag.Role = "HelpDesk";
-                        if (ticket.Status != ConstantUtil.TicketStatus.New &&
+                        if (ticket.Status != ConstantUtil.TicketStatus.Open &&
                             ticket.Status != ConstantUtil.TicketStatus.Unapproved)
                         {
                             return RedirectToAction("Index", "ManageTicket", new { Area = "HelpDesk" }); // Redirect to Index so the Technician cannot go to Solve view.
@@ -672,31 +672,9 @@ namespace TMS.Controllers
                     model.ID = ticket.ID;
                     model.Subject = ticket.Subject;
                     model.Description = ticket.Description;
-
-                    switch (ticket.Mode)
-                    {
-                        case ConstantUtil.TicketMode.PhoneCall: model.Mode = ConstantUtil.TicketModeString.PhoneCall; break;
-                        case ConstantUtil.TicketMode.WebForm: model.Mode = ConstantUtil.TicketModeString.WebForm; break;
-                        case ConstantUtil.TicketMode.Email: model.Mode = ConstantUtil.TicketModeString.Email; break;
-                    }
-
-                    switch (ticket.Type)
-                    {
-                        case ConstantUtil.TicketType.Request: model.Type = ConstantUtil.TicketTypeString.Request; break;
-                        case ConstantUtil.TicketType.Problem: model.Type = ConstantUtil.TicketTypeString.Problem; break;
-                        case ConstantUtil.TicketType.Change: model.Type = ConstantUtil.TicketTypeString.Change; break;
-                    }
-
-                    switch (ticket.Status)
-                    {
-                        case ConstantUtil.TicketStatus.New: model.Status = "New"; break;
-                        case ConstantUtil.TicketStatus.Assigned: model.Status = "Assigned"; break;
-                        case ConstantUtil.TicketStatus.Solved: model.Status = "Solved"; break;
-                        case ConstantUtil.TicketStatus.Unapproved: model.Status = "Unapproved"; break;
-                        case ConstantUtil.TicketStatus.Cancelled: model.Status = "Cancelled"; break;
-                        case ConstantUtil.TicketStatus.Closed: model.Status = "Closed"; break;
-                    }
-
+                    model.Mode = GeneralUtil.GetModeNameByMode(ticket.Mode);
+                    model.Type = GeneralUtil.GetTypeNameByType(ticket.Type);
+                    model.Status = GeneralUtil.GetTicketStatusByID(ticket.Status);
                     model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
                     model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
                     model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;

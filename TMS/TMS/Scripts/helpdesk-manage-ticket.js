@@ -113,7 +113,7 @@ function initTicketTable() {
                     + '</a>'
                     + '</li>';
                     switch (row.Status) {
-                        case "New":
+                        case "Open":
                             links += edit
                        + history
                        + detail
@@ -307,7 +307,7 @@ function openTicketDetailModal(ticketId) {
             //cancel: new, assigned
             //reopen: unapproved
             if (data.status == 1) {
-                $('#ticket-status').html(getStatusLabel('New'));
+                $('#ticket-status').html(getStatusLabel('Open'));
                 $('#action-solve-btn').show();
                 $("#action-cancel-btn").show();
                 $(".reopen-li").hide();
