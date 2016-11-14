@@ -89,7 +89,6 @@ namespace TMS.Areas.Technician.Controllers
                 technician.Address = model.Address;
                 technician.PhoneNumber = model.PhoneNumber;
                 technician.Gender = model.Gender;
-                technician.DepartmentID = model.DepartmentID;
                 // handle avatar
                 if (model.Avatar != null)
                 {

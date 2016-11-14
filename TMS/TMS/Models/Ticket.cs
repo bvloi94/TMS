@@ -18,6 +18,7 @@ namespace TMS.Models
         public Ticket()
         {
             this.Notifications = new HashSet<Notification>();
+            this.Ticket1 = new HashSet<Ticket>();
             this.TicketAttachments = new HashSet<TicketAttachment>();
             this.TicketHistories = new HashSet<TicketHistory>();
         }
@@ -50,6 +51,7 @@ namespace TMS.Models
         public string RequesterID { get; set; }
         public string Note { get; set; }
         public string Tags { get; set; }
+        public Nullable<int> MergedID { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
         public virtual AspNetUser AspNetUser1 { get; set; }
@@ -60,6 +62,9 @@ namespace TMS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual Priority Priority { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Ticket> Ticket1 { get; set; }
+        public virtual Ticket Ticket2 { get; set; }
         public virtual Urgency Urgency { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TicketAttachment> TicketAttachments { get; set; }

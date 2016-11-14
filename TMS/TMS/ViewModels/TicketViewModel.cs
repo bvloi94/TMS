@@ -17,6 +17,7 @@ namespace TMS.ViewModels
         public string Code { get; set; }
         public int Id { get; set; }
         [Required(ErrorMessage = "Ticket's subject is required!")]
+        [StringLength(200, MinimumLength = 10, ErrorMessage = "Subject length is between 10 and 200 characters")]
         public string Subject { get; set; }
         [AllowHtml]
         public string Description { get; set; }
@@ -38,6 +39,7 @@ namespace TMS.ViewModels
         public string Priority { get; set; }
         public int ImpactId { get; set; }
         public string Impact { get; set; }
+        [StringLength(255, ErrorMessage = "Impact Detail length is less than 255 characters")]
         public string ImpactDetail { get; set; }
         public int CategoryId { get; set; }
         public string Category { get; set; }
@@ -65,9 +67,13 @@ namespace TMS.ViewModels
         public string AssignedBy { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
+        public int? MergedId { get; set; }
+        public string MergedTicketSubject { get; set; }
+        public string MergedTicketCode { get; set; }
         public string DescriptionAttachmentsURL { get; set; }
         public string SolutionAttachmentsURL { get; set; }
         [TagFormat(ErrorMessage = "Tags only contain characters 'a-z', '0-9' and separated by commas!")]
+        [StringLength(255, ErrorMessage = "Tags length is less than 255 characters")]
         public string Tags { get; set; }
         public string Note { get; set; }
         [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]

@@ -925,12 +925,10 @@ namespace TMS.Areas.HelpDesk.Controllers
                     {
                         if (ticket.Status == ConstantUtil.TicketStatus.Unapproved)
                         {
-                            try
+                            ticket.TechnicianID = technicianId;
+                            bool assignResult = _ticketService.ReassignTicket(ticket, User.Identity.GetUserId());
+                            if (assignResult)
                             {
-                                ticket.TechnicianID = technicianId;
-                                ticket.Status = ConstantUtil.TicketStatus.Assigned;
-                                ticket.ModifiedTime = DateTime.Now;
-                                _ticketService.UpdateTicket(ticket, User.Identity.GetUserId());
                                 Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenAssignTicket(ticket, technician));
                                 thread.Start();
                                 return Json(new
@@ -939,7 +937,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                                     message = "Ticket was reassigned successfully!"
                                 });
                             }
-                            catch
+                            else
                             {
                                 return Json(new
                                 {

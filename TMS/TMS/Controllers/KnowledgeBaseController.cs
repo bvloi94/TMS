@@ -25,6 +25,7 @@ namespace TMS.Controllers
         private FileUploader _fileUploader;
         private CategoryService _categoryService;
         private SolutionAttachmentService _solutionAttachmentService;
+        private TicketAttachmentService _ticketAttachmentService;
 
         public KnowledgeBaseController()
         {
@@ -34,6 +35,7 @@ namespace TMS.Controllers
             _fileUploader = new FileUploader();
             _categoryService = new CategoryService(_unitOfWork);
             _solutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
+            _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
         }
 
         // GET: KB
@@ -44,8 +46,24 @@ namespace TMS.Controllers
 
         [HttpGet]
         [ActionName("Create")]
-        public ActionResult CreateGet(KnowledgeBaseViewModel model)
+        public ActionResult CreateGet(int? id)
         {
+            KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
+            if (id.HasValue)
+            {
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
+                {
+                    model.Subject = ticket.Subject;
+                    model.Keyword = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Content = ticket.Solution;
+                    model.CategoryID = ticket.CategoryID.HasValue ? ticket.CategoryID.Value : 0;
+                    if (ticket.Category != null)
+                    {
+                        model.Category = ticket.Category.Name;
+                    }
+                }
+            }
             ModelState.Clear();
             return View(model);
         }
@@ -380,10 +398,10 @@ namespace TMS.Controllers
             IEnumerable<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedSubjects(recentTickets);
 
             IEnumerable<FrequentlyAskedTicketViewModel> filteredListItems = frequentlyAskedTickets;
-            if (!string.IsNullOrEmpty(param.search["value"]))
-            {
-                filteredListItems = filteredListItems.Where(p => p.Tags != null && (p.Tags.ToLower().Contains(param.search["value"].ToLower())));
-            }
+            //if (!string.IsNullOrEmpty(param.search["value"]))
+            //{
+            //    filteredListItems = filteredListItems.Where(p => p.Tags != null && (p.Tags.ToLower().Contains(param.search["value"].ToLower())));
+            //}
 
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
@@ -393,8 +411,8 @@ namespace TMS.Controllers
             {
                 case 0:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => GetNumberOfTags(p.Tags))
-                        : filteredListItems.OrderByDescending(p => GetNumberOfTags(p.Tags));
+                        ? filteredListItems.OrderBy(p => GeneralUtil.GetNumberOfTags(p.Tags))
+                        : filteredListItems.OrderByDescending(p => GeneralUtil.GetNumberOfTags(p.Tags));
                     break;
                 case 1:
                     filteredListItems = sortDirection == "asc"
@@ -405,7 +423,6 @@ namespace TMS.Controllers
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new FrequentlyAskedTicketViewModel
             {
-                //Subject = _ticketService.GetSubjectByTags(m.Tags),
                 Tags = GeneralUtil.ConvertFormattedKeywordToView(m.Tags),
                 Count = m.Count
             });
@@ -435,27 +452,59 @@ namespace TMS.Controllers
             }
             IEnumerable<Ticket> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
 
-            IQueryable<TicketViewModel> filteredListItems = recentTickets.Select(m => new TicketViewModel
+            IEnumerable<TicketViewModel> temp = recentTickets.Select(m => new TicketViewModel
             {
+                Id = m.ID,
                 Subject = m.Subject,
                 Tags = m.Tags == null ? "" : m.Tags
             }).AsQueryable();
 
-            var predicate = PredicateBuilder.False<TicketViewModel>();
+            List<TicketViewModel> filteredListItems = new List<TicketViewModel>();
 
             if (!string.IsNullOrEmpty(tags))
             {
-                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                tags = regex.Replace(tags, " ");
+                tags = GeneralUtil.ConvertToFormatKeyword(tags);
                 string[] tagsArr = tags.Split(',');
-                foreach (string tagItem in tagsArr)
+                int numOfTags = tagsArr.Count();
+                foreach (TicketViewModel ticket in temp)
                 {
-                    string tagItemTemp = '"' + tagItem + '"';
-                    predicate = predicate.And(p => p.Tags.ToLower().Contains(tagItemTemp.ToLower()));
+                    int matchTag = 0;
+                    //string itemTags = string.IsNullOrWhiteSpace(ticket.Tags) ? "" : ticket.Tags;
+                    //int itemNumOfTags = GeneralUtil.GetNumberOfTags(itemTags);
+                    //if (itemNumOfTags >= numOfTags && tags != ticket.Tags)
+                    //{
+                    //    continue;
+                    //}
+                    foreach (string tagItem in tagsArr)
+                    {
+                        if (ticket.Tags != null && ticket.Tags.ToLower().Contains(tagItem.ToLower()))
+                        {
+                            matchTag++;
+                        }
+                    }
+                    if (numOfTags <= 2)
+                    {
+                        if (matchTag == numOfTags)
+                        {
+                            filteredListItems.Add(ticket);
+                        }
+                    }
+                    else if (2 < numOfTags && numOfTags <= 4)
+                    {
+                        if (matchTag >= numOfTags - 1 && matchTag <= numOfTags + 1)
+                        {
+                            filteredListItems.Add(ticket);
+                        }
+                    }
+                    else
+                    {
+                        if (matchTag >= numOfTags - 2 && matchTag <= numOfTags + 2)
+                        {
+                            filteredListItems.Add(ticket);
+                        }
+                    }
                 }
-                filteredListItems = filteredListItems.Where(predicate);
             }
-
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
             var sortDirection = param.order[0]["dir"];
@@ -464,26 +513,20 @@ namespace TMS.Controllers
             {
                 case 0:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.Subject)
-                        : filteredListItems.OrderByDescending(p => p.Subject);
+                        ? filteredListItems.OrderBy(p => p.Subject).ToList()
+                        : filteredListItems.OrderByDescending(p => p.Subject).ToList();
                     break;
             }
 
-            var displayedList = filteredListItems.ToList().Skip(param.start).Take(param.length);
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
 
             return Json(new
             {
                 draw = param.draw,
-                recordsTotal = displayedList.ToList().Count(),
+                recordsTotal = displayedList.Count(),
                 recordsFiltered = filteredListItems.Count(),
                 data = displayedList,
             }, JsonRequestBehavior.AllowGet);
-        }
-
-        private int GetNumberOfTags(string tags)
-        {
-            string[] tagArr = tags.Split(',');
-            return tagArr.Count();
         }
 
         [HttpGet]

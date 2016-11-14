@@ -17,12 +17,14 @@ namespace TMS.Models
         public int ID { get; set; }
         public int TicketID { get; set; }
         public Nullable<System.DateTime> NotifiedTime { get; set; }
-        public string NotificationContent { get; set; }
+        public int ActionType { get; set; }
+        public string ActID { get; set; }
         public string BeNotifiedID { get; set; }
         public bool IsForHelpDesk { get; set; }
         public bool IsRead { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
+        public virtual AspNetUser AspNetUser1 { get; set; }
         public virtual Ticket Ticket { get; set; }
     }
 }

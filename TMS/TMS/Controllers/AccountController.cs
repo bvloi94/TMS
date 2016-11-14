@@ -92,7 +92,7 @@ namespace TMS.Controllers
                     bool isActive = _userService.IsActive(user.Id);
                     if (isActive)
                     {
-                        if (string.IsNullOrWhiteSpace(returnUrl))
+                        if (string.IsNullOrWhiteSpace(returnUrl) || returnUrl == "/")
                         {
                             string role = user.AspNetRoles.FirstOrDefault().Name.ToLower();
                             switch (role)

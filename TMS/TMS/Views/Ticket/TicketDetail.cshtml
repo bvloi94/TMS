@@ -43,6 +43,14 @@
         margin: 10px 5px;
         width: 80px;
     }
+
+    .select2-dropdown {
+        z-index: 1200;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
 </style>
 <div class="row">
     <div class="col-sm-12" style="padding: 10px 55px; margin-top: 0px">
@@ -67,15 +75,8 @@
                         <div class="col-sm-2 labels">
                             <b>Description: </b>
                         </div>
-                        <div class="col-sm-10 pre-wrap">
-                            @if (!string.IsNullOrWhiteSpace(Model.Description))
-                            {
-                                @Html.DisplayFor(m => m.Description)
-                            }
-                            else
-                            {
-                                @:-
-                            }
+                        <div class="col-sm-10">
+                            <span class="pre-wrap">@Html.Raw(Model.Description)</span>
                         </div>
                     </div>
                 </div>
@@ -92,14 +93,14 @@
                         <div class="col-sm-2 labels">
                             <b>Solution: </b>
                         </div>
-                        <div class="col-sm-10 pre-wrap">
+                        <div class="col-sm-10">
                             @if (!string.IsNullOrWhiteSpace(Model.Solution))
                             {
-                                @Html.DisplayFor(m => m.Solution)
+                                <span class="pre-wrap">@Html.DisplayFor(m => m.Solution)</span>
                             }
                             else
                             {
-                                <span style="font-style: italic;">This ticket is not solved yet</span>
+                                <span class="pre-wrap" style="font-style: italic;">This ticket is not solved yet</span>
                             }
                         </div>
                     </div>
@@ -120,6 +121,19 @@
                         <div class="col-sm-10">@Html.DisplayFor(model => model.SolvedBy)</div>
                     </div>
                 </div>
+                @if (Model.MergedId.HasValue && !string.IsNullOrEmpty(Model.MergedTicketSubject))
+                {
+                    <div class="col-sm-12 row-content ">
+                        <div class="col-sm-12">
+                            <div class="col-sm-2 labels">
+                                <b>Merged into:  </b>
+                            </div>
+                            <div class="col-sm-10">
+                                @Model.MergedTicketSubject <span>(<a href="/Ticket/TicketDetail/@Model.MergedId">#@Model.MergedTicketCode</a>)</span>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -313,6 +327,25 @@
                                 </a>
                             </li>
                         }
+                        @if (Model.Status == "Unapproved")
+                        {
+                            <li class="reopen-li"><a href="javascript:void(0)"><strong>Reopen Ticket</strong></a></li>
+                            <li class="reopen-li">
+                                <a href="javascript:void(0)" onclick="showCloseModal(this)" data-ticket-id="@Model.Id">
+                                    <i class="fa fa-times-circle" aria-hidden="true"></i> Close Ticket
+                                </a>
+                            </li>
+                            <li class="reopen-li">
+                                <a href="javascript:void(0)" onclick="showReassignModal(this)" data-ticket-id="@Model.Id">
+                                    <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> Reassign
+                                </a>
+                            </li>
+                            <li class="reopen-li">
+                                <a href="/Ticket/Solve/@Model.Id">
+                                    <i class="fa fa-commenting" aria-hidden="true"></i> Re-solve Ticket
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
                 <a href="/Helpdesk/ManageTicket" class="btn btn-default btn-flat button">Back</a>
@@ -323,3 +356,156 @@
         }
     </div>
 </div>
+
+<div id="modal-close-ticket" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Do you want to close this ticket?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn-confirm-close"><i class="fa fa-check" aria-hidden="true"></i> Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> No</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div id="modal-reassign-ticket" class="modal fade" aria-hidden="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Reassign Ticket</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Department</label>
+                        <div class="col-md-9">
+                            <select class="form-control" id="department-select" data-role="ddl-department"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Technician</label>
+                        <div class="col-md-9">
+                            <select class="form-control" id="technician-select" data-role="ddl-technician"></select>
+                        </div>
+                    </div>
+                    <div>
+                        <span id="reassign-validation-message" class="col-md-offset-3 col-md-9 text-danger" style="display: none"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn-confirm-reassign"><i class="fa fa-check" aria-hidden="true"></i> Reassign</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> Cancel</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section scripts{
+    <script src="~/Scripts/helpdesk-manage-ticket.js"></script>
+    <script>
+        $("#btn-confirm-close").on('click', function () {
+            $(this).prop("disabled", true);
+            $.ajax({
+                url: "/HelpDesk/ManageTicket/CloseTicket",
+                type: "POST",
+                data: {
+                    ticketId: closeTicketId
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.msg,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        setTimeout(function () {
+                            window.location = "/HelpDesk/ManageTicket";
+                        }, 2000);
+                    } else {
+                        noty({
+                            text: data.msg,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#modal-close-ticket").modal("hide");
+                        $(this).prop("disabled", false);
+                    }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topCenter",
+                        timeout: 2000
+                    });
+                    $(this).prop("disabled", false);
+                }
+            });
+        });
+
+        $("#btn-confirm-reassign").click(function () {
+            $(this).prop("disabled", true);
+            var technicianId = $("#technician-select").val();
+            if (technicianId == null || technicianId.trim() == "") {
+                $("#reassign-validation-message").html("Please select technician!");
+                $("#reassign-validation-message").show();
+            } else {
+                $.ajax({
+                    url: "/HelpDesk/ManageTicket/Reassign",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        technicianId: technicianId,
+                        ticketId: reassignTicketId
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            noty({
+                                text: data.message,
+                                layout: "topCenter",
+                                type: "success",
+                                timeout: 2000
+                            });
+                            setTimeout(function () {
+                                window.location = "/HelpDesk/ManageTicket";
+                            }, 2000);
+                        } else {
+                            noty({
+                                text: data.message,
+                                layout: "topRight",
+                                type: "error",
+                                timeout: 2000
+                            });
+                            $(this).prop("disabled", false);
+                        }
+                    },
+                    error: function () {
+                        noty({
+                            text: "Cannot connect to server!",
+                            layout: "topRight",
+                            type: "error",
+                            timeout: 2000
+                        });
+                        $(this).prop("disabled", false);
+                    }
+                });
+            }
+        });
+    </script>
+}
