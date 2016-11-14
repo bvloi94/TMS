@@ -94,5 +94,18 @@ namespace TMS.Controllers
                 data = false,
             });
         }
+
+        public string TruncateContent (string Content)
+        {
+            if (Content.Length > 70)
+            {
+                int position = Content.IndexOf("'[#TK");
+                int length = Content.Length - position;
+                string truncateSubject = Content.Substring(0, 65);
+                string keptContent = Content.Substring(position, length);
+                return string.Concat(truncateSubject, "... ", keptContent);
+            }
+            return Content;
+        }
     }
 }

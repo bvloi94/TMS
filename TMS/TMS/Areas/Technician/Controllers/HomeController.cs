@@ -34,32 +34,44 @@ namespace TMS.Areas.Technician.Controllers
             var userID = User.Identity.GetUserId();
             int assignedTickets = 0, solvedTickets = 0, closedTickets = 0, newSolutions = 0;
 
-            IEnumerable<Ticket> technicianList = _ticketService.GetTechnicianTickets(userID).
-                Where(p => DateTime.Now.Subtract(p.CreatedTime).Days <= 7).ToArray().OrderByDescending(m => m.ModifiedTime);
+            IEnumerable<Ticket> technicianList = _ticketService.GetTechnicianTickets(userID).ToArray().OrderByDescending(m => m.ModifiedTime);
             if (technicianList != null)
             {
-                IEnumerable<BasicTicketViewModel> ticketList = technicianList.Select(m => new BasicTicketViewModel
-                {
-                    Code = m.Code,
-                    ID = m.ID,
-                    Status = m.Status,
-                    Subject = m.Subject,
-                    Category = m.Category == null ? "-" : m.Category.Name,
-                    CreatedBy = m.CreatedID == null ? "-" : _userService.GetUserById(m.CreatedID).Fullname,
-                    SolvedTime = m.SolvedDate == null ? "-" : GeneralUtil.ShowDateTime(m.SolvedDate.Value),
-                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
-                    ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
-                }).ToArray();
+                IEnumerable<BasicTicketViewModel> ticketList = technicianList.Where(p => DateTime.Now.Subtract(p.CreatedTime).Days <= 7)
+                    .Select(m => new BasicTicketViewModel
+                    {
+                        Code = m.Code,
+                        ID = m.ID,
+                        Status = m.Status,
+                        Subject = m.Subject,
+                        Category = m.Category == null ? "-" : m.Category.Name,
+                        CreatedBy = m.CreatedID == null ? "-" : _userService.GetUserById(m.CreatedID).Fullname,
+                        SolvedTime = m.SolvedDate == null ? "-" : GeneralUtil.ShowDateTime(m.SolvedDate.Value),
+                        CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                        ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
+                    }).ToArray();
                 ViewBag.TechnicianTicket = ticketList;
                 assignedTickets = technicianList.Where(p => p.Status == ConstantUtil.TicketStatus.Assigned).Count();
                 solvedTickets = technicianList.Where(p => p.Status == ConstantUtil.TicketStatus.Solved).Count();
                 closedTickets = technicianList.Where(p => p.Status == ConstantUtil.TicketStatus.Closed).Count();
+
+                IEnumerable<BasicTicketViewModel> incomingTickets = technicianList.Where(p => p.ScheduleEndDate.HasValue &&
+                    p.ScheduleEndDate.Value.Subtract(DateTime.Now).Days < 3 && p.Status == ConstantUtil.TicketStatus.Assigned)
+                    .Select(m => new BasicTicketViewModel
+                    {
+                        Code = m.Code,
+                        ID = m.ID,
+                        Status = m.Status,
+                        Subject = m.Subject,
+                        ScheduleEndTime = m.ScheduleEndDate.Value.ToString("MMMM dd, yyyy  hh:mm"),
+                    }).ToArray();
+                ViewBag.IncomingTickets = incomingTickets;
             }
 
             IEnumerable<Solution> solutionList = _solutionService.GetAllSolutions().Where(p => DateTime.Now.Subtract(p.CreatedTime.Value).Days <= 7);
             newSolutions = solutionList.Count();
+            
             ViewBag.SolutionList = solutionList;
-
             ViewBag.AssignedTicketsNo = assignedTickets;
             ViewBag.SolvedTicketsNo = solvedTickets;
             ViewBag.ClosedTicketsNo = closedTickets;
