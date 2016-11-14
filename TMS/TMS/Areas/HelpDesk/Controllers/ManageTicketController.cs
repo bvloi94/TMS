@@ -16,6 +16,7 @@ using TMS.ViewModels;
 using System.Threading;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
+using Microsoft.Ajax.Utilities;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -719,16 +720,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                         }
                         break;
                     case "last_week":
-                        if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
-                        {
-                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(-13).Date <= p.CreatedTime.Date
-                            && p.CreatedTime.Date <= DateTime.Now.AddDays(-7).Date);
-                        }
-                        else
-                        {
-                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek - 7).Date <= p.CreatedTime.Date
-                            && p.CreatedTime.Date <= DateTime.Now.AddDays(DayOfWeek.Sunday - DateTime.Now.DayOfWeek).Date);
-                        }
+                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Date >= DateTime.Now.Date.AddDays(-7).Date
+                        && p.CreatedTime.Date <= DateTime.Now.Date);
                         break;
                     case "month":
                         filteredListItems = queriedResult.Where(p => p.CreatedTime.Month == DateTime.Now.Month
@@ -740,15 +733,30 @@ namespace TMS.Areas.HelpDesk.Controllers
                         break;
                     case "two_months":
                         filteredListItems = queriedResult.Where(p => p.CreatedTime >= DateTime.Now.AddMonths(-2)
-                       && p.CreatedTime.Year == DateTime.Now.Year);
+                        && p.CreatedTime.Year == DateTime.Now.Year);
                         break;
                     case "six_months":
                         filteredListItems = queriedResult.Where(p => p.CreatedTime >= DateTime.Now.AddMonths(-6)
                         && p.CreatedTime.Year == DateTime.Now.Year);
                         break;
+                    case "set_date":
+                        var timePeriodFilter = Request["filter_time_period"];
+                        if (!string.IsNullOrEmpty(timePeriodFilter))
+                        {
+                            timePeriodFilter = timePeriodFilter.Replace(" ", "");
+                            string[] daterange = timePeriodFilter.Split('-');
+                            if (daterange.Length == 2)
+                            {
+                                var startDate = DateTime.ParseExact(daterange[0], ConstantUtil.DateFormat, new DateTimeFormatInfo());
+                                var endDate = DateTime.ParseExact(daterange[1], ConstantUtil.DateFormat,
+                                    new DateTimeFormatInfo());
+                                filteredListItems = queriedResult.Where(p => p.CreatedTime.Date >= startDate
+                                                                            && p.CreatedTime.Date <= endDate);
+                            }
+                        }
+                        break;
                 }
             }
-
 
             // Filter by status
             if (duebyFilter != null)

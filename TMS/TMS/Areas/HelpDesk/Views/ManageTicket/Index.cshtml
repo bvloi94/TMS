@@ -4,6 +4,8 @@
     ViewBag.Title = "Ticket Management";
 }
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
+<link rel="stylesheet" href="~/Content/css/daterangepicker.css" />
+
 <style>
     .select2-dropdown {
         z-index: 1200;
@@ -453,6 +455,10 @@
                         <option value="six_months">Last 180 days</option>
                         <option value="set_date">Select Time Period</option>
                     </select>
+                </div>
+                <div class="filter_time_period hidden" data-role="filter_time_period">
+                    <h5>Time period</h5>
+                    <input type="text" readonly="readonly" data-role="filter_time_period_input"/>
                 </div>
                 <div class="filter_due_by" data-role="filter_due_by">
                     <h5>Due by</h5>

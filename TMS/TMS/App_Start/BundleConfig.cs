@@ -79,7 +79,9 @@ namespace TMS
                       "~/Content/custom-css/admin.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/helpdesk-manage-ticket").Include(
-               "~/Scripts/helpdesk-manage-ticket.js"));
+               "~/Scripts/helpdesk-manage-ticket.js",
+               "~/Content/js/moment.min.js",
+               "~/Content/js/daterangepicker.js"));
         }
     }
 }

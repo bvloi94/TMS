@@ -26,6 +26,7 @@ function initTicketTable() {
             "type": "POST",
             "data": function (d) {
                 d.filter_created = $("[data-role='filter_created_select']").val();
+                d.filter_time_period = $("[data-role='filter_time_period_input']").val();
                 d.filter_dueby = JSON.stringify(getDueByFilter());
                 d.filter_status = JSON.stringify($("[data-role='filter_status_select']").val());
                 d.filter_mode = JSON.stringify($("[data-role='filter_mode_select']").val());
@@ -375,22 +376,54 @@ function getDueByFilter() {
 }
 
 function initFilter() {
-    $('[data-role="filter_created_select"').select2();
-    $('[data-role="filter_mode_select"').select2();
-    $('[data-role="filter_status_select"').select2();
-    $('[data-role="filter_status_select"').select2('val', "1");
-    initRequesterDropdown({
-        control: $("[data-role=filter_requester_select]"),
-        ignore: function () {
-            return $("[data-role=filter_requester_select]").val();
+    var created_select = $('[data-role="filter_created_select"');
+    var mode_select = $('[data-role="filter_mode_select"');
+    var status_select = $('[data-role="filter_status_select"');
+    var requester_select = $('[data-role="filter_requester_select"');
+    var time_period = $('[data-role="filter_time_period"');
+    var time_period_inp = $('[data-role="filter_time_period_input"');
+
+    created_select.select2();
+    time_period_inp.daterangepicker({
+        locale: {
+            format: 'DD/MM/YYYY'
         }
     });
-
-    $('.due_by_item, [data-role="filter_created_select"],[data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]')
+    time_period_inp.val("");
+    mode_select.select2();
+    status_select.select2();
+    status_select.select2('val', "1");
+    initRequesterDropdown({
+        control: requester_select,
+        ignore: function () {
+            return requester_select.val();
+        }
+    });
+    created_select
+        .on("change",
+            function () {
+                time_period_inp.val("");
+                if (created_select.val() == "set_date") {
+                    if (time_period.hasClass("hidden")) {
+                        time_period.removeClass("hidden");
+                    }
+                } else {
+                    if (!time_period.hasClass("hidden")) {
+                        time_period.addClass("hidden");
+                    }
+                    ticketTable.draw();
+                }
+            });
+    $('.due_by_item, [data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]')
         .on("change",
             function () {
                 ticketTable.draw();
             });
+
+    time_period_inp.on("change",
+        function() {
+            ticketTable.draw();
+        });
 }
 
 $(document).ready(function () {
