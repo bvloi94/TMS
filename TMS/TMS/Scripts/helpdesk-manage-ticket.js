@@ -12,11 +12,12 @@ $(window).on('resize', function () {
 });
 
 function initTicketTable() {
+
     ticketTable = $("#ticket-table").DataTable({
         serverSide: true,
         processing: true,
         sort: true,
-        filter: false,
+        searchable: true,
         lengthMenu: [7],
         order: [[6, 'des']],
         lengthChange: false,
@@ -24,8 +25,11 @@ function initTicketTable() {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
             "type": "POST",
             "data": function (d) {
-                d.status_filter = $("#status-dropdown").val();
-                d.search_text = $("#search-txt").val();
+                d.filter_created = $("[data-role='filter_created_select']").val();
+                d.filter_dueby = JSON.stringify(getDueByFilter());
+                d.filter_status = JSON.stringify($("[data-role='filter_status_select']").val());
+                d.filter_mode = JSON.stringify($("[data-role='filter_mode_select']").val());
+                d.filter_requester = JSON.stringify($("[data-role='filter_requester_select']").val());
             }
         },
         drawCallback: function () {
@@ -364,15 +368,41 @@ function openTicketDetailModal(ticketId) {
     });
 }
 
+function getDueByFilter() {
+    return $('.due_by_item:checked')
+        .map(function () { return $(this).val(); })
+        .get();
+}
+
+function initFilter() {
+    $('[data-role="filter_created_select"').select2();
+    $('[data-role="filter_mode_select"').select2();
+    $('[data-role="filter_status_select"').select2();
+    $('[data-role="filter_status_select"').select2('val', "1");
+    initRequesterDropdown({
+        control: $("[data-role=filter_requester_select]"),
+        ignore: function () {
+            return $("[data-role=filter_requester_select]").val();
+        }
+    });
+
+    $('.due_by_item, [data-role="filter_created_select"],[data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]')
+        .on("change",
+            function () {
+                ticketTable.draw();
+            });
+}
+
 $(document).ready(function () {
-    setActiveTicketMenu();
+    //setActiveTicketMenu();
+
+    // Init filter 
+    initFilter();
+
+    // Init ticket table
     initTicketTable();
 
     $("#search-txt").keyup(function () {
-        ticketTable.draw();
-    });
-
-    $("#status-dropdown").change(function () {
         ticketTable.draw();
     });
 
