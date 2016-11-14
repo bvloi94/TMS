@@ -551,6 +551,9 @@
 
 
         $("[data-role=btn-update-ticket]").on("click",function() {
+            if (!checkUploadFile()) {
+                return;
+            }
             $("[data-role=btn-update-ticket]").prop('disabled', true);
             $("[data-role=btn-cancel]").prop("disabled", true);
             var formData = new FormData($("#form-edit-ticket")[0]);
@@ -687,7 +690,7 @@
             loadInitDropdown('ddl-department', '@(Model.DepartmentId == 0 ? "Chooose Department" :@Model.Department)', @Model.DepartmentId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
 
-            if ((@Model.StatusId != @ConstantUtil.TicketStatus.New) &&
+            if ((@Model.StatusId != @ConstantUtil.TicketStatus.Open) &&
                 (@Model.StatusId != @ConstantUtil.TicketStatus.Assigned)) {
                 $('[name="DepartmentId"]').prop('disabled', true);
                 $('[name="TechnicianId"]').prop('disabled', true);

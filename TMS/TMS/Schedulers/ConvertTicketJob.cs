@@ -46,7 +46,7 @@ namespace TMS.Schedulers
                     {
                         Subject = subject,
                         Description = description,
-                        Status = ConstantUtil.TicketStatus.New,
+                        Status = ConstantUtil.TicketStatus.Open,
                         CreatedTime = DateTime.Now,
                         ModifiedTime = DateTime.Now,
                         CreatedID = _userService.GetUserByEmail(requesterEmail).Id,

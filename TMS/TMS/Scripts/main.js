@@ -28,7 +28,7 @@ function setActiveReportMenu() {
 function getStatusLabel(status) {
     var cssClass = "label-default";
     switch (status) {
-        case "New":
+        case "Open":
             cssClass = "label-info";
             break;
         case "Assigned":
@@ -203,6 +203,26 @@ function formatDateTime(date) {
     //var strTime = hours + ':' + minutes + ' ';// + ampm;
     //return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
     return date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + hours + ":" + minutes + ":" + seconds;
+}
+
+var checkUploadFile = function () {
+    var maxUploadSize = 4;
+    var size = 0;
+    $("input[type='file']").each(function (i, e) {
+        for (i = 0; i < $(e).get(0).files.length; i++) {
+            size += ($(e).get(0).files[i].size / 1024 / 1024).toFixed(2);
+        }
+    });
+    if (size < maxUploadSize) {
+        return true;
+    }
+    noty({
+        text: "Upload files must less than 4MB!",
+        type: "error",
+        layout: "topRight",
+        timeout: 2000
+    });
+    return false;
 }
 
 $(document).ready(function () {

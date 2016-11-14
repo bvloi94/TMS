@@ -113,7 +113,7 @@
                     <i>There is no urgent ticket at this moment.</i>
                 </div>
             }
-        </div>  
+        </div>
         <div class="box box-solid ticket-graph">
             <div class="box-header with-border">
                 <span class="box-title">Tickets by Status</span>
@@ -135,51 +135,51 @@
             </div>
             @if (newTickets.Count() > 0)
             {
-            <div class="box-body no-padding ticket-lists">
-                @foreach (BasicTicketViewModel ticket in newTickets)
+                <div class="box-body no-padding ticket-lists">
+                    @foreach (BasicTicketViewModel ticket in newTickets)
                     {
-                    <div class="col-sm-12 table-ticket">
-                        <div class="col-lg-2 col-md-2 col-sm-3">
-                            <span class="text-muted text-bold">#@ticket.Code</span>
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-5">
-                            <p>
-                                @if (ticket.Subject.Length > 60)
-                                        {
-                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
-                                        @ticket.Subject.Substring(0, 59) ...
-                                    </a>
-                                        }
-                                        else
-                                        {
-                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
-                                        @ticket.Subject
-                                    </a>
-                                        }
-                            </p>
-                            <p>
-                                <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
-                                Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
-                            </p>
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-4">
-                            <div class="text-right pull-right">
-                                <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Date created</p>
-                                <p class="text-blue">@ticket.CreatedTime</p>
+                        <div class="col-sm-12 table-ticket">
+                            <div class="col-lg-2 col-md-2 col-sm-3">
+                                <span class="text-muted text-bold">#@ticket.Code</span>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-5">
+                                <p>
+                                    @if (ticket.Subject.Length > 60)
+                                    {
+                                        <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                            @ticket.Subject.Substring(0, 59) ...
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                            @ticket.Subject
+                                        </a>
+                                    }
+                                </p>
+                                <p>
+                                    <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
+                                    Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
+                                </p>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-4">
+                                <div class="text-right pull-right">
+                                    <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Date created</p>
+                                    <p class="text-blue">@ticket.CreatedTime</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     }
-            </div>
-            <div class="box-footer">
-                <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
-            </div>
+                </div>
+                <div class="box-footer">
+                    <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
+                </div>
             }
             else
             {
-            <div class="box-body" style="text-align: center; padding: 15px 20px">
-                <span><i>There is no new ticket in last 7 days.</i></span>
-            </div>
+                <div class="box-body" style="text-align: center; padding: 15px 20px">
+                    <span><i>There is no new ticket in last 7 days.</i></span>
+                </div>
             }
         </div>
         <div class="box box-solid" id="unapproved-tickets">
@@ -192,51 +192,51 @@
             </div>
             @if (unapprovedTickets.Count() > 0)
             {
-            <div class="box-body no-padding ticket-lists">
-                @foreach (BasicTicketViewModel ticket in unapprovedTickets)
+                <div class="box-body no-padding ticket-lists">
+                    @foreach (BasicTicketViewModel ticket in unapprovedTickets)
                     {
-                    <div class="col-sm-12 table-ticket">
-                        <div class="col-lg-2 col-md-2 col-sm-3">
-                            <span class="text-muted text-bold">#@ticket.Code</span>
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-5">
-                            <p>
-                                @if (ticket.Subject.Length > 60)
+                        <div class="col-sm-12 table-ticket">
+                            <div class="col-lg-2 col-md-2 col-sm-3">
+                                <span class="text-muted text-bold">#@ticket.Code</span>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-5">
+                                <p>
+                                    @if (ticket.Subject.Length > 60)
                                     {
-                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
-                                        @ticket.Subject.Substring(0, 59) ...
-                                    </a>
+                                        <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                            @ticket.Subject.Substring(0, 59) ...
+                                        </a>
                                     }
                                     else
                                     {
-                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
-                                        @ticket.Subject
-                                    </a>
+                                        <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                            @ticket.Subject
+                                        </a>
                                     }
-                            </p>
-                            <p>
-                                <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
-                                Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
-                            </p>
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-4">
-                            <div class="text-right pull-right">
-                                <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Last modified</p>
-                                <p class="text-muted text-bold">@ticket.ModifiedTime</p>
+                                </p>
+                                <p>
+                                    <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
+                                    Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
+                                </p>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-4">
+                                <div class="text-right pull-right">
+                                    <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Last modified</p>
+                                    <p class="text-muted text-bold">@ticket.ModifiedTime</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     }
-            </div>
-            <div class="box-footer">
-                <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
-            </div>
+                </div>
+                <div class="box-footer">
+                    <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
+                </div>
             }
             else
             {
-            <div class="box-body" style="text-align: center; padding: 15px 20px">
-                <span><i>There is no unapproved ticket in last 7 days.</i></span>
-            </div>
+                <div class="box-body" style="text-align: center; padding: 15px 20px">
+                    <span><i>There is no unapproved ticket in last 7 days.</i></span>
+                </div>
             }
         </div>
 
@@ -248,12 +248,30 @@
     <script src="~/Content/Plugins/jquerydownload/jquery.fileDownload.js"></script>
     <script>
         var defaultColors = [
-            "#00C0EF", "#F39C12", "#00A65A", "#DD4B39", "#A1A1A1", "#757575"
+            "#00C0EF", "#f39c12", "#00A65A", "#DD4B39", "#605ca8", "#757575"
         ];
-
+        //"#A1A1A1"
         $(document).ready(function () {
             ProcessGraph();
         });
+
+        function getDateTime(year, month, day) {
+            var date = new Date(year, month, day);
+            var dd = date.getDate();
+            var mm = date.getMonth() + 1; //January is 0!
+            var yyyy = date.getFullYear();
+
+            if(dd<10) {
+                dd='0'+dd
+            }
+
+            if(mm<10) {
+                mm='0'+mm
+            }
+
+            date = dd+'/'+mm+'/'+yyyy;
+            return date;
+        }
 
         function ProcessGraph() {
             $.ajax({
@@ -262,7 +280,9 @@
                 "data": {
                     type: 0,
                     by: 6,
-                },
+                    date_from_select: getDateTime(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 7),
+                    date_to_select: getDateTime(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+                    },
                 "success": function (data) {
                     drawChart(data.label, data.data)
                 }
@@ -290,7 +310,7 @@
                 legend: false,
                 elements: {
                     arc: {
-                        borderWidth: 0
+                        borderWidth: 1
                     }
                 }
             }

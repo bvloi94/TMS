@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using log4net;
 using Microsoft.AspNet.Identity;
 using TMS.DAL;
-using TMS.Enumerator;
 using TMS.Models;
 using TMS.Schedulers;
 using TMS.Services;
 using TMS.Utils;
 using TMS.ViewModels;
-using ModelError = TMS.ViewModels.ModelError;
 using System.Threading;
 using System.Text.RegularExpressions;
 
@@ -90,7 +86,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 ticket.ActualEndDate = model.ActualEndDate;
                 ticket.CreatedTime = DateTime.Now;
                 ticket.ModifiedTime = DateTime.Now;
-                ticket.Status = (int)TicketStatusEnum.New;
+                ticket.Status = ConstantUtil.TicketStatus.Open;
                 ticket.RequesterID = model.RequesterId;
                 ticket.Solution = model.Solution;
                 ticket.CreatedID = User.Identity.GetUserId();
@@ -115,7 +111,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     ticket.TechnicianID = model.TechnicianId;
                     ticket.AssignedByID = User.Identity.GetUserId();
-                    ticket.Status = (int)TicketStatusEnum.Assigned;
+                    ticket.Status = ConstantUtil.TicketStatus.Assigned;
                 }
 
                 bool result = _ticketService.AddTicket(ticket);
@@ -201,7 +197,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
                 model.Mode = ticket.Mode;
                 if (ticket.Type.HasValue) model.Type = ticket.Type.Value;
-                model.Status = ((TicketStatusEnum)ticket.Status).ToString();
+                model.Status = GeneralUtil.GetTicketStatusByID(ticket.Status);
                 model.StatusId = ticket.Status;
                 if (ticket.CategoryID.HasValue)
                 {
@@ -359,14 +355,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                 {
                     ticket.TechnicianID = model.TechnicianId;
                     ticket.AssignedByID = User.Identity.GetUserId();
-                    if ((ticket.Status == ConstantUtil.TicketStatus.New ||
+                    if ((ticket.Status == ConstantUtil.TicketStatus.Open ||
                         ticket.Status == ConstantUtil.TicketStatus.Unapproved) && model.TechnicianId != null)
                     {
                         ticket.Status = ConstantUtil.TicketStatus.Assigned;
                     }
                     else if (ticket.Status == ConstantUtil.TicketStatus.Assigned && model.TechnicianId == null)
                     {
-                        ticket.Status = ConstantUtil.TicketStatus.New;
+                        ticket.Status = ConstantUtil.TicketStatus.Open;
                     }
                 }
 
@@ -461,7 +457,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Ticket ticket = _ticketService.GetTicketByID(ticketId.Value);
                 if (ticket != null)
                 {
-                    if (ticket.Status != ConstantUtil.TicketStatus.New && ticket.Status != ConstantUtil.TicketStatus.Assigned)
+                    if (ticket.Status != ConstantUtil.TicketStatus.Open && ticket.Status != ConstantUtil.TicketStatus.Assigned)
                     {
                         return Json(new
                         {
@@ -612,7 +608,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             for (int i = 1; i < tickets.Count; i++)
             {
                 Ticket oldTicket = tickets[i];
-                if (oldTicket.Status != ConstantUtil.TicketStatus.New && oldTicket.Status != ConstantUtil.TicketStatus.Assigned)
+                if (oldTicket.Status != ConstantUtil.TicketStatus.Open && oldTicket.Status != ConstantUtil.TicketStatus.Assigned)
                 {
                     return Json(new
                     {
@@ -669,8 +665,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                 else
                 {
                     //Hide Cancelled and Closed Tickets
-                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Cancelled);
-                    filteredListItems = filteredListItems.Where(p => p.Status != (int)TicketStatusEnum.Closed);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled);
+                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Closed);
                 }
             }
 
@@ -727,7 +723,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     s.Technician = "";
                 }
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
-                s.Status = ((TicketStatusEnum)item.Status).ToString();
+                s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 tickets.Add(s);
             }
