@@ -181,6 +181,24 @@ namespace TMS.Utils
             }
         }
 
+        public static async void SendToTechnicianWhenBusinessRuleIsApplied(Ticket ticket, AspNetUser technician)
+        {
+            string emailSubject = "[TMS] Business Rule Is Applied";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/BusinessRuleAppliedTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", technician.Fullname);
+            emailMessage = emailMessage.Replace("$code", ticket.Code);
+            emailMessage = emailMessage.Replace("$subject", ticket.Subject);
+            emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
+            try
+            {
+                await SendEmail(technician.Email, emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send cancel ticket notification email to {0} unsuccessfully!", technician.Fullname));
+            }
+        }
+
         private static async Task SendEmail(string toEmailAddress, string emailSubject, string emailMessage)
         {
             try
