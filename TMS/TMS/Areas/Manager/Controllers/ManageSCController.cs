@@ -601,28 +601,27 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetPriorityDetail()
+        public ActionResult GetPriorityDetail(int? id)
         {
-            try
+            if (id.HasValue)
             {
-                int id = Int32.Parse(Request["id"]);
-                Priority priority = _priorityService.GetPriorityByID(id);
-                return Json(new
+                Priority priority = _priorityService.GetPriorityByID(id.Value);
+                if (priority != null)
                 {
-                    success = true,
-                    name = priority.Name,
-                    description = priority.Description
-                }, JsonRequestBehavior.AllowGet);
+                    return Json(new
+                    {
+                        success = true,
+                        name = priority.Name,
+                        description = priority.Description,
+                        color = priority.Color
+                    }, JsonRequestBehavior.AllowGet);
+                }
             }
-            catch (Exception ex) when (ex is FormatException || ex is ArgumentNullException)
+            return Json(new
             {
-                return Json(new
-                {
-                    success = false,
-                    error = true,
-                    message = "Cannot get priority detail!"
-                }, JsonRequestBehavior.AllowGet);
-            }
+                success = false,
+                message = "Cannot get priority detail!"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

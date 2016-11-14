@@ -242,6 +242,7 @@ function initDropdownControl() {
 }
 
 function openTicketDetailModal(ticketId) {
+    $('#ticket-merged-div').hide();
     $.ajax({
         url: '/Ticket/GetTicketDetail',
         type: "GET",
@@ -264,6 +265,10 @@ function openTicketDetailModal(ticketId) {
             $('#ticket-category').text(data.category);
             $('#ticket-impact').text(data.impact);
             $('#ticket-impact-detail').text(data.impactDetail);
+            if (data.mergeTicket) {
+                $('#ticket-merged').html(data.mergeTicket);
+                $('#ticket-merged-div').show();
+            }
             $("#reopen-close-btn").attr("data-ticket-id", data.id);
             $("#reopen-resolve-btn").attr("href", "/Ticket/Solve/" + data.id);
             $("#reopen-reassign-btn").attr("data-ticket-id", data.id);

@@ -182,6 +182,7 @@ namespace TMS.Utils
             public const int Cancelled = 5;
             public const int Closed = 6;
             public const int Merged = 7;
+            public const int Reassigned = 8;
         }
 
         public class BusinessRuleTrigger
@@ -193,6 +194,23 @@ namespace TMS.Utils
             public const int MoveToItem = 5;
             public const int SetPriorityAs = 6;
             public const int ChangeStatusTo = 7;
+        }
+
+        public class NotificationActionType
+        {
+            public const int RequesterNotiCreate = 1;
+            public const int RequesterNotiCancel = 2;
+            public const int RequesterNotiSolve = 3;
+            public const int RequesterNotiClose = 4;
+            public const int RequesterNotiIsMerged = 5;
+            public const int HelpDeskNotiCreate = 6;
+            public const int HelpDeskNotiUnapprove = 7;
+            public const int TechnicianNotiAssign = 8;
+            public const int TechnicianNotiUnassign = 9;
+            public const int TechnicianNotiReassign = 10;
+            public const int TechnicianNotiCancel = 11;
+            public const int TechnicianNotiMerge = 12;
+            public const int TechnicianNotiIsMerged = 13;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace TMS.Services
             IEnumerable<BusinessRule> businessRules = _unitOfWork.BusinessRuleRepository.Get(m => m.IsActive == true);
             foreach (BusinessRule businessRule in businessRules)
             {
-                ICollection<BusinessRuleConditionCustom> businessRuleConditionCustomList = new List<BusinessRuleConditionCustom>();
+                List<BusinessRuleConditionCustom> businessRuleConditionCustomList = new List<BusinessRuleConditionCustom>();
                 IEnumerable<BusinessRuleCondition> conditions = businessRule.BusinessRuleConditions;
                 foreach (BusinessRuleCondition condition in conditions)
                 {
@@ -60,7 +60,7 @@ namespace TMS.Services
                     {
                         switch (trigger.Action)
                         {
-                                
+
                         }
                     }
                 }
@@ -126,7 +126,7 @@ namespace TMS.Services
 
         private bool IsSatisfiedWithCondition(Ticket handlingTicket, BusinessRuleCondition businessRuleCondition)
         {
-            bool isSatisfied = false;
+            string[] values;
             switch (businessRuleCondition.Criteria)
             {
                 case ConstantUtil.BusinessRuleCriteria.Subject:
@@ -135,37 +135,37 @@ namespace TMS.Services
                         case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
                             if (handlingTicket.Subject.Equals(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
                             if (!handlingTicket.Subject.Equals(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.BeginsWith:
                             if (handlingTicket.Subject.StartsWith(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.EndsWith:
                             if (handlingTicket.Subject.EndsWith(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.Contains:
                             if (handlingTicket.Subject.Contains(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.DoesNotContain:
                             if (!handlingTicket.Subject.Contains(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                     }
@@ -176,37 +176,37 @@ namespace TMS.Services
                         case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
                             if (handlingTicket.Description.Equals(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
                             if (!handlingTicket.Description.Equals(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.BeginsWith:
                             if (handlingTicket.Description.StartsWith(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.EndsWith:
                             if (handlingTicket.Description.EndsWith(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.Contains:
                             if (handlingTicket.Description.Contains(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.DoesNotContain:
                             if (!handlingTicket.Description.Contains(businessRuleCondition.Value))
                             {
-                                isSatisfied = true;
+                                return true;
                             }
                             break;
                     }
@@ -215,19 +215,32 @@ namespace TMS.Services
                     AspNetUser requester = _unitOfWork.AspNetUserRepository.GetByID(handlingTicket.RequesterID);
                     if (requester != null)
                     {
-                        string requesterName = requester.Fullname;
+                        string requesterId = requester.Id;
+                        values = businessRuleCondition.Value.Split(',');
                         switch (businessRuleCondition.Condition)
                         {
                             case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                                if (requesterName.Equals(businessRuleCondition.Value))
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    if (requesterId.Equals(value))
+                                    {
+                                        return true;
+                                    }
                                 }
                                 break;
                             case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                                if (!requesterName.Equals(businessRuleCondition.Value))
+                                bool result = true;
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    if (requesterId.Equals(value))
+                                    {
+                                        result = false;
+                                        break;
+                                    }
+                                }
+                                if (result)
+                                {
+                                    return true;
                                 }
                                 break;
                         }
@@ -240,19 +253,36 @@ namespace TMS.Services
                         Department department = technician.Department;
                         if (department != null)
                         {
-                            string departmentName = department.Name;
+                            int departmentId = department.ID;
+                            values = businessRuleCondition.Value.Split(',');
                             switch (businessRuleCondition.Condition)
                             {
                                 case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                                    if (departmentName.Equals(businessRuleCondition.Value))
+                                    foreach (string value in values)
                                     {
-                                        isSatisfied = true;
+                                        int intVal = 0;
+                                        Int32.TryParse(value, out intVal);
+                                        if (departmentId == intVal)
+                                        {
+                                            return true;
+                                        }
                                     }
                                     break;
                                 case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                                    if (!departmentName.Equals(businessRuleCondition.Value))
+                                    bool result = true;
+                                    foreach (string value in values)
                                     {
-                                        isSatisfied = true;
+                                        int intVal = 0;
+                                        Int32.TryParse(value, out intVal);
+                                        if (departmentId == intVal)
+                                        {
+                                            result = false;
+                                            break;
+                                        }
+                                    }
+                                    if (result)
+                                    {
+                                        return true;
                                     }
                                     break;
                             }
@@ -263,19 +293,36 @@ namespace TMS.Services
                     Priority priority = handlingTicket.Priority;
                     if (priority != null)
                     {
-                        string priorityName = priority.Name;
+                        int priorityId = priority.ID;
+                        values = businessRuleCondition.Value.Split(',');
                         switch (businessRuleCondition.Condition)
                         {
                             case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                                if (priorityName.Equals(businessRuleCondition.Value))
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    int intVal = 0;
+                                    Int32.TryParse(value, out intVal);
+                                    if (priorityId == intVal)
+                                    {
+                                        return true;
+                                    }
                                 }
                                 break;
                             case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                                if (!priorityName.Equals(businessRuleCondition.Value))
+                                bool result = true;
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    int intVal = 0;
+                                    Int32.TryParse(value, out intVal);
+                                    if (priorityId == intVal)
+                                    {
+                                        result = false;
+                                        break;
+                                    }
+                                }
+                                if (result)
+                                {
+                                    return true;
                                 }
                                 break;
                         }
@@ -285,19 +332,36 @@ namespace TMS.Services
                     Impact impact = handlingTicket.Impact;
                     if (impact != null)
                     {
-                        string impactName = impact.Name;
+                        int impactId = impact.ID;
+                        values = businessRuleCondition.Value.Split(',');
                         switch (businessRuleCondition.Condition)
                         {
                             case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                                if (impactName.Equals(businessRuleCondition.Value))
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    int intVal = 0;
+                                    Int32.TryParse(value, out intVal);
+                                    if (impactId == intVal)
+                                    {
+                                        return true;
+                                    }
                                 }
                                 break;
                             case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                                if (!impactName.Equals(businessRuleCondition.Value))
+                                bool result = true;
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    int intVal = 0;
+                                    Int32.TryParse(value, out intVal);
+                                    if (impactId == intVal)
+                                    {
+                                        result = false;
+                                        break;
+                                    }
+                                }
+                                if (result)
+                                {
+                                    return true;
                                 }
                                 break;
                         }
@@ -307,46 +371,71 @@ namespace TMS.Services
                     Urgency urgency = handlingTicket.Urgency;
                     if (urgency != null)
                     {
-                        string urgencyName = urgency.Name;
+                        int urgencyId = urgency.ID;
+                        values = businessRuleCondition.Value.Split(',');
                         switch (businessRuleCondition.Condition)
                         {
                             case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                                if (urgencyName.Equals(businessRuleCondition.Value))
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    int intVal = 0;
+                                    Int32.TryParse(value, out intVal);
+                                    if (urgencyId == intVal)
+                                    {
+                                        return true;
+                                    }
                                 }
                                 break;
                             case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                                if (!urgencyName.Equals(businessRuleCondition.Value))
+                                bool result = true;
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    int intVal = 0;
+                                    Int32.TryParse(value, out intVal);
+                                    if (urgencyId == intVal)
+                                    {
+                                        result = false;
+                                        break;
+                                    }
+                                }
+                                if (result)
+                                {
+                                    return true;
                                 }
                                 break;
                         }
                     }
                     break;
                 case ConstantUtil.BusinessRuleCriteria.Mode:
-                    string mode = ConstantUtil.TicketModeString.WebForm;
-                    if (handlingTicket.Mode == ConstantUtil.TicketMode.Email)
-                    {
-                        mode = ConstantUtil.TicketModeString.Email;
-                    }
-                    else if (handlingTicket.Mode == ConstantUtil.TicketMode.PhoneCall)
-                    {
-                        mode = ConstantUtil.TicketModeString.PhoneCall;
-                    }
+                    values = businessRuleCondition.Value.Split(',');
                     switch (businessRuleCondition.Condition)
                     {
                         case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                            if (mode.Equals(businessRuleCondition.Value))
+                            foreach (string value in values)
                             {
-                                isSatisfied = true;
+                                int intVal = 0;
+                                Int32.TryParse(value, out intVal);
+                                if (handlingTicket.Mode == intVal)
+                                {
+                                    return true;
+                                }
                             }
                             break;
                         case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                            if (!mode.Equals(businessRuleCondition.Value))
+                            bool result = true;
+                            foreach (string value in values)
                             {
-                                isSatisfied = true;
+                                int intVal = 0;
+                                Int32.TryParse(value, out intVal);
+                                if (handlingTicket.Mode == intVal)
+                                {
+                                    result = false;
+                                    break;
+                                }
+                            }
+                            if (result)
+                            {
+                                return true;
                             }
                             break;
                     }
@@ -355,28 +444,43 @@ namespace TMS.Services
                     Category category = handlingTicket.Category;
                     if (category != null)
                     {
-                        string categoryName = category.Name;
+                        int categoryId = category.ID;
+                        values = businessRuleCondition.Value.Split(',');
                         switch (businessRuleCondition.Condition)
                         {
                             case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                                if (categoryName.Equals(businessRuleCondition.Value))
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    int intVal = 0;
+                                    Int32.TryParse(value, out intVal);
+                                    if (categoryId == intVal)
+                                    {
+                                        return true;
+                                    }
                                 }
                                 break;
                             case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                                if (!categoryName.Equals(businessRuleCondition.Value))
+                                bool result = true;
+                                foreach (string value in values)
                                 {
-                                    isSatisfied = true;
+                                    int intVal = 0;
+                                    Int32.TryParse(value, out intVal);
+                                    if (categoryId == intVal)
+                                    {
+                                        result = false;
+                                        break;
+                                    }
+                                }
+                                if (result)
+                                {
+                                    return true;
                                 }
                                 break;
                         }
                     }
                     break;
-                default:
-                    break;
             }
-            return isSatisfied;
+            return false;
         }
 
         public IEnumerable<Ticket> GetRecentTickets(int timeOption)
@@ -428,7 +532,8 @@ namespace TMS.Services
                 Notification requesterNoti = new Notification();
                 requesterNoti.IsForHelpDesk = false;
                 requesterNoti.BeNotifiedID = ticket.RequesterID;
-                requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created successfully.", ticket.Subject, ticket.Code);
+                requesterNoti.ActionType = ConstantUtil.NotificationActionType.RequesterNotiCreate;
+                //requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created successfully.", ticket.Subject, ticket.Code);
                 requesterNoti.NotifiedTime = DateTime.Now;
                 ticket.Notifications.Add(requesterNoti);
 
@@ -441,7 +546,9 @@ namespace TMS.Services
                         Notification technicianNoti = new Notification();
                         technicianNoti.IsForHelpDesk = false;
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
-                        technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
+                        technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
+                        technicianNoti.ActID = ticket.AssignedByID;
+                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         ticket.Notifications.Add(technicianNoti);
                     }
@@ -458,7 +565,9 @@ namespace TMS.Services
                         {
                             Notification helpdeskNoti = new Notification();
                             helpdeskNoti.IsForHelpDesk = true;
-                            helpdeskNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created by {2}.", ticket.Subject, ticket.Code, ticketCreator.Fullname);
+                            helpdeskNoti.ActionType = ConstantUtil.NotificationActionType.HelpDeskNotiCreate;
+                            helpdeskNoti.ActID = ticket.RequesterID;
+                            //helpdeskNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created by {2}.", ticket.Subject, ticket.Code, ticketCreator.Fullname);
                             helpdeskNoti.NotifiedTime = DateTime.Now;
                             ticket.Notifications.Add(helpdeskNoti);
                         }
@@ -495,14 +604,16 @@ namespace TMS.Services
                 //send notification to technician when assigned
                 if (oldTicket.Status == ConstantUtil.TicketStatus.New && ticket.Status == ConstantUtil.TicketStatus.Assigned)
                 {
-                    AspNetUser ticketAssigner = _unitOfWork.AspNetUserRepository.GetByID(ticket.AssignedByID);
+                    AspNetUser ticketAssigner = _unitOfWork.AspNetUserRepository.GetByID(actId);
                     if (ticketAssigner != null)
                     {
                         Notification technicianNoti = new Notification();
                         technicianNoti.IsForHelpDesk = false;
                         technicianNoti.TicketID = ticket.ID;
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
-                        technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
+                        technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
+                        technicianNoti.ActID = actId;
+                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -517,7 +628,9 @@ namespace TMS.Services
                         technicianNoti.IsForHelpDesk = false;
                         technicianNoti.TicketID = ticket.ID;
                         technicianNoti.BeNotifiedID = oldTicket.TechnicianID;
-                        technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
+                        technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiUnassign;
+                        technicianNoti.ActID = actId;
+                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -534,7 +647,9 @@ namespace TMS.Services
                             oldTechnicianNoti.IsForHelpDesk = false;
                             oldTechnicianNoti.TicketID = ticket.ID;
                             oldTechnicianNoti.BeNotifiedID = oldTicket.TechnicianID;
-                            oldTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
+                            oldTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiUnassign;
+                            oldTechnicianNoti.ActID = actId;
+                            //oldTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                             oldTechnicianNoti.NotifiedTime = DateTime.Now;
                             _unitOfWork.NotificationRepository.Insert(oldTechnicianNoti);
                             //send notification to new technician
@@ -542,7 +657,9 @@ namespace TMS.Services
                             newTechnicianNoti.IsForHelpDesk = false;
                             newTechnicianNoti.TicketID = ticket.ID;
                             newTechnicianNoti.BeNotifiedID = ticket.TechnicianID;
-                            newTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
+                            oldTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
+                            oldTechnicianNoti.ActID = actId;
+                            //newTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                             newTechnicianNoti.NotifiedTime = DateTime.Now;
                             _unitOfWork.NotificationRepository.Insert(newTechnicianNoti);
                         }
@@ -578,7 +695,9 @@ namespace TMS.Services
                 Notification helpdeskNoti = new Notification();
                 helpdeskNoti.IsForHelpDesk = true;
                 helpdeskNoti.TicketID = ticket.ID;
-                helpdeskNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unapproved by {2}", ticket.Subject, ticket.Code, ticketUnapprovedUser.Fullname);
+                helpdeskNoti.ActionType = ConstantUtil.NotificationActionType.HelpDeskNotiUnapprove;
+                helpdeskNoti.ActID = actId;
+                //helpdeskNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unapproved by {2}", ticket.Subject, ticket.Code, ticketUnapprovedUser.Fullname);
                 helpdeskNoti.NotifiedTime = DateTime.Now;
                 _unitOfWork.NotificationRepository.Insert(helpdeskNoti);
             }
@@ -611,7 +730,8 @@ namespace TMS.Services
             requesterNoti.IsForHelpDesk = false;
             requesterNoti.TicketID = ticket.ID;
             requesterNoti.BeNotifiedID = ticket.RequesterID;
-            requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was cancelled.", ticket.Subject, ticket.Code);
+            requesterNoti.ActionType = ConstantUtil.NotificationActionType.RequesterNotiCancel;
+            //requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was cancelled.", ticket.Subject, ticket.Code);
             requesterNoti.NotifiedTime = DateTime.Now;
             _unitOfWork.NotificationRepository.Insert(requesterNoti);
 
@@ -625,7 +745,9 @@ namespace TMS.Services
                     technicianNoti.IsForHelpDesk = false;
                     technicianNoti.TicketID = ticket.ID;
                     technicianNoti.BeNotifiedID = ticket.TechnicianID;
-                    technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was cancelled by {2}.", ticket.Subject, ticket.Code, ticketCancelledUser.Fullname);
+                    technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiCancel;
+                    technicianNoti.ActID = actId;
+                    //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was cancelled by {2}.", ticket.Subject, ticket.Code, ticketCancelledUser.Fullname);
                     technicianNoti.NotifiedTime = DateTime.Now;
                     _unitOfWork.NotificationRepository.Insert(technicianNoti);
                 }
@@ -659,7 +781,8 @@ namespace TMS.Services
             requesterNoti.IsForHelpDesk = false;
             requesterNoti.TicketID = ticket.ID;
             requesterNoti.BeNotifiedID = ticket.RequesterID;
-            requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was solved.", ticket.Subject, ticket.Code);
+            requesterNoti.ActionType = ConstantUtil.NotificationActionType.RequesterNotiSolve;
+            //requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was solved.", ticket.Subject, ticket.Code);
             requesterNoti.NotifiedTime = DateTime.Now;
             _unitOfWork.NotificationRepository.Insert(requesterNoti);
             //end notification
@@ -720,7 +843,8 @@ namespace TMS.Services
             requesterNoti.IsForHelpDesk = false;
             requesterNoti.TicketID = ticket.ID;
             requesterNoti.BeNotifiedID = ticket.RequesterID;
-            requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was closed.", ticket.Subject, ticket.Code);
+            requesterNoti.ActionType = ConstantUtil.NotificationActionType.RequesterNotiClose;
+            //requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was closed.", ticket.Subject, ticket.Code);
             requesterNoti.NotifiedTime = DateTime.Now;
             _unitOfWork.NotificationRepository.Insert(requesterNoti);
             //end notification
@@ -731,6 +855,42 @@ namespace TMS.Services
             ticketHistory.Type = ConstantUtil.TicketHistoryType.Closed;
             ticketHistory.ActID = actId;
             ticketHistory.Action = "OPERATION: CLOSE";
+            ticketHistory.ActedTime = DateTime.Now;
+            //end ticket history
+            _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
+            _unitOfWork.TicketRepository.Update(ticket);
+            return _unitOfWork.CommitTransaction();
+        }
+
+        //send notification to requester
+        public bool ReassignTicket(Ticket ticket, string actId)
+        {
+            ticket.Status = ConstantUtil.TicketStatus.Assigned;
+            ticket.ModifiedTime = DateTime.Now;
+            _unitOfWork.BeginTransaction();
+
+            AspNetUser reassignUser = _unitOfWork.AspNetUserRepository.GetByID(actId);
+            if (reassignUser != null)
+            {
+                //send notification to technician
+                Notification technicianNoti = new Notification();
+                technicianNoti.IsForHelpDesk = false;
+                technicianNoti.TicketID = ticket.ID;
+                technicianNoti.BeNotifiedID = ticket.TechnicianID;
+                technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiReassign;
+                technicianNoti.ActID = actId;
+                //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was reassigned by {2}.", ticket.Subject, ticket.Code, reassignUser.Fullname);
+                technicianNoti.NotifiedTime = DateTime.Now;
+                _unitOfWork.NotificationRepository.Insert(technicianNoti);
+                //end notification
+            }
+
+            //start ticket history
+            TicketHistory ticketHistory = new TicketHistory();
+            ticketHistory.TicketID = ticket.ID;
+            ticketHistory.Type = ConstantUtil.TicketHistoryType.Reassigned;
+            ticketHistory.ActID = actId;
+            ticketHistory.Action = "OPERATION: REASSIGN";
             ticketHistory.ActedTime = DateTime.Now;
             //end ticket history
             _unitOfWork.TicketHistoryRepository.Insert(ticketHistory);
@@ -760,6 +920,7 @@ namespace TMS.Services
                 oldTicket.ModifiedTime = DateTime.Now;
                 int status = oldTicket.Status;
                 oldTicket.Status = ConstantUtil.TicketStatus.Cancelled;
+                oldTicket.MergedID = newTicket.ID;
                 //start ticket history
                 TicketHistory oldTicketHistory = new TicketHistory();
                 oldTicketHistory.TicketID = oldTicket.ID;
@@ -792,7 +953,9 @@ namespace TMS.Services
                         technicianNoti.IsForHelpDesk = false;
                         technicianNoti.TicketID = oldTicket.ID;
                         technicianNoti.BeNotifiedID = oldTicket.TechnicianID;
-                        technicianNoti.NotificationContent = string.Format("Ticket #{0} was merged into ticket #{1} by {2}.", oldTicket.Code, newTicket.Code, mergedUser.Fullname);
+                        technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiIsMerged;
+                        technicianNoti.ActID = actId;
+                        //technicianNoti.NotificationContent = string.Format("Ticket #{0} was merged into ticket #{1} by {2}.", oldTicket.Code, newTicket.Code, mergedUser.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -806,7 +969,8 @@ namespace TMS.Services
                 requesterNoti.IsForHelpDesk = false;
                 requesterNoti.TicketID = oldTicket.ID;
                 requesterNoti.BeNotifiedID = oldTicket.RequesterID;
-                requesterNoti.NotificationContent = string.Format("Ticket #{0} was merged into ticket #{1}.", oldTicket.Code, newTicket.Code);
+                requesterNoti.ActionType = ConstantUtil.NotificationActionType.RequesterNotiIsMerged;
+                //requesterNoti.NotificationContent = string.Format("Ticket #{0} was merged into ticket #{1}.", oldTicket.Code, newTicket.Code);
                 requesterNoti.NotifiedTime = DateTime.Now;
                 _unitOfWork.NotificationRepository.Insert(requesterNoti);
             }
@@ -820,7 +984,9 @@ namespace TMS.Services
                     technicianNoti.IsForHelpDesk = false;
                     technicianNoti.TicketID = newTicket.ID;
                     technicianNoti.BeNotifiedID = newTicket.TechnicianID;
-                    technicianNoti.NotificationContent = string.Format("Ticket #{0} was merged by {1}.", newTicket.Code, mergedUser.Fullname);
+                    technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiMerge;
+                    technicianNoti.ActID = actId;
+                    //technicianNoti.NotificationContent = string.Format("Ticket #{0} was merged by {1}.", newTicket.Code, mergedUser.Fullname);
                     technicianNoti.NotifiedTime = DateTime.Now;
                     _unitOfWork.NotificationRepository.Insert(technicianNoti);
                 }
@@ -853,62 +1019,76 @@ namespace TMS.Services
 
         public IEnumerable<FrequentlyAskedTicketViewModel> GetFrequentlyAskedSubjects(IEnumerable<Ticket> tickets)
         {
-            IEnumerable<FrequentlyAskedTicketViewModel> results = tickets.Where(m => m.Tags != null && m.Tags.Trim() != string.Empty).GroupBy(m => m.Tags).Select(m => new FrequentlyAskedTicketViewModel
+            //IEnumerable<FrequentlyAskedTicketViewModel> results = tickets.Where(m => m.Tags != null && m.Tags.Trim() != string.Empty)
+            //    .GroupBy(m => m.Tags).Select(m => new FrequentlyAskedTicketViewModel
+            //    {
+            //        Tags = m.Key,
+            //        Count = m.Count()
+            //    }).OrderByDescending(m => m.Count);
+
+            tickets = tickets.OrderByDescending(m => GeneralUtil.GetNumberOfTags(m.Tags));
+            List<FrequentlyAskedTicketViewModel> result = new List<FrequentlyAskedTicketViewModel>();
+            List<Ticket> temp = tickets.ToList();
+            foreach (Ticket compareTicket in temp)
             {
-                Tags = m.Key,
-                Count = m.Count()
-            }).OrderByDescending(m => m.Count);
+                int count = 0;
+                if (!string.IsNullOrWhiteSpace(compareTicket.Tags))
+                {
+                    string[] tagArr = compareTicket.Tags.Split(',');
+                    int numOfTags = tagArr.Count();
+                    if (result.Where(m => m.Tags == compareTicket.Tags).Any())
+                    {
+                        continue;
+                    }
+                    foreach (Ticket remainingTicket in temp)
+                    {
+                        int matchTag = 0;
+                        //string itemTags = string.IsNullOrWhiteSpace(remainingTicket.Tags) ? "" : remainingTicket.Tags;
+                        //int itemNumOfTags = GeneralUtil.GetNumberOfTags(itemTags);
+                        //if (itemNumOfTags >= numOfTags && compareTicket.Tags != remainingTicket.Tags)
+                        //{
+                        //    continue;
+                        //}
+                        if (!string.IsNullOrWhiteSpace(remainingTicket.Tags))
+                        {
+                            foreach (string tag in tagArr)
+                            {
+                                if (remainingTicket.Tags.Contains(tag))
+                                {
+                                    matchTag++;
+                                }
+                            }
+                        }
+                        if (numOfTags <= 3)
+                        {
+                            if (matchTag == numOfTags)
+                            {
+                                count++;
+                            }
+                        }
+                        else if (3 < numOfTags && numOfTags <= 5)
+                        {
+                            if (matchTag >= numOfTags - 1 && matchTag <= numOfTags + 1)
+                            {
+                                count++;
+                            }
+                        }
+                        else
+                        {
+                            if (matchTag >= numOfTags - 2 && matchTag <= numOfTags + 2)
+                            {
+                                count++;
+                            }
+                        }
+                    }
+                    FrequentlyAskedTicketViewModel frequentlyAskedTicket = new FrequentlyAskedTicketViewModel();
+                    frequentlyAskedTicket.Tags = compareTicket.Tags;
+                    frequentlyAskedTicket.Count = count;
+                    result.Add(frequentlyAskedTicket);
+                }
+            }
 
-            //tickets = tickets.OrderByDescending(m => m.Subject.Length);
-            //List<RecentTicketViewModel> result = new List<RecentTicketViewModel>();
-            //List<Ticket> temp = tickets.ToList();
-            //List<Ticket> ignore = new List<Ticket>();
-            //foreach (Ticket compareTicket in temp)
-            //{
-            //    int count = 1;
-            //    if (ignore.Where(m => m.ID == compareTicket.ID).Any())
-            //    {
-            //        continue;
-            //    }
-            //    ignore.Add(compareTicket);
-            //    int percent = 0;
-            //    foreach (Ticket remainingTicket in temp)
-            //    {
-            //        if (ignore.Where(m => m.ID == remainingTicket.ID).Any())
-            //        {
-            //            continue;
-            //        }
-            //        //int editDistance = LevenshteinDistance.DamerauLevenshteinCompute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
-            //        //if (compareTicket.Subject.Length >= remainingTicket.Subject.Length)
-            //        //{
-            //        //    percent = Convert.ToInt32(((float) (compareTicket.Subject.Length - editDistance) / compareTicket.Subject.Length) * 100);
-            //        //}
-            //        //else
-            //        //{
-            //        //    percent = Convert.ToInt32(((float) (remainingTicket.Subject.Length - editDistance) / remainingTicket.Subject.Length) * 100);
-            //        //}
-            //        percent = SentenceUtil.Compute(compareTicket.Subject.ToLower(), remainingTicket.Subject.ToLower());
-            //        if (percent >= 70)
-            //        {
-            //            count++;
-            //            ignore.Add(remainingTicket);
-            //        }
-            //    }
-            //    RecentTicketViewModel similarTicket = new RecentTicketViewModel
-            //    {
-            //        Subject = compareTicket.Subject,
-            //        Count = count
-            //    };
-            //    result.Add(similarTicket);
-            //}
-
-            return results;
-        }
-
-        public string GetSubjectByTags(string key)
-        {
-            Ticket ticket = _unitOfWork.TicketRepository.Get(m => m.Tags.Equals(key)).FirstOrDefault();
-            return (ticket == null) ? "" : ticket.Subject;
+            return result;
         }
 
         public int? GetPriority(int? impactId, int? urgencyId, int? priorityId)
@@ -930,6 +1110,11 @@ namespace TMS.Services
                 }
             }
             return null;
+        }
+
+        public IEnumerable<Ticket> GetMergedTickets(int id)
+        {
+            return _unitOfWork.TicketRepository.Get(m => m.MergedID == id);
         }
 
         public TicketHistory GetUpdatedTicketHistory(Ticket oldTicket, Ticket newTicket, string actId)
