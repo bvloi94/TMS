@@ -411,8 +411,8 @@ namespace TMS.Controllers
             {
                 case 0:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => GetNumberOfTags(p.Tags))
-                        : filteredListItems.OrderByDescending(p => GetNumberOfTags(p.Tags));
+                        ? filteredListItems.OrderBy(p => GeneralUtil.GetNumberOfTags(p.Tags))
+                        : filteredListItems.OrderByDescending(p => GeneralUtil.GetNumberOfTags(p.Tags));
                     break;
                 case 1:
                     filteredListItems = sortDirection == "asc"
@@ -423,7 +423,6 @@ namespace TMS.Controllers
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new FrequentlyAskedTicketViewModel
             {
-                //Subject = _ticketService.GetSubjectByTags(m.Tags),
                 Tags = GeneralUtil.ConvertFormattedKeywordToView(m.Tags),
                 Count = m.Count
             });
@@ -453,30 +452,59 @@ namespace TMS.Controllers
             }
             IEnumerable<Ticket> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
 
-            IQueryable<TicketViewModel> filteredListItems = recentTickets.Select(m => new TicketViewModel
+            IEnumerable<TicketViewModel> temp = recentTickets.Select(m => new TicketViewModel
             {
                 Id = m.ID,
                 Subject = m.Subject,
                 Tags = m.Tags == null ? "" : m.Tags
             }).AsQueryable();
 
-            var predicate = PredicateBuilder.True<TicketViewModel>();
+            List<TicketViewModel> filteredListItems = new List<TicketViewModel>();
 
             if (!string.IsNullOrEmpty(tags))
             {
                 tags = GeneralUtil.ConvertToFormatKeyword(tags);
-                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                //tags = regex.Replace(tags, " ");
-                //string[] tagsArr = tags.Split(',');
-                //foreach (string tagItem in tagsArr)
-                //{
-                //    string tagItemTemp = '"' + tagItem + '"';
-                //    predicate = predicate.And(p => p.Tags.ToLower().Contains(tagItemTemp.ToLower()));
-                //}
-                //filteredListItems = filteredListItems.Where(predicate);
-                filteredListItems = filteredListItems.Where(m => m.Tags == tags);
+                string[] tagsArr = tags.Split(',');
+                int numOfTags = tagsArr.Count();
+                foreach (TicketViewModel ticket in temp)
+                {
+                    int matchTag = 0;
+                    //string itemTags = string.IsNullOrWhiteSpace(ticket.Tags) ? "" : ticket.Tags;
+                    //int itemNumOfTags = GeneralUtil.GetNumberOfTags(itemTags);
+                    //if (itemNumOfTags >= numOfTags && tags != ticket.Tags)
+                    //{
+                    //    continue;
+                    //}
+                    foreach (string tagItem in tagsArr)
+                    {
+                        if (ticket.Tags != null && ticket.Tags.ToLower().Contains(tagItem.ToLower()))
+                        {
+                            matchTag++;
+                        }
+                    }
+                    if (numOfTags <= 2)
+                    {
+                        if (matchTag == numOfTags)
+                        {
+                            filteredListItems.Add(ticket);
+                        }
+                    }
+                    else if (2 < numOfTags && numOfTags <= 4)
+                    {
+                        if (matchTag >= numOfTags - 1 && matchTag <= numOfTags + 1)
+                        {
+                            filteredListItems.Add(ticket);
+                        }
+                    }
+                    else
+                    {
+                        if (matchTag >= numOfTags - 2 && matchTag <= numOfTags + 2)
+                        {
+                            filteredListItems.Add(ticket);
+                        }
+                    }
+                }
             }
-
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
             var sortDirection = param.order[0]["dir"];
@@ -485,26 +513,20 @@ namespace TMS.Controllers
             {
                 case 0:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.Subject)
-                        : filteredListItems.OrderByDescending(p => p.Subject);
+                        ? filteredListItems.OrderBy(p => p.Subject).ToList()
+                        : filteredListItems.OrderByDescending(p => p.Subject).ToList();
                     break;
             }
 
-            var displayedList = filteredListItems.ToList().Skip(param.start).Take(param.length);
+            var displayedList = filteredListItems.Skip(param.start).Take(param.length);
 
             return Json(new
             {
                 draw = param.draw,
-                recordsTotal = displayedList.ToList().Count(),
+                recordsTotal = displayedList.Count(),
                 recordsFiltered = filteredListItems.Count(),
                 data = displayedList,
             }, JsonRequestBehavior.AllowGet);
-        }
-
-        private int GetNumberOfTags(string tags)
-        {
-            string[] tagArr = tags.Split(',');
-            return tagArr.Count();
         }
 
         [HttpGet]

@@ -99,8 +99,8 @@
                 <h4 class="modal-title">Are you sure?</h4>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="yes-btn">Yes</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="yes-btn"><i class="fa fa-check" aria-hidden="true"></i> Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> No</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -177,6 +177,10 @@
 
         var showCreateModal = function () {
             clearModal();
+            $("#color-txt").spectrum({
+                color: "#ffffff"
+            });
+            $("#color-txt").val("#ffffff");
             $("#myModal").modal('show');
             $('#create-btn').attr('onclick', 'createPriority()');
         };
@@ -237,16 +241,18 @@
                         $("#myModal").modal("show");
                         $("#name-txt").val(data.name);
                         $("#description-txt").val(data.description);
+                        $("#color-txt").spectrum({
+                            color: data.color
+                        });
+                        $("#color-txt").val(data.color);
                         $("#create-btn").attr("onclick", "editPriority('" + id + "')");
                     } else {
-                        if (data.error) {
-                            noty({
-                                text: data.message,
-                                type: "error",
-                                layout: "topRight",
-                                timeout: 2000
-                            });
-                        }
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
                     }
                 },
                 error: function () {

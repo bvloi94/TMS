@@ -76,7 +76,7 @@
                             <b>Description: </b>
                         </div>
                         <div class="col-sm-10">
-                            <span class="pre-wrap">@Html.DisplayFor(m => m.Description)</span>
+                            <span class="pre-wrap">@Html.Raw(Model.Description)</span>
                         </div>
                     </div>
                 </div>
@@ -121,6 +121,19 @@
                         <div class="col-sm-10">@Html.DisplayFor(model => model.SolvedBy)</div>
                     </div>
                 </div>
+                @if (Model.MergedId.HasValue && !string.IsNullOrEmpty(Model.MergedTicketSubject))
+                {
+                    <div class="col-sm-12 row-content ">
+                        <div class="col-sm-12">
+                            <div class="col-sm-2 labels">
+                                <b>Merged into:  </b>
+                            </div>
+                            <div class="col-sm-10">
+                                @Model.MergedTicketSubject <span>(<a href="/Ticket/TicketDetail/@Model.MergedId">#@Model.MergedTicketCode</a>)</span>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>

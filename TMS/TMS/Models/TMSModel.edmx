@@ -218,6 +218,7 @@
           <Property Name="RequesterID" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Note" Type="nvarchar(max)" />
           <Property Name="Tags" Type="nvarchar" MaxLength="255" />
+          <Property Name="MergedID" Type="int" />
         </EntityType>
         <EntityType Name="TicketAttachment">
           <Key>
@@ -556,6 +557,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Ticket_Ticket">
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="0..1" />
+          <End Role="Ticket1" Type="Self.Ticket" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ticket">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Ticket1">
+              <PropertyRef Name="MergedID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Ticket_Urgency">
           <End Role="Urgency" Type="Self.Urgency" Multiplicity="0..1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
@@ -726,6 +739,10 @@
             <End Role="Priority" EntitySet="Priority" />
             <End Role="Ticket" EntitySet="Ticket" />
           </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Ticket" Association="Self.FK_Ticket_Ticket">
+            <End Role="Ticket" EntitySet="Ticket" />
+            <End Role="Ticket1" EntitySet="Ticket" />
+          </AssociationSet>
           <AssociationSet Name="FK_Ticket_Urgency" Association="Self.FK_Ticket_Urgency">
             <End Role="Urgency" EntitySet="Urgency" />
             <End Role="Ticket" EntitySet="Ticket" />
@@ -864,6 +881,10 @@
             <End Role="Solution" EntitySet="Solutions" />
             <End Role="SolutionAttachment" EntitySet="SolutionAttachments" />
           </AssociationSet>
+          <AssociationSet Name="FK_Ticket_Ticket" Association="TMSModel.FK_Ticket_Ticket">
+            <End Role="Ticket" EntitySet="Tickets" />
+            <End Role="Ticket1" EntitySet="Tickets" />
+          </AssociationSet>
           <AssociationSet Name="FK_Ticket_Urgency" Association="TMSModel.FK_Ticket_Urgency">
             <End Role="Urgency" EntitySet="Urgencies" />
             <End Role="Ticket" EntitySet="Tickets" />
@@ -995,7 +1016,7 @@
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Action" Type="Int32" />
-          <Property Name="Value" Type="String" />
+          <Property Name="Value" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="BusinessRuleID" Type="Int32" />
           <NavigationProperty Name="BusinessRule" Relationship="TMSModel.FK_BusinessRuleTrigger_BusinessRule" FromRole="BusinessRuleTrigger" ToRole="BusinessRule" />
         </EntityType>
@@ -1126,6 +1147,7 @@
           <Property Name="RequesterID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Tags" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="MergedID" Type="Int32" />
           <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_Ticket_AspNetUsers" FromRole="Ticket" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="TMSModel.FK_Ticket_AspNetUsers1" FromRole="Ticket" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser2" Relationship="TMSModel.FK_Ticket_AspNetUsers2" FromRole="Ticket" ToRole="AspNetUser" />
@@ -1134,6 +1156,8 @@
           <NavigationProperty Name="Impact" Relationship="TMSModel.FK_Ticket_Impact" FromRole="Ticket" ToRole="Impact" />
           <NavigationProperty Name="Notifications" Relationship="TMSModel.FK_Notification_Ticket" FromRole="Ticket" ToRole="Notification" />
           <NavigationProperty Name="Priority" Relationship="TMSModel.FK_Ticket_Priority" FromRole="Ticket" ToRole="Priority" />
+          <NavigationProperty Name="Ticket1" Relationship="TMSModel.FK_Ticket_Ticket" FromRole="Ticket" ToRole="Ticket1" />
+          <NavigationProperty Name="Ticket2" Relationship="TMSModel.FK_Ticket_Ticket" FromRole="Ticket1" ToRole="Ticket" />
           <NavigationProperty Name="Urgency" Relationship="TMSModel.FK_Ticket_Urgency" FromRole="Ticket" ToRole="Urgency" />
           <NavigationProperty Name="TicketAttachments" Relationship="TMSModel.FK_TicketAttachment_Ticket" FromRole="Ticket" ToRole="TicketAttachment" />
           <NavigationProperty Name="TicketHistories" Relationship="TMSModel.FK_TicketHistory_Ticket" FromRole="Ticket" ToRole="TicketHistory" />
@@ -1464,6 +1488,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Ticket_Ticket">
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="0..1" />
+          <End Type="TMSModel.Ticket" Role="Ticket1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ticket">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Ticket1">
+              <PropertyRef Name="MergedID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Ticket_Urgency">
           <End Type="TMSModel.Urgency" Role="Urgency" Multiplicity="0..1" />
           <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
@@ -1700,6 +1736,7 @@
           <EntitySetMapping Name="Tickets">
             <EntityTypeMapping TypeName="TMSModel.Ticket">
               <MappingFragment StoreEntitySet="Ticket">
+                <ScalarProperty Name="MergedID" ColumnName="MergedID" />
                 <ScalarProperty Name="Tags" ColumnName="Tags" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
                 <ScalarProperty Name="RequesterID" ColumnName="RequesterID" />

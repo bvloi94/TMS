@@ -407,8 +407,24 @@ namespace TMS.Controllers
                     model.Code = ticket.Code;
                     model.Subject = ticket.Subject;
                     model.Description = ticket.Description == null ? "-" : ticket.Description.Trim();
+                    IEnumerable<Ticket> mergedTickets = _ticketService.GetMergedTickets(ticket.ID);
+                    foreach (Ticket mergedTicket in mergedTickets)
+                    {
+                        string ticketCode = '#' + mergedTicket.Code;
+                        model.Description = model.Description.Replace(ticketCode, "<a href='/Ticket/TicketDetail/" + mergedTicket.ID + "'>" + ticketCode + "</a>");
+                    }
                     model.Mode = ticket.Mode;
                     model.Type = ticket.Type.HasValue ? ticket.Type.Value : 0;
+                    if (ticket.MergedID.HasValue)
+                    {
+                        Ticket mergedTicket = _ticketService.GetTicketByID(ticket.MergedID.Value);
+                        if (mergedTicket != null)
+                        {
+                            model.MergedId = mergedTicket.ID;
+                            model.MergedTicketSubject = mergedTicket.Subject;
+                            model.MergedTicketCode = mergedTicket.Code;
+                        }
+                    }
 
                     switch (ticket.Status)
                     {
@@ -570,12 +586,28 @@ namespace TMS.Controllers
             }
 
             string categoryPath = _categoryService.GetCategoryPath(ticket.Category);
+            string description = ticket.Description ?? "-";
+            IEnumerable<Ticket> mergedTickets = _ticketService.GetMergedTickets(ticket.ID);
+            foreach (Ticket mergedTicket in mergedTickets)
+            {
+                string ticketCode = '#' + mergedTicket.Code;
+                description = description.Replace(ticketCode, "<a href='/Ticket/TicketDetail/" + mergedTicket.ID + "'>" + ticketCode + "</a>");
+            }
+            string mergedTicketString = null;
+            if (ticket.MergedID.HasValue)
+            {
+                Ticket mergedTicket = _ticketService.GetTicketByID(ticket.MergedID.Value);
+                if (mergedTicket != null)
+                {
+                    mergedTicketString = mergedTicket.Subject + " (<a href='/Ticket/TicketDetail/" + ticket.MergedID + "'>" + mergedTicket.Code + "</a>)";
+                }
+            }
 
             return Json(new
             {
                 id = ticket.ID,
                 subject = ticket.Subject,
-                description = ticket.Description ?? "-",
+                description = description,
                 type = ticketType,
                 mode = ticketMode,
                 urgency = ticketUrgency,
@@ -598,7 +630,8 @@ namespace TMS.Controllers
                 technician = technician == null ? "-" : technician.Fullname,
                 department = department,
                 descriptionAttachment = descriptionAttachment,
-                solutionAttachment = solutionAttachment
+                solutionAttachment = solutionAttachment,
+                mergeTicket = mergedTicketString
             }, JsonRequestBehavior.AllowGet);
         }
 

@@ -226,7 +226,6 @@
     <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
     <Compile Include="Areas\Technician\Controllers\HomeController.cs" />
     <Compile Include="Areas\Technician\Controllers\ManageTicketController.cs" />
-	<Compile Include="Areas\Technician\Controllers\HomeController.cs" />
     <Compile Include="Areas\Technician\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
