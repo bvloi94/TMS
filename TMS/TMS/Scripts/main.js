@@ -210,7 +210,7 @@ var checkUploadFile = function () {
     var size = 0;
     $("input[type='file']").each(function (i, e) {
         for (i = 0; i < $(e).get(0).files.length; i++) {
-            size += ($(e).get(0).files[i].size / 1024 / 1024).toFixed(2);
+            size += parseInt(($(e).get(0).files[i].size / 1024 / 1024).toFixed(2));
         }
     });
     if (size < maxUploadSize) {
