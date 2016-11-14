@@ -32,13 +32,34 @@ namespace TMS.Areas.HelpDesk.Controllers
         // GET: HelpDesk/Home
         public ActionResult Index()
         {
-            IEnumerable<BasicTicketViewModel> ticketList = LoadRequestersTickets();
+            IEnumerable<BasicTicketViewModel> newTicketList = LoadAllTickets();
+            IEnumerable<BasicTicketViewModel> requestersTicketList = LoadRequestersTickets();
             IEnumerable<BasicTicketViewModel> ticketsInLast7Days = LoadRequestersTicketsInLast7Days();
+            IEnumerable<BasicTicketViewModel> warningTickets = LoadWarningTickets();
 
-            ViewBag.NewRequestersTickets = ticketList.Where(m => m.Status == ConstantUtil.TicketStatus.New);
+            ViewBag.AllNewTickets = newTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.New);
+            ViewBag.WarningTickets = warningTickets;
+            ViewBag.NewRequestersTickets = requestersTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.New);
             ViewBag.NewRequestersTicketsLast7Days = ticketsInLast7Days.Where(m => m.Status == ConstantUtil.TicketStatus.New);
-            ViewBag.UnapprovedTickets = ticketList.Where(m => m.Status == ConstantUtil.TicketStatus.Unapproved);
+            ViewBag.UnapprovedTickets = newTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.Unapproved);
             return View();
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadAllTickets()
+        {
+            IEnumerable<Ticket> ticketList = _ticketService.GetAll().ToArray();
+            IEnumerable<BasicTicketViewModel> filterList = ticketList.Select(
+                m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    CreatedBy = m.CreatedID == null ? "-" : _userService.GetUserById(m.CreatedID).Fullname,
+                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                    ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
+                }).ToArray().OrderBy(m => m.ScheduleEndTime);
+            return filterList;
         }
 
         public IEnumerable<BasicTicketViewModel> LoadRequestersTickets()
@@ -73,6 +94,21 @@ namespace TMS.Areas.HelpDesk.Controllers
                     ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
                 }).ToArray();
             return filterList;
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadWarningTickets()
+        {
+            IEnumerable<BasicTicketViewModel> incomingTickets = _ticketService.GetAll().Where(p => p.ScheduleEndDate.HasValue &&
+                    p.ScheduleEndDate.Value.Subtract(DateTime.Now).Days < 3 && p.Status == ConstantUtil.TicketStatus.Assigned)
+                    .Select(m => new BasicTicketViewModel
+                    {
+                        Code = m.Code,
+                        ID = m.ID,
+                        Status = m.Status,
+                        Subject = m.Subject,
+                        ScheduleEndTime = m.ScheduleEndDate.Value.ToString("MMMM dd, yyyy  hh:mm"),
+                    }).ToArray().OrderByDescending(m => m.ScheduleEndTime);
+            return incomingTickets;
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

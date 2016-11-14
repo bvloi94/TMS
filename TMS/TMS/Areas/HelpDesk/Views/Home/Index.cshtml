@@ -4,10 +4,11 @@
 @{
     Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Help Desk";
-    IEnumerable<BasicTicketViewModel> newTickets = ViewBag.NewRequestersTickets;
-    IEnumerable<BasicTicketViewModel> newTicketsLast7Days = ViewBag.NewRequestersTicketsLast7Days;
-    var newTicketsPercentage = newTicketsLast7Days.Count() * 100 / newTickets.Count();
+    IEnumerable<BasicTicketViewModel> newTickets = ViewBag.AllNewTickets;
+    IEnumerable<BasicTicketViewModel> newRequestersTickets = ViewBag.NewRequestersTickets;
+    var newTicketsPercentage = newRequestersTickets == null ? 0 : (newRequestersTickets.Count() * 100 / newTickets.Count());
     IEnumerable<BasicTicketViewModel> unapprovedTickets = ViewBag.UnapprovedTickets;
+    IEnumerable<BasicTicketViewModel> warningTickets = ViewBag.WarningTickets;
 }
 <link rel="stylesheet" href="~/Content/css/graph.css" />
 <style>
@@ -64,16 +65,55 @@
                 <div class="progress">
                     <div class="progress-bar" style="width: @newTicketsPercentage%"></div>
                 </div>
-                <span class="progress-description">@newTicketsLast7Days.Count() New in last 7 Days</span>
+                <span class="progress-description">@newRequestersTickets.Count() Tickets Created by Requester</span>
             </div>
         </div>
-        <div class="info-box bg-red">
+        <div class="info-box bg-orange">
             <span class="info-box-icon"><i class="fa fa-warning"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Unapproved tickets</span>
                 <span class="info-box-number">@unapprovedTickets.Count()</span>
             </div>
         </div>
+        <div class="box box-solid">
+            <div class="box-header bg-red-active">
+                <h4><i class="fa fa-tags"></i>&nbsp;&nbsp;Coming overdue Tickets</h4>
+            </div>
+            @if (warningTickets != null)
+            {
+                <div class="box-body">
+                    @foreach (BasicTicketViewModel ticket in warningTickets)
+                    {
+                        <div class="col-sm-12 table-ticket">
+                            <p>
+                                <span class="text-muted text-bold">#@ticket.Code&nbsp;</span>
+                                @if (ticket.Subject.Length > 90)
+                                {
+                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                        @ticket.Subject.Substring(0, 89) ...
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                        @ticket.Subject
+                                    </a>
+                                }
+                            </p>
+                            <p>
+                                <span class="text-orange text-bold"><i class="fa fa-clock-o"></i>&nbsp; Deadline: </span><span class="text-red text-bold">@ticket.ScheduleEndTime</span>
+                            </p>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="box-footer text-center">
+                    <i>There is no urgent ticket at this moment.</i>
+                </div>
+            }
+        </div>  
         <div class="box box-solid ticket-graph">
             <div class="box-header with-border">
                 <span class="box-title">Tickets by Status</span>
@@ -143,7 +183,7 @@
             }
         </div>
         <div class="box box-solid" id="unapproved-tickets">
-            <div class="box-header bg-red">
+            <div class="box-header bg-orange">
                 <span class="box-title" style="padding-left: 5px"><i class="fa fa-tags"></i>&nbsp;&nbsp;Unapproved Tickets</span>
                 <div class="box-tools pull-right">
                     <button type="button" class="btn btn-box-tool text-white" data-widget="collapse"><i class="fa fa-minus"></i></button>
