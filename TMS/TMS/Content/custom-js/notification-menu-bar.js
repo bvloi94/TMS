@@ -30,6 +30,10 @@ function loadNotification() {
                         count++;
                     }
                 }
+                $(".notification-item").trunk8({
+                    lines: 3,
+                    tooltips: false
+                });
                 $("#notification-count").text(count);
             }
             else {
