@@ -445,11 +445,13 @@ function initFilter() {
     var time_period_inp = $('[data-role="filter_time_period_input"');
 
     created_select.select2();
-    time_period_inp.daterangepicker({
-        locale: {
-            format: 'DD/MM/YYYY'
-        }
-    });
+    if (typeof daterangepicker === "function") {
+        time_period_inp.daterangepicker({
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+    }
     time_period_inp.val("");
     mode_select.select2();
     status_select.select2();

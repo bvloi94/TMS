@@ -247,8 +247,8 @@ namespace TMS.Utils
         {
             if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
             {
-                TimeSpan distance = scheduleDate.Value.Date.Subtract(DateTime.Now.Date);
-                int distanceDay = scheduleDate.Value.Date.Subtract(DateTime.Now.Date).Days;
+                TimeSpan distance = scheduleDate.Value.Subtract(DateTime.Now);
+                int distanceDay = distance.Days;
                 int distanceMinute = (int)distance.TotalMinutes;
                 if (distanceDay < 0)
                 {
@@ -285,8 +285,8 @@ namespace TMS.Utils
         {
             if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
             {
-                TimeSpan distance = scheduleDate.Value.Date.Subtract(DateTime.Now.Date);
-                int distanceDay = scheduleDate.Value.Date.Subtract(DateTime.Now.Date).Days;
+                TimeSpan distance = scheduleDate.Value.Subtract(DateTime.Now);
+                int distanceDay = distance.Days;
                 int distanceMinute = (int)distance.TotalMinutes;
                 if (distanceDay < 0)
                 {
