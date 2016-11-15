@@ -517,3 +517,12 @@ DEBUG 2016-11-15 15:41:55,030 EmailUtil              MoveNext           - System
    at TMS.Utils.EmailUtil.<SendEmail>d__11.MoveNext() in F:\Documents\Capstone\TMS\TMS\TMS\TMS\TMS\Utils\EmailUtil.cs:line 223
 WARN  2016-11-15 15:41:55,037 EmailUtil              MoveNext           - Send overdue ticket notification email to Duc Huy unsuccessfully!
 WARN  2016-11-15 15:41:55,038 EmailUtil              MoveNext           - Send overdue ticket notification email to Duc Huy unsuccessfully!
+DEBUG 2016-11-15 15:50:01,664 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-15 15:50:01,840 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-15 15:50:01,841 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-15 15:50:01,841 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-15 15:50:01,842 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-15 15:50:01,842 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-15 15:50:01,843 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-15 15:50:01,844 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-15 15:50:01,846 JobManager             ExecuteAllJobs     - End Method
