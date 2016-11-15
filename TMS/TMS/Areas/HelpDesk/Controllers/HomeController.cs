@@ -58,7 +58,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     CreatedBy = m.CreatedID == null ? "-" : _userService.GetUserById(m.CreatedID).Fullname,
                     CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
                     ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
-                }).ToArray().OrderBy(m => m.ScheduleEndTime);
+                }).ToArray().OrderBy(m => m.CreatedTime);
             return filterList;
         }
 
@@ -75,7 +75,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     CreatedBy = m.CreatedID == null ? "-" : _userService.GetUserById(m.CreatedID).Fullname,
                     CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
                     ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
-                }).ToArray();
+                }).ToArray().OrderBy(m => m.CreatedTime);
             return filterList;
         }
 
@@ -92,7 +92,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     CreatedBy = m.CreatedID == null ? "-" : _userService.GetUserById(m.CreatedID).Fullname,
                     CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
                     ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
-                }).ToArray();
+                }).ToArray().OrderBy(m => m.CreatedTime);
             return filterList;
         }
 
