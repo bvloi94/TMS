@@ -9,6 +9,7 @@ namespace TMS.ViewModels
     public class TicketSolveViewModel
     {
         public int? ID { get; set; }
+        public string Code { get; set; }
         public string Type { get; set; }
         public string Mode { get; set; }
         public string Status { get; set; }
@@ -23,15 +24,18 @@ namespace TMS.ViewModels
         public string Priority { get; set; }
         public string Category { get; set; }
         public string Subcategory { get; set; }
-        public Nullable<DateTime> CreateTime { get; set; }
-        public Nullable<DateTime> ModifiedTime { get; set; }
-        public Nullable<DateTime> ScheduleStartTime { get; set; }
-        public Nullable<DateTime> ScheduleEndTime { get; set; }
-        public Nullable<DateTime> ActualStartTime { get; set; }
-        public Nullable<DateTime> ActualEndTime { get; set; }
+        public string CreateTime { get; set; }
+        public string ModifiedTime { get; set; }
+        public string ScheduleStartDate { get; set; }
+        public string ScheduleEndDate { get; set; }
+        public string ActualStartDate { get; set; }
+        public string ActualEndDate { get; set; }
         [Required(ErrorMessage = "Solution cannot be empty!")]
         public string Solution { get; set; }
         public string SolvedBy { get; set; }
+        public string Requester { get; set; }
         public string UnapproveReason { get; set; }
+        public string Tags { get; set; }
+        public string Note { get; set; }
     }
 }

@@ -32,6 +32,7 @@ function initTicketTable() {
                 d.filter_status = JSON.stringify($("[data-role='filter_status_select']").val());
                 d.filter_mode = JSON.stringify($("[data-role='filter_mode_select']").val());
                 d.filter_requester = JSON.stringify($("[data-role='filter_requester_select']").val());
+                d.filter_search = $("#search-txt").val()
             }
         },
         drawCallback: function () {
@@ -446,11 +447,13 @@ function initFilter() {
     var time_period_inp = $('[data-role="filter_time_period_input"');
 
     created_select.select2();
-    time_period_inp.daterangepicker({
-        locale: {
-            format: 'DD/MM/YYYY'
-        }
-    });
+    if (typeof daterangepicker === "function") {
+        time_period_inp.daterangepicker({
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+    }
     time_period_inp.val("");
     mode_select.select2();
     status_select.select2();

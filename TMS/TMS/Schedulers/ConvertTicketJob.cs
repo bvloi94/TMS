@@ -53,7 +53,6 @@ namespace TMS.Schedulers
                         RequesterID = _userService.GetUserByEmail(requesterEmail).Id,
                         Mode = ConstantUtil.TicketMode.Email
                     };
-                    Ticket handledTicket = _ticketService.ParseTicket(ticket);
 
                     if (mail.Attachments.Length > 0)
                     {
@@ -71,10 +70,10 @@ namespace TMS.Schedulers
                             ticketAttachment.Path = "/Uploads/Attachments/" + fileName;
                             ticketAttachment.Filename = att.Name;
                             ticketAttachment.Type = ConstantUtil.TicketAttachmentType.Description;
-                            handledTicket.TicketAttachments.Add(ticketAttachment);
+                            ticket.TicketAttachments.Add(ticketAttachment);
                         }
                     }
-                    _ticketService.AddTicket(handledTicket);
+                    _ticketService.AddTicket(ticket);
                 }
             }
         }

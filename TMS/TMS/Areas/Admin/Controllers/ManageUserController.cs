@@ -551,8 +551,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
-                //string generatedPassword = GeneralUtil.GeneratePassword();
-                string generatedPassword = "123456";
+                string generatedPassword = GeneralUtil.GeneratePassword();
                 var result = await UserManager.CreateAsync(user, generatedPassword);
                 if (result.Succeeded)
                 {
@@ -629,8 +628,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
-                //string generatedPassword = GeneralUtil.GeneratePassword();
-                string generatedPassword = "123456";
+                string generatedPassword = GeneralUtil.GeneratePassword();
                 var result = await UserManager.CreateAsync(user, generatedPassword);
                 if (result.Succeeded)
                 {
@@ -703,8 +701,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
-                //string generatedPassword = GeneralUtil.GeneratePassword();
-                string generatedPassword = "123456";
+                string generatedPassword = GeneralUtil.GeneratePassword();
                 var result = await UserManager.CreateAsync(user, generatedPassword);
                 if (result.Succeeded)
                 {
@@ -779,8 +776,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
-                //string generatedPassword = GeneralUtil.GeneratePassword();
-                string generatedPassword = "123456";
+                string generatedPassword = GeneralUtil.GeneratePassword();
                 var result = await UserManager.CreateAsync(user, generatedPassword);
                 if (result.Succeeded)
                 {
@@ -853,8 +849,7 @@ namespace TMS.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
-                //string generatedPassword = GeneralUtil.GeneratePassword();
-                string generatedPassword = "123456";
+                string generatedPassword = GeneralUtil.GeneratePassword();
                 var result = await UserManager.CreateAsync(user, generatedPassword);
                 if (result.Succeeded)
                 {

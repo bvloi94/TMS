@@ -25,7 +25,7 @@ namespace TMS.Areas.HelpDesk.Controllers
     public class ManageTicketController : Controller
     {
 
-        private ILog log = LogManager.GetLogger(typeof(JobManager));
+        private ILog log = LogManager.GetLogger(typeof(ManageTicketController));
 
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
@@ -642,8 +642,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpPost]
         public ActionResult LoadAllTickets(JqueryDatatableParameterViewModel param)
         {
-
-            var searchText = param.search["value"];
+            var searchText = Request["filter_search"];
             var createdFilter = Request["filter_created"];
             var duebyFilter = Request["filter_dueby"];
             var statusFilter = Request["filter_status"];
@@ -797,21 +796,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 case 1:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.Subject)
-                        : filteredListItems.OrderByDescending(p => p.Subject);
-                    break;
-                case 2:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => _userService.GetUserById(p.RequesterID).Fullname)
-                        : filteredListItems.OrderByDescending(p => _userService.GetUserById(p.RequesterID).Fullname);
-                    break;
-                case 5:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.Status)
-                        : filteredListItems.OrderByDescending(p => p.Status);
-                    break;
-                case 6:
-                    filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.ModifiedTime)
                         : filteredListItems.OrderByDescending(p => p.ModifiedTime);
                     break;
@@ -841,11 +825,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 s.OverdueDateString = GeneralUtil.GetOverdueDate(item.ScheduleEndDate, item.Status);
-                s.IsOverdue = false;
-                if (item.ScheduleEndDate.HasValue)
-                {
-                    s.IsOverdue = (item.ScheduleEndDate.Value.Date.Subtract(DateTime.Now.Date).Days < 0) ? true : false;
-                }
+                s.IsOverdue = GeneralUtil.IsOverdue(item.ScheduleEndDate, item.Status);
                 s.Priority = item.Priority == null ? "" : item.Priority.Name;
                 s.PriorityColor = item.Priority == null ? "" : item.Priority.Color;
                 tickets.Add(s);

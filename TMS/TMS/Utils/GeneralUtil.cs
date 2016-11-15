@@ -247,28 +247,60 @@ namespace TMS.Utils
         {
             if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
             {
-                int distance = scheduleDate.Value.Date.Subtract(DateTime.Now.Date).Days;
-                if (distance < 0)
+                TimeSpan distance = scheduleDate.Value.Subtract(DateTime.Now);
+                int distanceDay = distance.Days;
+                int distanceMinute = (int)distance.TotalMinutes;
+                if (distanceDay < 0)
                 {
-                    if (distance == -1)
+                    if (distanceDay == -1)
                     {
                         return "Overdue by yesterday";
                     }
-                    return "Overdue by " + Math.Abs(distance) + " days";
+                    return "Overdue by " + Math.Abs(distanceDay) + " days";
                 }
-                else if (distance == 0) {
-                    return "Due on today at " + scheduleDate.Value.ToString("hh:mm"); ;
+                else if (distanceDay == 0)
+                {
+                    if (distanceMinute < 0)
+                    {
+                        return "Overdue by today at " + scheduleDate.Value.ToString("hh:mm");
+                    }
+                    else
+                    {
+                        return "Due on today at " + scheduleDate.Value.ToString("hh:mm");
+                    }
                 }
                 else
                 {
-                    if (distance == 1)
+                    if (distanceDay == 1)
                     {
                         return "Due on tomorrow at " + scheduleDate.Value.ToString("hh:mm");
                     }
                     return "Due on " + scheduleDate.Value.ToString("MMMM dd yyyy  hh:mm");
                 }
             }
-            return "";
+            return string.Empty;
+        }
+
+        public static bool IsOverdue(DateTime? scheduleDate, int status)
+        {
+            if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
+            {
+                TimeSpan distance = scheduleDate.Value.Subtract(DateTime.Now);
+                int distanceDay = distance.Days;
+                int distanceMinute = (int)distance.TotalMinutes;
+                if (distanceDay < 0)
+                {
+                    return true;
+                }
+                else if (distanceDay == 0)
+                {
+                    if (distanceMinute < 0)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

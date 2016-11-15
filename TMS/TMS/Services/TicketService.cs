@@ -39,77 +39,85 @@ namespace TMS.Services
             IEnumerable<BusinessRule> businessRules = _unitOfWork.BusinessRuleRepository.Get(m => m.IsActive == true);
             foreach (BusinessRule businessRule in businessRules)
             {
-                List<BusinessRuleConditionCustom> businessRuleConditionCustomList = new List<BusinessRuleConditionCustom>();
-                IEnumerable<BusinessRuleCondition> conditions = businessRule.BusinessRuleConditions;
-                foreach (BusinessRuleCondition condition in conditions)
+                IEnumerable<BusinessRuleTrigger> triggers = businessRule.BusinessRuleTriggers;
+                var enable = false;
+                if (businessRule.EnableRule != null)
+                    enable = (bool)businessRule.EnableRule;
+                bool triggerEnable = true;
+                if (enable)
                 {
-                    BusinessRuleConditionCustom businessRuleConditionCustom = new BusinessRuleConditionCustom
+                    List<BusinessRuleConditionCustom> businessRuleConditionCustomList = new List<BusinessRuleConditionCustom>();
+                    IEnumerable<BusinessRuleCondition> conditions = businessRule.BusinessRuleConditions;
+                    foreach (BusinessRuleCondition condition in conditions)
                     {
-                        BusinessRuleCondition = condition,
-                        IsSatisfied = IsSatisfiedWithCondition(handlingTicket, condition)
-                    };
-                    businessRuleConditionCustomList.Add(businessRuleConditionCustom);
-                }
-                isSatisfied = IsSatisfiedWithMultipleConditions(handlingTicket, businessRuleConditionCustomList);
-                if (isSatisfied)
-                {
-                    IEnumerable<BusinessRuleTrigger> triggers = businessRule.BusinessRuleTriggers;
-                    var enable = false;
-                    if (businessRule.EnableRule != null)
-                        enable = (bool)businessRule.EnableRule;
-                    if (enable)
-                    {
-                        foreach (BusinessRuleTrigger trigger in triggers)
+                        BusinessRuleConditionCustom businessRuleConditionCustom = new BusinessRuleConditionCustom
                         {
-                            switch (trigger.Action)
-                            {
-                                case ConstantUtil.BusinessRuleTrigger.AssignToTechnician:
-                                    var technician = _unitOfWork.AspNetRoleRepository.GetByID(trigger.Value);
-                                    if (technician != null)
-                                    {
-                                        ticket.TechnicianID = technician.Id;
-                                    }
-                                    break;
-                                case ConstantUtil.BusinessRuleTrigger.ChangeStatusTo:
-                                    int status = Convert.ToInt32(trigger.Value);
-                                    if (status > 0)
-                                    {
-                                        ticket.Status = status;
-                                    }
-                                    break;
-                                case ConstantUtil.BusinessRuleTrigger.PlaceInDepartment:
-                                    int department = Convert.ToInt32(trigger.Value);
-                                    if (department > 0)
-                                    {
-                                        // Ticket not have department
-                                    }
-                                    break;
-                                case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
-                                case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
-                                case ConstantUtil.BusinessRuleTrigger.MoveToItem:
-                                    int categoryId = Convert.ToInt32(trigger.Value);
-                                    if (categoryId > 0) { ticket.CategoryID = categoryId; }
-                                    break;
-                                case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
-                                    int priorityId = Convert.ToInt32(trigger.Value);
-                                    if (priorityId > 0)
-                                    {
-                                        ticket.PriorityID = priorityId;
-                                    }
-                                    break;
-                            }
+                            BusinessRuleCondition = condition,
+                            IsSatisfied = IsSatisfiedWithCondition(handlingTicket, condition)
+                        };
+                        businessRuleConditionCustomList.Add(businessRuleConditionCustom);
+                    }
+                    isSatisfied = IsSatisfiedWithMultipleConditions(handlingTicket, businessRuleConditionCustomList);
+                    if (!isSatisfied)
+                    {
+                        triggerEnable = false;
+                    }
+                }
+                if (triggerEnable)
+                {
+                    foreach (BusinessRuleTrigger trigger in triggers)
+                    {
+                        switch (trigger.Action)
+                        {
+                            case ConstantUtil.BusinessRuleTrigger.AssignToTechnician:
+                                var technician = _unitOfWork.AspNetRoleRepository.GetByID(trigger.Value);
+                                if (technician != null)
+                                {
+                                    handlingTicket.TechnicianID = technician.Id;
+                                }
+                                break;
+                            case ConstantUtil.BusinessRuleTrigger.ChangeStatusTo:
+                                int status = Convert.ToInt32(trigger.Value);
+                                if (status > 0)
+                                {
+                                    handlingTicket.Status = status;
+                                }
+                                break;
+                            case ConstantUtil.BusinessRuleTrigger.PlaceInDepartment:
+                                int department = Convert.ToInt32(trigger.Value);
+                                if (department > 0)
+                                {
+                                    // Ticket not have department
+                                }
+                                break;
+                            case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
+                            case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
+                            case ConstantUtil.BusinessRuleTrigger.MoveToItem:
+                                int categoryId = Convert.ToInt32(trigger.Value);
+                                if (categoryId > 0)
+                                {
+                                    handlingTicket.CategoryID = categoryId;
+                                }
+                                break;
+                            case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
+                                int priorityId = Convert.ToInt32(trigger.Value);
+                                if (priorityId > 0)
+                                {
+                                    handlingTicket.PriorityID = priorityId;
+                                }
+                                break;
                         }
                     }
+                }
 
-                    IEnumerable<BusinessRuleNotification> notifications = businessRule.BusinessRuleNotifications;
-                    foreach (var noty in notifications)
+                IEnumerable<BusinessRuleNotification> notifications = businessRule.BusinessRuleNotifications;
+                foreach (var noty in notifications)
+                {
+                    var technician = _unitOfWork.AspNetUserRepository.GetByID(noty.ReceiverID);
+                    if (technician != null)
                     {
-                        var technician = _unitOfWork.AspNetUserRepository.GetByID(noty.ReceiverID);
-                        if (technician != null)
-                        {
-                            Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenBusinessRuleIsApplied(ticket, technician));
-                            thread.Start();
-                        }
+                        Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenBusinessRuleIsApplied(ticket, technician));
+                        thread.Start();
                     }
                 }
             }
@@ -571,6 +579,7 @@ namespace TMS.Services
         //send notification to technician if ticket is assigned when creating
         public bool AddTicket(Ticket ticket)
         {
+            ticket = ParseTicket(ticket);
             string ticketCode = GenerateTicketCode();
             if (!string.IsNullOrWhiteSpace(ticketCode))
             {

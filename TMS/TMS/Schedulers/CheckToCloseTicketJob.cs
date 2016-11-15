@@ -42,7 +42,7 @@ namespace TMS.Schedulers
             {
                 if (ticket.SolvedDate.HasValue)
                 {
-                    if (DateTime.Now.Date > ticket.SolvedDate.Value.AddDays(7).Date)
+                    if (DateTime.Now.Date > ticket.SolvedDate.Value.AddDays(ConstantUtil.DayToCloseTicket).Date)
                     {
                         ticket.Status = ConstantUtil.TicketStatus.Closed;
                         ticket.ModifiedTime = DateTime.Now;
