@@ -32,6 +32,7 @@ function initTicketTable() {
                 d.filter_status = JSON.stringify($("[data-role='filter_status_select']").val());
                 d.filter_mode = JSON.stringify($("[data-role='filter_mode_select']").val());
                 d.filter_requester = JSON.stringify($("[data-role='filter_requester_select']").val());
+                d.filter_search = $("#search-txt").val()
             }
         },
         drawCallback: function () {

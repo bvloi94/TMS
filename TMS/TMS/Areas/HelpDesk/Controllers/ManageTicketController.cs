@@ -642,7 +642,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpPost]
         public ActionResult LoadAllTickets(JqueryDatatableParameterViewModel param)
         {
-            var searchText = param.search["value"];
+            var searchText = Request["filter_search"];
             var createdFilter = Request["filter_created"];
             var duebyFilter = Request["filter_dueby"];
             var statusFilter = Request["filter_status"];
