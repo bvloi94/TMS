@@ -3,8 +3,13 @@
     Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Ticket Management";
 }
+<link href="~/Content/Plugins/icheck/skins/square/blue.css" rel="stylesheet">
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
 <style>
+    table.dataTable tbody td {
+        vertical-align: middle;
+    }
+
     .select2-dropdown {
         z-index: 1200;
     }
@@ -16,6 +21,45 @@
     #ticket-description-attachments a, #ticket-solution-attachments a {
         margin: 2px 2px 2px 0px;
         display: inline-block;
+    }
+
+    .ticket-info {
+        margin-bottom: 15px;
+    }
+
+    .ticket-subject {
+        font-size: 16px;
+    }
+
+    .label-status {
+        display: inline-block;
+    }
+
+        .label-status .label {
+            display: inline-block;
+            min-width: 80px;
+            border-radius: unset;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+    .priority-color {
+        display: inline-block;
+        margin-top: 10px;
+        width: 12px;
+        height: 12px;
+    }
+
+    .overdue {
+        background-color: #de1515;
+        color: #ffffff;
+        display: block;
+        margin-top: 5px;
+        width: 120px;
+        padding: 5px 8px;
+        text-transform: uppercase;
+        text-align: center;
+        font-weight: bold;
     }
 </style>
 
@@ -432,17 +476,17 @@
                         <input class="form-control" type="text" id="search-txt" placeholder="Subject" />
                     </div>
                 </div>
-                <table class="table" id="ticket-table">
+                <table class="table table-striped" id="ticket-table">
                     <thead>
                         <tr>
-                            <th style="width: 5%;" />
-                            <th style="width: 20%;">Subject</th>
-                            <th style="width: 10%;">Requester</th>
-                            <th style="width: 10%;">Assigned To</th>
-                            <th style="width: 10%;">Solved Date</th>
-                            <th style="width: 10%;">Status</th>
-                            <th style="width: 15%;">Last Modified</th>
-                            <th style="width: 20%;">Options</th>
+                            <th style="width: 3%;" />
+                            <th style="padding-left: 15px">Subject</th>
+                            @*<th style="width: 10%;">Requester</th>
+                                <th style="width: 10%;">Assigned To</th>
+                                <th style="width: 10%;">Solved Date</th>
+                                <th style="width: 10%;">Status</th>
+                                <th style="width: 15%;">Last Modified</th>*@
+                            <th style="width: 5%;">Options</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

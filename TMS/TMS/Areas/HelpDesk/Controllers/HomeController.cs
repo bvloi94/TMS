@@ -34,13 +34,13 @@ namespace TMS.Areas.HelpDesk.Controllers
         {
             IEnumerable<BasicTicketViewModel> newTicketList = LoadAllTickets();
             IEnumerable<BasicTicketViewModel> requestersTicketList = LoadRequestersTickets();
-            IEnumerable<BasicTicketViewModel> ticketsInLast7Days = LoadRequestersTicketsInLast7Days();
+            IEnumerable<BasicTicketViewModel> ticketsInLast7Days = LoadTicketsInLast7Days();
             IEnumerable<BasicTicketViewModel> warningTickets = LoadWarningTickets();
 
             ViewBag.AllNewTickets = newTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.New);
             ViewBag.WarningTickets = warningTickets;
             ViewBag.NewRequestersTickets = requestersTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.New);
-            ViewBag.NewRequestersTicketsLast7Days = ticketsInLast7Days.Where(m => m.Status == ConstantUtil.TicketStatus.New);
+            ViewBag.NewTicketsLast7Days = ticketsInLast7Days.Where(m => m.Status == ConstantUtil.TicketStatus.New);
             ViewBag.UnapprovedTickets = newTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.Unapproved);
             return View();
         }
@@ -79,9 +79,9 @@ namespace TMS.Areas.HelpDesk.Controllers
             return filterList;
         }
 
-        public IEnumerable<BasicTicketViewModel> LoadRequestersTicketsInLast7Days()
+        public IEnumerable<BasicTicketViewModel> LoadTicketsInLast7Days()
         {
-            IEnumerable<Ticket> ticketList = _ticketService.GetAll().Where(m => DateTime.Now.Subtract(m.CreatedTime).Days < 7 && _userService.GetUserById(m.CreatedID).AspNetRoles.FirstOrDefault().Name == "Requester").ToArray();
+            IEnumerable<Ticket> ticketList = _ticketService.GetAll().Where(m => DateTime.Now.Subtract(m.CreatedTime).Days < 7).ToArray();
             IEnumerable<BasicTicketViewModel> filterList = ticketList.Select(
                 m => new BasicTicketViewModel
                 {

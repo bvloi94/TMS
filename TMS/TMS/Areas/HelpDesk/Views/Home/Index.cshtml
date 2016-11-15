@@ -5,8 +5,8 @@
     Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Help Desk";
     IEnumerable<BasicTicketViewModel> newTickets = ViewBag.AllNewTickets;
-    IEnumerable<BasicTicketViewModel> newRequestersTickets = ViewBag.NewRequestersTickets;
-    var newTicketsPercentage = newRequestersTickets == null ? 0 : (newRequestersTickets.Count() * 100 / newTickets.Count());
+    IEnumerable<BasicTicketViewModel> newTicketsLast7Days = ViewBag.NewTicketsLast7Days;
+    var newTicketsPercentage = newTicketsLast7Days == null ? 0 : (newTicketsLast7Days.Count() * 100 / newTickets.Count());
     IEnumerable<BasicTicketViewModel> unapprovedTickets = ViewBag.UnapprovedTickets;
     IEnumerable<BasicTicketViewModel> warningTickets = ViewBag.WarningTickets;
 }
@@ -60,12 +60,26 @@
         <div class="info-box bg-aqua">
             <span class="info-box-icon"><i class="fa fa-star"></i></span>
             <div class="info-box-content">
-                <span class="info-box-text">New Requesters' tickets</span>
-                <span class="info-box-number">@newTickets.Count()</span>
+                <span class="info-box-text">Open tickets</span>
+                @if (newTicketsLast7Days == null)
+                {
+                    <span class="info-box-number">0</span>
+                }
+                else
+                {
+                    <span class="info-box-number">@newTickets.Count()</span>
+                }
                 <div class="progress">
                     <div class="progress-bar" style="width: @newTicketsPercentage%"></div>
                 </div>
-                <span class="progress-description">@newRequestersTickets.Count() Tickets Created by Requester</span>
+                @if (newTicketsLast7Days == null)
+                {
+                    <span class="progress-description">0 Tickets created in last 7 days</span>
+                }
+                else
+                {
+                    <span class="progress-description">@newTicketsLast7Days.Count() Tickets created in last 7 days</span>
+                }
             </div>
         </div>
         <div class="info-box bg-orange">
@@ -73,6 +87,13 @@
             <div class="info-box-content">
                 <span class="info-box-text">Unapproved tickets</span>
                 <span class="info-box-number">@unapprovedTickets.Count()</span>
+            </div>
+        </div>
+        <div class="info-box bg-red">
+            <span class="info-box-icon"><i class="fa fa-bell"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Coming overdue tickets</span>
+                <span class="info-box-number">@warningTickets.Count()</span>
             </div>
         </div>
         <div class="box box-solid">
@@ -113,7 +134,7 @@
                     <i>There is no urgent ticket at this moment.</i>
                 </div>
             }
-        </div>  
+        </div>
         <div class="box box-solid ticket-graph">
             <div class="box-header with-border">
                 <span class="box-title">Tickets by Status</span>
@@ -135,51 +156,51 @@
             </div>
             @if (newTickets.Count() > 0)
             {
-            <div class="box-body no-padding ticket-lists">
-                @foreach (BasicTicketViewModel ticket in newTickets)
+                <div class="box-body no-padding ticket-lists">
+                    @foreach (BasicTicketViewModel ticket in newTickets)
                     {
-                    <div class="col-sm-12 table-ticket">
-                        <div class="col-lg-2 col-md-2 col-sm-3">
-                            <span class="text-muted text-bold">#@ticket.Code</span>
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-5">
-                            <p>
-                                @if (ticket.Subject.Length > 60)
-                                        {
-                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
-                                        @ticket.Subject.Substring(0, 59) ...
-                                    </a>
-                                        }
-                                        else
-                                        {
-                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
-                                        @ticket.Subject
-                                    </a>
-                                        }
-                            </p>
-                            <p>
-                                <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
-                                Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
-                            </p>
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-4">
-                            <div class="text-right pull-right">
-                                <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Date created</p>
-                                <p class="text-blue">@ticket.CreatedTime</p>
+                        <div class="col-sm-12 table-ticket">
+                            <div class="col-lg-2 col-md-2 col-sm-3">
+                                <span class="text-muted text-bold">#@ticket.Code</span>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-5">
+                                <p>
+                                    @if (ticket.Subject.Length > 60)
+                                    {
+                                        <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                            @ticket.Subject.Substring(0, 59) ...
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                            @ticket.Subject
+                                        </a>
+                                    }
+                                </p>
+                                <p>
+                                    <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
+                                    Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
+                                </p>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-4">
+                                <div class="text-right pull-right">
+                                    <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Date created</p>
+                                    <p class="text-blue">@ticket.CreatedTime</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     }
-            </div>
-            <div class="box-footer">
-                <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
-            </div>
+                </div>
+                <div class="box-footer">
+                    <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
+                </div>
             }
             else
             {
-            <div class="box-body" style="text-align: center; padding: 15px 20px">
-                <span><i>There is no new ticket in last 7 days.</i></span>
-            </div>
+                <div class="box-body" style="text-align: center; padding: 15px 20px">
+                    <span><i>There is no new ticket in last 7 days.</i></span>
+                </div>
             }
         </div>
         <div class="box box-solid" id="unapproved-tickets">
@@ -192,51 +213,51 @@
             </div>
             @if (unapprovedTickets.Count() > 0)
             {
-            <div class="box-body no-padding ticket-lists">
-                @foreach (BasicTicketViewModel ticket in unapprovedTickets)
+                <div class="box-body no-padding ticket-lists">
+                    @foreach (BasicTicketViewModel ticket in unapprovedTickets)
                     {
-                    <div class="col-sm-12 table-ticket">
-                        <div class="col-lg-2 col-md-2 col-sm-3">
-                            <span class="text-muted text-bold">#@ticket.Code</span>
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-5">
-                            <p>
-                                @if (ticket.Subject.Length > 60)
+                        <div class="col-sm-12 table-ticket">
+                            <div class="col-lg-2 col-md-2 col-sm-3">
+                                <span class="text-muted text-bold">#@ticket.Code</span>
+                            </div>
+                            <div class="col-lg-7 col-md-7 col-sm-5">
+                                <p>
+                                    @if (ticket.Subject.Length > 60)
                                     {
-                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
-                                        @ticket.Subject.Substring(0, 59) ...
-                                    </a>
+                                        <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                            @ticket.Subject.Substring(0, 59) ...
+                                        </a>
                                     }
                                     else
                                     {
-                                    <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
-                                        @ticket.Subject
-                                    </a>
+                                        <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-blue">
+                                            @ticket.Subject
+                                        </a>
                                     }
-                            </p>
-                            <p>
-                                <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
-                                Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
-                            </p>
-                        </div>
-                        <div class="col-lg-3 col-md-3 col-sm-4">
-                            <div class="text-right pull-right">
-                                <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Last modified</p>
-                                <p class="text-muted text-bold">@ticket.ModifiedTime</p>
+                                </p>
+                                <p>
+                                    <i class="fa fa-star text-muted"></i>&nbsp;&nbsp;
+                                    Created by <span class="text-muted text-bold">@ticket.CreatedBy</span>
+                                </p>
+                            </div>
+                            <div class="col-lg-3 col-md-3 col-sm-4">
+                                <div class="text-right pull-right">
+                                    <p class="text-muted"><i class="fa fa-clock-o"></i>&nbsp;&nbsp;Last modified</p>
+                                    <p class="text-muted text-bold">@ticket.ModifiedTime</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     }
-            </div>
-            <div class="box-footer">
-                <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
-            </div>
+                </div>
+                <div class="box-footer">
+                    <div class="col-sm-12"><a class="text-blue pull-right" href="/HelpDesk/ManageTicket">View Ticket List</a> </div>
+                </div>
             }
             else
             {
-            <div class="box-body" style="text-align: center; padding: 15px 20px">
-                <span><i>There is no unapproved ticket in last 7 days.</i></span>
-            </div>
+                <div class="box-body" style="text-align: center; padding: 15px 20px">
+                    <span><i>There is no unapproved ticket in last 7 days.</i></span>
+                </div>
             }
         </div>
 

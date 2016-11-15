@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.0.0\build\Microsoft.Net.Compilers.props')" />
@@ -457,6 +457,8 @@
     <Content Include="Content\img\user8-128x128.jpg" />
     <Content Include="Content\js\jPages.min.js" />
     <Content Include="Content\js\spectrum.js" />
+    <Content Include="Content\Plugins\icheck\icheck.js" />
+    <Content Include="Content\Plugins\icheck\icheck.min.js" />
     <Content Include="Content\Plugins\jquery.ui\jquery-ui.min.css" />
     <Content Include="Content\js\chart.min.js" />
     <Content Include="Content\js\html2canvas.js" />
@@ -752,6 +754,7 @@
     <Folder Include="Areas\Technician\Models\" />
     <Folder Include="Content\knowledgebase\css\" />
     <Folder Include="Content\knowledgebase\images\" />
+    <Folder Include="Content\Plugins\icheck\skins\" />
     <Folder Include="Content\Plugins\jquery.ui\images\" />
     <Folder Include="Views\Notification\" />
   </ItemGroup>

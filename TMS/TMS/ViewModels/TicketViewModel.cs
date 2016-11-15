@@ -37,6 +37,7 @@ namespace TMS.ViewModels
         public string Urgency { get; set; }
         public int PriorityId { get; set; }
         public string Priority { get; set; }
+        public string PriorityColor { get; set; }
         public int ImpactId { get; set; }
         public string Impact { get; set; }
         [StringLength(255, ErrorMessage = "Impact Detail length is less than 255 characters")]
@@ -62,6 +63,8 @@ namespace TMS.ViewModels
         public string ScheduleEndDateString { get; set; }
         public string ActualStartDateString { get; set; }
         public string ActualEndDateString { get; set; }
+        public string OverdueDateString { get; set; }
+        public bool IsOverdue { get; set; }
         public string CreatedBy { get; set; }
         public string CreatedId { get; set; }
         public string AssignedBy { get; set; }

@@ -5,7 +5,10 @@ using System.Linq;
 using System.Web.Mvc;
 using TMS.DAL;
 using TMS.Models;
+using TMS.Utils;
 using TMS.Services;
+using TMS.ViewModels;
+using TMS.Enumerator;
 
 namespace TMS.Areas.Technician.Controllers
 {
@@ -30,7 +33,7 @@ namespace TMS.Areas.Technician.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetTechnicianTickets(jQueryDataTableParamModel param)
+        public ActionResult GetTechnicianTickets(JqueryDatatableParameterViewModel param)
         {
             // 1. Get Parameters
             string technicianId = User.Identity.GetUserId();
@@ -86,49 +89,51 @@ namespace TMS.Areas.Technician.Controllers
             var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
             var sortDirection = Request["order[0][dir]"];
 
-            switch (sortColumnIndex)
+            if (sortColumnIndex == 0)
             {
-                case 0:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.CreatedTime)
-                        : filteredListItems.OrderByDescending(p => p.CreatedTime);
-                    break;
-                case 1:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.RequesterID)
-                        : filteredListItems.OrderByDescending(p => p.RequesterID);
-                    break;
-                case 2:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.Subject)
-                        : filteredListItems.OrderByDescending(p => p.Subject);
-                    break;
-                case 5:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.ModifiedTime)
-                        : filteredListItems.OrderByDescending(p => p.ModifiedTime);
-                    break;
-                default: break;
+                filteredListItems = sortDirection == "asc"
+                     ? filteredListItems.OrderBy(p => p.ModifiedTime)
+                     : filteredListItems.OrderByDescending(p => p.ModifiedTime);
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
-            var result = displayedList.Select(p => new IConvertible[]{
-                p.CreatedTime.ToString(),
-                p.RequesterID == null ? "" : _userService.GetUserById(p.RequesterID).Fullname,
-                p.Subject,
-                p.Solution,
-                p.Status,
-                p.ModifiedTime.ToString(),
-                p.ID
-            }.ToArray());
-
-            return Json(new
+            var tickets = new List<TicketViewModel>();
+            int startNo = param.start;
+            foreach (var item in displayedList)
             {
-                param.sEcho,
-                iTotalRecords = result.Count(),
-                iTotalDisplayRecords = filteredListItems.Count(),
-                aaData = result
-            }, JsonRequestBehavior.AllowGet);
+                var s = new TicketViewModel();
+                s.No = ++startNo;
+                s.Code = item.Code;
+                s.Id = item.ID;
+                s.Subject = item.Subject;
+                s.Requester = item.RequesterID == null ? "" : _userService.GetUserById(item.RequesterID).Fullname;
+                if (item.TechnicianID != null)
+                {
+                    AspNetUser technician = _userService.GetUserById(item.TechnicianID);
+                    s.Technician = technician.Fullname;
+                }
+                else
+                {
+                    s.Technician = "";
+                }
+                s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                s.Status = ((TicketStatusEnum)item.Status).ToString();
+                s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
+                s.OverdueDateString = GeneralUtil.GetOverdueDate(item.ScheduleEndDate, item.Status);
+                s.IsOverdue = false;
+                if (item.ScheduleEndDate.HasValue)
+                {
+                    s.IsOverdue = (item.ScheduleEndDate.Value.Date.Subtract(DateTime.Now.Date).Days < 0) ? true : false;
+                }
+                s.Priority = item.Priority == null ? "" : item.Priority.Name;
+                s.PriorityColor = item.Priority == null ? "" : item.Priority.Color;
+                tickets.Add(s);
+            }
+            JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
+            rsModel.draw = param.draw;
+            rsModel.recordsFiltered = filteredListItems.Count();
+            rsModel.data = tickets;
+            return Json(rsModel, JsonRequestBehavior.AllowGet);
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

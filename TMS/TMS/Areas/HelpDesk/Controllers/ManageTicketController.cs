@@ -714,6 +714,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 var s = new TicketViewModel();
                 s.No = ++startNo;
+                s.Code = item.Code;
                 s.Id = item.ID;
                 s.Subject = item.Subject;
                 s.Requester = item.RequesterID == null ? "" : _userService.GetUserById(item.RequesterID).Fullname;
@@ -729,6 +730,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = ((TicketStatusEnum)item.Status).ToString();
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
+                s.OverdueDateString = GeneralUtil.GetOverdueDate(item.ScheduleEndDate, item.Status);
+                s.IsOverdue = false;
+                if (item.ScheduleEndDate.HasValue)
+                {
+                    s.IsOverdue = (item.ScheduleEndDate.Value.Date.Subtract(DateTime.Now.Date).Days < 0) ? true : false;
+                }
+                s.Priority = item.Priority == null ? "" : item.Priority.Name;
+                s.PriorityColor = item.Priority == null ? "" : item.Priority.Color;
                 tickets.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
