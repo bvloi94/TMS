@@ -254,25 +254,45 @@ namespace TMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(BasicTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
+                foreach (ModelState modelState in ViewData.ModelState.Values)
                 {
-                    Ticket ticket = new Ticket();
-                    TicketAttachment ticketFiles = new TicketAttachment();
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = error.ErrorMessage
+                        });
+                    }
+                }
+            }
+            else
+            {
+                Ticket ticket = new Ticket();
+                TicketAttachment ticketFiles = new TicketAttachment();
 
-                    ticket.Subject = model.Subject;
-                    ticket.Description = model.Description;
-                    ticket.Status = ConstantUtil.TicketStatus.Open;
-                    ticket.CreatedID = User.Identity.GetUserId();
-                    ticket.RequesterID = User.Identity.GetUserId();
-                    ticket.Mode = ConstantUtil.TicketMode.WebForm;
-                    ticket.CreatedTime = DateTime.Now;
-                    ticket.ModifiedTime = DateTime.Now;
-                    _ticketService.AddTicket(ticket);
+                ticket.Subject = model.Subject;
+                ticket.Description = model.Description;
+                ticket.Status = ConstantUtil.TicketStatus.Open;
+                ticket.CreatedID = User.Identity.GetUserId();
+                ticket.RequesterID = User.Identity.GetUserId();
+                ticket.Mode = ConstantUtil.TicketMode.WebForm;
+                ticket.CreatedTime = DateTime.Now;
+                ticket.ModifiedTime = DateTime.Now;
+                bool addResult = _ticketService.AddTicket(ticket);
+                if (addResult)
+                {
                     if (uploadFiles != null && uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                     {
                         _ticketAttachmentService.saveFile(ticket.ID, uploadFiles, ConstantUtil.TicketAttachmentType.Description);
+                    }
+                    AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
+                    if (requester != null)
+                    {
+                        Thread thread = new Thread(() => EmailUtil.SendToRequesterWhenCreateTicket(ticket, requester));
+                        thread.Start();
                     }
                     return Json(new
                     {
@@ -280,13 +300,12 @@ namespace TMS.Controllers
                         msg = "Create ticket successfully!"
                     });
                 }
-                catch
+                else
                 {
                     return Json(new
                     {
                         success = false,
-                        error = true,
-                        msg = "Cannot create ticket. Please try again!"
+                        msg = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }
@@ -294,8 +313,7 @@ namespace TMS.Controllers
             return Json(new
             {
                 success = false,
-                error = true,
-                msg = "Cannot create ticket. Please try again!"
+                msg = ConstantUtil.CommonError.DBExceptionError
             });
         }
 

@@ -20,6 +20,7 @@ using TMS.ViewModels;
 
 namespace TMS.Areas.Admin.Controllers
 {
+    [CustomAuthorize(Roles = "Admin")]
     public class ManageUserController : Controller
     {
         private ApplicationSignInManager _signInManager;
@@ -356,7 +357,8 @@ namespace TMS.Areas.Admin.Controllers
         [HttpGet]
         public ActionResult GetAdmins(jQueryDataTableParamModel param)
         {
-            var admins = _userService.GetAdmins();
+            string currentUserId = User.Identity.GetUserId();
+            var admins = _userService.GetAdmins(currentUserId);
             var default_search_key = Request["search[value]"];
             var availability_select = Request["availability_select"];
             var search_text = Request["search_text"];

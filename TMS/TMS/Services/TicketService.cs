@@ -590,7 +590,6 @@ namespace TMS.Services
                 requesterNoti.IsForHelpDesk = false;
                 requesterNoti.BeNotifiedID = ticket.RequesterID;
                 requesterNoti.ActionType = ConstantUtil.NotificationActionType.RequesterNotiCreate;
-                //requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created successfully.", ticket.Subject, ticket.Code);
                 requesterNoti.NotifiedTime = DateTime.Now;
                 ticket.Notifications.Add(requesterNoti);
 
@@ -605,7 +604,6 @@ namespace TMS.Services
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
                         technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
                         technicianNoti.ActID = ticket.AssignedByID;
-                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         ticket.Notifications.Add(technicianNoti);
                     }
@@ -624,7 +622,6 @@ namespace TMS.Services
                             helpdeskNoti.IsForHelpDesk = true;
                             helpdeskNoti.ActionType = ConstantUtil.NotificationActionType.HelpDeskNotiCreate;
                             helpdeskNoti.ActID = ticket.RequesterID;
-                            //helpdeskNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created by {2}.", ticket.Subject, ticket.Code, ticketCreator.Fullname);
                             helpdeskNoti.NotifiedTime = DateTime.Now;
                             ticket.Notifications.Add(helpdeskNoti);
                         }

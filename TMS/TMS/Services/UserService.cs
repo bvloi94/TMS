@@ -105,9 +105,9 @@ namespace TMS.Services
                          && (query == null || r.Fullname.Contains(query)));
         }
 
-        public IEnumerable<AspNetUser> GetAdmins()
+        public IEnumerable<AspNetUser> GetAdmins(string currentUserId)
         {
-            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin");
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin" && r.Id != currentUserId);
         }
 
         public IEnumerable<AspNetUser> GetManagers()
