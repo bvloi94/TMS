@@ -17,8 +17,9 @@ function initTicketTable() {
         serverSide: true,
         processing: true,
         sort: true,
-        searchable: true,
-        lengthMenu: [7],
+        filter: false,
+        //searchable: true,
+        lengthMenu: [10],
         order: [[1, 'des']],
         lengthChange: false,
         ajax: {
@@ -231,7 +232,7 @@ function initTicketTable() {
             "sInfo": "Found _TOTAL_ tickets",
             "sLast": "Last page",
             "sFirst": "First",
-            "sSearch": "Search:",
+            //"sSearch": "Search:",
             "sZeroRecords": "No records",
             "sEmptyTable": "No data",
             "sInfoFiltered": " - filter from _MAX_ rows",
@@ -497,6 +498,24 @@ $(document).ready(function () {
 
     // Init ticket table
     initTicketTable();
+
+    //$("#filterBtn").on("click", function () {
+
+    //    // if submenu is hidden, does not have active class
+    //    if (!$('#filterBtn').hasClass("active")) {
+
+    //        $('#filter-div').removeClass("hidden");
+    //        $('#filterBtn').addClass("active");
+    //        $('#filter-div').slideDown(400);
+
+    //        //if submenu is visible
+    //    } else if ($('#filterBtn').hasClass("active")) {
+
+    //        $('#filter-div').slideToggle(400);
+    //        $('#filter-div').addClass("hidden");
+    //        $('#filterBtn').removeClass("active");
+    //    }
+    //});
 
     $("#search-txt").keyup(function () {
         ticketTable.draw();
