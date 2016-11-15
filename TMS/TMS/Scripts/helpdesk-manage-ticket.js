@@ -251,115 +251,132 @@ function openTicketDetailModal(ticketId) {
             id: ticketId
         },
         success: function (data) {
-            $('#ticket-subject').text(data.subject);
-            //$('#ticket-description').text(data.description);
-            $('#ticket-department').text(data.department);
-            $('#ticket-technician').text(data.technician);
-            $('#ticket-created-by').text(data.creater);
-            $('#ticket-assigned-by').text(data.assigner);
-            $('#ticket-solved-by').text(data.solver);
-            $('#ticket-type').text(data.type);
-            $('#ticket-mode').text(data.mode);
-            $('#ticket-urgency').text(data.urgency);
-            $('#ticket-priority').text(data.priority);
-            $('#ticket-category').text(data.category);
-            $('#ticket-impact').text(data.impact);
-            $('#ticket-impact-detail').text(data.impactDetail);
-            if (data.mergeTicket) {
-                $('#ticket-merged').html(data.mergeTicket);
-                $('#ticket-merged-div').show();
+            if (data.success) {
+                $('#ticket-subject').text(data.subject);
+                //$('#ticket-description').text(data.description);
+                $('#ticket-department').text(data.department);
+                $('#ticket-technician').text(data.technician);
+                $('#ticket-created-by').text(data.creater);
+                $('#ticket-assigned-by').text(data.assigner);
+                $("#ticket-requester").text(data.requester);
+                $("#ticket-solved-by").text(data.solver);
+                $('#ticket-type').text(data.type);
+                $('#ticket-mode').text(data.mode);
+                $('#ticket-urgency').text(data.urgency);
+                $('#ticket-priority').text(data.priority);
+                $('#ticket-category').text(data.category);
+                $('#ticket-impact').text(data.impact);
+                $('#ticket-impact-detail').text(data.impactDetail);
+                if (data.mergeTicket) {
+                    $('#ticket-merged').html(data.mergeTicket);
+                    $('#ticket-merged-div').show();
+                }
+                $("#ticket-tags").html(loadKeywordToTags(data.tags));
+                $("#ticket-note").html(data.note);
+                $("#reopen-close-btn").attr("data-ticket-id", data.id);
+                $("#reopen-resolve-btn").attr("href", "/Ticket/Solve/" + data.id);
+                $("#reopen-reassign-btn").attr("data-ticket-id", data.id);
+                $("#refer-older-ticket-btn").attr("data-id", data.id);
+                //action button group
+                $("#action-cancel-btn").attr("data-ticket-id", data.id);
+                $("#action-solve-btn").attr("href", "/Ticket/Solve/" + data.id);
+                $("#action-edit-btn").attr("href", "/HelpDesk/ManageTicket/EditTicket/" + data.id);
+                $("#action-history-btn").attr("href", "/Ticket/History/" + data.id);
+                $("#action-detail-btn").attr("href", "/Ticket/TicketDetail/" + data.id);
+
+                var solution = "";
+                if (!data.solution || data.solution == "-") {
+                    solution = "This ticket is not solved yet.";
+                }
+                else {
+                    solution = data.solution;
+                }
+
+                $('#ticket-description-attachments').empty();
+                if (data.descriptionAttachment && data.descriptionAttachment != "") {
+                    $('#ticket-description-attachments').append(data.descriptionAttachment);
+                }
+
+                $('#ticket-solution-attachments').empty();
+                if (data.solutionAttachment && data.solutionAttachment != "") {
+                    $('#ticket-solution-attachments').append(data.solutionAttachment);
+                }
+
+                //solve: new
+                //edit: all
+                //cancel: new, assigned
+                //reopen: unapproved
+                if (data.status == 1) {
+                    $('#ticket-status').html(getStatusLabel('Open'));
+                    $('#action-solve-btn').show();
+                    $("#action-cancel-btn").show();
+                    $(".reopen-li").hide();
+                } else if (data.status == 2) {
+                    $('#ticket-status').html(getStatusLabel('Assigned'));
+                    $('#action-solve-btn').hide();
+                    $("#action-cancel-btn").show();
+                    $(".reopen-li").hide();
+                } else if (data.status == 3) {
+                    $('#ticket-status').html(getStatusLabel('Solved'));
+                    $('#action-solve-btn').hide();
+                    $("#action-cancel-btn").hide();
+                    $(".reopen-li").hide();
+                } else if (data.status == 4) {
+                    $('#ticket-status').html(getStatusLabel('Unapproved'));
+                    $('#action-solve-btn').hide();
+                    $("#action-cancel-btn").hide();
+                    $(".reopen-li").show();
+                } else if (data.status == 5) {
+                    $('#ticket-status').html(getStatusLabel('Cancelled'));
+                    $('#action-solve-btn').hide();
+                    $("#action-cancel-btn").hide();
+                    $(".reopen-li").hide();
+                } else if (data.status == 6) {
+                    $('#ticket-status').html(getStatusLabel('Closed'));
+                    $('#action-solve-btn').hide();
+                    $("#action-cancel-btn").hide();
+                    $(".reopen-li").hide();
+                }
+
+                $('#ticket-created-date').text(data.createdDate);
+                $('#ticket-modified-date').text(data.lastModified);
+                $('#ticket-solved-date').text(data.solvedDate);
+                $('#ticket-schedule-start').text(data.scheduleStart);
+                $('#ticket-schedule-end').text(data.scheduleEnd);
+                $('#ticket-actual-start').text(data.actualStart);
+                $('#ticket-actual-end').text(data.actualEnd);
+
+                $('#ticket-solveUser').text(data.solveUser);
+
+                $('#detail-modal').modal("show");
+                $('#ticket-description').trunk8({
+                    tooltip: false,
+                    lines: 6,
+                    fill: '&hellip; <a id="see-more" href="/Ticket/TicketDetail/' + data.id + '">See More</a>'
+                });
+                $('#ticket-description').trunk8("update", data.description);
+                $('#ticket-solution').trunk8({
+                    tooltip: false,
+                    lines: 6,
+                    fill: '&hellip; <a id="see-more" href="/Ticket/TicketDetail/' + data.id + '">See More</a>'
+                });
+                $('#ticket-solution').trunk8("update", solution);
+            } else {
+                noty({
+                    text: data.message,
+                    type: "error",
+                    layout: "topRight",
+                    timeout: 2500
+                });
             }
-            $("#reopen-close-btn").attr("data-ticket-id", data.id);
-            $("#reopen-resolve-btn").attr("href", "/Ticket/Solve/" + data.id);
-            $("#reopen-reassign-btn").attr("data-ticket-id", data.id);
-            $("#refer-older-ticket-btn").attr("data-id", data.id);
-            //action button group
-            $("#action-cancel-btn").attr("data-ticket-id", data.id);
-            $("#action-solve-btn").attr("href", "/Ticket/Solve/" + data.id);
-            $("#action-edit-btn").attr("href", "/HelpDesk/ManageTicket/EditTicket/" + data.id);
-            $("#action-history-btn").attr("href", "/Ticket/History/" + data.id);
-            $("#action-detail-btn").attr("href", "/Ticket/TicketDetail/" + data.id);
-
-            var solution = "";
-            if (!data.solution || data.solution == "-") {
-                solution = "This ticket is not solved yet.";
-            }
-            else {
-                solution = data.solution;
-            }
-
-            $('#ticket-description-attachments').empty();
-            if (data.descriptionAttachment && data.descriptionAttachment != "") {
-                $('#ticket-description-attachments').append(data.descriptionAttachment);
-            }
-
-            $('#ticket-solution-attachments').empty();
-            if (data.solutionAttachment && data.solutionAttachment != "") {
-                $('#ticket-solution-attachments').append(data.solutionAttachment);
-            }
-
-            //solve: new
-            //edit: all
-            //cancel: new, assigned
-            //reopen: unapproved
-            if (data.status == 1) {
-                $('#ticket-status').html(getStatusLabel('Open'));
-                $('#action-solve-btn').show();
-                $("#action-cancel-btn").show();
-                $(".reopen-li").hide();
-            } else if (data.status == 2) {
-                $('#ticket-status').html(getStatusLabel('Assigned'));
-                $('#action-solve-btn').hide();
-                $("#action-cancel-btn").show();
-                $(".reopen-li").hide();
-            } else if (data.status == 3) {
-                $('#ticket-status').html(getStatusLabel('Solved'));
-                $('#action-solve-btn').hide();
-                $("#action-cancel-btn").hide();
-                $(".reopen-li").hide();
-            } else if (data.status == 4) {
-                $('#ticket-status').html(getStatusLabel('Unapproved'));
-                $('#action-solve-btn').hide();
-                $("#action-cancel-btn").hide();
-                $(".reopen-li").show();
-            } else if (data.status == 5) {
-                $('#ticket-status').html(getStatusLabel('Cancelled'));
-                $('#action-solve-btn').hide();
-                $("#action-cancel-btn").hide();
-                $(".reopen-li").hide();
-            } else if (data.status == 6) {
-                $('#ticket-status').html(getStatusLabel('Closed'));
-                $('#action-solve-btn').hide();
-                $("#action-cancel-btn").hide();
-                $(".reopen-li").hide();
-            }
-
-            $('#ticket-created-date').text(data.createdDate);
-            $('#ticket-modified-date').text(data.lastModified);
-            $('#ticket-solved-date').text(data.solvedDate);
-            $('#ticket-schedule-start').text(data.scheduleStart);
-            $('#ticket-schedule-end').text(data.scheduleEnd);
-            $('#ticket-actual-start').text(data.actualStart);
-            $('#ticket-actual-end').text(data.actualEnd);
-
-            $('#ticket-solveUser').text(data.solveUser);
-
-            $('#detail-modal').modal("show");
-            $('#ticket-description').trunk8({
-                tooltip: false,
-                lines: 6,
-                fill: '&hellip; <a id="see-more" href="/Ticket/TicketDetail/' + data.id + '">See More</a>'
-            });
-            $('#ticket-description').trunk8("update", data.description);
-            $('#ticket-solution').trunk8({
-                tooltip: false,
-                lines: 6,
-                fill: '&hellip; <a id="see-more" href="/Ticket/TicketDetail/' + data.id + '">See More</a>'
-            });
-            $('#ticket-solution').trunk8("update", solution);
         },
-        failure: function (data) {
-            alert(data.d);
+        error: function () {
+            noty({
+                text: "Cannot connect to server",
+                type: "error",
+                layout: "topRight",
+                timeout: 2500
+            });
         }
     });
 }
@@ -803,4 +820,17 @@ var generateTags = function () {
             }
         }
     });
+}
+
+function loadKeywordToTags(keyword) {
+    var keywordTags = (keyword).split(',');
+    var content = '<ul class="keywords">';
+    for (j = 0; j < keywordTags.length; j++) {
+        if (keywordTags[j]) {
+            var key = keywordTags[j].replace(/"/g, '');
+            content += '<li><div class="key-tags">' + key + '</div></li>';
+        }
+    }
+    content += '</ul>';
+    return content;
 }

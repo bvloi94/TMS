@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using TMS.DAL;
+using TMS.Models;
 using TMS.Services;
 
 namespace TMS.Utils
@@ -87,7 +88,7 @@ namespace TMS.Utils
                         return ConstantUtil.TicketTypeString.Change;
                 }
             }
-            return "Unassigned";
+            return "-";
         }
 
         public static string GetModeNameByMode(int mode)
@@ -203,6 +204,42 @@ namespace TMS.Utils
                     return ConstantUtil.TicketStatusString.Closed;
                 default:
                     return "Unassigned";
+            }
+        }
+
+        public static string GetUserInfo(AspNetUser user)
+        {
+            if (user != null)
+            {
+                return user.Fullname + " (" + user.Email + ")";
+            }
+            else
+            {
+                return "-";
+            }
+        }
+
+        public static string GetMergedTicketInfo(Ticket mergedTicket)
+        {
+            if (mergedTicket != null)
+            {
+                return string.Format("{0} (<a href='/Ticket/TicketDetail/{1}'>#{2}</a>)", mergedTicket.Subject, mergedTicket.ID, mergedTicket.Code);
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        public static string GetRequesterMergedTicketInfo(Ticket mergedTicket)
+        {
+            if (mergedTicket != null)
+            {
+                return string.Format("{0} (<a href='/Ticket/Detail/{1}'>#{2}</a>)", mergedTicket.Subject, mergedTicket.ID, mergedTicket.Code);
+            }
+            else
+            {
+                return string.Empty;
             }
         }
     }

@@ -85,3 +85,27 @@ tr.shown td.details-control {
     font-weight: bold;
     color: #0073ea;
 }
+
+.keywords {
+        margin-left: 0px;
+        padding-left: 0px;
+        margin-bottom: 5px;
+        float: left;
+        list-style: none;
+    }
+
+        .keywords li {
+            float: left;
+            margin-right: 1em;
+        }
+
+    .key-tags {
+        position: relative;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 15px;
+        background-color: #e6e6e6;
+        border-left: solid 5px #3393d8;
+        color: #191919;
+        margin: 5px 0px;
+    }

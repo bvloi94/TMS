@@ -195,6 +195,22 @@
                                         <div class="col-sm-10" style="padding-left: 10px"><span id="ticket-category"></span></div>
                                     </div>
                                 </div>
+                                <div class="col-sm-12 row-content">
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-2 labels">
+                                            <b>Tags: </b>
+                                        </div>
+                                        <div class="col-sm-10" style="padding-left: 10px"><span id="ticket-tags"></span></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 row-content">
+                                    <div class="col-sm-12">
+                                        <div class="col-sm-2 labels">
+                                            <b>Note: </b>
+                                        </div>
+                                        <div class="col-sm-10" style="padding-left: 10px"><span id="ticket-note" class="pre-wrap"></span></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="box box-solid">
@@ -208,13 +224,13 @@
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-6">
                                         <div class="col-sm-6 labels">
-                                            <b>Created date: </b>
+                                            <b>Created time: </b>
                                         </div>
                                         <div class="col-sm-6"><span id="ticket-created-date"></span></div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="col-sm-6 labels">
-                                            <b>Last modified date: </b>
+                                            <b>Last modified time: </b>
                                         </div>
                                         <div class="col-sm-6"><span id="ticket-modified-date"></span></div>
                                     </div>
@@ -222,13 +238,13 @@
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-6">
                                         <div class="col-sm-6 labels">
-                                            <b>Scheduled start time: </b>
+                                            <b>Schedule start date: </b>
                                         </div>
                                         <div class="col-sm-6"><span id="ticket-schedule-start"></span></div>
                                     </div>
                                     <div class="col-sm-6 ">
                                         <div class="col-sm-6 labels">
-                                            <b>Schedule end time: </b>
+                                            <b>Schedule end date: </b>
                                         </div>
                                         <div class="col-sm-6"><span id="ticket-schedule-end"></span></div>
                                     </div>
@@ -237,13 +253,13 @@
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-6 ">
                                         <div class="col-sm-6 labels">
-                                            <b>Actual start time: </b>
+                                            <b>Actual start date: </b>
                                         </div>
                                         <div class="col-sm-6"><span id="ticket-actual-start"></span></div>
                                     </div>
                                     <div class="col-sm-6 ">
                                         <div class="col-sm-6 labels">
-                                            <b>Actual end time: </b>
+                                            <b>Actual end date: </b>
                                         </div>
                                         <div class="col-sm-6"><span id="ticket-actual-end"></span></div>
                                     </div>
@@ -297,39 +313,46 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content">
-                                    <div class="col-sm-4 ">
-                                        <div class="col-sm-6 labels">
-                                            <b>Department: </b>
+                                    <div class="col-sm-6">
+                                        <div class="col-sm-4 labels">
+                                            <b>Requester: </b>
                                         </div>
-                                        <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-department"></span></div>
+                                        <div class="col-sm-8" style="padding-left: 19px"><span id="ticket-requester"></span></div>
                                     </div>
-                                    <div class="col-sm-4 ">
-                                        <div class="col-sm-6 labels">
-                                            <b>Technician: </b>
+                                    <div class="col-sm-6">
+                                        <div class="col-sm-4 labels">
+                                            <b>Assigned By: </b>
                                         </div>
-                                        <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-technician"></span></div>
+                                        <div class="col-sm-8" style="padding-left: 30px"><span id="ticket-assigned-by"></span></div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 row-content">
-                                    <div class="col-sm-4">
-                                        <div class="col-sm-6 labels">
+                                    <div class="col-sm-6">
+                                        <div class="col-sm-4 labels">
+                                            <b>Department: </b>
+                                        </div>
+                                        <div class="col-sm-8" style="padding-left: 19px"><span id="ticket-department"></span></div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="col-sm-4 labels">
+                                            <b>Technician: </b>
+                                        </div>
+                                        <div class="col-sm-8" style="padding-left: 30px"><span id="ticket-technician"></span></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 row-content">
+                                    <div class="col-sm-6">
+                                        <div class="col-sm-4 labels">
                                             <b>Created by: </b>
                                         </div>
-                                        <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-created-by"></span></div>
+                                        <div class="col-sm-8" style="padding-left: 19px"><span id="ticket-created-by"></span></div>
                                     </div>
-                                    <div class="col-sm-4">
-                                        <div class="col-sm-6 labels">
-                                            <b>Assigned by: </b>
-                                        </div>
-                                        <div class="col-sm-6" style="padding-left: 30px"><span id="ticket-assigned-by"></span></div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="col-sm-6 labels" style="padding-left: 30px">
+                                    <div class="col-sm-6">
+                                        <div class="col-sm-4 labels">
                                             <b>Solved by: </b>
                                         </div>
-                                        <div class="col-sm-6"><span id="ticket-solved-by"></span></div>
+                                        <div class="col-sm-8" style="padding-left: 30px"><span id="ticket-solved-by"></span></div>
                                     </div>
-
                                 </div>
                                 <div class="col-sm-12 row-content" id="ticket-merged-div" style="display:none">
                                     <div class="col-sm-12">
@@ -442,7 +465,7 @@
                             <th style="width: 10%;">Solved Date</th>
                             <th style="width: 10%;">Status</th>
                             <th style="width: 15%;">Last Modified</th>
-                            <th style="width: 20%;">Options</th>
+                            <th style="width: 20%;">Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>

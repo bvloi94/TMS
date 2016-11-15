@@ -61,6 +61,10 @@
     .bg-light-green {
         background-color: #D2EDDE;
     }
+
+    .bg-violet {
+        background-color: #605ca8;
+    }
 </style>
 
 <div class="row">
@@ -82,17 +86,17 @@
             <div class="box-body no-padding bg-light-green">
                 @switch (Model.Status)
                 {
-                    case 1:
+                    case ConstantUtil.TicketStatus.Open:
                         <div class="col-lg-1 col-sm-2 text-center column-body status bg-aqua" id="status-div">New</div> break;
-                    case 2:
+                    case ConstantUtil.TicketStatus.Assigned:
                         <div class="col-lg-1 col-sm-2 text-center column-body status bg-orange" id="status-div">Assigned</div> break;
-                    case 3:
+                    case ConstantUtil.TicketStatus.Solved:
                         <div class="col-lg-1 col-sm-2 text-center column-body status bg-green" id="status-div">Solved</div> break;
-                    case 4:
+                    case ConstantUtil.TicketStatus.Unapproved:
                         <div class="col-lg-1 col-sm-2 text-center column-body status bg-red-active" id="status-div">Unapproved</div> break;
-                    case 5:
-                        <div class="col-lg-1 col-sm-2 text-center column-body status bg-gray" id="status-div">Cancelled</div> break;
-                    case 6:
+                    case ConstantUtil.TicketStatus.Cancelled:
+                        <div class="col-lg-1 col-sm-2 text-center column-body status bg-violet" id="status-div">Cancelled</div> break;
+                    case ConstantUtil.TicketStatus.Closed:
                         <div class="col-lg-1 col-sm-2 text-center column-body status bg-gray" id="status-div">Closed</div> break;
                 }
                 <div class="col-lg-2 col-sm-2 column-body">
@@ -113,7 +117,7 @@
             <div class="box-body no-pad-left">
                 <div class="col-lg-1 col-sm-2 text-bold">Description: </div>
                 <div class="col-lg-11 col-sm-10">
-                    <span class="pre-wrap" id="ticket-description">@Html.DisplayFor(model => model.Description)</span>
+                    <span class="pre-wrap" id="ticket-description">@Html.Raw(Model.Description)</span>
                 </div>
             </div>
             <div class="box-footer no-pad-left bg-light-green">
@@ -129,6 +133,13 @@
                     }
                 </div>
             </div>
+            @if (!string.IsNullOrWhiteSpace(Model.MergedTicketString))
+            {
+                <div class="box-body no-pad-left">
+                    <div class="col-lg-1 col-sm-2 text-bold">Merged into: </div>
+                    <div class="col-lg-11 col-sm-10">@Html.Raw(Model.MergedTicketString)</div>
+                </div>
+            }
         </div>
 
         @if (Model.Solution == "-")

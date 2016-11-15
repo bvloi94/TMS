@@ -59,7 +59,7 @@
     <div class="col-sm-12">
         <div class="box box-solid">
             <div class="box-header bg-gray with-border heading">
-                <a class="text-uppercase" data-widget="collapse">Main Information</a>
+                <a class="text-uppercase" data-widget="collapse"><i class="fa fa-file-text header-content"></i> Main Information</a>
             </div>
             <div class="box-body" style="display: block;">
                 <div class="col-sm-12 row-content ">
@@ -114,14 +114,48 @@
                     </div>
                 </div>
                 <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Solved by:  </b>
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Requester:  </b>
                         </div>
-                        <div class="col-sm-10">@Html.DisplayFor(model => model.SolvedBy)</div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.Requester)</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Assigned By:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.AssignedBy)</div>
                     </div>
                 </div>
-                @if (Model.MergedId.HasValue && !string.IsNullOrEmpty(Model.MergedTicketSubject))
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Department:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.Department)</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Technician:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.Technician)</div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Created By:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.CreatedBy)</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Solved by:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.SolvedBy)</div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.MergedTicketString))
                 {
                     <div class="col-sm-12 row-content ">
                         <div class="col-sm-12">
@@ -129,7 +163,7 @@
                                 <b>Merged into:  </b>
                             </div>
                             <div class="col-sm-10">
-                                @Model.MergedTicketSubject <span>(<a href="/Ticket/TicketDetail/@Model.MergedId">#@Model.MergedTicketCode</a>)</span>
+                                @Html.Raw(Model.MergedTicketString)
                             </div>
                         </div>
                     </div>
@@ -140,54 +174,21 @@
     <div class="col-sm-12">
         <div class="box box-solid">
             <div class="box-header bg-gray with-border heading">
-                <a class="text-uppercase" data-widget="collapse">Detail</a>
+                <a class="text-uppercase" data-widget="collapse"><i class="fa fa-info-circle header-content"></i> Detail</a>
             </div>
             <div class="box-body" style="display: block;">
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-6 col-content ">
                         <div class="col-sm-4 labels">
-                            <b>Created by: </b>
-                        </div>
-                        <div class="col-sm-8">@Html.DisplayFor(model => model.CreatedBy)</div>
-                    </div>
-                    <div class="col-sm-6 col-content ">
-                        <div class="col-sm-4 labels">
                             <b>Type: </b>
                         </div>
-                        <div class="col-sm-8">
-                            @switch (Model.Type)
-                            {
-                                case 1: <span>@ConstantUtil.TicketTypeString.Request </span>break;
-                                case 2: <span>@ConstantUtil.TicketTypeString.Problem </span>break;
-                                case 3: <span>@ConstantUtil.TicketTypeString.Change </span>break;
-                                default: <span> - </span> break;
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content">
-                    <div class="col-sm-6 col-content ">
-                        <div class="col-sm-4 labels">
-                            <b>Assigned by: </b>
-                        </div>
-                        <div class="col-sm-8">@Html.DisplayFor(model => model.AssignedBy)</div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.TypeString)</div>
                     </div>
                     <div class="col-sm-6 col-content ">
                         <div class="col-sm-4 labels">
                             <b>Mode: </b>
                         </div>
-                        <div class="col-sm-8">
-                            @switch (Model.Mode)
-                            {
-                                case ConstantUtil.TicketMode.PhoneCall: <span>@ConstantUtil.TicketModeString.PhoneCall </span>break;
-                                case ConstantUtil.TicketMode.WebForm: <span>@ConstantUtil.TicketModeString.WebForm </span>break;
-                                case ConstantUtil.TicketMode.Email: <span>@ConstantUtil.TicketModeString.Email </span>break;
-                                case ConstantUtil.TicketMode.SocialNetwork: <span>@ConstantUtil.TicketModeString.SocialNetwork </span>break;
-                                case ConstantUtil.TicketMode.Forum: <span>@ConstantUtil.TicketModeString.Forum </span>break;
-                                case ConstantUtil.TicketMode.Other: <span>@ConstantUtil.TicketModeString.Other </span>break;
-                                default: <span> - </span> break;
-                            }
-                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.ModeString)</div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -242,25 +243,43 @@
                         <div class="col-sm-8">@Html.DisplayFor(model => model.Priority)</div>
                     </div>
                 </div>
+                <div class="col-sm-12 row-content">
+                    <div class="col-sm-12 col-content ">
+                        <div class="col-sm-2 labels">
+                            <b>Tags: </b>
+                        </div>
+                        <div class="col-sm-10"><span id="tags"></span></div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content">
+                    <div class="col-sm-12 col-content ">
+                        <div class="col-sm-2 labels">
+                            <b>Note: </b>
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="pre-wrap">@Html.DisplayFor(m => m.Note)</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-sm-12">
         <div class="box box-solid">
             <div class="box-header bg-gray with-border heading">
-                <a class="text-uppercase" data-widget="collapse">Date & Time</a>
+                <a class="text-uppercase" data-widget="collapse"><i class="fa fa-clock-o header-content"></i> Date & Time</a>
             </div>
             <div class="box-body" style="display: block;">
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-6">
                         <div class="col-sm-4 labels">
-                            <b>Created date: </b>
+                            <b>Created time: </b>
                         </div>
                         <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.CreatedTimeString)</div>
                     </div>
                     <div class="col-sm-6">
                         <div class="col-sm-4 labels">
-                            <b>Last modified date: </b>
+                            <b>Last modified time: </b>
                         </div>
                         <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ModifiedTimeString)</div>
                     </div>
@@ -268,13 +287,13 @@
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-6">
                         <div class="col-sm-4 labels">
-                            <b>Scheduled start time: </b>
+                            <b>Schedule start date: </b>
                         </div>
                         <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleStartDateString)</div>
                     </div>
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
-                            <b>Schedule end time: </b>
+                            <b>Schedule end date: </b>
                         </div>
                         <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleEndDateString)</div>
                     </div>
@@ -282,15 +301,23 @@
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
-                            <b>Actual start time: </b>
+                            <b>Actual start date: </b>
                         </div>
                         <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualStartDateString)</div>
                     </div>
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
-                            <b>Actual end time: </b>
+                            <b>Actual end date: </b>
                         </div>
                         <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualEndDateString)</div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content">
+                    <div class="col-sm-6 ">
+                        <div class="col-sm-4 labels">
+                            <b>Solved date: </b>
+                        </div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.SolvedDateString)</div>
                     </div>
                 </div>
             </div>
@@ -417,6 +444,10 @@
 @section scripts{
     <script src="~/Scripts/helpdesk-manage-ticket.js"></script>
     <script>
+        $(document).ready(function () {
+            $("#tags").html(loadKeywordToTags('@Model.Tags'));
+        });
+
         $("#btn-confirm-close").on('click', function () {
             $(this).prop("disabled", true);
             $.ajax({

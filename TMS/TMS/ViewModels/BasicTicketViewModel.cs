@@ -31,5 +31,6 @@ namespace TMS.ViewModels
         public string SolutionAttachment { get; set; }
         public string SolvedBy { get; set; }
         public string UnapproveReason { get; set; }
+        public string MergedTicketString { get; set; }
     }
 }

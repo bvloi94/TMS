@@ -25,8 +25,10 @@ namespace TMS.ViewModels
         public string TechnicianId { get; set; }
         public string Technician { get; set; }
         public int Type { get; set; }
+        public string TypeString { get; set; }
         [CustomRequired(ErrorMessage = "Ticket's mode is required!")]
         public int Mode { get; set; }
+        public string ModeString { get; set; }
         public int StatusId { get; set; }
         public string Status { get; set; }
         public int UrgencyId { get; set; }
@@ -63,9 +65,7 @@ namespace TMS.ViewModels
         public string AssignedBy { get; set; }
         public string SolvedBy { get; set; }
         public string SolvedId { get; set; }
-        public int? MergedId { get; set; }
-        public string MergedTicketSubject { get; set; }
-        public string MergedTicketCode { get; set; }
+        public string MergedTicketString { get; set; }
         public string DescriptionAttachmentsURL { get; set; }
         public string SolutionAttachmentsURL { get; set; }
         [TagFormat(ErrorMessage = "Tags only contain characters 'a-z', '0-9' and separated by commas!")]

@@ -316,11 +316,17 @@ namespace TMS.Controllers
                     model.ID = ticket.ID;
                     model.Subject = ticket.Subject;
                     model.Description = ticket.Description == null ? "-" : ticket.Description.Trim();
+                    IEnumerable<Ticket> mergedTickets = _ticketService.GetMergedTickets(ticket.ID);
+                    foreach (Ticket mergedTicket in mergedTickets)
+                    {
+                        string ticketCode = '#' + mergedTicket.Code;
+                        model.Description = model.Description.Replace(ticketCode, "<a href='/Ticket/Detail/" + mergedTicket.ID + "'>" + ticketCode + "</a>");
+                    }
                     model.CreatedBy = creater.Fullname;
                     model.SolvedBy = solver == null ? "-" : solver.Fullname;
                     model.Status = ticket.Status;
                     model.Code = ticket.Code;
-                    model.UnapproveReason = ticket.UnapproveReason == null ? "" : ticket.UnapproveReason;
+                    model.UnapproveReason = ticket.UnapproveReason == null ? "" : ticket.UnapproveReason.Trim();
 
                     if (ticket.Status == ConstantUtil.TicketStatus.Open || ticket.Status == ConstantUtil.TicketStatus.Assigned)
                     {
@@ -358,6 +364,11 @@ namespace TMS.Controllers
                             }
                         }
                     }
+                    if (ticket.MergedID.HasValue)
+                    {
+                        Ticket mergedTicket = _ticketService.GetTicketByID(ticket.MergedID.Value);
+                        model.MergedTicketString = GeneralUtil.GetRequesterMergedTicketInfo(mergedTicket);
+                    }
 
                     return View(model);
                 }
@@ -387,11 +398,12 @@ namespace TMS.Controllers
                     // Get Ticket information
                     AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
                     AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
-                    AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+                    AspNetUser assignedUser = _userService.GetUserById(ticket.AssignedByID);
                     AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                    AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
 
-                    if (ticket.Status == ConstantUtil.TicketStatus.Assigned 
-                        && userRole.Name == "Technician" 
+                    if (ticket.Status == ConstantUtil.TicketStatus.Assigned
+                        && userRole.Name == ConstantUtil.UserRoleString.Technician
                         && currentUser.Id == ticket.TechnicianID)
                     {
                         ViewBag.Role = "TechnicianInCharge";
@@ -413,29 +425,14 @@ namespace TMS.Controllers
                         string ticketCode = '#' + mergedTicket.Code;
                         model.Description = model.Description.Replace(ticketCode, "<a href='/Ticket/TicketDetail/" + mergedTicket.ID + "'>" + ticketCode + "</a>");
                     }
-                    model.Mode = ticket.Mode;
-                    model.Type = ticket.Type.HasValue ? ticket.Type.Value : 0;
+                    model.ModeString = GeneralUtil.GetModeNameByMode(ticket.Mode);
+                    model.TypeString = GeneralUtil.GetTypeNameByType(ticket.Type);
                     if (ticket.MergedID.HasValue)
                     {
                         Ticket mergedTicket = _ticketService.GetTicketByID(ticket.MergedID.Value);
-                        if (mergedTicket != null)
-                        {
-                            model.MergedId = mergedTicket.ID;
-                            model.MergedTicketSubject = mergedTicket.Subject;
-                            model.MergedTicketCode = mergedTicket.Code;
-                        }
+                        model.MergedTicketString = GeneralUtil.GetRequesterMergedTicketInfo(mergedTicket);
                     }
-
-                    switch (ticket.Status)
-                    {
-                        case ConstantUtil.TicketStatus.Open: model.Status = "Open"; break;
-                        case ConstantUtil.TicketStatus.Assigned: model.Status = "Assigned"; break;
-                        case ConstantUtil.TicketStatus.Solved: model.Status = "Solved"; break;
-                        case ConstantUtil.TicketStatus.Unapproved: model.Status = "Unapproved"; break;
-                        case ConstantUtil.TicketStatus.Cancelled: model.Status = "Cancelled"; break;
-                        case ConstantUtil.TicketStatus.Closed: model.Status = "Closed"; break;
-                    }
-
+                    model.Status = GeneralUtil.GetTicketStatusByID(ticket.Status);
                     IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);
                     string descriptionAttachment = "";
                     string solutionAttachment = "";
@@ -460,7 +457,7 @@ namespace TMS.Controllers
                             }
                         }
                     }
-                    
+
                     if (string.IsNullOrWhiteSpace(descriptionAttachment))
                     {
                         descriptionAttachment = "None";
@@ -482,156 +479,176 @@ namespace TMS.Controllers
                     model.ScheduleStartDateString = ticket.ScheduleStartDate == null ? "-" : ticket.ScheduleStartDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.ActualStartDateString = ticket.ActualStartDate == null ? "-" : ticket.ActualStartDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.ActualEndDateString = ticket.ActualEndDate == null ? "-" : ticket.ActualEndDate.Value.ToString("MMM d yyyy, hh:mm");
-                    model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
-                    model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
-                    model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
+                    model.SolvedDateString = ticket.SolvedDate == null ? "-" : ticket.SolvedDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.Department = "-";
+                    if (technician != null)
+                    {
+                        if (technician.Department != null)
+                        {
+                            model.Department = technician.Department.Name;
+                        }
+                    }
+                    model.Technician = GeneralUtil.GetUserInfo(technician);
+                    model.CreatedBy = GeneralUtil.GetUserInfo(createdUser);
+                    model.AssignedBy = GeneralUtil.GetUserInfo(assignedUser);
+                    model.SolvedBy = GeneralUtil.GetUserInfo(solvedUser);
+                    model.Requester = GeneralUtil.GetUserInfo(requester);
                     model.Solution = ticket.Solution == null ? string.Empty : ticket.Solution.Trim();
                     model.DescriptionAttachmentsURL = descriptionAttachment;
                     model.SolutionAttachmentsURL = solutionAttachment;
-                    model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
-                    
+                    model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason.Trim();
+                    model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Note = (string.IsNullOrEmpty(ticket.Note)) ? "-" : ticket.Note.Trim();
+
                     return View(model);
                 }
             }
             return HttpNotFound();
         }
 
+        [CustomAuthorize(Roles = "Requester,Helpdesk,Technician")]
         [HttpGet]
-        public ActionResult GetTicketDetail(int id)
+        public ActionResult GetTicketDetail(int? id)
         {
-            Ticket ticket = _ticketService.GetTicketByID(id);
-            AspNetUser solver = _userService.GetUserById(ticket.SolveID);
-            AspNetUser creater = _userService.GetUserById(ticket.CreatedID);
-            AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
-            AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
-            string ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department = "-";
-            string createdDate, modifiedDate, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
-
-            string userRole = null;
-            if (User.Identity.GetUserId() != null)
+            if (id.HasValue)
             {
-                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
-            }
-
-            if (userRole == ConstantUtil.UserRoleString.Requester)
-            {
-                if (ticket.Status == ConstantUtil.TicketStatus.Open
-                    || ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                if (ticket != null)
                 {
-                    solution = "-";
-                }
-                else
-                {
-                    solution = ticket.Solution == null ? "-" : ticket.Solution;
-                }
-            }
-            else
-            {
-                solution = ticket.Solution == null ? "-" : ticket.Solution;
-            }
+                    AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
+                    AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
+                    AspNetUser assignedUser = _userService.GetUserById(ticket.AssignedByID);
+                    AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
+                    AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
 
-            IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id);
-            string descriptionAttachment = "";
-            string solutionAttachment = "";
+                    string ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department, category, description, note;
+                    string createdTime, modifiedTime, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
 
-            if (ticketAttachments.Count() > 0)
-            {
-                string fileName;
-                foreach (var attachFile in ticketAttachments)
-                {
-                    fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
-                    if (attachFile.Type == ConstantUtil.TicketAttachmentType.Description)
+                    string userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
+
+                    if (userRole == ConstantUtil.UserRoleString.Requester)
                     {
-                        descriptionAttachment += "<a download=\'" + fileName +
-                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
-                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                        if (ticket.Status == ConstantUtil.TicketStatus.Open
+                            || ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                        {
+                            solution = "-";
+                        }
+                        else
+                        {
+                            solution = string.IsNullOrWhiteSpace(ticket.Solution) ? "-" : ticket.Solution.Trim();
+                        }
                     }
-                    else if (attachFile.Type == ConstantUtil.TicketAttachmentType.Solution)
+                    else
                     {
-                        solutionAttachment += "<a download=\'" + fileName +
-                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
-                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                        solution = string.IsNullOrWhiteSpace(ticket.Solution) ? "-" : ticket.Solution.Trim();
                     }
+
+                    IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);
+                    string descriptionAttachment = "";
+                    string solutionAttachment = "";
+
+                    if (ticketAttachments.Count() > 0)
+                    {
+                        string fileName;
+                        foreach (var attachFile in ticketAttachments)
+                        {
+                            fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
+                            if (attachFile.Type == ConstantUtil.TicketAttachmentType.Description)
+                            {
+                                descriptionAttachment += "<a download=\'" + fileName +
+                                                 "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
+                                                 "\' target=\'_blank\' >" + fileName + "</a>";
+                            }
+                            else if (attachFile.Type == ConstantUtil.TicketAttachmentType.Solution)
+                            {
+                                solutionAttachment += "<a download=\'" + fileName +
+                                                 "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
+                                                 "\' target=\'_blank\' >" + fileName + "</a>";
+                            }
+                        }
+                    }
+
+                    ticketType = GeneralUtil.GetTypeNameByType(ticket.Type);
+                    ticketMode = GeneralUtil.GetModeNameByMode(ticket.Mode);
+                    ticketUrgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name;
+                    ticketPriority = ticket.Priority == null ? "-" : ticket.Priority.Name;
+                    ticketImpact = ticket.Impact == null ? "-" : ticket.Impact.Name;
+                    createdTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+                    modifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
+                    scheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+                    scheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+                    actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+                    actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+                    solvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+
+                    department = "-";
+                    if (technician != null)
+                    {
+                        if (technician.Department != null)
+                        {
+                            department = technician.Department.Name;
+                        }
+                    }
+
+                    category = _categoryService.GetCategoryPath(ticket.Category);
+                    description = ticket.Description ?? "-";
+                    IEnumerable<Ticket> mergedTickets = _ticketService.GetMergedTickets(ticket.ID);
+                    foreach (Ticket mergedTicket in mergedTickets)
+                    {
+                        string ticketCode = '#' + mergedTicket.Code;
+                        description = description.Replace(ticketCode, "<a href='/Ticket/TicketDetail/" + mergedTicket.ID + "'>" + ticketCode + "</a>");
+                    }
+                    string mergedTicketString = null;
+                    if (ticket.MergedID.HasValue)
+                    {
+                        Ticket mergedTicket = _ticketService.GetTicketByID(ticket.MergedID.Value);
+                        if (mergedTicket != null)
+                        {
+                            mergedTicketString = mergedTicket.Subject + " (<a href='/Ticket/TicketDetail/" + ticket.MergedID + "'>" + mergedTicket.Code + "</a>)";
+                        }
+                    }
+                    note = (string.IsNullOrWhiteSpace(ticket.Note)) ? "-" : ticket.Note.Trim();
+
+                    return Json(new
+                    {
+                        success = true,
+                        id = ticket.ID,
+                        subject = ticket.Subject,
+                        description = description,
+                        type = ticketType,
+                        mode = ticketMode,
+                        urgency = ticketUrgency,
+                        priority = ticketPriority,
+                        category = category,
+                        impact = ticketImpact,
+                        impactDetail = ticket.ImpactDetail ?? "-",
+                        status = ticket.Status,
+                        createdDate = createdTime,
+                        lastModified = modifiedTime,
+                        solvedDate = solvedDate,
+                        scheduleStart = scheduleStartDate,
+                        scheduleEnd = scheduleEndDate,
+                        actualStart = actualStartDate,
+                        actualEnd = actualEndDate,
+                        solution = solution,
+                        solver = GeneralUtil.GetUserInfo(solvedUser),
+                        creater = GeneralUtil.GetUserInfo(createdUser),
+                        assigner = GeneralUtil.GetUserInfo(assignedUser),
+                        technician = GeneralUtil.GetUserInfo(technician),
+                        requester = GeneralUtil.GetUserInfo(requester),
+                        department = department,
+                        descriptionAttachment = descriptionAttachment,
+                        solutionAttachment = solutionAttachment,
+                        mergeTicket = mergedTicketString,
+                        tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags),
+                        note = note
+                    }, JsonRequestBehavior.AllowGet);
                 }
             }
-
-            switch (ticket.Type)
-            {
-                case 1: ticketType = ConstantUtil.TicketTypeString.Request; break;
-                case 2: ticketType = ConstantUtil.TicketTypeString.Problem; break;
-                case 3: ticketType = ConstantUtil.TicketTypeString.Change; break;
-                default: ticketType = "-"; break;
-            }
-            ticketType = GeneralUtil.GetTypeNameByType(ticket.Type);
-            ticketMode = GeneralUtil.GetModeNameByMode(ticket.Mode);
-
-            ticketUrgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name;
-            ticketPriority = ticket.Priority == null ? "-" : ticket.Priority.Name;
-            ticketImpact = ticket.Impact == null ? "-" : ticket.Impact.Name;
-            createdDate = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
-            modifiedDate = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
-            scheduleStartDate = ticket.ScheduleStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-            scheduleEndDate = ticket.ScheduleEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-            actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-            actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-            solvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-
-            if (technician != null)
-            {
-                department = technician.Department == null ? "-" : technician.Department.Name;
-            }
-            else
-            {
-                department = "-";
-            }
-
-            string categoryPath = _categoryService.GetCategoryPath(ticket.Category);
-            string description = ticket.Description ?? "-";
-            IEnumerable<Ticket> mergedTickets = _ticketService.GetMergedTickets(ticket.ID);
-            foreach (Ticket mergedTicket in mergedTickets)
-            {
-                string ticketCode = '#' + mergedTicket.Code;
-                description = description.Replace(ticketCode, "<a href='/Ticket/TicketDetail/" + mergedTicket.ID + "'>" + ticketCode + "</a>");
-            }
-            string mergedTicketString = null;
-            if (ticket.MergedID.HasValue)
-            {
-                Ticket mergedTicket = _ticketService.GetTicketByID(ticket.MergedID.Value);
-                if (mergedTicket != null)
-                {
-                    mergedTicketString = mergedTicket.Subject + " (<a href='/Ticket/TicketDetail/" + ticket.MergedID + "'>" + mergedTicket.Code + "</a>)";
-                }
-            }
-
             return Json(new
             {
-                id = ticket.ID,
-                subject = ticket.Subject,
-                description = description,
-                type = ticketType,
-                mode = ticketMode,
-                urgency = ticketUrgency,
-                priority = ticketPriority,
-                category = categoryPath,
-                impact = ticketImpact,
-                impactDetail = ticket.ImpactDetail ?? "-",
-                status = ticket.Status,
-                createdDate = createdDate,
-                lastModified = modifiedDate,
-                solvedDate = solvedDate,
-                scheduleStart = scheduleStartDate,
-                scheduleEnd = scheduleEndDate,
-                actualStart = actualStartDate,
-                actualEnd = actualEndDate,
-                solution = solution,
-                solver = solver == null ? "-" : solver.Fullname,
-                creater = creater == null ? "-" : creater.Fullname,
-                assigner = assigner == null ? "-" : assigner.Fullname,
-                technician = technician == null ? "-" : technician.Fullname,
-                department = department,
-                descriptionAttachment = descriptionAttachment,
-                solutionAttachment = solutionAttachment,
-                mergeTicket = mergedTicketString
+                success = false,
+                message = ConstantUtil.CommonError.UnavailableTicket
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -742,7 +759,7 @@ namespace TMS.Controllers
                                 Thread thread = new Thread(() => EmailUtil.SendToRequesterWhenSolveTicket(ticket, requester));
                                 thread.Start();
                             }
-                            
+
                             return Json(new
                             {
                                 success = true,

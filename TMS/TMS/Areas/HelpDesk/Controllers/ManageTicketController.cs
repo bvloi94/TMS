@@ -177,8 +177,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             else
             {
                 Ticket ticket = _ticketService.GetTicketByID(id.Value);
-                if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled
-                    || ticket.Status == ConstantUtil.TicketStatus.Closed)
+                if (ticket == null)
                 {
                     return HttpNotFound();
                 }
