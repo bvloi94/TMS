@@ -37,10 +37,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             IEnumerable<BasicTicketViewModel> ticketsInLast7Days = LoadTicketsInLast7Days();
             IEnumerable<BasicTicketViewModel> warningTickets = LoadWarningTickets();
 
-            ViewBag.AllNewTickets = newTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.New);
+            ViewBag.AllNewTickets = newTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.Open);
             ViewBag.WarningTickets = warningTickets;
-            ViewBag.NewRequestersTickets = requestersTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.New);
-            ViewBag.NewTicketsLast7Days = ticketsInLast7Days.Where(m => m.Status == ConstantUtil.TicketStatus.New);
+            ViewBag.NewRequestersTickets = requestersTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.Open);
+            ViewBag.NewTicketsLast7Days = ticketsInLast7Days.Where(m => m.Status == ConstantUtil.TicketStatus.Open);
             ViewBag.UnapprovedTickets = newTicketList.Where(m => m.Status == ConstantUtil.TicketStatus.Unapproved);
             return View();
         }

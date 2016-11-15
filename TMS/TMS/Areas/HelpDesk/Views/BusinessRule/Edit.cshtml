@@ -2,7 +2,7 @@
 @model TMS.ViewModels.BusinessRuleViewModel
 @{
     Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
-    ViewBag.Title = "BUSINESS RULES";
+    ViewBag.Title = "Business Rules";
 }
 <link rel="stylesheet" href="~/Content/Plugins/jstree/style.min.css" />
 
@@ -220,19 +220,7 @@
                             </legend>
                             <div id="criteriaeditordiv">
                                 <!-- in this example the tree is populated from inline HTML -->
-                                <ul id="root" class="list-unstyled">
-                                    @*<li>
-                                            <a>
-                                                <span><i class="fa fa-arrows draggable" style="color: #aaa;"></i></span>
-                                                <span id="rule_logic_0" class="logicalcss invisible">AND</span>
-                                                <span id="rule_criteria_0" class="fieldcss">-- Select criteria --</span>
-                                                <span id="rule_condition_0" class="operatorcss">-- Select condition --</span>
-                                                <span id="rule_value_0" class="valuecss"></span>
-                                                <span class="pull-right"><i id="rule_remove_0" class="fa fa-remove removecss" style="color: #aaa;"></i></span>
-                                                <span class="pull-right"><i id="rule_add_0" class="fa fa-plus addcss" style="color: #aaa;"></i></span>
-                                            </a>
-                                        </li>*@
-                                </ul>
+                                <ul id="root" class="list-unstyled"></ul>
                             </div>
                         </fieldset>
                     </div>
@@ -334,6 +322,28 @@
                 ]
             });
 
+        function resetLogicDisplay() {
+            var nodeIds = tree.jstree().get_node("#").children_d;
+            var anchorTag;
+            var nodeId;
+            var node;
+            for (var i = 0; i < nodeIds.length; i++) {
+                nodeId = nodeIds[i];
+                node = tree.jstree().get_node(nodeId);
+                anchorTag = $("<a/>").append(node.text)[0];
+                if (anchorTag.children[1].className.indexOf("invisible") != -1) {
+                    anchorTag.children[1].className = anchorTag.children[1].className.replace(" invisible", "");
+                }
+                tree.jstree().set_text(nodeId, anchorTag.innerHTML);
+            }
+            nodeId = tree.jstree().get_node("#").children[0];
+            node = tree.jstree().get_node(nodeId);
+            anchorTag = $("<a/>").append(node.text)[0];
+            if (anchorTag.children[1].className.indexOf("invisible") == -1) {
+                anchorTag.children[1].className += " invisible";
+            }
+            tree.jstree().set_text(nodeId, anchorTag.innerHTML);
+        }
 
         $('#jstree')
             .on("changed.jstree",
@@ -358,7 +368,10 @@
                 })
             .on('move_node.jstree',
                 function(e, data) {
-                    //
+                    resetLogicDisplay();
+                    tree.jstree().deselect_all(true);
+                    tree.jstree().select_node("#" + data.parent);
+                    tree.jstree().open_node("#" + data.parent);
                 });
 
         tree.bind("redraw.jstree",
@@ -385,8 +398,8 @@
                 if (typeof (dt.ConditionText) == "undefined") {
                     dt.ConditionText = '-- Select condition --';
                 }
-                if (typeof (dt.Value) == "undefined") {
-                    dt.Value = '';
+                if (typeof (dt.ValueMask) == "undefined") {
+                    dt.ValueMask = '';
                 }
 
                 var nodeText = '<span><i class=\"fa fa-arrows draggable\" style=\"color: #aaa;\"></i></span>' +
@@ -562,146 +575,146 @@
                         var inputId = clickedId + '_inp';
                         var p = $("#" + clickedId);
                         switch (criteria) {
-                        case "Subject":
-                        case "Description":
-                            $('#rulecriteria_fs')
-                                .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                    p[0].offsetTop +
-                                    'px; left:' +
-                                    p[0].offsetLeft +
-                                    'px; "><input style="width:200px; font-size: 14px;" id="' +
-                                    inputId +
-                                    '"></input></div>');
-                            if (tree.jstree().get_node(selectedId).data.Value)
-                                $("#" + inputId).val(tree.jstree().get_node(selectedId).data.Value);
-                            $("#" + inputId).focus();
-                            $("#" + inputId)
-                                .focusout(function() {
-                                    anchorTag.children[4].innerHTML = $("#" + inputId)[0].value;
-                                    tree.jstree().get_node(selectedId).data.Value = $("#" + inputId)[0].value;
-                                    tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                    $('#tempSelectValue').remove();
-                                });
-                            break;
-                        case "Requester Name":
-                            var top = p[0].offsetTop + 24;
-                            $('#rulecriteria_fs')
-                                .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                    top +
-                                    'px; left:' +
-                                    p[0].offsetLeft +
-                                    'px; "><select multiple="multiple" id="' +
-                                    inputId +
-                                    '"></select></div>');
-                            initRequesterDropdown({
-                                control: $("#" + inputId),
-                                ignore: function() {
-                                    return $("#" + inputId).val();
-                                }
-                            });
-                            if (anchorTag.children[4].innerHTML != "") {
-                                var masks = anchorTag.children[4].innerHTML.split(", ");
-                                var values = tree.jstree().get_node(selectedId).data.Value.split(",");
-                                for (var i = 0; i < masks.length; i++) {
-                                    initDropdown($("#" + inputId), masks[i], values[i]);
-                                }
-                            }
-                            $("#" + inputId).select2("open");
-                            $("#" + inputId)
-                                .on("select2:close",
-                                    function() {
+                            case "Subject":
+                            case "Description":
+                                $('#rulecriteria_fs')
+                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+                                        p[0].offsetTop +
+                                        'px; left:' +
+                                        p[0].offsetLeft +
+                                        'px; "><input style="width:200px; font-size: 14px;" id="' +
+                                        inputId +
+                                        '"></input></div>');
+                                if (tree.jstree().get_node(selectedId).data.Value)
+                                    $("#" + inputId).val(tree.jstree().get_node(selectedId).data.Value);
+                                $("#" + inputId).focus();
+                                $("#" + inputId)
+                                    .focusout(function() {
+                                        anchorTag.children[4].innerHTML = $("#" + inputId)[0].value;
+                                        tree.jstree().get_node(selectedId).data.Value = $("#" + inputId)[0].value;
                                         tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
                                         $('#tempSelectValue').remove();
                                     });
-                            $("#" + inputId)
-                                .change(function() {
-                                    var a = $("#" + inputId).select2('data');
-                                    var text = "";
-                                    var val = "";
-                                    if (a != null && a.length > 0) {
-                                        text = a[0].text;
-                                        val = a[0].id;
-                                        if (a.length > 1)
-                                            for (var i = 1; i < a.length; i++) {
-                                                text += ", " + a[i].text;
-                                                val += "," + a[i].id;
-                                            }
+                                break;
+                            case "Requester Name":
+                                var top = p[0].offsetTop + 24;
+                                $('#rulecriteria_fs')
+                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+                                        top +
+                                        'px; left:' +
+                                        p[0].offsetLeft +
+                                        'px; "><select multiple="multiple" id="' +
+                                        inputId +
+                                        '"></select></div>');
+                                initRequesterDropdown({
+                                    control: $("#" + inputId),
+                                    ignore: function() {
+                                        return []; //$("#" + inputId).val();
                                     }
-                                    p[0].innerHTML = text;
-                                    anchorTag.children[4].innerHTML = text;
-                                    tree.jstree().get_node(selectedId).data.Value = val;
-                                    //tree.jstree().get_node(selectedId).data.ValueText = text;
                                 });
-                            $("#" + inputId)
-                                .on("select2-blur",
-                                    function() {
-                                        alert("grr");
-                                        //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                        //$('#tempSelectValue').remove();
-                                    });
-                            break;
-                        case "Department":
-                        case "Priority":
-                        case "Impact":
-                        case "Urgency":
-                        case "Category":
-                        case "Mode":
-                            var top = p[0].offsetTop + 24;
-                            $('#rulecriteria_fs')
-                                .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                    top +
-                                    'px; left:' +
-                                    p[0].offsetLeft +
-                                    'px; "><select multiple="multiple" id="' +
-                                    inputId +
-                                    '"></select></div>');
-                            initConditionValueDropdown({
-                                control: $("#" + inputId),
-                                ignore: function() {
-                                    return $("#" + inputId).val();
-                                },
-                                criteria: criteria
-                            });
-                            if (anchorTag.children[4].innerHTML != "") {
-                                var masks = anchorTag.children[4].innerHTML.split(", ");
-                                var values = tree.jstree().get_node(selectedId).data.Value.split(",");
-                                for (var i = 0; i < masks.length; i++) {
-                                    initDropdown($("#" + inputId), masks[i], values[i]);
+                                if (anchorTag.children[4].innerHTML != "") {
+                                    var masks = anchorTag.children[4].innerHTML.split(", ");
+                                    var values = tree.jstree().get_node(selectedId).data.Value.split(",");
+                                    for (var i = 0; i < masks.length; i++) {
+                                        initDropdown($("#" + inputId), masks[i], values[i]);
+                                    }
                                 }
-                            }
-                            $("#" + inputId).select2("open");
-                            $("#" + inputId)
-                                .on("select2:close",
-                                    function() {
-                                        tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                        $('#tempSelectValue').remove();
+                                $("#" + inputId).select2("open");
+                                $("#" + inputId)
+                                    .on("select2:close",
+                                        function() {
+                                            tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                            $('#tempSelectValue').remove();
+                                        });
+                                $("#" + inputId)
+                                    .change(function() {
+                                        var a = $("#" + inputId).select2('data');
+                                        var text = "";
+                                        var val = "";
+                                        if (a != null && a.length > 0) {
+                                            text = a[0].text;
+                                            val = a[0].id;
+                                            if (a.length > 1)
+                                                for (var i = 1; i < a.length; i++) {
+                                                    text += ", " + a[i].text;
+                                                    val += "," + a[i].id;
+                                                }
+                                        }
+                                        p[0].innerHTML = text;
+                                        anchorTag.children[4].innerHTML = text;
+                                        tree.jstree().get_node(selectedId).data.Value = val;
+                                        //tree.jstree().get_node(selectedId).data.ValueText = text;
                                     });
-                            $("#" + inputId)
-                                .change(function() {
-                                    var a = $("#" + inputId).select2('data');
-                                    var text = "";
-                                    var val = "";
-                                    if (a != null && a.length > 0) {
-                                        text = a[0].text;
-                                        val = a[0].id;
-                                        if (a.length > 1)
-                                            for (var i = 1; i < a.length; i++) {
-                                                text += ", " + a[i].text;
-                                                val += "," + a[i].id;
-                                            }
-                                    }
-                                    p[0].innerHTML = text;
-                                    anchorTag.children[4].innerHTML = text;
-                                    tree.jstree().get_node(selectedId).data.Value = val;
+                                $("#" + inputId)
+                                    .on("select2-blur",
+                                        function() {
+                                            alert("grr");
+                                            //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                            //$('#tempSelectValue').remove();
+                                        });
+                                break;
+                            case "Department":
+                            case "Priority":
+                            case "Impact":
+                            case "Urgency":
+                            case "Category":
+                            case "Mode":
+                                var top = p[0].offsetTop + 24;
+                                $('#rulecriteria_fs')
+                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+                                        top +
+                                        'px; left:' +
+                                        p[0].offsetLeft +
+                                        'px; "><select multiple="multiple" id="' +
+                                        inputId +
+                                        '"></select></div>');
+                                initConditionValueDropdown({
+                                    control: $("#" + inputId),
+                                    ignore: function() {
+                                        return $("#" + inputId).val();
+                                    },
+                                    criteria: criteria
                                 });
-                            $("#" + inputId)
-                                .on("select2-blur",
-                                    function() {
-                                        alert("grr");
-                                        //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                        //$('#tempSelectValue').remove();
+                                if (anchorTag.children[4].innerHTML != "") {
+                                    var masks = anchorTag.children[4].innerHTML.split(", ");
+                                    var values = tree.jstree().get_node(selectedId).data.Value.split(",");
+                                    for (var i = 0; i < masks.length; i++) {
+                                        initDropdown($("#" + inputId), masks[i], values[i]);
+                                    }
+                                }
+                                $("#" + inputId).select2("open");
+                                $("#" + inputId)
+                                    .on("select2:close",
+                                        function() {
+                                            tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                            $('#tempSelectValue').remove();
+                                        });
+                                $("#" + inputId)
+                                    .change(function() {
+                                        var a = $("#" + inputId).select2('data');
+                                        var text = "";
+                                        var val = "";
+                                        if (a != null && a.length > 0) {
+                                            text = a[0].text;
+                                            val = a[0].id;
+                                            if (a.length > 1)
+                                                for (var i = 1; i < a.length; i++) {
+                                                    text += ", " + a[i].text;
+                                                    val += "," + a[i].id;
+                                                }
+                                        }
+                                        p[0].innerHTML = text;
+                                        anchorTag.children[4].innerHTML = text;
+                                        tree.jstree().get_node(selectedId).data.Value = val;
                                     });
-                            break;
+                                $("#" + inputId)
+                                    .on("select2-blur",
+                                        function() {
+                                            alert("grr");
+                                            //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+                                            //$('#tempSelectValue').remove();
+                                        });
+                                break;
                         }
                     }
 
@@ -725,7 +738,8 @@
         $(document)
             .bind("dnd_start.vakata",
                 function(e, data) {
-
+                    $('#tempSelectValue').select2('destroy');
+                    $('#tempSelectValue').remove();
                 })
             .bind("dnd_move.vakata",
                 function(e, data) {
@@ -738,66 +752,66 @@
 
         function onSelectBRActionChange() {
             switch ($("#rule-action").val()) {
-            case "1":
-                initTechnicianDropdown({
-                    control: $("#rule-action-select"),
-                    ignore: function() {
-                        return [];
-                    }
-                });
-                break;
-            case "2":
-                initDepartmentDropdown({
-                    control: $("#rule-action-select"),
-                    ignore: function() {
-                        return [];
-                    }
-                });
-                break;
-            case "3":
-                initCategoryDropdownByLevel({
-                    control: $("#rule-action-select"),
-                    ignore: function() {
-                        return [];
-                    },
-                    level: 1
-                });
-                break;
-            case "4":
-                initCategoryDropdownByLevel({
-                    control: $("#rule-action-select"),
-                    ignore: function() {
-                        return [];
-                    },
-                    level: 2
-                });
-                break;
-            case "5":
-                initCategoryDropdownByLevel({
-                    control: $("#rule-action-select"),
-                    ignore: function() {
-                        return [];
-                    },
-                    level: 3
-                });
-                break;
-            case "6":
-                initPriorityDropdown({
-                    control: $("#rule-action-select"),
-                    ignore: function() {
-                        return [];
-                    }
-                });
-                break;
-            case "7":
-                initStatusDropdown({
-                    control: $("#rule-action-select"),
-                    ignore: function() {
-                        return [];
-                    }
-                });
-                break;
-            default:
+                case "1":
+                    initTechnicianDropdown({
+                        control: $("#rule-action-select"),
+                        ignore: function() {
+                            return [];
+                        }
+                    });
+                    break;
+                case "2":
+                    initDepartmentDropdown({
+                        control: $("#rule-action-select"),
+                        ignore: function() {
+                            return [];
+                        }
+                    });
+                    break;
+                case "3":
+                    initCategoryDropdownByLevel({
+                        control: $("#rule-action-select"),
+                        ignore: function() {
+                            return [];
+                        },
+                        level: 1
+                    });
+                    break;
+                case "4":
+                    initCategoryDropdownByLevel({
+                        control: $("#rule-action-select"),
+                        ignore: function() {
+                            return [];
+                        },
+                        level: 2
+                    });
+                    break;
+                case "5":
+                    initCategoryDropdownByLevel({
+                        control: $("#rule-action-select"),
+                        ignore: function() {
+                            return [];
+                        },
+                        level: 3
+                    });
+                    break;
+                case "6":
+                    initPriorityDropdown({
+                        control: $("#rule-action-select"),
+                        ignore: function() {
+                            return [];
+                        }
+                    });
+                    break;
+                case "7":
+                    initStatusDropdown({
+                        control: $("#rule-action-select"),
+                        ignore: function() {
+                            return [];
+                        }
+                    });
+                    break;
+                default:
             }
         }
 
@@ -937,31 +951,31 @@
             @foreach (var item in Model.Rules)
             {
                 <text>
-                    if ('@item.ParentId' == id) {
-                        var createdId = tree.jstree(true)
-                            .create_node(parentNode,
-                                {
-                                    "data": {
-                                        Logic: '@item.Logic',
-                                        LogicText: '@item.LogicText',
-                                        Criteria: '@item.Criteria',
-                                        CriteriaText: '@item.CriteriaText',
-                                        Condition: '@item.Condition',
-                                        ConditionText: '@item.ConditionText',
-                                        Value: '@item.Value',
-                                        ValueMask: '@item.ValueMask'
-                                    }
-                                },
-                                "last");
-                        @*tree.jstree().get_node(createdId).data.Logic = @item.Logic;
+            if ('@item.ParentId' == id) {
+                var createdId = tree.jstree(true)
+                    .create_node(parentNode,
+                        {
+                            "data": {
+                                Logic: '@item.Logic',
+                                LogicText: '@item.LogicText',
+                                Criteria: '@item.Criteria',
+                                CriteriaText: '@item.CriteriaText',
+                                Condition: '@item.Condition',
+                                ConditionText: '@item.ConditionText',
+                                Value: '@item.Value',
+                                ValueMask: '@item.ValueMask'
+                            }
+                        },
+                        "last");
+                @*tree.jstree().get_node(createdId).data.Logic = @item.Logic;
                         tree.jstree().get_node(createdId).data.Criteria = @item.Criteria;
                         tree.jstree().get_node(createdId).data.Condition = @item.Condition;
                         tree.jstree().get_node(createdId).data.Value = @item.Value;*@
-                        //var anchorTag = $("<a/>").append(tree.jstree().get_node(createdId).data.text)[0];
-                        //anchorTag.children[1].innerHTML = logic;
-                        addChildRule(createdId, @item.Id);
-                    }
-                </text>
+                //var anchorTag = $("<a/>").append(tree.jstree().get_node(createdId).data.text)[0];
+                //anchorTag.children[1].innerHTML = logic;
+                addChildRule(createdId, @item.Id);
+            }
+            </text>
             }
         }
 
@@ -971,15 +985,15 @@
             @foreach (var item in Model.technicianList)
             {
                 <text>
-                    initDropdown($("#ddl-technician"), '@item.Name', '@item.Id');
-                </text>
+            initDropdown($("#ddl-technician"), '@item.Name', '@item.Id');
+            </text>
             }
         }
 
         $(document)
             .ready(function() {
 
-                setActiveTicketMenu();
+                //setActiveTicketMenu();
                 initDropdownControl();
                 initData();
             });

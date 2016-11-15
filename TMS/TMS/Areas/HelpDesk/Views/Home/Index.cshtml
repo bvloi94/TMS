@@ -269,12 +269,30 @@
     <script src="~/Content/Plugins/jquerydownload/jquery.fileDownload.js"></script>
     <script>
         var defaultColors = [
-            "#00C0EF", "#F39C12", "#00A65A", "#DD4B39", "#A1A1A1", "#757575"
+            "#00C0EF", "#f39c12", "#00A65A", "#DD4B39", "#605ca8", "#757575"
         ];
-
+        //"#A1A1A1"
         $(document).ready(function () {
             ProcessGraph();
         });
+
+        function getDateTime(year, month, day) {
+            var date = new Date(year, month, day);
+            var dd = date.getDate();
+            var mm = date.getMonth() + 1; //January is 0!
+            var yyyy = date.getFullYear();
+
+            if(dd<10) {
+                dd='0'+dd
+            }
+
+            if(mm<10) {
+                mm='0'+mm
+            }
+
+            date = dd+'/'+mm+'/'+yyyy;
+            return date;
+        }
 
         function ProcessGraph() {
             $.ajax({
@@ -283,7 +301,9 @@
                 "data": {
                     type: 0,
                     by: 6,
-                },
+                    date_from_select: getDateTime(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 7),
+                    date_to_select: getDateTime(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
+                    },
                 "success": function (data) {
                     drawChart(data.label, data.data)
                 }
@@ -311,7 +331,7 @@
                 legend: false,
                 elements: {
                     arc: {
-                        borderWidth: 0
+                        borderWidth: 1
                     }
                 }
             }

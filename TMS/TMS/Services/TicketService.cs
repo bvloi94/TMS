@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Web;
 using TMS.Class;
 using TMS.DAL;
-using TMS.Enumerator;
 using TMS.Models;
 using TMS.Utils;
 using TMS.ViewModels;
@@ -56,11 +54,61 @@ namespace TMS.Services
                 if (isSatisfied)
                 {
                     IEnumerable<BusinessRuleTrigger> triggers = businessRule.BusinessRuleTriggers;
-                    foreach (BusinessRuleTrigger trigger in triggers)
+                    var enable = false;
+                    if (businessRule.EnableRule != null)
+                        enable = (bool)businessRule.EnableRule;
+                    if (enable)
                     {
-                        switch (trigger.Action)
+                        foreach (BusinessRuleTrigger trigger in triggers)
                         {
+                            switch (trigger.Action)
+                            {
+                                case ConstantUtil.BusinessRuleTrigger.AssignToTechnician:
+                                    var technician = _unitOfWork.AspNetRoleRepository.GetByID(trigger.Value);
+                                    if (technician != null)
+                                    {
+                                        ticket.TechnicianID = technician.Id;
+                                    }
+                                    break;
+                                case ConstantUtil.BusinessRuleTrigger.ChangeStatusTo:
+                                    int status = Convert.ToInt32(trigger.Value);
+                                    if (status > 0)
+                                    {
+                                        ticket.Status = status;
+                                    }
+                                    break;
+                                case ConstantUtil.BusinessRuleTrigger.PlaceInDepartment:
+                                    int department = Convert.ToInt32(trigger.Value);
+                                    if (department > 0)
+                                    {
+                                        // Ticket not have department
+                                    }
+                                    break;
+                                case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
+                                case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
+                                case ConstantUtil.BusinessRuleTrigger.MoveToItem:
+                                    int categoryId = Convert.ToInt32(trigger.Value);
+                                    if (categoryId > 0) { ticket.CategoryID = categoryId; }
+                                    break;
+                                case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
+                                    int priorityId = Convert.ToInt32(trigger.Value);
+                                    if (priorityId > 0)
+                                    {
+                                        ticket.PriorityID = priorityId;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
 
+                    IEnumerable<BusinessRuleNotification> notifications = businessRule.BusinessRuleNotifications;
+                    foreach (var noty in notifications)
+                    {
+                        var technician = _unitOfWork.AspNetUserRepository.GetByID(noty.ReceiverID);
+                        if (technician != null)
+                        {
+                            Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenBusinessRuleIsApplied(ticket, technician));
+                            thread.Start();
                         }
                     }
                 }
@@ -602,7 +650,7 @@ namespace TMS.Services
                 _unitOfWork.BeginTransaction();
 
                 //send notification to technician when assigned
-                if (oldTicket.Status == ConstantUtil.TicketStatus.New && ticket.Status == ConstantUtil.TicketStatus.Assigned)
+                if (oldTicket.Status == ConstantUtil.TicketStatus.Open && ticket.Status == ConstantUtil.TicketStatus.Assigned)
                 {
                     AspNetUser ticketAssigner = _unitOfWork.AspNetUserRepository.GetByID(actId);
                     if (ticketAssigner != null)
@@ -619,7 +667,7 @@ namespace TMS.Services
                     }
                 }
                 //send notification to technician when unassigned
-                else if (oldTicket.Status == ConstantUtil.TicketStatus.Assigned && ticket.Status == ConstantUtil.TicketStatus.New)
+                else if (oldTicket.Status == ConstantUtil.TicketStatus.Assigned && ticket.Status == ConstantUtil.TicketStatus.Open)
                 {
                     AspNetUser ticketUnassigner = _unitOfWork.AspNetUserRepository.GetByID(actId);
                     if (ticketUnassigner != null)
@@ -1129,7 +1177,7 @@ namespace TMS.Services
             //status
             if (oldTicket.Status != newTicket.Status)
             {
-                sb.Append(string.Format(@"<p>Status changed from <b>{0}</b> to <b>{1}</b></p>", (TicketStatusEnum)oldTicket.Status, (TicketStatusEnum)newTicket.Status));
+                sb.Append(string.Format(@"<p>Status changed from <b>{0}</b> to <b>{1}</b></p>", GeneralUtil.GetTicketStatusByID(oldTicket.Status), GeneralUtil.GetTicketStatusByID(newTicket.Status)));
             }
             //impact
             if (oldTicket.ImpactID != null || newTicket.ImpactID != null)

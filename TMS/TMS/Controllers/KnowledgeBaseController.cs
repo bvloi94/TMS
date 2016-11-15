@@ -427,19 +427,13 @@ namespace TMS.Controllers
                 Count = m.Count
             });
 
-            var totalTicket = 0;
-            foreach (FrequentlyAskedTicketViewModel ticket in frequentlyAskedTickets)
-            {
-                totalTicket += ticket.Count;
-            }
-
             return Json(new
             {
                 draw = param.draw,
                 recordsTotal = displayedList.ToList().Count(),
                 recordsFiltered = filteredListItems.Count(),
                 data = displayedList,
-                totalTicket = totalTicket
+                totalTicket = recentTickets.Count()
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -469,12 +463,6 @@ namespace TMS.Controllers
                 foreach (TicketViewModel ticket in temp)
                 {
                     int matchTag = 0;
-                    //string itemTags = string.IsNullOrWhiteSpace(ticket.Tags) ? "" : ticket.Tags;
-                    //int itemNumOfTags = GeneralUtil.GetNumberOfTags(itemTags);
-                    //if (itemNumOfTags >= numOfTags && tags != ticket.Tags)
-                    //{
-                    //    continue;
-                    //}
                     foreach (string tagItem in tagsArr)
                     {
                         if (ticket.Tags != null && ticket.Tags.ToLower().Contains(tagItem.ToLower()))

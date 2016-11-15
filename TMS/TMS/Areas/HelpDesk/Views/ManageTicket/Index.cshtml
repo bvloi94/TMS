@@ -5,6 +5,8 @@
 }
 <link href="~/Content/Plugins/icheck/skins/square/blue.css" rel="stylesheet">
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
+<link rel="stylesheet" href="~/Content/css/daterangepicker.css" />
+
 <style>
     table.dataTable tbody td {
         vertical-align: middle;
@@ -21,6 +23,34 @@
     #ticket-description-attachments a, #ticket-solution-attachments a {
         margin: 2px 2px 2px 0px;
         display: inline-block;
+    }
+
+    .ticket_filter div {
+        padding-bottom: 10px;
+    }
+
+    .ticket_filter label {
+        font-weight: normal;
+        margin-bottom: 0px;
+    }
+
+    .ticket_filter .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: rgba(104, 140, 150, 0.78);
+        border: none;
+    }
+
+    .ticket_filter .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #f7f5f5;
+    }
+
+    .requester-name {
+        margin-bottom: 0px;
+    }
+
+    .requester-email {
+        margin-bottom: 0px;
+        font-weight: normal;
+        white-space: nowrap;
     }
 
     .ticket-info {
@@ -183,6 +213,7 @@
                             </div>
                             <!-- /.box-header -->
                             <div class="box-body collapse" id="detail-box">
+
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-4 ">
                                         <div class="col-sm-6 labels">
@@ -451,7 +482,88 @@
 }
 
 <div class="row">
-    <div class="col-xs-12">
+    <div class="col-xs-2">
+        <div class="box box-solid">
+            <div class="box-header">
+                <h3 class="box-title">Filter Tickets</h3>
+            </div>
+            <div class="box-body ticket_filter" style="display: block;">
+                <div class="filter_created_time" data-role="filter_created_time">
+                    <h5>Created</h5>
+                    <select data-role="filter_created_select">
+                        <option value="0" default>Any time</option>
+                        <option value="5">Within 5 minutes</option>
+                        <option value="15">Within 15 minutes</option>
+                        <option value="30">Within 30 minutes</option>
+                        <option value="60">Within 1 hour</option>
+                        <option value="240">Within 4 hours</option>
+                        <option value="720">Within 12 hours</option>
+                        <option value="1440">Within 24 hours</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="week">This Week</option>
+                        <option value="last_week">Last 7 days</option>
+                        <option value="month">This Month</option>
+                        <option value="last_month">Last 30 days</option>
+                        <option value="two_months">Last 60 days</option>
+                        <option value="six_months">Last 180 days</option>
+                        <option value="set_date">Select Time Period</option>
+                    </select>
+                </div>
+                <div class="filter_time_period hidden" data-role="filter_time_period">
+                    <h5>Time period</h5>
+                    <input type="text" readonly="readonly" data-role="filter_time_period_input" />
+                </div>
+                <div class="filter_due_by" data-role="filter_due_by">
+                    <h5>Due by</h5>
+                    <label style="display: block;">
+                        <input class="due_by_item" id="Overdue" name="Overdue" type="checkbox" value="Overdue">
+                        <span>Overdue</span>
+                    </label>
+                    <label style="display: block;">
+                        <input class="due_by_item" id="Today" name="Today" type="checkbox" value="Today">
+                        <span>Today</span>
+                    </label>
+                    <label style="display: block;">
+                        <input class="due_by_item" id="Tomorrow" name="Tomorrow" type="checkbox" value="Tomorrow">
+                        <span>Tomorrow</span>
+                    </label>
+                    <label style="display: block;">
+                        <input class="due_by_item" id="Next_8_hours" name="Next 8 hours" type="checkbox" value="Next_8_hours">
+                        <span>Next 8 hours</span>
+                    </label>
+                </div>
+                <div class="filter_status" data-role="filter_status">
+                    <h5>Status</h5>
+                    <select multiple="multiple" data-role="filter_status_select">
+                        <option value="0">Pending</option>
+                        <option value="1">Unassigned</option>
+                        <option value="2">Assigned</option>
+                        <option value="3">Solved</option>
+                        <option value="4">Unapproved</option>
+                        <option value="5">Cancelled</option>
+                        <option value="6">Closed</option>
+                    </select>
+                </div>
+                <div class="filter_mode" data-role="filter_mode">
+                    <h5>Mode</h5>
+                    <select multiple="multiple" data-role="filter_mode_select">
+                        <option value="@ConstantUtil.TicketMode.PhoneCall">@ConstantUtil.TicketModeString.PhoneCall</option>
+                        <option value="@ConstantUtil.TicketMode.WebForm">@ConstantUtil.TicketModeString.WebForm</option>
+                        <option value="@ConstantUtil.TicketMode.Email">@ConstantUtil.TicketModeString.Email</option>
+                        <option value="@ConstantUtil.TicketMode.SocialNetwork">@ConstantUtil.TicketModeString.SocialNetwork</option>
+                        <option value="@ConstantUtil.TicketMode.Forum">@ConstantUtil.TicketModeString.Forum</option>
+                        <option value="@ConstantUtil.TicketMode.Other">@ConstantUtil.TicketModeString.Other</option>
+                    </select>
+                </div>
+                <div class="filter_requester" data-role="filter_requester">
+                    <h5>Requester</h5>
+                    <select multiple="multiple" style="width: 250px;" data-role="filter_requester_select"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-10">
         <div class="box box-solid">
             <div class="box-body" style="display: block;">
                 <a class="btn bg-olive btn-flat" style="display: inline-block;" href='@Url.Action("CreateNewTicket", "ManageTicket")'>
@@ -460,22 +572,22 @@
                 <a class="btn bg-olive btn-flat margin-left10 disabled" style="display: inline-block;" data-role="btn-merge-ticket">
                     <i class="fa fa-compress" aria-hidden="true"></i> Merge
                 </a>
-                <div class="pull-right" style="margin-right: 20px">
-                    <div class="form-inline form-group">
-                        <label>Status: &nbsp;</label>
-                        <select class="form-control" id="status-dropdown">
-                            <option value="0">Pending</option>
-                            <option value="1">New</option>
-                            <option value="2">Assigned</option>
-                            <option value="3">Solved</option>
-                            <option value="4">Unapproved</option>
-                            <option value="5">Cancelled</option>
-                            <option value="6">Closed</option>
-                        </select>&nbsp;&nbsp; &nbsp;
-                        <label>Search: &nbsp;</label>
-                        <input class="form-control" type="text" id="search-txt" placeholder="Subject" />
-                    </div>
-                </div>
+                @*<div class="pull-right" style="margin-right: 20px">
+                        <div class="form-inline form-group">
+                            <label>Status: &nbsp;</label>
+                            <select class="form-control" id="status-dropdown">
+                                <option value="0">Pending</option>
+                                <option value="1">Open</option>
+                                <option value="2">Assigned</option>
+                                <option value="3">Solved</option>
+                                <option value="4">Unapproved</option>
+                                <option value="5">Cancelled</option>
+                                <option value="6">Closed</option>
+                            </select>&nbsp;&nbsp; &nbsp;
+                            <label>Search: &nbsp;</label>
+                            <input class="form-control" type="text" id="search-txt" placeholder="Subject" />
+                        </div>
+                    </div>*@
                 <table class="table table-striped" id="ticket-table">
                     <thead>
                         <tr>

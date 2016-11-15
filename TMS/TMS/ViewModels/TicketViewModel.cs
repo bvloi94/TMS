@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using EAGetMail;
-using TMS.Enumerator;
-using TMS.Models;
 using TMS.Utils;
 
 namespace TMS.ViewModels

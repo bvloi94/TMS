@@ -32,7 +32,7 @@ namespace TMS
                 "~/Scripts/main.js",
                 "~/Content/js/jquery.noty.packaged.js",
                 "~/Scripts/notify.min.js",
-                "~/Content/js/select2.min.js",
+                "~/Content/js/select2.full.js",
                 "~/Content/js/jquery.truncate.js",
                 "~/Content/js/trunk8.min.js",
                 "~/Content/js/jPages.min.js",
@@ -54,7 +54,7 @@ namespace TMS
                       "~/Content/bootstrap.css.map",
                       "~/Content/font-awesome.min.css",
                       "~/Content/Site.css",
-                      "~/Content/css/select2.min.css",
+                      "~/Content/css/select2.css",
                       "~/Content/custom-css/tms.css",
                       "~/Content/custom-css/tms-dropdown.css",
                       "~/Content/Plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css",
@@ -80,7 +80,9 @@ namespace TMS
                       "~/Content/custom-css/admin.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/helpdesk-manage-ticket").Include(
-               "~/Scripts/helpdesk-manage-ticket.js"));
+               "~/Scripts/helpdesk-manage-ticket.js",
+               "~/Content/js/moment.min.js",
+               "~/Content/js/daterangepicker.js"));
         }
     }
 }

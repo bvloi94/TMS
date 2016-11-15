@@ -204,11 +204,11 @@
                         <div class="col-sm-8">
                             @switch (Model.Status)
                             {
-                                case "New": <label class="label label-info">New</label> break;
+                                case "Open": <label class="label label-info">Open</label> break;
                                 case "Assigned": <label class="label label-warning">Assigned</label> break;
                                 case "Solved": <label class="label label-success">Solved</label> break;
                                 case "Unapproved": <label class="label label-danger">Unapproved</label> break;
-                                case "Cancelled": <label class="label label-default">Cancelled</label> break;
+                                case "Cancelled": <label class="label label-violet">Cancelled</label> break;
                                 case "Closed": <label class="label label-default">Closed</label> break;
                             }
                         </div>
@@ -319,7 +319,7 @@
                                 <i class="fa fa-history" aria-hidden="true"></i> Ticket History
                             </a>
                         </li>
-                        @if (Model.Status == "New")
+                        @if (Model.Status == "Open")
                         {
                             <li>
                                 <a href="/Ticket/Solve/@Model.Id">

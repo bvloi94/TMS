@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using TMS.DAL;
-using TMS.Enumerator;
 using TMS.Models;
 using TMS.Services;
 using TMS.Utils;
@@ -305,12 +302,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                 // Status
                 case 6:
                     {
-                        IEnumerable<Ticket> statusInTickets;
-                        foreach (TicketStatusEnum status in Enum.GetValues(typeof(TicketStatusEnum)))
+                        foreach (var status in typeof(ConstantUtil.TicketStatus).GetFields())
                         {
-                            labels.Add(status.ToString());
-                            statusInTickets = filteredListItems.Where(p => p.Status == (int)status);
-                            data.Add(statusInTickets.Count());
+                            labels.Add(typeof(ConstantUtil.TicketStatusString).GetField(status.Name).GetValue(null).ToString());
+                            var ticketStatus = filteredListItems.Where(p => p.Status == (int)status.GetValue(null));
+                            data.Add(ticketStatus.Count());
                         }
 
                         return Json(new

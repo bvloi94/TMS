@@ -185,6 +185,27 @@ namespace TMS.Utils
             }
         }
 
+        public static string GetTicketStatusByID(int status)
+        {
+            switch (status)
+            {
+                case ConstantUtil.TicketStatus.Open:
+                    return ConstantUtil.TicketStatusString.Open;
+                case ConstantUtil.TicketStatus.Assigned:
+                    return ConstantUtil.TicketStatusString.Assigned;
+                case ConstantUtil.TicketStatus.Solved:
+                    return ConstantUtil.TicketStatusString.Solved;
+                case ConstantUtil.TicketStatus.Unapproved:
+                    return ConstantUtil.TicketStatusString.Unapproved;
+                case ConstantUtil.TicketStatus.Cancelled:
+                    return ConstantUtil.TicketStatusString.Cancelled;
+                case ConstantUtil.TicketStatus.Closed:
+                    return ConstantUtil.TicketStatusString.Closed;
+                default:
+                    return "Unassigned";
+            }
+        }
+
         public static string GetOverdueDate(DateTime? scheduleDate, int status)
         {
             if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.New || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))

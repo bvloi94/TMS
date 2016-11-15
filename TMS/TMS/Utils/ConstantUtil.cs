@@ -72,12 +72,22 @@ namespace TMS.Utils
 
         public class TicketStatus
         {
-            public const int New = 1;
+            public const int Open = 1;
             public const int Assigned = 2;
             public const int Solved = 3;
             public const int Unapproved = 4;
             public const int Cancelled = 5;
             public const int Closed = 6;
+        }
+
+        public class TicketStatusString
+        {
+            public const string Open = "Open";
+            public const string Assigned = "Assigned";
+            public const string Solved = "Solved";
+            public const string Unapproved = "Unapproved";
+            public const string Cancelled = "Cancelled";
+            public const string Closed = "Closed";
         }
 
         public class ContactEmailInfo

@@ -51,8 +51,8 @@ namespace TMS.Utils
         {
             switch (status)
             {
-                case ConstantUtil.TicketStatus.New:
-                    return "New";
+                case ConstantUtil.TicketStatus.Open:
+                    return "Open";
                 case ConstantUtil.TicketStatus.Assigned:
                     return "Assigned";
                 case ConstantUtil.TicketStatus.Solved:
@@ -151,7 +151,7 @@ namespace TMS.Utils
         public static List<DropDownViewModel> GetDefaultStatus()
         {
             List<DropDownViewModel> status = new List<DropDownViewModel>();
-            status.Add((new DropDownViewModel(1, "New")));
+            status.Add((new DropDownViewModel(1, "Open")));
             status.Add((new DropDownViewModel(2, "Assigned")));
             status.Add((new DropDownViewModel(3, "Solved")));
             status.Add((new DropDownViewModel(4, "Unapproved")));

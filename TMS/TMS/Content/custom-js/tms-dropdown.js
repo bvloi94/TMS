@@ -496,7 +496,7 @@ function initRequesterDropdown(param) {
             },
             cache: true
         },
-        placeholder: "-- Select Requester --",
+        //placeholder: "-- Select Requester --",
         escapeMarkup: function (markup) {
             return markup;
         }, // let our custom formatter work

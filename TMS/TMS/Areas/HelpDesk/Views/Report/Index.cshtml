@@ -261,7 +261,7 @@
                     {
                         "render": function (data, type, row) {
                             return row[4];
-                            
+
                         },
                         // Actual End Date
                         "targets": 4,
@@ -275,19 +275,7 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            if (row[6] == "New") {
-                                return "<label class='label label-info'>New</label>";
-                            }else if (row[6] == "Assigned") {
-                                return "<label class='label label-warning'>Assigned</label>";
-                            } else if (row[6] == "Solved") {
-                                return "<label class='label label-success'>Solved</label>";
-                            } else if (row[6] == "Unapproved") {
-                                return "<label class='label label-danger'>Unapproved</label>";
-                            } else if (row[6] == "Cancelled") {
-                                return "<label class='label label-default'>Cancelled</label>";
-                            } else if (row[6] == "Closed") {
-                                return "<label class='label label-default'>Closed</label>";
-                            }
+                            return getStatusLabel(row[6]);
                         },
                         // Status
                         "targets": 6,
