@@ -7,6 +7,8 @@ namespace TMS.Models
 {
     public class jQueryDataTableParamModel
     {
+        internal int draw;
+
         /// <summary>
         /// Request sequence number sent by DataTable,
         /// same value must be returned in response

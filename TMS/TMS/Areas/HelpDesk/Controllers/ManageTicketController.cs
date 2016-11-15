@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using log4net;
@@ -14,6 +15,8 @@ using TMS.Utils;
 using TMS.ViewModels;
 using System.Threading;
 using System.Text.RegularExpressions;
+using System.Web.Script.Serialization;
+using Microsoft.Ajax.Utilities;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -638,41 +641,204 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpPost]
         public ActionResult LoadAllTickets(JqueryDatatableParameterViewModel param)
         {
-            var default_search_key = Request["search[value]"];
-            var status_filter = Request["status_filter"];
-            var search_text = Request["search_text"];
+
+            var searchText = param.search["value"];
+            var createdFilter = Request["filter_created"];
+            var duebyFilter = Request["filter_dueby"];
+            var statusFilter = Request["filter_status"];
+            var modeFilter = Request["filter_mode"];
+            var requesterFilter = Request["filter_requester"];
+
+            object[] duebyFilterItems = null;
+            object[] statusFilterItems = null;
+            object[] modeFilterItems = null;
+            object[] requesterFilterItems = null;
+
+            var js = new JavaScriptSerializer();
+            if (duebyFilter != null)
+            {
+                duebyFilterItems = (object[])js.DeserializeObject(duebyFilter);
+            }
+            if (statusFilter != null)
+            {
+                statusFilterItems = (object[])js.DeserializeObject(Request["filter_status"]);
+            }
+            if (modeFilter != null)
+            {
+                modeFilterItems = (object[])js.DeserializeObject(Request["filter_mode"]);
+            }
+            if (requesterFilter != null)
+            {
+                requesterFilterItems = (object[])js.DeserializeObject(Request["filter_requester"]);
+            }
 
             var queriedResult = _ticketService.GetAll();
             IEnumerable<Ticket> filteredListItems;
 
-            if (!string.IsNullOrEmpty(default_search_key))
+            // Search by subject
+            if (!string.IsNullOrEmpty(searchText))
             {
-                filteredListItems = queriedResult.Where(p => p.Subject.ToLower().Contains(default_search_key.ToLower()));
+                filteredListItems = queriedResult.Where(p => p.Subject.ToLower().Contains(searchText.ToLower()));
             }
             else
             {
                 filteredListItems = queriedResult;
             }
-            // Search by custom
-            if (!string.IsNullOrEmpty(status_filter))
+
+            // Filter by created time
+            if (!string.IsNullOrEmpty(createdFilter))
             {
-                int statusNo = Int32.Parse(status_filter);
-                if (statusNo > 0)
+                int minutes = 0;
+                switch (createdFilter)
                 {
-                    filteredListItems = filteredListItems.Where(p => p.Status == statusNo);
-                }
-                else
-                {
-                    //Hide Cancelled and Closed Tickets
-                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled);
-                    filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Closed);
+                    case "5":
+                    case "15":
+                    case "30":
+                    case "60":
+                    case "240":
+                    case "720":
+                    case "1440":
+                        filteredListItems = queriedResult.Where(p => (DateTime.Now - p.CreatedTime).TotalMinutes == Int32.Parse(createdFilter));
+                        break;
+                    case "today":
+                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Date == DateTime.Today);
+                        break;
+                    case "yesterday":
+                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Date == DateTime.Today.AddDays(-1));
+                        break;
+                    case "week":
+                        if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
+                        {
+                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(-6).Date <= p.CreatedTime.Date
+                            && p.CreatedTime.Date <= DateTime.Now.Date);
+                        }
+                        else
+                        {
+                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date <= p.CreatedTime.Date
+                            && p.CreatedTime.Date <= DateTime.Now.Date.AddDays(DayOfWeek.Sunday - DateTime.Now.DayOfWeek + 7).Date);
+                        }
+                        break;
+                    case "last_week":
+                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Date >= DateTime.Now.Date.AddDays(-7).Date
+                        && p.CreatedTime.Date <= DateTime.Now.Date);
+                        break;
+                    case "month":
+                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Month == DateTime.Now.Month
+                        && p.CreatedTime.Year == DateTime.Now.Year);
+                        break;
+                    case "last_month":
+                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Month == DateTime.Now.AddMonths(-1).Month
+                       && p.CreatedTime.Year == DateTime.Now.Year);
+                        break;
+                    case "two_months":
+                        filteredListItems = queriedResult.Where(p => p.CreatedTime >= DateTime.Now.AddMonths(-2)
+                        && p.CreatedTime.Year == DateTime.Now.Year);
+                        break;
+                    case "six_months":
+                        filteredListItems = queriedResult.Where(p => p.CreatedTime >= DateTime.Now.AddMonths(-6)
+                        && p.CreatedTime.Year == DateTime.Now.Year);
+                        break;
+                    case "set_date":
+                        var timePeriodFilter = Request["filter_time_period"];
+                        if (!string.IsNullOrEmpty(timePeriodFilter))
+                        {
+                            timePeriodFilter = timePeriodFilter.Replace(" ", "");
+                            string[] daterange = timePeriodFilter.Split('-');
+                            if (daterange.Length == 2)
+                            {
+                                var startDate = DateTime.ParseExact(daterange[0], ConstantUtil.DateFormat, new DateTimeFormatInfo());
+                                var endDate = DateTime.ParseExact(daterange[1], ConstantUtil.DateFormat,
+                                    new DateTimeFormatInfo());
+                                filteredListItems = queriedResult.Where(p => p.CreatedTime.Date >= startDate
+                                                                            && p.CreatedTime.Date <= endDate);
+                            }
+                        }
+                        break;
                 }
             }
 
-            if (!string.IsNullOrEmpty(search_text))
-            {
-                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
-            }
+            // Filter by status
+            if (duebyFilter != null)
+                foreach (var dueby in duebyFilterItems)
+                {
+                    if (!string.IsNullOrEmpty((string)dueby))
+                    {
+                        switch ((string)dueby)
+                        {
+                            case "Overdue":
+                                filteredListItems =
+                                    queriedResult.Where(
+                                        p => p.ScheduleEndDate.HasValue && p.ScheduleEndDate.Value < DateTime.Now);
+                                break;
+                            case "Today":
+                                filteredListItems =
+                                    queriedResult.Where(
+                                        p =>
+                                            p.ScheduleEndDate.HasValue &&
+                                            p.ScheduleEndDate.Value.Date == DateTime.Today);
+                                break;
+                            case "Tomorrow":
+                                filteredListItems =
+                                    queriedResult.Where(
+                                        p =>
+                                            p.ScheduleEndDate.HasValue &&
+                                            p.ScheduleEndDate.Value.Date == DateTime.Today.AddDays(1));
+                                break;
+                            case "Next_8_hours":
+                                filteredListItems =
+                                    queriedResult.Where(
+                                        p =>
+                                            p.ScheduleEndDate.HasValue && p.ScheduleEndDate.Value >= DateTime.Now
+                                            && p.ScheduleEndDate.Value <= DateTime.Now.AddHours(8));
+                                break;
+                        }
+                    }
+                }
+
+            // Filter by status
+            if (statusFilterItems != null)
+                foreach (var status in statusFilterItems)
+                {
+                    if (!string.IsNullOrEmpty((string)status))
+                    {
+                        int statusNo = Convert.ToInt32(status);
+                        if (statusNo > 0)
+                        {
+                            filteredListItems = filteredListItems.Where(p => p.Status == statusNo);
+                        }
+                        else
+                        {
+                            //Hide Cancelled and Closed Tickets
+                            filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled);
+                            filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Closed);
+                        }
+                    }
+                }
+
+            // Filter by mode
+            if (modeFilterItems != null)
+                foreach (var item in modeFilterItems)
+                {
+                    if (!string.IsNullOrEmpty((string)item))
+                    {
+                        int mode = Convert.ToInt32(item);
+                        if (mode > 0)
+                        {
+                            filteredListItems = filteredListItems.Where(p => p.Mode == mode);
+                        }
+                    }
+                }
+
+            // Filter by requester
+            if (requesterFilterItems != null)
+                foreach (var item in requesterFilterItems)
+                {
+                    if (!string.IsNullOrEmpty((string)item))
+                    {
+                        filteredListItems = filteredListItems.Where(p => p.RequesterID == item);
+                    }
+                }
+
 
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
@@ -709,6 +875,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 var s = new TicketViewModel();
                 s.No = ++startNo;
+                s.Code = item.Code;
                 s.Id = item.ID;
                 s.Subject = item.Subject;
                 s.Requester = item.RequesterID == null ? "" : _userService.GetUserById(item.RequesterID).Fullname;
@@ -724,6 +891,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
+                s.OverdueDateString = GeneralUtil.GetOverdueDate(item.ScheduleEndDate, item.Status);
+                s.IsOverdue = false;
+                if (item.ScheduleEndDate.HasValue)
+                {
+                    s.IsOverdue = (item.ScheduleEndDate.Value.Date.Subtract(DateTime.Now.Date).Days < 0) ? true : false;
+                }
+                s.Priority = item.Priority == null ? "" : item.Priority.Name;
+                s.PriorityColor = item.Priority == null ? "" : item.Priority.Color;
                 tickets.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();

@@ -64,12 +64,65 @@
         white-space: pre-wrap;
     }
 
-    .long-table-column {
+        table.dataTable tbody td {
+        vertical-align: middle;
+    }
+
+    .select2-dropdown {
+        z-index: 1200;
+    }
+
+    .select2-container {
+        width: 100% !important;
+    }
+
+    #ticket-description-attachments a, #ticket-solution-attachments a {
+        margin: 2px 2px 2px 0px;
+        display: inline-block;
+    }
+
+    .ticket-info {
+        margin-bottom: 15px;
+    }
+
+    .ticket-subject {
+        font-size: 16px;
+    }
+
+    .label-status {
+        display: inline-block;
+    }
+
+        .label-status .label {
+            display: inline-block;
+            min-width: 80px;
+            border-radius: unset;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+    .priority-color {
+        display: inline-block;
+        margin-top: 10px;
+        width: 12px;
+        height: 12px;
+    }
+
+    .overdue {
+        background-color: #de1515;
+        color: #ffffff;
+        display: block;
+        margin-top: 5px;
+        width: 120px;
+        padding: 5px 8px;
+        text-transform: uppercase;
+        text-align: center;
+        font-weight: bold;
     }
 </style>
 
 <div class="row">
-    <div class="col-xs-12">
+    <div class="col-xs-12" style="margin-bottom: 15px">
         <div class="box box-solid">
             <div class="box-header"></div>
             <div class="box-body">
@@ -94,17 +147,16 @@
                 <table class="table" id="ticket-table">
                     <thead>
                         <tr>
-                            <th>Created Date</th>
-                            <th>Requester</th>
-                            <th class="long-table-column">Subject</th>
-                            <th class="long-table-column">Solution</th>
-                            <th>Status</th>
-                            <th>Last Modified</th>
-                            <th>Action</th>
+                            <th style="width: 90%">Ticket</th>
+                            <th style="width: 10%">Action</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
+
+                @*<table class="table" id="ticket-table">
+
+                </table>*@
 
                 <!-- View ticket detail modal -->
                 <div id="detail-modal" class="modal fade" role="dialog">
@@ -338,7 +390,7 @@
                 serverSide: true,
                 paging: true,
                 sort: true,
-                order: [[5, 'dsc']],
+                order: [[0, 'asc']],
                 lengthChange: false,
                 filter: false,
                 drawCallback: function () {
@@ -356,73 +408,106 @@
                 },
                 "columnDefs": [
                     {
+                        "targets": [0],
                         "render": function (data, type, row) {
-                            return row[0];
-                        },
-                        "targets": 0
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return row[1];
-                        },
-                        "targets": 1
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return '<a href="javascript:void{0}" class="view-detail" data-id=' + row[6] + '>' + row[2] + '</a>';
-                        },
-                        "targets": 2
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            if (row[3] != null) {
-                                return "<span class='long-table-column'>" + row[3] + "</span>";
+                            var ticketInfo = "";
+                            var code = $("<span/>",
+                            {
+                                "class": "text-muted text-sm",
+                                "text": "#" + row.Code
+                            })[0].outerHTML;
+
+                            var status = $("<div/>",
+                           {
+                               "class": "label-status",
+                               "html": getStatusLabel(row.Status)
+                           })[0].outerHTML;
+
+                            var subject = $("<a/>",
+                            {
+                                "class": "ticket-subject",
+                                "href": "/Ticket/TicketDetail/" + row.Id,
+                                "html": row.Subject
+                            })[0].outerHTML;
+
+                            var creater = row.Requester != "" ? row.Requester : "-";
+                            var createdBy = $("<p/>",
+                            {
+                                "class": "text-muted",
+                                "html": 'Request by <span class="text-bold">' + creater + '</span>'
+                            })[0].outerHTML;
+
+                            var priority = row.Priority == "" ? " None" : '<div class="priority-color" style="background-color: ' + row.PriorityColor + '"></div>&nbsp;<span class="text-bold">' + row.Priority
+                            var priorityRow = $("<span/>",
+                            {
+                                "html": 'Priority: ' + priority
+                            })[0].outerHTML;
+
+                            var modifiedTime = $("<span/>",
+                            {
+                                "class": "text-muted",
+                                "html": 'Last modified <span class="text-bold">' + row.ModifiedTimeString + '. </span>'
+                            })[0].outerHTML;
+
+                            var overdueTime = "";
+                            var overdueDiv = "";
+                            if (row.IsOverdue) {
+                                overdueTime = $("<span/>",
+                                {
+                                    "class": "text-red text-bold",
+                                    "text": row.OverdueDateString
+                                })[0].outerHTML;
+                                overdueDiv = $("<div/>",
+                                {
+                                    "class": "overdue",
+                                    "html": "Overdue"
+                                })[0].outerHTML;
+                            } else {
+                                overdueTime = $("<span/>",
+                                {
+                                    "class": "text-black text-bold",
+                                    "text": row.OverdueDateString
+                                })[0].outerHTML;
                             }
-                            else {
-                                return "-";
-                            }
+
+                            ticketInfo = $("<div/>",
+                            {
+                                "class": "col-lg-10 col-sm-9",
+                                "style": "line-height: 14px",
+                                "html": '<p>' + status + '&nbsp;&nbsp;' + subject + '&nbsp;&nbsp;' + code + '</p>' + createdBy + modifiedTime + overdueTime
+                            })[0].outerHTML;
+
+                            ticketInfo += $("<div/>",
+                            {
+                                "class": "col-lg-2 col-sm-3 pull-right",
+                                "html": priorityRow + overdueDiv
+                            })[0].outerHTML;
+
+                            var ticketInfoContainer = $("<div/>",
+                            {
+                                "class": "row ticket-info",
+                                "html": ticketInfo
+                            })[0].outerHTML;
+
+                            return ticketInfoContainer;
                         },
-                        "sortable": false,
-                        "targets": 3
                     },
                     {
                         "render": function (data, type, row) {
-                            if (row[4] == 2) {
-                                return "<label class='label label-warning'>Assigned</label>";
-                            } else if (row[4] == 3) {
-                                return "<label class='label label-success'>Solved</label>";
-                            } else if (row[4] == 4) {
-                                return "<label class='label label-danger'>Unapproved</label>";
-                            } else if (row[4] == 5) {
-                                return "<label class='label label-default'>Cancelled</label>";
-                            } else if (row[4] == 6) {
-                                return "<label class='label label-default'>Closed</label>";
-                            }
-                        },
-                        "sortable": false,
-                        "targets": 4
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return row[5];
-                        },
-                        "targets": 5
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            var solveUrl = '/Ticket/Solve/' + row[6];
-                            if (row[4] == 2) {
-                                return "<a href='" + solveUrl + "' class='btn btn-primary btn-flat' >Solve</a>";
+                            var solveUrl = '/Ticket/Solve/' + row.Id;
+                            if (row.Status == "Assigned") {
+                                return "<a href='" + solveUrl + "' class='btn btn-success btn-flat' >Solve</a>";
                             }
                             else {
                                 return "<a class='btn btn-default btn-flat' disabled>Solve</a>";
                             }
                         },
                         "sortable": false,
-                        "targets": 6
+                        "targets": 1
                     }]
             });
         }
+
 
         var reloadDataTable = function () {
             var oTable = $("#ticket-table").dataTable();

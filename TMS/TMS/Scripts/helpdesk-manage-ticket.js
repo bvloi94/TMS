@@ -12,20 +12,25 @@ $(window).on('resize', function () {
 });
 
 function initTicketTable() {
+
     ticketTable = $("#ticket-table").DataTable({
         serverSide: true,
         processing: true,
         sort: true,
-        filter: false,
+        searchable: true,
         lengthMenu: [7],
-        order: [[6, 'des']],
+        order: [[1, 'des']],
         lengthChange: false,
         ajax: {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
             "type": "POST",
             "data": function (d) {
-                d.status_filter = $("#status-dropdown").val();
-                d.search_text = $("#search-txt").val();
+                d.filter_created = $("[data-role='filter_created_select']").val();
+                d.filter_time_period = $("[data-role='filter_time_period_input']").val();
+                d.filter_dueby = JSON.stringify(getDueByFilter());
+                d.filter_status = JSON.stringify($("[data-role='filter_status_select']").val());
+                d.filter_mode = JSON.stringify($("[data-role='filter_mode_select']").val());
+                d.filter_requester = JSON.stringify($("[data-role='filter_requester_select']").val());
             }
         },
         drawCallback: function () {
@@ -34,62 +39,106 @@ function initTicketTable() {
                 lines: 2,
                 tooltip: false
             });
+
         },
         autoWidth: false,
         columnDefs: [
-        {
-            "targets": [0],
-            "sortable": false,
-            "render": function (data, type, row) {
-                return '<input type="checkbox" data-role="cbo-ticket" data-id="' + row.Id + '" data-requester="' + row.Requester + '"/>';
-            }
-        },
-             {
-                 "targets": [1],
-                 "render": function (data, type, row) {
-                     return $("<a/>",
-                     {
-                         "class": "ticket-subject",
-                         "href": "javascript:openTicketDetailModal(" + row.Id + ")",
-                         "html": row.Subject
-                     })[0].outerHTML;
-                 },
-                 "width": "40%"
-             },
+            {
+                "targets": [0],
+                "sortable": false,
+                "render": function (data, type, row) {
+                    return '<div class="text-center"><input type="checkbox" data-role="cbo-ticket" data-id="' + row.Id + '" data-requester="' + row.Requester + '"/></div>';
+                }
+            },
+            {
+                "targets": [1],
+                "render": function (data, type, row) {
+                    var ticketInfo = "";
+                    var code = $("<span/>",
+                    {
+                        "class": "text-muted text-sm",
+                        "text": "#" + row.Code
+                    })[0].outerHTML;
+
+                    var status = $("<div/>",
+                   {
+                       "class": "label-status",
+                       "html": getStatusLabel(row.Status)
+                   })[0].outerHTML;
+
+                    var subject = $("<a/>",
+                    {
+                        "class": "ticket-subject",
+                        "href": "javascript:openTicketDetailModal(" + row.Id + ")",
+                        "html": row.Subject
+                    })[0].outerHTML;
+
+                    var creater = row.Requester != "" ? row.Requester : "-";
+                    var createdBy = $("<p/>",
+                    {
+                        "class": "text-muted",
+                        "html": 'Request by <span class="text-bold">' + creater + '</span>'
+                    })[0].outerHTML;
+
+                    var priority = row.Priority == "" ? " None" : '<div class="priority-color" style="background-color: ' + row.PriorityColor + '"></div>&nbsp;<span class="text-bold">' + row.Priority
+                    var priorityRow = $("<span/>",
+                    {
+                        "html": 'Priority: ' + priority
+                    })[0].outerHTML;
+
+                    var modifiedTime = $("<span/>",
+                    {
+                        "class": "text-muted",
+                        "html": 'Last modified <span class="text-bold">' + row.ModifiedTimeString + '. </span>'
+                    })[0].outerHTML;
+
+                    var overdueTime = "";
+                    var overdueDiv = "";
+                    if (row.IsOverdue) {
+                        overdueTime = $("<span/>",
+                        {
+                            "class": "text-red text-bold",
+                            "text": row.OverdueDateString
+                        })[0].outerHTML;
+                        overdueDiv = $("<div/>",
+                        {
+                            "class": "overdue",
+                            "html": "Overdue"
+                        })[0].outerHTML;
+                    } else {
+                        overdueTime = $("<span/>",
+                        {
+                            "class": "text-black text-bold",
+                            "text": row.OverdueDateString
+                        })[0].outerHTML;
+                    }
+
+
+                    ticketInfo = $("<div/>",
+                    {
+                        "class": "col-lg-10 col-sm-9",
+                        "style": "line-height: 14px",
+                        "html": '<p>' + status + '&nbsp;&nbsp;' + subject + '&nbsp;&nbsp;' + code + '</p>' + createdBy + modifiedTime + overdueTime
+                    })[0].outerHTML;
+
+                    ticketInfo += $("<div/>",
+                    {
+                        "class": "col-lg-2 col-sm-3 pull-right",
+                        "html": priorityRow + overdueDiv
+                    })[0].outerHTML;
+
+                    var ticketInfoContainer = $("<div/>",
+                    {
+                        "class": "row ticket-info",
+                        "html": ticketInfo
+                    })[0].outerHTML;
+
+                    return ticketInfoContainer;
+                },
+                "width": "70%"
+            },
             {
                 "targets": [2],
-                "render": function (data, type, row) {
-                    return row.Requester != "" ? row.Requester : "-";
-                }
-            },
-            {
-                "targets": [3],
-                "sortable": false,
-                "render": function (data, type, row) {
-                    return row.Technician != "" ? row.Technician : "-";
-                }
-
-            },
-            {
-                "targets": [4],
-                "sortable": false,
-                "render": function (data, type, row) {
-                    return row.SolvedDateString;
-                }
-            }, {
-                "targets": [5],
-                "render": function (data, type, row) {
-                    return getStatusLabel(row.Status);
-                }
-            },
-            {
-                "targets": [6],
-                "render": function (data, type, row) {
-                    return row.ModifiedTimeString;
-                }
-            },
-            {
-                "targets": [7],
                 "sortable": false,
                 "render": function (data, type, row) {
                     var links = '';
@@ -381,15 +430,73 @@ function openTicketDetailModal(ticketId) {
     });
 }
 
+function getDueByFilter() {
+    return $('.due_by_item:checked')
+        .map(function () { return $(this).val(); })
+        .get();
+}
+
+function initFilter() {
+    var created_select = $('[data-role="filter_created_select"');
+    var mode_select = $('[data-role="filter_mode_select"');
+    var status_select = $('[data-role="filter_status_select"');
+    var requester_select = $('[data-role="filter_requester_select"');
+    var time_period = $('[data-role="filter_time_period"');
+    var time_period_inp = $('[data-role="filter_time_period_input"');
+
+    created_select.select2();
+    time_period_inp.daterangepicker({
+        locale: {
+            format: 'DD/MM/YYYY'
+        }
+    });
+    time_period_inp.val("");
+    mode_select.select2();
+    status_select.select2();
+    status_select.select2('val', "1");
+    initRequesterDropdown({
+        control: requester_select,
+        ignore: function () {
+            return requester_select.val();
+        }
+    });
+    created_select
+        .on("change",
+            function () {
+                time_period_inp.val("");
+                if (created_select.val() == "set_date") {
+                    if (time_period.hasClass("hidden")) {
+                        time_period.removeClass("hidden");
+                    }
+                } else {
+                    if (!time_period.hasClass("hidden")) {
+                        time_period.addClass("hidden");
+                    }
+                    ticketTable.draw();
+                }
+            });
+    $('.due_by_item, [data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]')
+        .on("change",
+            function () {
+                ticketTable.draw();
+            });
+
+    time_period_inp.on("change",
+        function() {
+            ticketTable.draw();
+        });
+}
+
 $(document).ready(function () {
-    setActiveTicketMenu();
+    //setActiveTicketMenu();
+
+    // Init filter 
+    initFilter();
+
+    // Init ticket table
     initTicketTable();
 
     $("#search-txt").keyup(function () {
-        ticketTable.draw();
-    });
-
-    $("#status-dropdown").change(function () {
         ticketTable.draw();
     });
 

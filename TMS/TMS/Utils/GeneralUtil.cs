@@ -242,5 +242,33 @@ namespace TMS.Utils
                 return string.Empty;
             }
         }
+
+        public static string GetOverdueDate(DateTime? scheduleDate, int status)
+        {
+            if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.New || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
+            {
+                int distance = scheduleDate.Value.Date.Subtract(DateTime.Now.Date).Days;
+                if (distance < 0)
+                {
+                    if (distance == -1)
+                    {
+                        return "Overdue by yesterday";
+                    }
+                    return "Overdue by " + Math.Abs(distance) + " days";
+                }
+                else if (distance == 0) {
+                    return "Due on today at " + scheduleDate.Value.ToString("hh:mm"); ;
+                }
+                else
+                {
+                    if (distance == 1)
+                    {
+                        return "Due on tomorrow at " + scheduleDate.Value.ToString("hh:mm");
+                    }
+                    return "Due on " + scheduleDate.Value.ToString("MMMM dd yyyy  hh:mm");
+                }
+            }
+            return "";
+        }
     }
 }

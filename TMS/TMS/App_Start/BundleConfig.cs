@@ -41,6 +41,7 @@ namespace TMS
                 "~/Content/Plugins/datetimepicker/jquery.datetimepicker.full.min.js",
                 "~/Content/Plugins/bootstraptoggle/bootstrap-toggle.min.js",
                 "~/Content/Plugins/tagit/tag-it.min.js",
+                "~/Content/Plugins/icheck/icheck.min.js",
                 "~/Scripts/globalize.js",
                 "~/Scripts/cldr.js",
                 "~/Scripts/jquery.cookie.js"));
@@ -79,7 +80,9 @@ namespace TMS
                       "~/Content/custom-css/admin.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/helpdesk-manage-ticket").Include(
-               "~/Scripts/helpdesk-manage-ticket.js"));
+               "~/Scripts/helpdesk-manage-ticket.js",
+               "~/Content/js/moment.min.js",
+               "~/Content/js/daterangepicker.js"));
         }
     }
 }

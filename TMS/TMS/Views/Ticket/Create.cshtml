@@ -67,6 +67,7 @@
 @section scripts{
     <script>
         $("#saveBtn").on("click", function () {
+            $("#saveBtn").attr("disabled", true);
             var formData = new FormData($('#create-ticket-form')[0]);
             $.ajax({
                 "url": "/Ticket/Create/",
@@ -103,6 +104,9 @@
                         layout: "topRight",
                         timeout: 2500
                     });
+                },
+                complete: function () {
+                    $("#saveBtn").attr("disabled", false);
                 }
             });
         });
