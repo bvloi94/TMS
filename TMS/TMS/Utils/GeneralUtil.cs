@@ -245,7 +245,7 @@ namespace TMS.Utils
 
         public static string GetOverdueDate(DateTime? scheduleDate, int status)
         {
-            if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.New || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
+            if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
             {
                 int distance = scheduleDate.Value.Date.Subtract(DateTime.Now.Date).Days;
                 if (distance < 0)

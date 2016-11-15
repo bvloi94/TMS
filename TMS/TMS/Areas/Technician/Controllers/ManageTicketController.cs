@@ -8,7 +8,6 @@ using TMS.Models;
 using TMS.Utils;
 using TMS.Services;
 using TMS.ViewModels;
-using TMS.Enumerator;
 
 namespace TMS.Areas.Technician.Controllers
 {
@@ -117,7 +116,7 @@ namespace TMS.Areas.Technician.Controllers
                     s.Technician = "";
                 }
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
-                s.Status = ((TicketStatusEnum)item.Status).ToString();
+                s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 s.OverdueDateString = GeneralUtil.GetOverdueDate(item.ScheduleEndDate, item.Status);
                 s.IsOverdue = false;
