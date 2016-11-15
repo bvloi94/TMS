@@ -16,6 +16,7 @@ using TMS.ViewModels;
 using System.Threading;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
+using iTextSharp.text.pdf.qrcode;
 using Microsoft.Ajax.Utilities;
 
 namespace TMS.Areas.HelpDesk.Controllers
@@ -687,7 +688,6 @@ namespace TMS.Areas.HelpDesk.Controllers
             // Filter by created time
             if (!string.IsNullOrEmpty(createdFilter))
             {
-                int minutes = 0;
                 switch (createdFilter)
                 {
                     case "5":
@@ -697,44 +697,44 @@ namespace TMS.Areas.HelpDesk.Controllers
                     case "240":
                     case "720":
                     case "1440":
-                        filteredListItems = queriedResult.Where(p => (DateTime.Now - p.CreatedTime).TotalMinutes == Int32.Parse(createdFilter));
+                        filteredListItems = filteredListItems.Where(p => (DateTime.Now - p.CreatedTime).TotalMinutes <= Double.Parse(createdFilter));
                         break;
                     case "today":
-                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Date == DateTime.Today);
+                        filteredListItems = filteredListItems.Where(p => p.CreatedTime.Date == DateTime.Today);
                         break;
                     case "yesterday":
-                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Date == DateTime.Today.AddDays(-1));
+                        filteredListItems = filteredListItems.Where(p => p.CreatedTime.Date == DateTime.Today.AddDays(-1));
                         break;
                     case "week":
                         if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday)
                         {
-                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(-6).Date <= p.CreatedTime.Date
+                            filteredListItems = filteredListItems.Where(p => DateTime.Now.Date.AddDays(-6).Date <= p.CreatedTime.Date
                             && p.CreatedTime.Date <= DateTime.Now.Date);
                         }
                         else
                         {
-                            filteredListItems = queriedResult.Where(p => DateTime.Now.Date.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date <= p.CreatedTime.Date
+                            filteredListItems = filteredListItems.Where(p => DateTime.Now.Date.AddDays(DayOfWeek.Monday - DateTime.Now.DayOfWeek).Date <= p.CreatedTime.Date
                             && p.CreatedTime.Date <= DateTime.Now.Date.AddDays(DayOfWeek.Sunday - DateTime.Now.DayOfWeek + 7).Date);
                         }
                         break;
                     case "last_week":
-                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Date >= DateTime.Now.Date.AddDays(-7).Date
+                        filteredListItems = filteredListItems.Where(p => p.CreatedTime.Date >= DateTime.Now.Date.AddDays(-7).Date
                         && p.CreatedTime.Date <= DateTime.Now.Date);
                         break;
                     case "month":
-                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Month == DateTime.Now.Month
+                        filteredListItems = filteredListItems.Where(p => p.CreatedTime.Month == DateTime.Now.Month
                         && p.CreatedTime.Year == DateTime.Now.Year);
                         break;
                     case "last_month":
-                        filteredListItems = queriedResult.Where(p => p.CreatedTime.Month == DateTime.Now.AddMonths(-1).Month
+                        filteredListItems = filteredListItems.Where(p => p.CreatedTime.Month == DateTime.Now.AddMonths(-1).Month
                        && p.CreatedTime.Year == DateTime.Now.Year);
                         break;
                     case "two_months":
-                        filteredListItems = queriedResult.Where(p => p.CreatedTime >= DateTime.Now.AddMonths(-2)
+                        filteredListItems = filteredListItems.Where(p => p.CreatedTime >= DateTime.Now.AddMonths(-2)
                         && p.CreatedTime.Year == DateTime.Now.Year);
                         break;
                     case "six_months":
-                        filteredListItems = queriedResult.Where(p => p.CreatedTime >= DateTime.Now.AddMonths(-6)
+                        filteredListItems = filteredListItems.Where(p => p.CreatedTime >= DateTime.Now.AddMonths(-6)
                         && p.CreatedTime.Year == DateTime.Now.Year);
                         break;
                     case "set_date":
@@ -748,7 +748,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                                 var startDate = DateTime.ParseExact(daterange[0], ConstantUtil.DateFormat, new DateTimeFormatInfo());
                                 var endDate = DateTime.ParseExact(daterange[1], ConstantUtil.DateFormat,
                                     new DateTimeFormatInfo());
-                                filteredListItems = queriedResult.Where(p => p.CreatedTime.Date >= startDate
+                                filteredListItems = filteredListItems.Where(p => p.CreatedTime.Date >= startDate
                                                                             && p.CreatedTime.Date <= endDate);
                             }
                         }
@@ -757,87 +757,36 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             // Filter by status
-            if (duebyFilter != null)
-                foreach (var dueby in duebyFilterItems)
-                {
-                    if (!string.IsNullOrEmpty((string)dueby))
-                    {
-                        switch ((string)dueby)
-                        {
-                            case "Overdue":
-                                filteredListItems =
-                                    queriedResult.Where(
-                                        p => p.ScheduleEndDate.HasValue && p.ScheduleEndDate.Value < DateTime.Now);
-                                break;
-                            case "Today":
-                                filteredListItems =
-                                    queriedResult.Where(
-                                        p =>
-                                            p.ScheduleEndDate.HasValue &&
-                                            p.ScheduleEndDate.Value.Date == DateTime.Today);
-                                break;
-                            case "Tomorrow":
-                                filteredListItems =
-                                    queriedResult.Where(
-                                        p =>
-                                            p.ScheduleEndDate.HasValue &&
-                                            p.ScheduleEndDate.Value.Date == DateTime.Today.AddDays(1));
-                                break;
-                            case "Next_8_hours":
-                                filteredListItems =
-                                    queriedResult.Where(
-                                        p =>
-                                            p.ScheduleEndDate.HasValue && p.ScheduleEndDate.Value >= DateTime.Now
-                                            && p.ScheduleEndDate.Value <= DateTime.Now.AddHours(8));
-                                break;
-                        }
-                    }
-                }
+            if (duebyFilterItems != null)
+            {
+                filteredListItems =
+                    filteredListItems.Where(
+                        p => p.ScheduleEndDate.HasValue && (
+                        (duebyFilterItems.Contains("Overdue") && p.ScheduleEndDate.Value < DateTime.Now)
+                        || (duebyFilterItems.Contains("Today") && p.ScheduleEndDate.Value.Date == DateTime.Today)
+                        || (duebyFilterItems.Contains("Tomorrow") && p.ScheduleEndDate.Value.Date == DateTime.Today.AddDays(1))
+                        || (duebyFilterItems.Contains("Next_8_hours") && p.ScheduleEndDate.Value >= DateTime.Now && p.ScheduleEndDate.Value <= DateTime.Now.AddHours(8))
+                        ));
+            }
 
             // Filter by status
             if (statusFilterItems != null)
-                foreach (var status in statusFilterItems)
-                {
-                    if (!string.IsNullOrEmpty((string)status))
-                    {
-                        int statusNo = Convert.ToInt32(status);
-                        if (statusNo > 0)
-                        {
-                            filteredListItems = filteredListItems.Where(p => p.Status == statusNo);
-                        }
-                        else
-                        {
-                            //Hide Cancelled and Closed Tickets
-                            filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Cancelled);
-                            filteredListItems = filteredListItems.Where(p => p.Status != ConstantUtil.TicketStatus.Closed);
-                        }
-                    }
-                }
+            {
+                filteredListItems = filteredListItems.Where(p => statusFilterItems.Contains(p.Status.ToString())
+                || (statusFilterItems.Contains("0") && p.Status != ConstantUtil.TicketStatus.Cancelled && p.Status != ConstantUtil.TicketStatus.Closed));
+            }
 
             // Filter by mode
             if (modeFilterItems != null)
-                foreach (var item in modeFilterItems)
-                {
-                    if (!string.IsNullOrEmpty((string)item))
-                    {
-                        int mode = Convert.ToInt32(item);
-                        if (mode > 0)
-                        {
-                            filteredListItems = filteredListItems.Where(p => p.Mode == mode);
-                        }
-                    }
-                }
+            {
+                filteredListItems = filteredListItems.Where(p => modeFilterItems.Contains(p.Mode.ToString()));
+            }
 
             // Filter by requester
             if (requesterFilterItems != null)
-                foreach (var item in requesterFilterItems)
-                {
-                    if (!string.IsNullOrEmpty((string)item))
-                    {
-                        filteredListItems = filteredListItems.Where(p => p.RequesterID == item);
-                    }
-                }
-
+            {
+                filteredListItems = filteredListItems.Where(p => requesterFilter.Contains(p.RequesterID.ToString()));
+            }
 
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);

@@ -431,7 +431,7 @@ function openTicketDetailModal(ticketId) {
 }
 
 function getDueByFilter() {
-    return $('.due_by_item:checked')
+    return $('.due_by_item:checked').length == 0 ? null : $('.due_by_item:checked')
         .map(function () { return $(this).val(); })
         .get();
 }
@@ -482,7 +482,7 @@ function initFilter() {
             });
 
     time_period_inp.on("change",
-        function() {
+        function () {
             ticketTable.draw();
         });
 }
