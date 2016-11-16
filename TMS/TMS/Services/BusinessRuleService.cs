@@ -83,7 +83,7 @@ namespace TMS.Services
                     Rule tempRule = js.ConvertToType<Rule>(rule["data"]);
                     tempRule.Id = (string)rule["id"];
                     tempRule.ParentId = (string)rule["parent"];
-                    if (tempRule.Condition != 0 && tempRule.Criteria != 0 && tempRule.Value != null)
+                    if (tempRule.Condition != 0 && tempRule.Criteria != 0 && !String.IsNullOrEmpty(tempRule.Value))
                     {
                         ruleList.Add(tempRule);
                     }
