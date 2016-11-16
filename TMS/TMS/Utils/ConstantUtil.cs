@@ -7,7 +7,7 @@ namespace TMS.Utils
     {
         public static readonly string DateTimeFormat = "dd/MM/yyyy HH:mm";
         public static readonly string DateFormat = "dd/MM/yyyy";
-        public static int DayToCloseTicket = 3;
+        public const int DayToCloseTicket = 3;
 
         public class UserRole
         {

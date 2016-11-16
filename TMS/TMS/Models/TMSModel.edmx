@@ -210,6 +210,7 @@
           <Property Name="ActualStartDate" Type="datetime" />
           <Property Name="ActualEndDate" Type="datetime" />
           <Property Name="SolvedDate" Type="datetime" />
+          <Property Name="DueByDate" Type="datetime" />
           <Property Name="CreatedTime" Type="datetime" Nullable="false" />
           <Property Name="ModifiedTime" Type="datetime" Nullable="false" />
           <Property Name="CreatedID" Type="nvarchar" MaxLength="128" Nullable="false" />
@@ -1162,6 +1163,7 @@
           <Property Name="ActualStartDate" Type="DateTime" Precision="3" />
           <Property Name="ActualEndDate" Type="DateTime" Precision="3" />
           <Property Name="SolvedDate" Type="DateTime" Precision="3" />
+          <Property Name="DueByDate" Type="DateTime" Precision="3" />
           <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CreatedID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
@@ -1783,6 +1785,7 @@
                 <ScalarProperty Name="CreatedID" ColumnName="CreatedID" />
                 <ScalarProperty Name="ModifiedTime" ColumnName="ModifiedTime" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="DueByDate" ColumnName="DueByDate" />
                 <ScalarProperty Name="SolvedDate" ColumnName="SolvedDate" />
                 <ScalarProperty Name="ActualEndDate" ColumnName="ActualEndDate" />
                 <ScalarProperty Name="ActualStartDate" ColumnName="ActualStartDate" />
