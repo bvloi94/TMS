@@ -389,7 +389,7 @@ $("#submitBtn").click(function () {
     for (var i = 0; i < treeData.length; i++) {
         delete treeData[i].text;
         delete treeData[i].icon;
-        if (i > 0 && treeData[i].Condition == 0 || treeData[i].Criteria == 0 || treeData[i].Value) {
+        if ((i > 0) && (treeData[i].data.Condition == 0 || treeData[i].data.Criteria == 0 || !treeData[i].data.Value)) {
             noty({
                 text: "The condition has not been finish yet! \n Please check again.",
                 type: "error",
