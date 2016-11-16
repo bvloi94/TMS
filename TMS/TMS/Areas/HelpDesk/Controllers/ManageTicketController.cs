@@ -827,8 +827,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
-                s.OverdueDateString = GeneralUtil.GetOverdueDate(item.ScheduleEndDate, item.Status);
-                s.IsOverdue = GeneralUtil.IsOverdue(item.ScheduleEndDate, item.Status);
+                s.OverdueDateString = GeneralUtil.GetOverdueDate(item.DueByDate, item.Status);
+                s.IsOverdue = GeneralUtil.IsOverdue(item.DueByDate, item.Status);
                 s.Priority = item.Priority == null ? "" : item.Priority.Name;
                 s.PriorityColor = item.Priority == null ? "" : item.Priority.Color;
                 tickets.Add(s);

@@ -221,22 +221,16 @@ namespace TMS.Controllers
                 foreach (var attachFile in ticketAttachments)
                 {
                     fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
-                    if (type == ConstantUtil.TicketAttachmentType.Description)
+                    if (attachFile.Type == type)
                     {
                         attachmentUrl += "<a download=\'" + fileName +
                                          "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
-                                         "\' target=\'_blank\' >" + fileName + "</a>";
-                    }
-                    else if (type == ConstantUtil.TicketAttachmentType.Solution)
-                    {
-                        attachmentUrl += "<a download=\'" + fileName +
-                                         "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
-                                         "\' target=\'_blank\' >" + fileName + "</a>";
+                                         "\' target=\'_blank\' >" + fileName + "</a> &nbsp; &nbsp;";
                     }
                 }
             }
 
-            return attachmentUrl;
+            return attachmentUrl == "" ? "None" : attachmentUrl;
         }
 
         // GET: Tickets/Create
@@ -712,6 +706,7 @@ namespace TMS.Controllers
                     model.Code = ticket.Code;
                     model.Subject = ticket.Subject;
                     model.Description = string.IsNullOrWhiteSpace(ticket.Description) ? "-" : ticket.Description.Trim();
+                    model.DescriptionAttachmentsURL = GetTicketAttachmentUrl(ticket.ID, ConstantUtil.TicketAttachmentType.Description);
                     model.Mode = GeneralUtil.GetModeNameByMode(ticket.Mode);
                     model.Type = GeneralUtil.GetTypeNameByType(ticket.Type);
                     model.Status = GeneralUtil.GetTicketStatusByID(ticket.Status);
@@ -720,17 +715,39 @@ namespace TMS.Controllers
                     model.ImpactDetail = string.IsNullOrWhiteSpace(ticket.ImpactDetail) ? "-" : ticket.ImpactDetail.Trim();
                     model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
                     model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
-                    model.CreateTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
-                    model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
-                    model.ScheduleStartDate = ticket.ScheduleStartDate.HasValue ? ticket.ScheduleStartDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
-                    model.ScheduleEndDate = ticket.ScheduleEndDate.HasValue ? ticket.ScheduleEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
-                    model.ActualStartDate = ticket.ActualStartDate.HasValue ? ticket.ActualStartDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
-                    model.ActualEndDate = ticket.ActualEndDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.CreatedTimeString = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+                    model.ModifiedTimeString = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
+                    model.ScheduleStartDateString = ticket.ScheduleStartDate.HasValue ? ticket.ScheduleStartDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.ScheduleEndDateString = ticket.ScheduleEndDate.HasValue ? ticket.ScheduleEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.ActualStartDateString = ticket.ActualStartDate.HasValue ? ticket.ActualStartDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.ActualEndDateString = ticket.ActualEndDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.SolvedDateString = ticket.SolvedDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.OverdueDateString = ticket.DueByDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                     model.CreatedBy = GeneralUtil.GetUserInfo(createdUser);
                     model.AssignedBy = GeneralUtil.GetUserInfo(assignedUser);
                     model.SolvedBy = GeneralUtil.GetUserInfo(solvedUser);
                     model.Requester = GeneralUtil.GetUserInfo(requester);
                     model.Solution = ticket.Solution;
+                    IEnumerable<TicketAttachment> attachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID);
+                    if (attachments != null)
+                    {
+                        model.DescriptionAttachments = new List<AttachmentViewModel>();
+                        model.SolutionAttachments = new List<AttachmentViewModel>();
+                        foreach (var attachment in attachments)
+                        {
+                            var att = new AttachmentViewModel();
+                            att.id = attachment.ID;
+                            att.name = TMSUtils.GetMinimizedAttachmentName(attachment.Filename);
+                            if (attachment.Type == ConstantUtil.TicketAttachmentType.Description)
+                            {
+                                model.DescriptionAttachments.Add(att);
+                            }
+                            else
+                            {
+                                model.SolutionAttachments.Add(att);
+                            }
+                        }
+                    }
                     model.UnapproveReason = (string.IsNullOrWhiteSpace(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason.Trim();
                     model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
                     model.Note = (string.IsNullOrWhiteSpace(ticket.Note)) ? "-" : ticket.Note.Trim();
@@ -743,14 +760,14 @@ namespace TMS.Controllers
         [CustomAuthorize(Roles = "Helpdesk,Technician")]
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult SolveTicket(int? id, string solution, string command)
+        public ActionResult SolveTicket(TicketSolveViewModel model)
         {
-            if (id.HasValue)
+            if (model.ID.HasValue)
             {
                 AspNetUser user = _userService.GetUserById(User.Identity.GetUserId());
                 string userRole = user.AspNetRoles.FirstOrDefault().Name;
 
-                Ticket ticket = _ticketService.GetTicketByID(id.Value);
+                Ticket ticket = _ticketService.GetTicketByID(model.ID.Value);
                 if (ticket == null)
                 {
                     return Json(new
@@ -760,7 +777,7 @@ namespace TMS.Controllers
                     });
                 }
 
-                if (string.IsNullOrWhiteSpace(solution))
+                if (string.IsNullOrWhiteSpace(model.Solution))
                 {
                     return Json(new
                     {
@@ -770,15 +787,19 @@ namespace TMS.Controllers
                 }
 
                 ticket.ModifiedTime = DateTime.Now;
-                ticket.Solution = solution;
-                switch (command)
+                ticket.Solution = model.Solution;
+                switch (model.Command)
                 {
-                    case "solveBtn":
+                    case "Solve":
                         ticket.SolveID = User.Identity.GetUserId();
                         ticket.SolvedDate = DateTime.Now;
                         bool solveResult = _ticketService.SolveTicket(ticket, User.Identity.GetUserId());
                         if (solveResult)
                         {
+                            if (model.SolutionFiles != null && model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
+                            {
+                                _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                            }
                             AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
                             if (requester != null)
                             {
@@ -794,10 +815,14 @@ namespace TMS.Controllers
                             });
                         }
                         break;
-                    case "saveBtn":
+                    case "Save":
                         bool updateResult = _ticketService.UpdateTicket(ticket, User.Identity.GetUserId());
                         if (updateResult)
                         {
+                            if (model.SolutionFiles != null && model.SolutionFiles.ToList()[0] != null && model.SolutionFiles.ToList().Count > 0)
+                            {
+                                _ticketAttachmentService.saveFile(ticket.ID, model.SolutionFiles, ConstantUtil.TicketAttachmentType.Solution);
+                            }
                             return Json(new
                             {
                                 success = true,
@@ -814,6 +839,7 @@ namespace TMS.Controllers
                     userRole = userRole
                 });
             }
+
             return Json(new
             {
                 success = false,
