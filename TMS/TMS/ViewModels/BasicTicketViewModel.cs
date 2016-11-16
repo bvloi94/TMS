@@ -11,7 +11,7 @@ namespace TMS.ViewModels
         public int? ID { get; set; }
         public int? Status { get; set; }
         [Required(ErrorMessage = "Subject cannot be empty!")]
-        [StringLength(255, MinimumLength = 10, ErrorMessage = "Subject length is between 10 and 255 characters")]
+        [StringLength(200, MinimumLength = 10, ErrorMessage = "Subject length is between 10 and 200 characters")]
         public string Subject { get; set; }
         public string Code { get; set; }
         public string Description { get; set; }

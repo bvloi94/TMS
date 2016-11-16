@@ -134,6 +134,10 @@
                                 <label class="control-label">ACTUAL END DATE</label>
                                 @Html.TextBoxFor(m => m.ActualEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.AddDays(+7).ToString(ConstantUtil.DateTimeFormat) })
                             </div>
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">DUE BY DATE</label>
+                                @Html.TextBoxFor(m => m.DueByDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.AddDays(+7).AddDays(-ConstantUtil.DayToCloseTicket).ToString(ConstantUtil.DateTimeFormat) })
+                            </div>
                         </div>
                         <div class="row form-group">
                             <div class="col-md-12 col-xs-12">

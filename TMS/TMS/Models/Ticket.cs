@@ -42,6 +42,7 @@ namespace TMS.Models
         public Nullable<System.DateTime> ActualStartDate { get; set; }
         public Nullable<System.DateTime> ActualEndDate { get; set; }
         public Nullable<System.DateTime> SolvedDate { get; set; }
+        public Nullable<System.DateTime> DueByDate { get; set; }
         public System.DateTime CreatedTime { get; set; }
         public System.DateTime ModifiedTime { get; set; }
         public string CreatedID { get; set; }

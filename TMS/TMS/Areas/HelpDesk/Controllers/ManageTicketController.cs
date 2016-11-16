@@ -86,6 +86,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 ticket.Description = model.Description;
                 ticket.ScheduleStartDate = model.ScheduleStartDate;
                 ticket.ScheduleEndDate = model.ScheduleEndDate;
+                ticket.DueByDate = model.DueByDate;
                 ticket.ActualStartDate = model.ActualStartDate;
                 ticket.ActualEndDate = model.ActualEndDate;
                 ticket.CreatedTime = DateTime.Now;
@@ -225,6 +226,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.ImpactDetail = ticket.ImpactDetail;
                 model.ScheduleStartDate = ticket.ScheduleStartDate;
                 model.ScheduleEndDate = ticket.ScheduleEndDate;
+                model.DueByDate = ticket.DueByDate;
                 model.ActualStartDate = ticket.ActualStartDate;
                 model.ActualEndDate = ticket.ActualEndDate;
                 model.SolvedDate = ticket.SolvedDate;
@@ -302,6 +304,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Ticket ticket = _ticketService.GetTicketByID(model.Id);
                 ticket.ScheduleStartDate = model.ScheduleStartDate;
                 ticket.ScheduleEndDate = model.ScheduleEndDate;
+                ticket.DueByDate = model.DueByDate;
                 ticket.ActualStartDate = model.ActualStartDate;
                 ticket.ActualEndDate = model.ActualEndDate;
                 ticket.ModifiedTime = DateTime.Now;
