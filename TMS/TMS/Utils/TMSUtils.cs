@@ -124,53 +124,71 @@ namespace TMS.Utils
         public static List<DropDownViewModel> GetDefaultCritetia()
         {
             List<DropDownViewModel> list = new List<DropDownViewModel>();
-            list.Add((new DropDownViewModel(1, "Subject")));
-            list.Add((new DropDownViewModel(2, "Description")));
-            list.Add((new DropDownViewModel(3, "Requester Name")));
-            list.Add((new DropDownViewModel(4, "Department")));
-            list.Add((new DropDownViewModel(5, "Priority")));
-            list.Add((new DropDownViewModel(6, "Impact")));
-            list.Add((new DropDownViewModel(7, "Urgency")));
-            list.Add((new DropDownViewModel(8, "Category")));
-            list.Add((new DropDownViewModel(9, "Mode")));
+            list.Add((new DropDownViewModel("1", "Subject")));
+            list.Add((new DropDownViewModel("2", "Description")));
+            list.Add((new DropDownViewModel("3", "Requester Name")));
+            list.Add((new DropDownViewModel("4", "Department")));
+            list.Add((new DropDownViewModel("5", "Priority")));
+            list.Add((new DropDownViewModel("6", "Impact")));
+            list.Add((new DropDownViewModel("7", "Urgency")));
+            list.Add((new DropDownViewModel("8", "Category")));
+            list.Add((new DropDownViewModel("9", "Mode")));
             return list;
         }
 
         public static List<DropDownViewModel> GetDefaultCondition()
         {
             List<DropDownViewModel> list = new List<DropDownViewModel>();
-            list.Add((new DropDownViewModel(1, "is")));
-            list.Add((new DropDownViewModel(2, "is not")));
-            list.Add((new DropDownViewModel(3, "begins with")));
-            list.Add((new DropDownViewModel(4, "ends with")));
-            list.Add((new DropDownViewModel(5, "contains")));
-            list.Add((new DropDownViewModel(6, "does not contain")));
+            list.Add((new DropDownViewModel("1", "is")));
+            list.Add((new DropDownViewModel("2", "is not")));
+            list.Add((new DropDownViewModel("3", "begins with")));
+            list.Add((new DropDownViewModel("4", "ends with")));
+            list.Add((new DropDownViewModel("5", "contains")));
+            list.Add((new DropDownViewModel("6", "does not contain")));
             return list;
         }
 
         public static List<DropDownViewModel> GetDefaultStatus()
         {
             List<DropDownViewModel> status = new List<DropDownViewModel>();
-            status.Add((new DropDownViewModel(1, "Open")));
-            status.Add((new DropDownViewModel(2, "Assigned")));
-            status.Add((new DropDownViewModel(3, "Solved")));
-            status.Add((new DropDownViewModel(4, "Unapproved")));
-            status.Add((new DropDownViewModel(5, "Cancelled")));
-            status.Add((new DropDownViewModel(6, "Closed")));
+            status.Add((new DropDownViewModel("1", "Open")));
+            status.Add((new DropDownViewModel("2", "Assigned")));
+            status.Add((new DropDownViewModel("3", "Solved")));
+            status.Add((new DropDownViewModel("4", "Unapproved")));
+            status.Add((new DropDownViewModel("5", "Cancelled")));
+            status.Add((new DropDownViewModel("6", "Closed")));
+            return status;
+        }
+
+        public static List<DropDownViewModel> GetDefaultMode()
+        {
+            List<DropDownViewModel> status = new List<DropDownViewModel>();
+            status.Add((new DropDownViewModel(ConstantUtil.TicketMode.PhoneCall.ToString(), ConstantUtil.TicketModeString.PhoneCall)));
+            status.Add((new DropDownViewModel(ConstantUtil.TicketMode.WebForm.ToString(), ConstantUtil.TicketModeString.WebForm)));
+            status.Add((new DropDownViewModel(ConstantUtil.TicketMode.Email.ToString(), ConstantUtil.TicketModeString.Email)));
+            status.Add((new DropDownViewModel(ConstantUtil.TicketMode.SocialNetwork.ToString(), ConstantUtil.TicketModeString.SocialNetwork)));
+            status.Add((new DropDownViewModel(ConstantUtil.TicketMode.Forum.ToString(), ConstantUtil.TicketModeString.Forum)));
+            status.Add((new DropDownViewModel(ConstantUtil.TicketMode.Other.ToString(), ConstantUtil.TicketModeString.Other)));
             return status;
         }
 
         public static List<DropDownViewModel> GetDefaultActions()
         {
             List<DropDownViewModel> actions = new List<DropDownViewModel>();
-            actions.Add((new DropDownViewModel(1, "Assign to Technician")));
-            actions.Add((new DropDownViewModel(2, "Place in Department")));
-            actions.Add((new DropDownViewModel(3, "Move to Category")));
-            actions.Add((new DropDownViewModel(4, "Move to Sub Category")));
-            actions.Add((new DropDownViewModel(5, "Move to Item")));
-            actions.Add((new DropDownViewModel(6, "Set Priority as")));
-            actions.Add((new DropDownViewModel(7, "Change Status to")));
+            actions.Add((new DropDownViewModel("1", "Assign to Technician")));
+            actions.Add((new DropDownViewModel("2", "Move to Category")));
+            actions.Add((new DropDownViewModel("3", "Move to Sub Category")));
+            actions.Add((new DropDownViewModel("4", "Move to Item")));
+            actions.Add((new DropDownViewModel("5", "Set Priority as")));
             return actions;
+        }
+
+        public static int StrToIntDef(string s, int defaultNumber)
+        {
+            int num;
+            if (int.TryParse(s, out num))
+                return num;
+            return defaultNumber;
         }
     }
 }

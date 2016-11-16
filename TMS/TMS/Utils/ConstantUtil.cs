@@ -199,12 +199,10 @@ namespace TMS.Utils
         public class BusinessRuleTrigger
         {
             public const int AssignToTechnician = 1;
-            public const int PlaceInDepartment = 2;
-            public const int MoveToCategory = 3;
-            public const int MoveToSubCategory = 4;
-            public const int MoveToItem = 5;
-            public const int SetPriorityAs = 6;
-            public const int ChangeStatusTo = 7;
+            public const int MoveToCategory = 2;
+            public const int MoveToSubCategory = 3;
+            public const int MoveToItem = 4;
+            public const int SetPriorityAs = 5;
         }
 
         public class NotificationActionType
@@ -222,6 +220,7 @@ namespace TMS.Utils
             public const int TechnicianNotiCancel = 11;
             public const int TechnicianNotiMerge = 12;
             public const int TechnicianNotiIsMerged = 13;
+            public const int TechnicianNotiChangeDueByDate = 14;
         }
     }
 }

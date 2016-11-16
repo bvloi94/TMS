@@ -492,7 +492,7 @@ namespace TMS.Controllers
                     model.ActualStartDateString = ticket.ActualStartDate == null ? "-" : ticket.ActualStartDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.ActualEndDateString = ticket.ActualEndDate == null ? "-" : ticket.ActualEndDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.SolvedDateString = ticket.SolvedDate == null ? "-" : ticket.SolvedDate.Value.ToString("MMM d yyyy, hh:mm");
-                    model.OverdueDateString = ticket.DueByDate == null ? "-" : ticket.DueByDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.DueByDateString = ticket.DueByDate == null ? "-" : ticket.DueByDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.Department = "-";
                     if (technician != null)
                     {
@@ -535,7 +535,7 @@ namespace TMS.Controllers
                     AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
 
                     string ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department, category, description, note;
-                    string createdTime, modifiedTime, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
+                    string createdTime, modifiedTime, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate, dueByDate;
 
                     string userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
 
@@ -593,6 +593,7 @@ namespace TMS.Controllers
                     actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
                     actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
                     solvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+                    dueByDate = ticket.DueByDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
 
                     department = "-";
                     if (technician != null)
@@ -643,6 +644,7 @@ namespace TMS.Controllers
                         scheduleEnd = scheduleEndDate,
                         actualStart = actualStartDate,
                         actualEnd = actualEndDate,
+                        dueByDate = dueByDate,
                         solution = solution,
                         solver = GeneralUtil.GetUserInfo(solvedUser),
                         creater = GeneralUtil.GetUserInfo(createdUser),

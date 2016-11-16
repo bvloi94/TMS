@@ -39,13 +39,13 @@ namespace TMS.Controllers
         [CustomAuthorize(Roles = "Helpdesk,Technician,Requester")]
         public ActionResult GetNotifications()
         {
-            string id = User.Identity.GetUserId();
-            string userRole = _userService.GetUserById(id).AspNetRoles.FirstOrDefault().Name;
+            string userId = User.Identity.GetUserId();
+            string userRole = _userService.GetUserById(userId).AspNetRoles.FirstOrDefault().Name;
             IEnumerable<NotificationViewModel> notificationList;
             if (userRole == "Helpdesk")
             {
-                notificationList = _notificationService.GetAll().OrderByDescending(m => m.NotifiedTime)
-                .Where(m => m.IsForHelpDesk == true).Select(m => new NotificationViewModel
+                notificationList = _notificationService.GetHelpDeskNotifications().OrderByDescending(m => m.NotifiedTime)
+                .Select(m => new NotificationViewModel
                 {
                     Id = m.ID,
                     TicketId = m.TicketID,
@@ -56,7 +56,7 @@ namespace TMS.Controllers
             }
             else
             {
-                notificationList = _notificationService.GetUserNotifications(id).OrderByDescending(m => m.NotifiedTime)
+                notificationList = _notificationService.GetUserNotifications(userId).OrderByDescending(m => m.NotifiedTime)
                 .Select(m => new NotificationViewModel
                 {
                     Id = m.ID,

@@ -310,9 +310,9 @@ namespace TMS.DAL
         {
             try
             {
-                var rs = DataContext.SaveChanges();
+                DataContext.SaveChanges();
                 _contextTransaction.Commit();
-                return rs > 0;
+                return true;
             }
             catch (Exception ex)
             {

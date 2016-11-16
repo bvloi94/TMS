@@ -10,7 +10,7 @@ namespace TMS.Utils
         GreaterThan
     }
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
     public class CompareValidateDateAttribute : ValidationAttribute
     {
         CompareToOperation _compareToOperation;
@@ -23,7 +23,6 @@ namespace TMS.Utils
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            
             var propertyInfo = validationContext.ObjectType.GetProperty(_dateTimeProperty);
             if (propertyInfo == null)
             {
@@ -39,7 +38,7 @@ namespace TMS.Utils
                     switch (_compareToOperation)
                     {
                         case CompareToOperation.GreaterThan:
-                            if (date.Value.Date <= compareToDate.Value.Date)
+                            if (date.Value <= compareToDate.Value)
                             {
                                 return new ValidationResult(ErrorMessage);
                             }
@@ -51,14 +50,23 @@ namespace TMS.Utils
                             }
                             break;
                         case CompareToOperation.LessThan:
-                            if (date.Value.Date >= compareToDate.Value.Date)
+                            if (date.Value >= compareToDate.Value)
                             {
                                 return new ValidationResult(ErrorMessage);
                             }
                             break;
                     }
                 }
-                return null;
+                return ValidationResult.Success;
+            }
+        }
+
+        private object _typeId = new object();
+        public override object TypeId
+        {
+            get
+            {
+                return this._typeId;
             }
         }
     }

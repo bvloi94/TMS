@@ -206,7 +206,7 @@ namespace TMS.Controllers
             foreach (var cate in categories)
             {
                 DropDownViewModel item = new DropDownViewModel();
-                item.Id = cate.ID;
+                item.Id = cate.ID.ToString();
                 item.Name = cate.Name;
                 var parentId = cate.ParentID;
                 while (parentId != null)
@@ -224,6 +224,13 @@ namespace TMS.Controllers
         public ActionResult LoadStatusDropdown()
         {
             return Json(TMSUtils.GetDefaultStatus(), JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult LoadModeDropdown(string query)
+        {
+            IEnumerable<DropDownViewModel> modeList = TMSUtils.GetDefaultMode();
+            modeList = modeList.Where(m => m.Name.Contains(query));
+            return Json(modeList, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult LoadActionDropdown()
@@ -330,22 +337,24 @@ namespace TMS.Controllers
             var js = new JavaScriptSerializer();
             var ignoreItems = (object[])js.DeserializeObject(ignore);
             var result = new List<DropDownViewModel>();
+            query = query ?? "";
             switch (criteria)
             {
                 case "Department":
                     var departmentResult = _departmentService.GetAll();
+                    departmentResult = departmentResult.Where(d => d.Name.Contains(query));
                     foreach (var item in departmentResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => (string)a == item.ID.ToString()))
+                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.ID.ToString().ToLower()))
                             {
                                 continue;
                             }
                         }
                         var newItem = new DropDownViewModel
                         {
-                            Id = item.ID,
+                            Id = item.ID.ToString(),
                             Name = item.Name,
                         };
                         result.Add(newItem);
@@ -353,18 +362,19 @@ namespace TMS.Controllers
                     break;
                 case "Priority":
                     var priorityResult = _priorityService.GetAll();
+                    priorityResult = priorityResult.Where(d => d.Name.Contains(query));
                     foreach (var item in priorityResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => (string)a == item.ID.ToString()))
+                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.ID.ToString().ToLower()))
                             {
                                 continue;
                             }
                         }
                         var newItem = new DropDownViewModel
                         {
-                            Id = item.ID,
+                            Id = item.ID.ToString(),
                             Name = item.Name,
                         };
                         result.Add(newItem);
@@ -372,55 +382,73 @@ namespace TMS.Controllers
                     break;
                 case "Impact":
                     var impactResult = _impactService.GetAll();
+                    impactResult = impactResult.Where(d => d.Name.Contains(query));
                     foreach (var item in impactResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => (string)a == item.ID.ToString()))
+                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.ID.ToString().ToLower()))
                             {
                                 continue;
                             }
                         }
                         var newItem = new DropDownViewModel
                         {
-                            Id = item.ID,
+                            Id = item.ID.ToString(),
                             Name = item.Name,
                         };
                         result.Add(newItem);
                     }
                     break;
                 case "Urgency":
-                    var urgencyResult = _urgencyService.GetAll().ToList();
+                    var urgencyResult = _urgencyService.GetAll();
+                    urgencyResult = urgencyResult.Where(d => d.Name.Contains(query));
                     foreach (var item in urgencyResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => (string)a == item.ID.ToString()))
+                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.ID.ToString().ToLower()))
                             {
                                 continue;
                             }
                         }
                         var newItem = new DropDownViewModel
                         {
-                            Id = item.ID,
+                            Id = item.ID.ToString(),
                             Name = item.Name,
                         };
                         result.Add(newItem);
                     }
                     break;
-                case "Category":
-                    var categoryResult = new List<CategoryViewModel>();
-                    addChildCates(ref categoryResult, 1, 0);
-                    foreach (var item in categoryResult)
+                case "Mode":
+                    IEnumerable<DropDownViewModel> modeList = TMSUtils.GetDefaultMode();
+                    modeList = modeList.Where(m => m.Name.Contains(query));
+                    foreach (var item in modeList)
                     {
-                        var newItem = new DropDownViewModel
+                        if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            Id = item.ID,
-                            Name = item.Name,
-                        };
-                        result.Add(newItem);
+                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.Id.ToString().ToLower()))
+                            {
+                                continue;
+                            }
+                        }
+                        result.Add(item);
                     }
                     break;
+
+                    //case "Category":
+                    //    var categoryResult = new List<CategoryViewModel>();
+                    //    addChildCates(ref categoryResult, 1, 0);
+                    //    foreach (var item in categoryResult)
+                    //    {
+                    //        var newItem = new DropDownViewModel
+                    //        {
+                    //            Id = item.ID,
+                    //            Name = item.Name,
+                    //        };
+                    //        result.Add(newItem);
+                    //    }
+                    //    break;
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -441,7 +469,7 @@ namespace TMS.Controllers
                             {
                                 var newItem = new DropDownViewModel
                                 {
-                                    Id = item.ID,
+                                    Id = item.ID.ToString(),
                                     Name = item.Name,
                                 };
 
@@ -457,7 +485,7 @@ namespace TMS.Controllers
                             {
                                 var newItem = new DropDownViewModel
                                 {
-                                    Id = item.ID,
+                                    Id = item.ID.ToString(),
                                     Name = item.Name,
                                 };
 
@@ -473,7 +501,7 @@ namespace TMS.Controllers
                             {
                                 var newItem = new DropDownViewModel
                                 {
-                                    Id = item.ID,
+                                    Id = item.ID.ToString(),
                                     Name = item.Name,
                                 };
 
@@ -489,7 +517,7 @@ namespace TMS.Controllers
                             {
                                 var newItem = new DropDownViewModel
                                 {
-                                    Id = item.ID,
+                                    Id = item.ID.ToString(),
                                     Name = item.Name,
                                 };
 
@@ -505,7 +533,7 @@ namespace TMS.Controllers
                             {
                                 var newItem = new DropDownViewModel
                                 {
-                                    Id = item.ID,
+                                    Id = item.ID.ToString(),
                                     Name = item.Name,
                                 };
 

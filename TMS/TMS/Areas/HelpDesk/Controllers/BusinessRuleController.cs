@@ -60,6 +60,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             brModel.Id = br.ID;
             brModel.Name = br.Name;
             brModel.Description = br.Description;
+            brModel.Enable = br.EnableRule.HasValue ? br.EnableRule.Value : false;
 
             // Load all rules
             List<Rule> ruleList = new List<Rule>();
@@ -90,12 +91,16 @@ namespace TMS.Areas.HelpDesk.Controllers
                     switch (rule.Criteria)
                     {
                         case ConstantUtil.BusinessRuleCriteria.RequesterName:
-                            rule.ValueMask = _userService.GetUserById(list[0]).Fullname;
-                            if (list.Length > 1)
+                            var requester = _userService.GetUserById(list[0]);
+                            if (requester != null)
                             {
-                                for (int i = 1; i < list.Length; i++)
+                                rule.ValueMask = requester.Fullname;
+                                if (list.Length > 1)
                                 {
-                                    rule.ValueMask += ", " + _userService.GetUserById(list[i]).Fullname;
+                                    for (int i = 1; i < list.Length; i++)
+                                    {
+                                        rule.ValueMask += ", " + _userService.GetUserById(list[i]).Fullname;
+                                    }
                                 }
                             }
                             break;
@@ -149,6 +154,17 @@ namespace TMS.Areas.HelpDesk.Controllers
                                 }
                             }
                             break;
+                        case ConstantUtil.BusinessRuleCriteria.Mode:
+                            rule.ValueMask = TMSUtils.ConvertModeFromInt(Convert.ToInt32(list[0]));
+                            if (list.Length > 1)
+                            {
+                                for (int i = 1; i < list.Length; i++)
+                                {
+                                    rule.ValueMask += ", " + TMSUtils.ConvertModeFromInt(Convert.ToInt32(list[i]));
+                                }
+                            }
+                            break;
+
                     }
                 }
                 rule.ParentId = con.BusinessRuleConditionID.ToString();
@@ -171,10 +187,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                             TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.AssignToTechnician - 1].Name;
                         item.Mask += " \"" + _userService.GetUserById(no.Value).Fullname + "\"";
                         break;
-                    case ConstantUtil.BusinessRuleTrigger.ChangeStatusTo:
-                        item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.ChangeStatusTo - 1].Name;
-                        item.Mask += " \"" + TMSUtils.GetDefaultStatus()[Convert.ToInt32(no.Value) - 1].Name + "\"";
-                        break;
                     case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
                     case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
                     case ConstantUtil.BusinessRuleTrigger.MoveToItem:
@@ -191,10 +203,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                             level--;
                         }
                         item.Mask += " \"" + mask + "\"";
-                        break;
-                    case ConstantUtil.BusinessRuleTrigger.PlaceInDepartment:
-                        item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.PlaceInDepartment - 1].Name;
-                        item.Mask += " \"" + _departmentService.GetDepartmentById(Convert.ToInt32(no.Value)).Name + "\"";
                         break;
                     case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
                         item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.SetPriorityAs - 1].Name;
@@ -221,181 +229,47 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(string name, string description, string rules, string actions, string technicians)
+        public ActionResult Create(BusinessRuleViewModel viewModel)
         {
-            unitOfWork.BeginTransaction();
-
             // Create New BusinessRule
             BusinessRule businessRule = new BusinessRule();
-
-            //validate TODO
-
-            businessRule.Name = name.Trim();
-            businessRule.Description = description;
+            businessRule.Name = viewModel.Name.Trim();
+            businessRule.Description = viewModel.Description;
+            businessRule.EnableRule = viewModel.Enable;
             businessRule.IsActive = true;
 
             // Add new business rule to database
-            int businessRuleId = _businessRuleService.AddNew(businessRule);
+            var result = _businessRuleService.AddNewBusinessRule(businessRule, viewModel.Conditions, viewModel.Actions, viewModel.Technicians);
 
-            //enable rule checkbox TODO
-
-            // Get conditions
-
-            List<BusinessRuleCondition> businessRuleConditions = new List<BusinessRuleCondition>();
-            List<Rule> ruleList = new List<Rule>();
-            var js = new JavaScriptSerializer();
-            object[] ruleTree = (object[])js.DeserializeObject(rules);
-            for (int i = 0; i < ruleTree.Length; i++)
-            {
-
-                Dictionary<string, object> rule = (Dictionary<string, object>)ruleTree[i];
-                Rule tempRule = js.ConvertToType<Rule>(rule["data"]);
-                tempRule.Id = (string)rule["id"];
-                tempRule.ParentId = (string)rule["parent"];
-                if (tempRule.Condition != 0 && tempRule.Criteria != 0 && tempRule.Value != null)
-                {
-                    ruleList.Add(tempRule);
-                }
-                else
-                {
-                    return Json(new
-                    {
-                        success = false,
-                        msg = "The rule have not finish yet. Please fill in!"
-                    });
-                }
-            }
-
-            // Add condition to database
-            AddConditionsToDB(0, 1, businessRuleId, null, "#", ruleList);
-
-            // Add trigger 
-            object[] actionSet = (object[])js.DeserializeObject(actions);
-            for (int i = 0; i < actionSet.Length; i++)
-            {
-                Dictionary<string, object> action = (Dictionary<string, object>)actionSet[i];
-                BusinessRuleTrigger trigger = new BusinessRuleTrigger();
-                trigger.BusinessRuleID = businessRuleId;
-                trigger.Action = Convert.ToInt32(action["id"]);
-                trigger.Value = (string)action["value"];
-                _businessRuleService.AddTrigger(trigger);
-            }
-
-            // Add technician notification
-            var technicianList = (object[])js.DeserializeObject(technicians);
-            if (technicianList != null)
-            {
-                for (int i = 0; i < technicianList.Length; i++)
-                {
-                    string techId = technicianList[i].ToString();
-                    if (_userService.GetUserById(techId) != null)
-                    {
-                        BusinessRuleNotification brNotification = new BusinessRuleNotification();
-                        brNotification.BusinessRuleID = businessRuleId;
-                        brNotification.ReceiverID = techId;
-                        _businessRuleService.AddNotificationReciever(brNotification);
-                    }
-                }
-            }
-
-            unitOfWork.CommitTransaction();
             return Json(new
             {
-                success = true,
+                success = result,
             });
         }
 
         [HttpPost]
-        public ActionResult Update(int brId, string name, string description, string rules, string actions, string technicians)
+        public ActionResult Update(BusinessRuleViewModel viewModel)
         {
-            unitOfWork.BeginTransaction();
-
+            var result = false;
             // Update new business rule to database
-            int businessRuleId = brId;
-            BusinessRule br = new BusinessRule();
-            br.ID = brId;
-            br.Name = name;
-            br.Description = description;
-            br.IsActive = true;
-
-            _businessRuleService.UpdateBusinessRule(br);
-            _businessRuleService.RemoveAllRuleRelatedInfo(brId);
-
-            //enable rule checkbox TODO
-
-            // Get conditions
-            List<BusinessRuleCondition> businessRuleConditions = new List<BusinessRuleCondition>();
-            List<Rule> ruleList = new List<Rule>();
-            var js = new JavaScriptSerializer();
-            object[] ruleTree = (object[])js.DeserializeObject(rules);
-            for (int i = 0; i < ruleTree.Length; i++)
+            if (viewModel.Id.HasValue)
             {
-                Dictionary<string, object> rule = (Dictionary<string, object>)ruleTree[i];
-                Rule tempRule = js.ConvertToType<Rule>(rule["data"]);
-                tempRule.Id = (string)rule["id"];
-                tempRule.ParentId = (string)rule["parent"];
-                ruleList.Add(tempRule);
-            }
-
-            // Add condition to database
-            AddConditionsToDB(0, 1, businessRuleId, null, "#", ruleList);
-
-            // Add trigger 
-            object[] actionSet = (object[])js.DeserializeObject(actions);
-            for (int i = 0; i < actionSet.Length; i++)
-            {
-                Dictionary<string, object> action = (Dictionary<string, object>)actionSet[i];
-                BusinessRuleTrigger trigger = new BusinessRuleTrigger();
-                trigger.BusinessRuleID = businessRuleId;
-                trigger.Action = Convert.ToInt32(action["id"]);
-                trigger.Value = (string)action["value"];
-                _businessRuleService.AddTrigger(trigger);
-            }
-
-            // Add technician notification
-            var technicianList = (object[])js.DeserializeObject(technicians);
-            if (technicianList != null)
-            {
-                for (int i = 0; i < technicianList.Length; i++)
+                BusinessRule businessRule = _businessRuleService.GetById((int)viewModel.Id);
+                if (businessRule != null)
                 {
-                    string techId = technicianList[i].ToString();
-                    if (_userService.GetUserById(techId) != null)
-                    {
-                        BusinessRuleNotification brNotification = new BusinessRuleNotification();
-                        brNotification.BusinessRuleID = businessRuleId;
-                        brNotification.ReceiverID = techId;
-                        _businessRuleService.AddNotificationReciever(brNotification);
-                    }
+                    businessRule.Name = viewModel.Name;
+                    businessRule.Description = viewModel.Description;
+                    businessRule.EnableRule = viewModel.Enable;
+                    result = _businessRuleService.UpdateBusinessRule(businessRule, viewModel.Conditions, viewModel.Actions,
+                        viewModel.Technicians);
                 }
             }
 
-            unitOfWork.CommitTransaction();
             return Json(new
             {
-                success = true,
+                success = result
             });
         }
-
-        private void AddConditionsToDB(int index, int level, int businessRuleId, int? Id, string parentId, List<Rule> ruleList)
-        {
-            for (int i = index; i < ruleList.Count; i++)
-            {
-                Rule tempRule = ruleList[i];
-                if (ruleList[i].ParentId == parentId)
-                {
-                    BusinessRuleCondition condition = new BusinessRuleCondition();
-                    condition.BusinessRuleID = businessRuleId;
-                    condition.Type = tempRule.Logic.HasValue ? tempRule.Logic : ConstantUtil.TypeOfBusinessRuleCondition.And;
-                    condition.Criteria = tempRule.Criteria;
-                    condition.Condition = tempRule.Condition;
-                    condition.Value = tempRule.Value;
-                    condition.BusinessRuleConditionID = Id;
-                    condition.BusinessRuleConditionLevel = level;
-                    AddConditionsToDB(index + 1, level + 1, businessRuleId, _businessRuleService.AddCondition(condition), tempRule.Id, ruleList);
-                }
-            }
-        }
-
 
         [HttpPost]
         public ActionResult LoadAll(JqueryDatatableParameterViewModel param)

@@ -396,6 +396,7 @@ function openTicketDetailModal(ticketId) {
                 $('#ticket-schedule-end').text(data.scheduleEnd);
                 $('#ticket-actual-start').text(data.actualStart);
                 $('#ticket-actual-end').text(data.actualEnd);
+                $('#ticket-due-by-date').text(data.dueByDate);
 
                 $('#ticket-solveUser').text(data.solveUser);
 
@@ -492,8 +493,6 @@ function initFilter() {
 }
 
 $(document).ready(function () {
-    //setActiveTicketMenu();
-
     // Init filter 
     initFilter();
 
