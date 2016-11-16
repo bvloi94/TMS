@@ -7,6 +7,7 @@ namespace TMS.Utils
     {
         public static readonly string DateTimeFormat = "dd/MM/yyyy HH:mm";
         public static readonly string DateFormat = "dd/MM/yyyy";
+        public const int DayToCloseTicket = 3;
 
         public class UserRole
         {
@@ -219,6 +220,7 @@ namespace TMS.Utils
             public const int TechnicianNotiCancel = 11;
             public const int TechnicianNotiMerge = 12;
             public const int TechnicianNotiIsMerged = 13;
+            public const int TechnicianNotiChangeDueByDate = 14;
         }
     }
 }

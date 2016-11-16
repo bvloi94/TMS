@@ -98,15 +98,15 @@ namespace TMS.Controllers
                             switch (role)
                             {
                                 case "admin":
-                                    return RedirectToAction("Requester", "ManageUser", new { area = "Admin" });
+                                    return RedirectToAction("Index", "Home", new { area = "Admin" });
                                 case "technician":
                                     return RedirectToAction("Index", "Home", new { area = "Technician" });
                                 case "helpdesk":
-                                    return RedirectToAction("Index", "ManageTicket", new { area = "HelpDesk" });
+                                    return RedirectToAction("Index", "Home", new { area = "HelpDesk" });
                                 case "requester":
                                     return RedirectToAction("Index", "Home");
                                 case "manager":
-                                    return RedirectToAction("Index", "Department", new { area = "Manager" });
+                                    return RedirectToAction("Index", "Home", new { area = "Manager" });
                             }
                         }
                         return RedirectToLocal(returnUrl);

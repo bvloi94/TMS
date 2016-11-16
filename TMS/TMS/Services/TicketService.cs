@@ -39,63 +39,71 @@ namespace TMS.Services
             IEnumerable<BusinessRule> businessRules = _unitOfWork.BusinessRuleRepository.Get(m => m.IsActive == true);
             foreach (BusinessRule businessRule in businessRules)
             {
-                List<BusinessRuleConditionCustom> businessRuleConditionCustomList = new List<BusinessRuleConditionCustom>();
-                IEnumerable<BusinessRuleCondition> conditions = businessRule.BusinessRuleConditions;
-                foreach (BusinessRuleCondition condition in conditions)
+                IEnumerable<BusinessRuleTrigger> triggers = businessRule.BusinessRuleTriggers;
+                var enable = false;
+                if (businessRule.EnableRule != null)
+                    enable = (bool)businessRule.EnableRule;
+                bool triggerEnable = true;
+                if (enable)
                 {
-                    BusinessRuleConditionCustom businessRuleConditionCustom = new BusinessRuleConditionCustom
+                    List<BusinessRuleConditionCustom> businessRuleConditionCustomList = new List<BusinessRuleConditionCustom>();
+                    IEnumerable<BusinessRuleCondition> conditions = businessRule.BusinessRuleConditions;
+                    foreach (BusinessRuleCondition condition in conditions)
                     {
-                        BusinessRuleCondition = condition,
-                        IsSatisfied = IsSatisfiedWithCondition(handlingTicket, condition)
-                    };
-                    businessRuleConditionCustomList.Add(businessRuleConditionCustom);
-                }
-                isSatisfied = IsSatisfiedWithMultipleConditions(handlingTicket, businessRuleConditionCustomList);
-                if (isSatisfied)
-                {
-                    IEnumerable<BusinessRuleTrigger> triggers = businessRule.BusinessRuleTriggers;
-                    var enable = false;
-                    if (businessRule.EnableRule != null)
-                        enable = (bool)businessRule.EnableRule;
-                    if (enable)
-                    {
-                        foreach (BusinessRuleTrigger trigger in triggers)
+                        BusinessRuleConditionCustom businessRuleConditionCustom = new BusinessRuleConditionCustom
                         {
-                            switch (trigger.Action)
-                            {
-                                case ConstantUtil.BusinessRuleTrigger.AssignToTechnician:
-                                    var technician = _unitOfWork.AspNetRoleRepository.GetByID(trigger.Value);
-                                    if (technician != null)
-                                    {
-                                        ticket.TechnicianID = technician.Id;
-                                    }
-                                    break;
-                                case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
-                                case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
-                                case ConstantUtil.BusinessRuleTrigger.MoveToItem:
-                                    int categoryId = Convert.ToInt32(trigger.Value);
-                                    if (categoryId > 0) { ticket.CategoryID = categoryId; }
-                                    break;
-                                case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
-                                    int priorityId = Convert.ToInt32(trigger.Value);
-                                    if (priorityId > 0)
-                                    {
-                                        ticket.PriorityID = priorityId;
-                                    }
-                                    break;
-                            }
+                            BusinessRuleCondition = condition,
+                            IsSatisfied = IsSatisfiedWithCondition(handlingTicket, condition)
+                        };
+                        businessRuleConditionCustomList.Add(businessRuleConditionCustom);
+                    }
+                    isSatisfied = IsSatisfiedWithMultipleConditions(handlingTicket, businessRuleConditionCustomList);
+                    if (!isSatisfied)
+                    {
+                        triggerEnable = false;
+                    }
+                }
+                if (triggerEnable)
+                {
+                    foreach (BusinessRuleTrigger trigger in triggers)
+                    {
+                        switch (trigger.Action)
+                        {
+                            case ConstantUtil.BusinessRuleTrigger.AssignToTechnician:
+                                var technician = _unitOfWork.AspNetRoleRepository.GetByID(trigger.Value);
+                                if (technician != null)
+                                {
+                                    handlingTicket.TechnicianID = technician.Id;
+                                }
+                                break;
+                            case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
+                            case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
+                            case ConstantUtil.BusinessRuleTrigger.MoveToItem:
+                                int categoryId = Convert.ToInt32(trigger.Value);
+                                if (categoryId > 0)
+                                {
+                                    handlingTicket.CategoryID = categoryId;
+                                }
+                                break;
+                            case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
+                                int priorityId = Convert.ToInt32(trigger.Value);
+                                if (priorityId > 0)
+                                {
+                                    handlingTicket.PriorityID = priorityId;
+                                }
+                                break;
                         }
                     }
+                }
 
-                    IEnumerable<BusinessRuleNotification> notifications = businessRule.BusinessRuleNotifications;
-                    foreach (var noty in notifications)
+                IEnumerable<BusinessRuleNotification> notifications = businessRule.BusinessRuleNotifications;
+                foreach (var noty in notifications)
+                {
+                    var technician = _unitOfWork.AspNetUserRepository.GetByID(noty.ReceiverID);
+                    if (technician != null)
                     {
-                        var technician = _unitOfWork.AspNetUserRepository.GetByID(noty.ReceiverID);
-                        if (technician != null)
-                        {
-                            Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenBusinessRuleIsApplied(ticket, technician));
-                            thread.Start();
-                        }
+                        Thread thread = new Thread(() => EmailUtil.SendToTechnicianWhenBusinessRuleIsApplied(ticket, technician));
+                        thread.Start();
                     }
                 }
             }
@@ -557,6 +565,7 @@ namespace TMS.Services
         //send notification to technician if ticket is assigned when creating
         public bool AddTicket(Ticket ticket)
         {
+            ticket = ParseTicket(ticket);
             string ticketCode = GenerateTicketCode();
             if (!string.IsNullOrWhiteSpace(ticketCode))
             {
@@ -567,7 +576,6 @@ namespace TMS.Services
                 requesterNoti.IsForHelpDesk = false;
                 requesterNoti.BeNotifiedID = ticket.RequesterID;
                 requesterNoti.ActionType = ConstantUtil.NotificationActionType.RequesterNotiCreate;
-                //requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created successfully.", ticket.Subject, ticket.Code);
                 requesterNoti.NotifiedTime = DateTime.Now;
                 ticket.Notifications.Add(requesterNoti);
 
@@ -582,7 +590,6 @@ namespace TMS.Services
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
                         technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
                         technicianNoti.ActID = ticket.AssignedByID;
-                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         ticket.Notifications.Add(technicianNoti);
                     }
@@ -601,7 +608,6 @@ namespace TMS.Services
                             helpdeskNoti.IsForHelpDesk = true;
                             helpdeskNoti.ActionType = ConstantUtil.NotificationActionType.HelpDeskNotiCreate;
                             helpdeskNoti.ActID = ticket.RequesterID;
-                            //helpdeskNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was created by {2}.", ticket.Subject, ticket.Code, ticketCreator.Fullname);
                             helpdeskNoti.NotifiedTime = DateTime.Now;
                             ticket.Notifications.Add(helpdeskNoti);
                         }
@@ -647,7 +653,6 @@ namespace TMS.Services
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
                         technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
                         technicianNoti.ActID = actId;
-                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -664,7 +669,6 @@ namespace TMS.Services
                         technicianNoti.BeNotifiedID = oldTicket.TechnicianID;
                         technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiUnassign;
                         technicianNoti.ActID = actId;
-                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -683,7 +687,6 @@ namespace TMS.Services
                             oldTechnicianNoti.BeNotifiedID = oldTicket.TechnicianID;
                             oldTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiUnassign;
                             oldTechnicianNoti.ActID = actId;
-                            //oldTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                             oldTechnicianNoti.NotifiedTime = DateTime.Now;
                             _unitOfWork.NotificationRepository.Insert(oldTechnicianNoti);
                             //send notification to new technician
@@ -691,12 +694,22 @@ namespace TMS.Services
                             newTechnicianNoti.IsForHelpDesk = false;
                             newTechnicianNoti.TicketID = ticket.ID;
                             newTechnicianNoti.BeNotifiedID = ticket.TechnicianID;
-                            oldTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
-                            oldTechnicianNoti.ActID = actId;
-                            //newTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
+                            newTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
+                            newTechnicianNoti.ActID = actId;
                             newTechnicianNoti.NotifiedTime = DateTime.Now;
                             _unitOfWork.NotificationRepository.Insert(newTechnicianNoti);
                         }
+                    }
+                    if (ticket.DueByDate.HasValue && oldTicket.DueByDate != ticket.DueByDate)
+                    {
+                        Notification newTechnicianNoti = new Notification();
+                        newTechnicianNoti.IsForHelpDesk = false;
+                        newTechnicianNoti.TicketID = ticket.ID;
+                        newTechnicianNoti.BeNotifiedID = ticket.TechnicianID;
+                        newTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiChangeDueByDate;
+                        newTechnicianNoti.ActID = actId;
+                        newTechnicianNoti.NotifiedTime = DateTime.Now;
+                        _unitOfWork.NotificationRepository.Insert(newTechnicianNoti);
                     }
                 }
                 //end notification

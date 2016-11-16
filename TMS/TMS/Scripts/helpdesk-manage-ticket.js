@@ -17,8 +17,9 @@ function initTicketTable() {
         serverSide: true,
         processing: true,
         sort: true,
-        searchable: true,
-        lengthMenu: [7],
+        filter: false,
+        //searchable: true,
+        lengthMenu: [10],
         order: [[1, 'des']],
         lengthChange: false,
         ajax: {
@@ -31,6 +32,7 @@ function initTicketTable() {
                 d.filter_status = JSON.stringify($("[data-role='filter_status_select']").val());
                 d.filter_mode = JSON.stringify($("[data-role='filter_mode_select']").val());
                 d.filter_requester = JSON.stringify($("[data-role='filter_requester_select']").val());
+                d.filter_search = $("#search-txt").val()
             }
         },
         drawCallback: function () {
@@ -231,7 +233,7 @@ function initTicketTable() {
             "sInfo": "Found _TOTAL_ tickets",
             "sLast": "Last page",
             "sFirst": "First",
-            "sSearch": "Search:",
+            //"sSearch": "Search:",
             "sZeroRecords": "No records",
             "sEmptyTable": "No data",
             "sInfoFiltered": " - filter from _MAX_ rows",
@@ -394,6 +396,7 @@ function openTicketDetailModal(ticketId) {
                 $('#ticket-schedule-end').text(data.scheduleEnd);
                 $('#ticket-actual-start').text(data.actualStart);
                 $('#ticket-actual-end').text(data.actualEnd);
+                $('#ticket-due-by-date').text(data.dueByDate);
 
                 $('#ticket-solveUser').text(data.solveUser);
 
@@ -445,11 +448,13 @@ function initFilter() {
     var time_period_inp = $('[data-role="filter_time_period_input"');
 
     created_select.select2();
-    time_period_inp.daterangepicker({
-        locale: {
-            format: 'DD/MM/YYYY'
-        }
-    });
+    if (typeof daterangepicker === "function") {
+        time_period_inp.daterangepicker({
+            locale: {
+                format: 'DD/MM/YYYY'
+            }
+        });
+    }
     time_period_inp.val("");
     mode_select.select2();
     status_select.select2();
@@ -493,6 +498,24 @@ $(document).ready(function () {
 
     // Init ticket table
     initTicketTable();
+
+    //$("#filterBtn").on("click", function () {
+
+    //    // if submenu is hidden, does not have active class
+    //    if (!$('#filterBtn').hasClass("active")) {
+
+    //        $('#filter-div').removeClass("hidden");
+    //        $('#filterBtn').addClass("active");
+    //        $('#filter-div').slideDown(400);
+
+    //        //if submenu is visible
+    //    } else if ($('#filterBtn').hasClass("active")) {
+
+    //        $('#filter-div').slideToggle(400);
+    //        $('#filter-div').addClass("hidden");
+    //        $('#filterBtn').removeClass("active");
+    //    }
+    //});
 
     $("#search-txt").keyup(function () {
         ticketTable.draw();

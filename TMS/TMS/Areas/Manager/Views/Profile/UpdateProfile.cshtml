@@ -1,7 +1,7 @@
 ﻿@model TMS.ViewModels.ProfileManagerViewModel
 @{
     ViewBag.Title = "Edit Profile";
-    Layout = "~/Areas/Manager/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/Manager/Views/Shared/_TopLayout.cshtml";
 }
 
 @using (Html.BeginForm("EditProfie", "Profile", FormMethod.Post, new { @class = "form-horizontal", role = "form", area = "Manager", enctype = "multipart/form-data" }))

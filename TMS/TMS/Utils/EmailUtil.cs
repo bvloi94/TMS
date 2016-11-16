@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using TMS.Models;
@@ -24,7 +23,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$password", password);
             try
             {
-                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail(email, emailSubject, emailMessage);
             }
             catch
             {
@@ -41,7 +40,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$password", password);
             try
             {
-                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail(email, emailSubject, emailMessage);
                 return true;
             }
             catch
@@ -61,7 +60,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
             try
             {
-                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail(technician.Email, emailSubject, emailMessage);
             }
             catch
             {
@@ -81,7 +80,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$scheduleEndDate", (ticket.ScheduleEndDate == null) ? "-" : ticket.ScheduleEndDate.ToString());
             try
             {
-                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail(technician.Email, emailSubject, emailMessage);
             }
             catch
             {
@@ -100,7 +99,7 @@ namespace TMS.Utils
                 emailMessage = emailMessage.Replace("$delayDay", ((int)(DateTime.Now.Date - ticket.ScheduleEndDate.Value.Date).TotalDays).ToString());
                 try
                 {
-                    await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                    await SendEmail(helpdesk.Email, emailSubject, emailMessage);
                 }
                 catch
                 {
@@ -119,7 +118,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
             try
             {
-                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail(requester.Email, emailSubject, emailMessage);
             }
             catch
             {
@@ -137,7 +136,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
             try
             {
-                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail(requester.Email, emailSubject, emailMessage);
             }
             catch
             {
@@ -155,7 +154,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
             try
             {
-                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail(requester.Email, emailSubject, emailMessage);
             }
             catch
             {
@@ -173,7 +172,7 @@ namespace TMS.Utils
             emailMessage = emailMessage.Replace("$description", (ticket.Description == null) ? "-" : ticket.Description.Replace(Environment.NewLine, "<br />"));
             try
             {
-                await SendEmail("huytcdse61256@fpt.edu.vn", emailSubject, emailMessage);
+                await SendEmail(requester.Email, emailSubject, emailMessage);
             }
             catch
             {

@@ -254,25 +254,45 @@ namespace TMS.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(BasicTicketViewModel model, IEnumerable<HttpPostedFileBase> uploadFiles)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
+                foreach (ModelState modelState in ViewData.ModelState.Values)
                 {
-                    Ticket ticket = new Ticket();
-                    TicketAttachment ticketFiles = new TicketAttachment();
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = error.ErrorMessage
+                        });
+                    }
+                }
+            }
+            else
+            {
+                Ticket ticket = new Ticket();
+                TicketAttachment ticketFiles = new TicketAttachment();
 
-                    ticket.Subject = model.Subject;
-                    ticket.Description = model.Description;
-                    ticket.Status = ConstantUtil.TicketStatus.Open;
-                    ticket.CreatedID = User.Identity.GetUserId();
-                    ticket.RequesterID = User.Identity.GetUserId();
-                    ticket.Mode = ConstantUtil.TicketMode.WebForm;
-                    ticket.CreatedTime = DateTime.Now;
-                    ticket.ModifiedTime = DateTime.Now;
-                    _ticketService.AddTicket(ticket);
+                ticket.Subject = model.Subject;
+                ticket.Description = model.Description;
+                ticket.Status = ConstantUtil.TicketStatus.Open;
+                ticket.CreatedID = User.Identity.GetUserId();
+                ticket.RequesterID = User.Identity.GetUserId();
+                ticket.Mode = ConstantUtil.TicketMode.WebForm;
+                ticket.CreatedTime = DateTime.Now;
+                ticket.ModifiedTime = DateTime.Now;
+                bool addResult = _ticketService.AddTicket(ticket);
+                if (addResult)
+                {
                     if (uploadFiles != null && uploadFiles.ToList()[0] != null && uploadFiles.ToList().Count > 0)
                     {
                         _ticketAttachmentService.saveFile(ticket.ID, uploadFiles, ConstantUtil.TicketAttachmentType.Description);
+                    }
+                    AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
+                    if (requester != null)
+                    {
+                        Thread thread = new Thread(() => EmailUtil.SendToRequesterWhenCreateTicket(ticket, requester));
+                        thread.Start();
                     }
                     return Json(new
                     {
@@ -280,13 +300,12 @@ namespace TMS.Controllers
                         msg = "Create ticket successfully!"
                     });
                 }
-                catch
+                else
                 {
                     return Json(new
                     {
                         success = false,
-                        error = true,
-                        msg = "Cannot create ticket. Please try again!"
+                        msg = ConstantUtil.CommonError.DBExceptionError
                     });
                 }
             }
@@ -294,8 +313,7 @@ namespace TMS.Controllers
             return Json(new
             {
                 success = false,
-                error = true,
-                msg = "Cannot create ticket. Please try again!"
+                msg = ConstantUtil.CommonError.DBExceptionError
             });
         }
 
@@ -480,6 +498,7 @@ namespace TMS.Controllers
                     model.ActualStartDateString = ticket.ActualStartDate == null ? "-" : ticket.ActualStartDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.ActualEndDateString = ticket.ActualEndDate == null ? "-" : ticket.ActualEndDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.SolvedDateString = ticket.SolvedDate == null ? "-" : ticket.SolvedDate.Value.ToString("MMM d yyyy, hh:mm");
+                    model.DueByDateString = ticket.DueByDate == null ? "-" : ticket.DueByDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.Department = "-";
                     if (technician != null)
                     {
@@ -522,7 +541,7 @@ namespace TMS.Controllers
                     AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
 
                     string ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department, category, description, note;
-                    string createdTime, modifiedTime, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate;
+                    string createdTime, modifiedTime, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate, dueByDate;
 
                     string userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
 
@@ -580,6 +599,7 @@ namespace TMS.Controllers
                     actualStartDate = ticket.ActualStartDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
                     actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
                     solvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+                    dueByDate = ticket.DueByDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
 
                     department = "-";
                     if (technician != null)
@@ -630,6 +650,7 @@ namespace TMS.Controllers
                         scheduleEnd = scheduleEndDate,
                         actualStart = actualStartDate,
                         actualEnd = actualEndDate,
+                        dueByDate = dueByDate,
                         solution = solution,
                         solver = GeneralUtil.GetUserInfo(solvedUser),
                         creater = GeneralUtil.GetUserInfo(createdUser),
@@ -683,31 +704,36 @@ namespace TMS.Controllers
                     // Get Ticket information
                     AspNetUser solvedUser = _userService.GetUserById(ticket.SolveID);
                     AspNetUser createdUser = _userService.GetUserById(ticket.CreatedID);
-                    AspNetUser assigner = _userService.GetUserById(ticket.AssignedByID);
+                    AspNetUser assignedUser = _userService.GetUserById(ticket.AssignedByID);
+                    AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
                     TicketSolveViewModel model = new TicketSolveViewModel();
 
                     model.ID = ticket.ID;
+                    model.Code = ticket.Code;
                     model.Subject = ticket.Subject;
-                    model.Description = ticket.Description;
+                    model.Description = string.IsNullOrWhiteSpace(ticket.Description) ? "-" : ticket.Description.Trim();
                     model.Mode = GeneralUtil.GetModeNameByMode(ticket.Mode);
                     model.Type = GeneralUtil.GetTypeNameByType(ticket.Type);
                     model.Status = GeneralUtil.GetTicketStatusByID(ticket.Status);
                     model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
                     model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
-                    model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
+                    model.ImpactDetail = string.IsNullOrWhiteSpace(ticket.ImpactDetail) ? "-" : ticket.ImpactDetail.Trim();
                     model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
                     model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
-                    model.CreateTime = ticket.CreatedTime;
-                    model.ModifiedTime = ticket.ModifiedTime;
-                    model.ScheduleEndTime = ticket.ScheduleEndDate;
-                    model.ScheduleStartTime = ticket.ScheduleStartDate;
-                    model.ActualStartTime = ticket.ActualStartDate;
-                    model.ActualEndTime = ticket.ActualEndDate;
-                    model.CreatedBy = (createdUser == null) ? "-" : createdUser.Fullname;
-                    model.AssignedBy = (assigner == null) ? "-" : assigner.Fullname;
-                    model.SolvedBy = (solvedUser == null) ? "-" : solvedUser.Fullname;
+                    model.CreateTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
+                    model.ModifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
+                    model.ScheduleStartDate = ticket.ScheduleStartDate.HasValue ? ticket.ScheduleStartDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.ScheduleEndDate = ticket.ScheduleEndDate.HasValue ? ticket.ScheduleEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.ActualStartDate = ticket.ActualStartDate.HasValue ? ticket.ActualStartDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.ActualEndDate = ticket.ActualEndDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.CreatedBy = GeneralUtil.GetUserInfo(createdUser);
+                    model.AssignedBy = GeneralUtil.GetUserInfo(assignedUser);
+                    model.SolvedBy = GeneralUtil.GetUserInfo(solvedUser);
+                    model.Requester = GeneralUtil.GetUserInfo(requester);
                     model.Solution = ticket.Solution;
-                    model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason;
+                    model.UnapproveReason = (string.IsNullOrWhiteSpace(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason.Trim();
+                    model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Note = (string.IsNullOrWhiteSpace(ticket.Note)) ? "-" : ticket.Note.Trim();
                     return View(model);
                 }
             }
