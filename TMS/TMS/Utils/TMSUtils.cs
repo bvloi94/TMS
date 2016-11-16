@@ -182,5 +182,13 @@ namespace TMS.Utils
             actions.Add((new DropDownViewModel("5", "Set Priority as")));
             return actions;
         }
+
+        public static int StrToIntDef(string s, int defaultNumber)
+        {
+            int num;
+            if (int.TryParse(s, out num))
+                return num;
+            return defaultNumber;
+        }
     }
 }

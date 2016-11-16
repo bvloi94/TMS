@@ -136,10 +136,14 @@ tree.on("select_node.jstree", function (event, data) {
         $("#" + inputId).select2("open");
         $("#" + inputId).on("change", function () {
             anchorTag.children[2].innerHTML = $("#" + inputId).text();
-            tree.jstree().get_node(selectedId).data.Criteria = $("#" + inputId).val();
-            tree.jstree().get_node(selectedId).data.CriteriaText = $("#" + inputId).text();
             anchorTag.children[3].innerHTML = "-- Select condition --";
             anchorTag.children[4].innerHTML = "";
+            tree.jstree().get_node(selectedId).data.Criteria = $("#" + inputId).val();
+            tree.jstree().get_node(selectedId).data.CriteriaText = $("#" + inputId).text();
+            tree.jstree().get_node(selectedId).data.Condition = 0;
+            tree.jstree().get_node(selectedId).data.ConditionText = "-- Select condition --";
+            tree.jstree().get_node(selectedId).data.Value = null;
+            tree.jstree().get_node(selectedId).data.ValueMask = "";
             tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
             $('.tempDiv').remove();
         });
@@ -168,9 +172,11 @@ tree.on("select_node.jstree", function (event, data) {
             $("#" + inputId).select2("open");
             $("#" + inputId).on("change", function () {
                 anchorTag.children[3].innerHTML = $("#" + inputId).text();
+                anchorTag.children[4].innerHTML = "";
                 tree.jstree().get_node(selectedId).data.Condition = $("#" + inputId).val();
                 tree.jstree().get_node(selectedId).data.ConditionText = $("#" + inputId).text();
-                anchorTag.children[4].innerHTML = "";
+                tree.jstree().get_node(selectedId).data.Value = null;
+                tree.jstree().get_node(selectedId).data.ValueMask = "";
                 tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
                 $('.tempDiv').remove();
             });
