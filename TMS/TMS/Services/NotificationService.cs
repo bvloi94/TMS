@@ -22,6 +22,11 @@ namespace TMS.Services
             return _unitOfWork.NotificationRepository.Get();
         }
 
+        public IEnumerable<Notification> GetHelpDeskNotifications()
+        {
+            return _unitOfWork.NotificationRepository.Get(m => m.IsForHelpDesk == true);
+        }
+
         public Notification GetNotificationById(int id)
         {
             return _unitOfWork.NotificationRepository.GetByID(id);
@@ -29,7 +34,7 @@ namespace TMS.Services
 
         public IEnumerable<Notification> GetUserNotifications(string id)
         {
-            return _unitOfWork.NotificationRepository.Get().Where(m => m.BeNotifiedID == id);
+            return _unitOfWork.NotificationRepository.Get(m => m.BeNotifiedID == id);
         }
 
         public bool EditNotification(Notification notification)
@@ -41,10 +46,11 @@ namespace TMS.Services
         public string GetNotificationContent(int ticketID, int actionType, string actID)
         {
             Ticket ticket = _unitOfWork.TicketRepository.GetByID(ticketID);
-            Ticket mergedTicket;
-            AspNetUser mergedUser = _unitOfWork.AspNetUserRepository.GetByID(ticket.MergedID);
+            Ticket mergedTicket = _unitOfWork.TicketRepository.GetByID(ticket.MergedID);
             AspNetUser creater = _unitOfWork.AspNetUserRepository.GetByID(ticket.CreatedID);
             AspNetUser solver = _unitOfWork.AspNetUserRepository.GetByID(ticket.SolveID);
+            AspNetUser actedUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
+
             if (ticket != null)
             {
                 string subject = ticket.Subject.Length > 120 ? ticket.Subject.Substring(0, 119) + "..." : ticket.Subject;
@@ -130,15 +136,14 @@ namespace TMS.Services
                             return string.Format("A ticket was cancelled: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
                         }
                     case ConstantUtil.NotificationActionType.TechnicianNotiIsMerged:
-                        mergedUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
-                        if (mergedUser != null)
+                        if (actedUser != null)
                         {
                             if (ticket.MergedID.HasValue)
                             {
                                 mergedTicket = _unitOfWork.TicketRepository.GetByID(ticket.MergedID);
                                 string ticketSubject = ticket.Subject.Length > 50 ? ticket.Subject.Substring(0, 49) + "..." : ticket.Subject;
                                 string mergedTicketSubject = ticket.Subject.Length > 50 ? ticket.Subject.Substring(0, 49) + "..." : ticket.Subject;
-                                return string.Format("<b>{0}</b> merged ticket #{1} <b>\"{2}\"</b> into ticket #{3} <b>\"{4}\"</b>.", mergedUser.Fullname, ticket.Code, subject, mergedTicket.Code, mergedTicket.Subject);
+                                return string.Format("<b>{0}</b> merged ticket #{1} <b>\"{2}\"</b> into ticket #{3} <b>\"{4}\"</b>.", actedUser.Fullname, ticket.Code, subject, mergedTicket.Code, mergedTicket.Subject);
                             }
                         }
                         else
@@ -151,10 +156,9 @@ namespace TMS.Services
                         }
                         break;
                     case ConstantUtil.NotificationActionType.TechnicianNotiMerge:
-                        mergedUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
-                        if (mergedUser != null)
+                        if (actedUser != null)
                         {
-                            return string.Format("<b>{0}</b> merge 2 ticket: #{1} <b>\"{2}\"</b>.", mergedUser.Fullname, ticket.Code, ticket.Subject);
+                            return string.Format("<b>{0}</b> merge 2 ticket: #{1} <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
                         else
                         {
