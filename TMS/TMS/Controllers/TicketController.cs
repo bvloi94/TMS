@@ -442,7 +442,7 @@ namespace TMS.Controllers
                     if (ticket.MergedID.HasValue)
                     {
                         Ticket mergedTicket = _ticketService.GetTicketByID(ticket.MergedID.Value);
-                        model.MergedTicketString = GeneralUtil.GetRequesterMergedTicketInfo(mergedTicket);
+                        model.MergedTicketString = GeneralUtil.GetMergedTicketInfo(mergedTicket);
                     }
                     model.Status = GeneralUtil.GetTicketStatusByID(ticket.Status);
                     IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);
@@ -988,7 +988,7 @@ namespace TMS.Controllers
                 filteredListItems = ticketList;
             }
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"], 2);
             var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)

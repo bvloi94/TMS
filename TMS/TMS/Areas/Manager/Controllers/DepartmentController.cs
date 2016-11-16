@@ -48,15 +48,15 @@ namespace TMS.Areas.Manager.Controllers
             }
 
             // sort 
-            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"], 0);
             var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
             {
-                case 2:
+                case 0:
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Name)
-                        : filteredListItems.OrderByDescending(p => p.Description);
+                        : filteredListItems.OrderByDescending(p => p.Name);
                     break;
             }
 

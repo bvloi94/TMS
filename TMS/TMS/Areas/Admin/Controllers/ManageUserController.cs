@@ -145,10 +145,8 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["order[0][column]"], 0);
             var sortDirection = Request["order[0][dir]"];
-            //var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            //var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
             {
@@ -228,10 +226,8 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["order[0][column]"], 0);
             var sortDirection = Request["order[0][dir]"];
-            //var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            //var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
             {
@@ -311,10 +307,8 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["order[0][column]"], 0);
             var sortDirection = Request["order[0][dir]"];
-            //var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            //var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
             {
@@ -396,10 +390,8 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["order[0][column]"], 0);
             var sortDirection = Request["order[0][dir]"];
-            //var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            //var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
             {
@@ -474,10 +466,8 @@ namespace TMS.Areas.Admin.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["order[0][column]"], 0);
             var sortDirection = Request["order[0][dir]"];
-            //var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
-            //var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
             {

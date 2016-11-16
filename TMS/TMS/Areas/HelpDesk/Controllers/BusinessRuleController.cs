@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using LumiSoft.Net.Mime.vCard;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
@@ -53,29 +55,35 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            var brId = Convert.ToInt32(id);
+            BusinessRule br = _businessRuleService.GetById((int)id);
+            if (br == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
             BusinessRuleViewModel brModel = new BusinessRuleViewModel();
-            BusinessRule br = _businessRuleService.GetById(brId);
-
             brModel.Id = br.ID;
             brModel.Name = br.Name;
             brModel.Description = br.Description;
-            brModel.Enable = br.EnableRule.HasValue ? br.EnableRule.Value : false;
+            brModel.Enable = br.EnableRule ?? false;
 
             // Load all rules
             List<Rule> ruleList = new List<Rule>();
-            var conditionList = _businessRuleService.GetAllBusinessRuleConditions(brId);
+            var conditionList = _businessRuleService.GetAllBusinessRuleConditions(br.ID);
             foreach (var con in conditionList)
             {
                 Rule rule = new Rule();
                 rule.Id = con.ID.ToString();
                 rule.Logic = con.Type;
-                rule.LogicText = (con.Type == ConstantUtil.TypeOfBusinessRuleCondition.Or) ? "OR" : "AND";
-                rule.Condition = Convert.ToInt32(con.Condition);
-                rule.ConditionText = TMSUtils.GetDefaultCondition()[Convert.ToInt32(con.Condition) - 1].Name;
-                rule.Criteria = Convert.ToInt32(con.Criteria);
-                rule.CriteriaText = TMSUtils.GetDefaultCritetia()[Convert.ToInt32(con.Criteria) - 1].Name;
+                rule.Criteria = con.Criteria ?? 0;
+                rule.Condition = con.Condition ?? 0;
                 rule.Value = con.Value;
+                if (rule.Criteria == 0 || rule.Condition == 0 || rule.Value == null)
+                {
+                    continue;
+                }
+                rule.LogicText = (con.Type == ConstantUtil.TypeOfBusinessRuleCondition.Or) ? "OR" : "AND";
+                rule.CriteriaText = rule.Criteria > 0 ? TMSUtils.GetDefaultCritetia()[rule.Criteria - 1].Name : "";
+                rule.ConditionText = rule.Condition > 0 ? TMSUtils.GetDefaultCondition()[rule.Condition - 1].Name : "";
                 if (rule.Value == null)
                 {
                     rule.ValueMask = "";
@@ -105,62 +113,113 @@ namespace TMS.Areas.HelpDesk.Controllers
                             }
                             break;
                         case ConstantUtil.BusinessRuleCriteria.Department:
-                            rule.ValueMask = _departmentService.GetDepartmentById(Convert.ToInt32(list[0])).Name;
-                            if (list.Length > 1)
+                            var dep = _departmentService.GetDepartmentById(TMSUtils.StrToIntDef(list[0], 0));
+                            if (dep != null)
                             {
-                                for (int i = 1; i < list.Length; i++)
+                                rule.ValueMask = dep.Name;
+                                if (list.Length > 1)
                                 {
-                                    rule.ValueMask += ", " + _departmentService.GetDepartmentById(Convert.ToInt32(list[i])).Name;
+                                    for (int i = 1; i < list.Length; i++)
+                                    {
+                                        var nextDep = _departmentService.GetDepartmentById(TMSUtils.StrToIntDef(list[i], 0));
+                                        if (nextDep != null)
+                                        {
+                                            {
+                                                rule.ValueMask += ", " + nextDep.Name;
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             break;
                         case ConstantUtil.BusinessRuleCriteria.Priority:
-                            rule.ValueMask = _priorityService.GetPriorityByID(Convert.ToInt32(list[0])).Name;
-                            if (list.Length > 1)
+                            var pri = _priorityService.GetPriorityByID(TMSUtils.StrToIntDef(list[0], 0));
+                            if (pri != null)
                             {
-                                for (int i = 1; i < list.Length; i++)
+                                rule.ValueMask = pri.Name;
+                                if (list.Length > 1)
                                 {
-                                    rule.ValueMask += ", " + _priorityService.GetPriorityByID(Convert.ToInt32(list[i])).Name;
+                                    for (int i = 1; i < list.Length; i++)
+                                    {
+                                        var nextPri = _priorityService.GetPriorityByID(TMSUtils.StrToIntDef(list[i], 0));
+                                        if (nextPri != null)
+                                        {
+                                            rule.ValueMask += ", " + nextPri.Name;
+                                        }
+                                    }
                                 }
                             }
                             break;
                         case ConstantUtil.BusinessRuleCriteria.Impact:
-                            rule.ValueMask = _impactService.GetImpactById(Convert.ToInt32(list[0])).Name;
-                            if (list.Length > 1)
+                            var impact = _impactService.GetImpactById(TMSUtils.StrToIntDef(list[0], 0));
+                            if (impact != null)
                             {
-                                for (int i = 1; i < list.Length; i++)
+                                rule.ValueMask = impact.Name;
+                                if (list.Length > 1)
                                 {
-                                    rule.ValueMask += ", " + _impactService.GetImpactById(Convert.ToInt32(list[i])).Name;
+                                    for (int i = 1; i < list.Length; i++)
+                                    {
+                                        var nextImpact = _impactService.GetImpactById(TMSUtils.StrToIntDef(list[i], 0));
+                                        if (nextImpact != null)
+                                        {
+                                            rule.ValueMask += ", " + nextImpact.Name;
+                                        }
+                                    }
                                 }
                             }
                             break;
                         case ConstantUtil.BusinessRuleCriteria.Urgency:
-                            rule.ValueMask = _urgencyService.GetUrgencyByID(Convert.ToInt32(list[0])).Name;
-                            if (list.Length > 1)
+                            var urgency = _urgencyService.GetUrgencyByID(TMSUtils.StrToIntDef(list[0], 0));
+                            if (urgency != null)
                             {
-                                for (int i = 1; i < list.Length; i++)
+                                rule.ValueMask = urgency.Name;
+                                if (list.Length > 1)
                                 {
-                                    rule.ValueMask += ", " + _urgencyService.GetUrgencyByID(Convert.ToInt32(list[i])).Name;
+                                    for (int i = 1; i < list.Length; i++)
+                                    {
+                                        var nextUrg = _urgencyService.GetUrgencyByID(TMSUtils.StrToIntDef(list[i], 0));
+                                        if (nextUrg != null)
+                                        {
+                                            rule.ValueMask += ", " + nextUrg.Name;
+
+                                        }
+                                    }
                                 }
                             }
                             break;
                         case ConstantUtil.BusinessRuleCriteria.Category:
-                            rule.ValueMask = _categoryService.GetCategoryById(Convert.ToInt32(list[0])).Name;
-                            if (list.Length > 1)
+                            var cate = _categoryService.GetCategoryById(TMSUtils.StrToIntDef(list[0], 0));
+                            if (cate != null)
                             {
-                                for (int i = 1; i < list.Length; i++)
+                                rule.ValueMask = cate.Name;
+                                if (list.Length > 1)
                                 {
-                                    rule.ValueMask += ", " + _categoryService.GetCategoryById(Convert.ToInt32(list[i])).Name;
+                                    for (int i = 1; i < list.Length; i++)
+                                    {
+                                        var nextCate = _categoryService.GetCategoryById(TMSUtils.StrToIntDef(list[i], 0));
+                                        if (nextCate != null)
+                                        {
+                                            rule.ValueMask += ", " + nextCate.Name;
+                                        }
+                                    }
                                 }
                             }
                             break;
                         case ConstantUtil.BusinessRuleCriteria.Mode:
-                            rule.ValueMask = TMSUtils.ConvertModeFromInt(Convert.ToInt32(list[0]));
-                            if (list.Length > 1)
+                            var mode = TMSUtils.ConvertModeFromInt(TMSUtils.StrToIntDef(list[0], 0));
+                            if (mode != "-")
                             {
-                                for (int i = 1; i < list.Length; i++)
+                                rule.ValueMask = mode;
+                                if (list.Length > 1)
                                 {
-                                    rule.ValueMask += ", " + TMSUtils.ConvertModeFromInt(Convert.ToInt32(list[i]));
+                                    for (int i = 1; i < list.Length; i++)
+                                    {
+                                        var nextMode = TMSUtils.ConvertModeFromInt(TMSUtils.StrToIntDef(list[i], 0));
+                                        if (nextMode != "-")
+                                        {
+                                            rule.ValueMask += ", " + nextMode;
+                                        }
+                                    }
                                 }
                             }
                             break;
@@ -174,48 +233,60 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             //Load all action
             var actionList = new List<TriggerViewModel>();
-            var brTriggers = _businessRuleService.GetAllBusinessRuleTrigger(brId);
+            var brTriggers = _businessRuleService.GetAllBusinessRuleTrigger(br.ID);
             foreach (var no in brTriggers)
             {
                 TriggerViewModel item = new TriggerViewModel();
                 item.Id = no.Action;
                 item.Name = no.Value;
+                item.Mask = "";
                 switch (no.Action)
                 {
                     case ConstantUtil.BusinessRuleTrigger.AssignToTechnician:
-                        item.Mask =
-                            TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.AssignToTechnician - 1].Name;
-                        item.Mask += " \"" + _userService.GetUserById(no.Value).Fullname + "\"";
+                        var user = _userService.GetUserById(no.Value);
+                        if (user != null)
+                        {
+                            item.Mask =
+                                TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.AssignToTechnician - 1].Name;
+                            item.Mask += " \"" + user.Fullname + "\"";
+                        }
                         break;
                     case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
                     case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
                     case ConstantUtil.BusinessRuleTrigger.MoveToItem:
-                        Category cate = _categoryService.GetCategoryById(Convert.ToInt32(no.Value));
-                        var mask = cate.Name;
-                        int level = (int)cate.CategoryLevel;
-                        int parentId;
-                        item.Mask = TMSUtils.GetDefaultActions()[level + 1].Name;
-                        while (level > 1)
+                        Category cate = _categoryService.GetCategoryById(TMSUtils.StrToIntDef(no.Value, 0));
+                        if (cate != null)
                         {
-                            parentId = (int)cate.ParentID;
-                            cate = _categoryService.GetCategoryById(parentId);
-                            mask = cate.Name + " >> " + mask;
-                            level--;
+                            var mask = cate.Name;
+                            int level = (int)cate.CategoryLevel;
+                            int parentId;
+                            item.Mask = TMSUtils.GetDefaultActions()[level + 1].Name;
+                            while (level > 1)
+                            {
+                                parentId = (int)cate.ParentID;
+                                cate = _categoryService.GetCategoryById(parentId);
+                                mask = cate.Name + " >> " + mask;
+                                level--;
+                            }
+                            item.Mask += " \"" + mask + "\"";
                         }
-                        item.Mask += " \"" + mask + "\"";
                         break;
                     case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
-                        item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.SetPriorityAs - 1].Name;
-                        item.Mask += " \"" + _priorityService.GetPriorityByID(Convert.ToInt32(no.Value)).Name + "\"";
+                        var pri = _priorityService.GetPriorityByID(TMSUtils.StrToIntDef(no.Value, 0));
+                        if (pri != null)
+                        {
+                            item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.SetPriorityAs - 1].Name;
+                            item.Mask += " \"" + pri.Name + "\"";
+                        }
                         break;
                 }
-                actionList.Add(item);
+                if (item.Mask != "") actionList.Add(item);
             }
             brModel.actionList = actionList;
 
             // Load all recievers
             var technicianList = new List<DropdownTechnicianViewModel>();
-            var brNotifications = _businessRuleService.GetAllBusinessRuleNotifications(brId);
+            var brNotifications = _businessRuleService.GetAllBusinessRuleNotifications(br.ID);
             foreach (var no in brNotifications)
             {
                 DropdownTechnicianViewModel item = new DropdownTechnicianViewModel();
@@ -289,7 +360,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(param.order[0]["column"], 0);
             var sortDirection = param.order[0]["dir"];
 
             switch (sortColumnIndex)
@@ -318,6 +389,18 @@ namespace TMS.Areas.HelpDesk.Controllers
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = rules;
             return Json(rsModel, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser admin = _userService.GetUserById(id);
+            if (admin != null)
+            {
+                ViewBag.LayoutName = admin.Fullname;
+                ViewBag.LayoutAvatarURL = admin.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }
