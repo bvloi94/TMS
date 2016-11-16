@@ -70,20 +70,6 @@ namespace TMS.Services
                                         ticket.TechnicianID = technician.Id;
                                     }
                                     break;
-                                case ConstantUtil.BusinessRuleTrigger.ChangeStatusTo:
-                                    int status = Convert.ToInt32(trigger.Value);
-                                    if (status > 0)
-                                    {
-                                        ticket.Status = status;
-                                    }
-                                    break;
-                                case ConstantUtil.BusinessRuleTrigger.PlaceInDepartment:
-                                    int department = Convert.ToInt32(trigger.Value);
-                                    if (department > 0)
-                                    {
-                                        // Ticket not have department
-                                    }
-                                    break;
                                 case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
                                 case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
                                 case ConstantUtil.BusinessRuleTrigger.MoveToItem:

@@ -488,8 +488,6 @@ function initFilter() {
 }
 
 $(document).ready(function () {
-    //setActiveTicketMenu();
-
     // Init filter 
     initFilter();
 

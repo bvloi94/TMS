@@ -7,11 +7,12 @@ namespace TMS.ViewModels
 {
     public class BusinessRuleViewModel
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        //public bool EnableRules { get; set; }
+        public bool Enable { get; set; }
         public List<Rule> Rules { get; set; }
+        public string Conditions { get; set; }
         public string Actions { get; set; }
         public string Technicians { get; set; }
         public List<DropdownTechnicianViewModel> technicianList { get; set; }

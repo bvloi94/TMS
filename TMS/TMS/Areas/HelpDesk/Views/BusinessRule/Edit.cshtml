@@ -199,7 +199,7 @@
             <div class="box-body" style="padding: 15px 30px;">
                 <form class="form-horizontal" role="form" id="form-business-rules" method="POST" enctype="multipart/form-data">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" id="brId" value="@Model.Id" />
+                    <input type="hidden" id="busnessruleId" value="@Model.Id" />
                     <div class="row bottom-space">
                         <div class="col-md-6">
                             <label class="control-label">RULE NAME <font color="red">*</font></label>
@@ -216,7 +216,14 @@
                     <div class="row left-space">
                         <fieldset id="rulecriteria_fs" class="rulefieldset">
                             <legend>
-                                <label><input type="checkbox" checked="" id="enableRule" name="enableRule">Match the below rules</label>
+                                @if (Model.Enable)
+                                {
+                                    <label><input type="checkbox" checked="checked" id="enableRule" name="enableRule">Match the below rules</label>
+                                }
+                                else
+                                {
+                                    <label><input type="checkbox" id="enableRule" name="enableRule">Match the below rules</label>
+                                }
                             </legend>
                             <div id="criteriaeditordiv">
                                 <!-- in this example the tree is populated from inline HTML -->
@@ -264,7 +271,7 @@
                     </div>
                     <br />
                     <div class="row alignCenter">
-                        <a id="updateBtn" class="btn btn-flat bg-olive" style="margin-right: 5px;">Update</a>
+                        <a id="submitBtn" data-url="Update" class="btn btn-flat bg-olive" style="margin-right: 5px;">Update</a>
                         <a id="cancelBtn" href="/HelpDesk/BusinessRule/" class="btn btn-flat btn-default" style="margin-right: 5px;">Cancel</a>
                     </div>
                     <div class="row">
@@ -279,709 +286,643 @@
 
 @section Scripts {
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
+    <script src="~/Scripts/helpdesk-businessrules.js"></script>
+
     <script>
 
+        //function initDropdownControl() {
+        //    initTechnicianDropdown({
+        //        control: $("[data-role=ddl-technician]"),
+        //        ignore: function() {
+        //            return $("[data-role=ddl-technician]").val();
+        //        }
+        //    });
 
-        $(document)
-            .click(".logicalcss",
-                function() {
-                    if ($(this).innerHTML == "AND") {
-                        $(this).innerHTML = "OR";
-                    } else $(this).innerHTML = "AND";
-                });
+        //    initActionDropdown({
+        //        control: $("#rule-action")
+        //    });
 
+        //}
 
-        function initDropdownControl() {
-            initTechnicianDropdown({
-                control: $("[data-role=ddl-technician]"),
-                ignore: function() {
-                    return $("[data-role=ddl-technician]").val();
-                }
-            });
+        //var tree = $('#criteriaeditordiv')
+        //    .jstree({
+        //        "core": {
+        //            "animation": 0,
+        //            "check_callback": true,
+        //            "themes": {
+        //                "dots": false,
+        //                "icons": false
+        //            }
+        //        },
+        //        "plugins": [
+        //            "dnd", "crrm"
+        //        ]
+        //    });
 
-            initActionDropdown({
-                control: $("#rule-action"),
-                ignore: function() {
-                }
-            });
+        //function resetLogicDisplay() {
+        //    var nodeIds = tree.jstree().get_node("#").children_d;
+        //    var anchorTag;
+        //    var nodeId;
+        //    var node;
+        //    for (var i = 0; i < nodeIds.length; i++) {
+        //        nodeId = nodeIds[i];
+        //        node = tree.jstree().get_node(nodeId);
+        //        anchorTag = $("<a/>").append(node.text)[0];
+        //        if (anchorTag.children[1].className.indexOf("invisible") != -1) {
+        //            anchorTag.children[1].className = anchorTag.children[1].className.replace(" invisible", "");
+        //        }
+        //        tree.jstree().set_text(nodeId, anchorTag.innerHTML);
+        //    }
+        //    nodeId = tree.jstree().get_node("#").children[0];
+        //    node = tree.jstree().get_node(nodeId);
+        //    anchorTag = $("<a/>").append(node.text)[0];
+        //    if (anchorTag.children[1].className.indexOf("invisible") == -1) {
+        //        anchorTag.children[1].className += " invisible";
+        //    }
+        //    tree.jstree().set_text(nodeId, anchorTag.innerHTML);
+        //}
 
-        }
+        //tree
+        //    .on('copy_node.jstree',
+        //        function(e, data) {
+        //            //
+        //        })
+        //    .on('cut.jstree',
+        //        function(e, data) {
+        //            //
+        //        })
+        //    .on('paste.jstree',
+        //        function(e, data) {
+        //            //
+        //        })
+        //    .on('move_node.jstree',
+        //        function(e, data) {
+        //            resetLogicDisplay();
+        //            tree.jstree().deselect_all(true);
+        //            tree.jstree().select_node("#" + data.parent);
+        //            tree.jstree().open_node("#" + data.parent);
+        //        });
 
-        var tree = $('#criteriaeditordiv')
-            .jstree({
-                "core": {
-                    "animation": 0,
-                    "check_callback": true,
-                    "themes": {
-                        "dots": false,
-                        "icons": false
-                    }
-                },
-                "plugins": [
-                    "dnd", "crrm"
-                ]
-            });
+        //tree.bind("redraw.jstree",
+        //    function(event, data) {
+        //        //alert("redraw");
+        //    });
 
-        function resetLogicDisplay() {
-            var nodeIds = tree.jstree().get_node("#").children_d;
-            var anchorTag;
-            var nodeId;
-            var node;
-            for (var i = 0; i < nodeIds.length; i++) {
-                nodeId = nodeIds[i];
-                node = tree.jstree().get_node(nodeId);
-                anchorTag = $("<a/>").append(node.text)[0];
-                if (anchorTag.children[1].className.indexOf("invisible") != -1) {
-                    anchorTag.children[1].className = anchorTag.children[1].className.replace(" invisible", "");
-                }
-                tree.jstree().set_text(nodeId, anchorTag.innerHTML);
-            }
-            nodeId = tree.jstree().get_node("#").children[0];
-            node = tree.jstree().get_node(nodeId);
-            anchorTag = $("<a/>").append(node.text)[0];
-            if (anchorTag.children[1].className.indexOf("invisible") == -1) {
-                anchorTag.children[1].className += " invisible";
-            }
-            tree.jstree().set_text(nodeId, anchorTag.innerHTML);
-        }
+        //tree.bind("loaded.jstree",
+        //    function(event, data) {
+        //        //alert("TREE IS LOADED");
+        //    });
 
-        $('#jstree')
-            .on("changed.jstree",
-                function(e, data) {
-                    console.log(data.selected);
-                });
-        tree
-            .on('copy_node.jstree',
-                function(e, data) {
-                    //data.node.data = $.extend(true, {}, data.original.data);
-                    //var id = data.node.id.split('_').pop();
-                    //var nodeText = "";
-                    //tree.jstree().set_id(data.node, 'rule_' + id);
-                    //tree.jstree().set_text(data.node.id, nodeText);
-                })
-            .on('cut.jstree',
-                function(e, data) {
-                    //
-                })
-            .on('paste.jstree',
-                function(e, data) {
-                })
-            .on('move_node.jstree',
-                function(e, data) {
-                    resetLogicDisplay();
-                    tree.jstree().deselect_all(true);
-                    tree.jstree().select_node("#" + data.parent);
-                    tree.jstree().open_node("#" + data.parent);
-                });
+        //tree.bind('create_node.jstree',
+        //    function(e, data) {
+        //        var id = data.node.id.split('_').pop();
+        //        var dt = data.node.data;
+        //        if (typeof (dt.LogicText) == "undefined") {
+        //            dt.Logic = 1;
+        //            dt.LogicText = 'AND';
+        //        }
+        //        if (typeof (dt.CriteriaText) == "undefined") {
+        //            dt.CriteriaText = '-- Select criteria --';
+        //        }
+        //        if (typeof (dt.ConditionText) == "undefined") {
+        //            dt.ConditionText = '-- Select condition --';
+        //        }
+        //        if (typeof (dt.ValueMask) == "undefined") {
+        //            dt.ValueMask = '';
+        //        }
 
-        tree.bind("redraw.jstree",
-            function(event, data) {
-                //alert("redraw");
-            });
-
-        tree.bind("loaded.jstree",
-            function(event, data) {
-                //alert("TREE IS LOADED");
-            });
-
-        tree.bind('create_node.jstree',
-            function(e, data) {
-                var id = data.node.id.split('_').pop();
-                var dt = data.node.data;
-                if (typeof (dt.LogicText) == "undefined") {
-                    dt.Logic = 1;
-                    dt.LogicText = 'AND';
-                }
-                if (typeof (dt.CriteriaText) == "undefined") {
-                    dt.CriteriaText = '-- Select criteria --';
-                }
-                if (typeof (dt.ConditionText) == "undefined") {
-                    dt.ConditionText = '-- Select condition --';
-                }
-                if (typeof (dt.ValueMask) == "undefined") {
-                    dt.ValueMask = '';
-                }
-
-                var nodeText = '<span><i class=\"fa fa-arrows draggable\" style=\"color: #aaa;\"></i></span>' +
-                    '<span id=\"rule_logic_' +
-                    id +
-                    '\" class=\"logicalcss\">' +
-                    dt.LogicText +
-                    '</span>' +
-                    '<span id=\"rule_criteria_' +
-                    id +
-                    '\" class=\"fieldcss\">' +
-                    dt.CriteriaText +
-                    '</span>' +
-                    '<span id=\"rule_condition_' +
-                    id +
-                    '\" class=\"operatorcss\" >' +
-                    dt.ConditionText +
-                    '</span>' +
-                    '<span id=\"rule_value_' +
-                    id +
-                    '\"  class="valuecss">' +
-                    dt.ValueMask +
-                    '</span>' +
-                    '<span class=\"pull-right\"><i id=\"rule_remove_' +
-                    id +
-                    '\" class=\"fa fa-remove addcss\" style="color: #aaa;\"></i></span>' +
-                    '<span class=\"pull-right\"><i id=\"rule_add_' +
-                    id +
-                    '\" class=\"fa fa-plus removecss\" style="color: #aaa;\"></i></span>';
-                tree.jstree().set_text(data.node.id, nodeText);
-                //if (tree.jstree().is_closed(data.node.parent)) {
-                //    tree.jstree().open_node(data.node.parent);
-                //}
-                //tree.jstree().deselect_all(true);
-                //tree.jstree().select_node(data.node.id);
-            });
+        //        var nodeText = '<span><i class=\"fa fa-arrows draggable\" style=\"color: #aaa;\"></i></span>' +
+        //            '<span id=\"rule_logic_' +
+        //            id +
+        //            '\" class=\"logicalcss\">' +
+        //            dt.LogicText +
+        //            '</span>' +
+        //            '<span id=\"rule_criteria_' +
+        //            id +
+        //            '\" class=\"fieldcss\">' +
+        //            dt.CriteriaText +
+        //            '</span>' +
+        //            '<span id=\"rule_condition_' +
+        //            id +
+        //            '\" class=\"operatorcss\" >' +
+        //            dt.ConditionText +
+        //            '</span>' +
+        //            '<span id=\"rule_value_' +
+        //            id +
+        //            '\"  class="valuecss">' +
+        //            dt.ValueMask +
+        //            '</span>' +
+        //            '<span class=\"pull-right\"><i id=\"rule_remove_' +
+        //            id +
+        //            '\" class=\"fa fa-remove addcss\" style="color: #aaa;\"></i></span>' +
+        //            '<span class=\"pull-right\"><i id=\"rule_add_' +
+        //            id +
+        //            '\" class=\"fa fa-plus removecss\" style="color: #aaa;\"></i></span>';
+        //        tree.jstree().set_text(data.node.id, nodeText);
+        //    });
 
 
-        tree.bind("select_node.jstree",
-            function(event, data) {
-                var evt = window.event || event;
-                //var button = evt.which || evt.button;
-                //if (button != 1 && (typeof button != "undefined")) return false;
+        //tree.bind("select_node.jstree",
+        //    function(event, data) {
+        //        var evt = window.event || event;
+        //        var clickedId = evt.target.id;
+        //        var selectedId = '#' + tree.jstree('get_selected')[0];
 
-                var clickedId = evt.target.id;
-                var selectedId = '#' + tree.jstree('get_selected')[0];
+        //        var anchorTag = $("<a/>").append(data.node.text)[0];
+        //        if (clickedId.indexOf("rule_logic") != -1) {
+        //            var logic = "AND";
+        //            if ($('#' + clickedId)[0].innerHTML == "AND") {
+        //                logic = "OR";
+        //            }
+        //            anchorTag.children[1].innerHTML = logic;
+        //            tree.jstree().get_node(selectedId).data.Logic = (logic == "OR") ? 2 : 1;
+        //            tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+        //        }
 
-                var anchorTag = $("<a/>").append(data.node.text)[0];
-                if (clickedId.indexOf("rule_logic") != -1) {
-                    var logic = "AND";
-                    if ($('#' + clickedId)[0].innerHTML == "AND") {
-                        logic = "OR";
-                    }
-                    anchorTag.children[1].innerHTML = logic;
-                    tree.jstree().get_node(selectedId).data.Logic = (logic == "OR") ? 2 : 1;
-                    tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                }
+        //        if (clickedId.indexOf("rule_add") != -1) {
+        //            var id = tree.jstree(true).create_node(data.node.parent, { "data": {} }, "last");
+        //        }
 
-                if (clickedId.indexOf("rule_add") != -1) {
+        //        if (clickedId.indexOf("rule_remove") != -1) {
+        //            var treeData = tree.jstree(true)
+        //                .get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
+        //            if (treeData.length > 1) {
+        //                var deleted = tree.jstree(true).delete_node(data.node);
+        //                resetLogicDisplay();
+        //            }
+        //        }
 
-                    var id = tree.jstree(true).create_node(data.node.parent, { "data": {} }, "last");
+        //        if (clickedId.indexOf("rule_criteria") != -1) {
+        //            var inputId = clickedId + '_inp';
+        //            var p = $("#" + clickedId);
+        //            p.addClass('list-open');
+        //            $('#rulecriteria_fs')
+        //                .append('<div id="tempSelectCriteria" class="tempDiv select-sublinks-single" style="top:' +
+        //                    p[0].offsetTop +
+        //                    'px; left:' +
+        //                    p[0].offsetLeft +
+        //                    'px; "><select id="' +
+        //                    inputId +
+        //                    '"></select></div>');
+        //            initCriteriaDropdown({
+        //                control: $("#" + inputId),
+        //                ignore: function() {
+        //                    return [];
+        //                }
+        //            });
+        //            $('b[role="presentation"]').hide();
+        //            $('#tempSelectCriteria .select2-selection__rendered').hide();
+        //            $("#" + inputId).select2("open");
+        //            $("#" + inputId)
+        //                .on("change",
+        //                    function() {
+        //                        anchorTag.children[2].innerHTML = $("#" + inputId).text();
+        //                        tree.jstree().get_node(selectedId).data.Criteria = $("#" + inputId).val();
+        //                        anchorTag.children[3].innerHTML = "-- Select condition --";
+        //                        anchorTag.children[4].innerHTML = "";
+        //                        tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+        //                        $('.tempDiv').remove();
+        //                    });
+        //            $("#" + inputId)
+        //                .on("blur",
+        //                    function() {
+        //                        $("#" + inputId).select2("close");
+        //                        $('.tempDiv').remove();
+        //                    });
+        //        }
 
-                    //var copied = tree.jstree().copy_node(selectedId,data.node.parent');
-                }
+        //        if (clickedId.indexOf("rule_condition") != -1) {
+        //            var criteria = anchorTag.children[2].innerHTML;
+        //            if (criteria == "-- Select criteria --") {
+        //                alert("Please select the criteria first.");
+        //            } else {
+        //                var inputId = clickedId + '_inp';
+        //                var p = $("#" + clickedId);
+        //                p.addClass('list-open');
+        //                $('#rulecriteria_fs')
+        //                    .append('<div id="tempSelectCondition" class="tempDiv select-sublinks-single" style="top:' +
+        //                        p[0].offsetTop +
+        //                        'px; left:' +
+        //                        p[0].offsetLeft +
+        //                        'px; "><select id="' +
+        //                        inputId +
+        //                        '"></select></div>');
+        //                initConditionDropdown({
+        //                    control: $("#" + inputId),
+        //                    criteria: criteria,
+        //                    ignore: function() {
+        //                        return [];
+        //                    }
+        //                });
+        //                $('b[role="presentation"]').hide();
+        //                $('#tempSelectCondition .select2-selection__rendered').hide();
+        //                $("#" + inputId).select2("open");
 
-                if (clickedId.indexOf("rule_remove") != -1) {
-                    var treeData = tree.jstree(true)
-                        .get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
-                    if (treeData.length > 1) {
-                        var deleted = tree.jstree(true).delete_node(data.node);
-                        //var firstNodeId = treeData[0]["id"];
-                        //var anchorTag = $("<a/>").append(tree.jstree().get_node(firstNodeId).text)[0];
-                        //anchorTag.children[1].innerHTML = "AND";
-                        //anchorTag.children[1].addClass("invisible");
-                        //tree.jstree().get_node(firstNodeId).data.Logic = 1;
-                        //tree.jstree().set_text(firstNodeId, anchorTag.innerHTML);
-                    }
-                }
+        //                $("#" + inputId)
+        //                    .on("change",
+        //                        function() {
+        //                            anchorTag.children[3].innerHTML = $("#" + inputId).text();
+        //                            tree.jstree().get_node(selectedId).data.Condition = $("#" + inputId).val();
+        //                            anchorTag.children[4].innerHTML = "";
+        //                            tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+        //                            $('.tempDiv').remove();
+        //                        });
+        //                $("#" + inputId)
+        //                    .on("blur",
+        //                        function() {
+        //                            $("#" + inputId).select2("close");
+        //                            $('.tempDiv').remove();
+        //                        });
+        //            }
+        //        }
 
-                if (clickedId.indexOf("rule_criteria") != -1) {
-                    var inputId = clickedId + '_inp';
-                    var p = $("#" + clickedId);
-                    p.addClass('list-open');
-                    $('#rulecriteria_fs')
-                        .append('<div id="tempSelectCriteria" class="tempDiv select-sublinks-single" style="top:' +
-                            p[0].offsetTop +
-                            'px; left:' +
-                            p[0].offsetLeft +
-                            'px; "><select id="' +
-                            inputId +
-                            '"></select></div>');
-                    initCriteriaDropdown({
-                        control: $("#" + inputId),
-                        ignore: function() {
-                            return [];
-                        }
-                    });
-                    $('b[role="presentation"]').hide();
-                    $('#tempSelectCriteria .select2-selection__rendered').hide();
-                    $("#" + inputId).select2("open");
-                    $("#" + inputId)
-                        .on("change",
-                            function() {
-                                anchorTag.children[2].innerHTML = $("#" + inputId).text();
-                                tree.jstree().get_node(selectedId).data.Criteria = $("#" + inputId).val();
-                                anchorTag.children[3].innerHTML = "-- Select condition --";
-                                anchorTag.children[4].innerHTML = "";
-                                tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                $('.tempDiv').remove();
-                            });
-                    $("#" + inputId)
-                        .on("blur",
-                            function() {
-                                $("#" + inputId).select2("close");
-                                $('.tempDiv').remove();
-                            });
-                }
+        //        if (clickedId.indexOf("rule_value") != -1) {
+        //            $('.tempDiv').remove();
+        //            var criteria = anchorTag.children[2].innerHTML;
+        //            var condition = anchorTag.children[3].innerHTML;
+        //            if (criteria == "-- Select criteria --") {
+        //                alert("Please select the criteria first.");
+        //            } else if (condition == "-- Select condition --") {
+        //                alert("Please select the condition.");
+        //            } else {
+        //                var inputId = clickedId + '_inp';
+        //                var p = $("#" + clickedId);
+        //                switch (criteria) {
+        //                    case "Subject":
+        //                    case "Description":
+        //                        $('#rulecriteria_fs')
+        //                            .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+        //                                p[0].offsetTop +
+        //                                'px; left:' +
+        //                                p[0].offsetLeft +
+        //                                'px; "><input style="width:200px; font-size: 14px;" id="' +
+        //                                inputId +
+        //                                '"></input></div>');
+        //                        if (tree.jstree().get_node(selectedId).data.Value)
+        //                            $("#" + inputId).val(tree.jstree().get_node(selectedId).data.Value);
+        //                        $("#" + inputId).focus();
+        //                        $("#" + inputId)
+        //                            .focusout(function() {
+        //                                anchorTag.children[4].innerHTML = $("#" + inputId)[0].value;
+        //                                tree.jstree().get_node(selectedId).data.Value = $("#" + inputId)[0].value;
+        //                                tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+        //                                $('#tempSelectValue').remove();
+        //                            });
+        //                        break;
+        //                    case "Requester Name":
+        //                        var top = p[0].offsetTop + 24;
+        //                        $('#rulecriteria_fs')
+        //                            .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+        //                                top +
+        //                                'px; left:' +
+        //                                p[0].offsetLeft +
+        //                                'px; "><select multiple="multiple" id="' +
+        //                                inputId +
+        //                                '"></select></div>');
+        //                        initRequesterDropdown({
+        //                            control: $("#" + inputId),
+        //                            ignore: function() {
+        //                                return []; //$("#" + inputId).val();
+        //                            }
+        //                        });
+        //                        if (anchorTag.children[4].innerHTML != "") {
+        //                            var masks = anchorTag.children[4].innerHTML.split(", ");
+        //                            var values = tree.jstree().get_node(selectedId).data.Value.split(",");
+        //                            for (var i = 0; i < masks.length; i++) {
+        //                                initDropdown($("#" + inputId), masks[i], values[i]);
+        //                            }
+        //                        }
+        //                        $("#" + inputId).select2("open");
+        //                        $("#" + inputId)
+        //                            .on("select2:close",
+        //                                function() {
+        //                                    tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+        //                                    $('#tempSelectValue').remove();
+        //                                });
+        //                        $("#" + inputId)
+        //                            .change(function() {
+        //                                var a = $("#" + inputId).select2('data');
+        //                                var text = "";
+        //                                var val = "";
+        //                                if (a != null && a.length > 0) {
+        //                                    text = a[0].text;
+        //                                    val = a[0].id;
+        //                                    if (a.length > 1)
+        //                                        for (var i = 1; i < a.length; i++) {
+        //                                            text += ", " + a[i].text;
+        //                                            val += "," + a[i].id;
+        //                                        }
+        //                                }
+        //                                p[0].innerHTML = text;
+        //                                anchorTag.children[4].innerHTML = text;
+        //                                tree.jstree().get_node(selectedId).data.Value = val;
+        //                                //tree.jstree().get_node(selectedId).data.ValueText = text;
+        //                            });
+        //                        break;
+        //                    case "Department":
+        //                    case "Priority":
+        //                    case "Impact":
+        //                    case "Urgency":
+        //                    case "Category":
+        //                    case "Mode":
+        //                        var top = p[0].offsetTop + 24;
+        //                        $('#rulecriteria_fs')
+        //                            .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
+        //                                top +
+        //                                'px; left:' +
+        //                                p[0].offsetLeft +
+        //                                'px; "><select multiple="multiple" id="' +
+        //                                inputId +
+        //                                '"></select></div>');
+        //                        initConditionValueDropdown({
+        //                            control: $("#" + inputId),
+        //                            ignore: function() {
+        //                                return $("#" + inputId).val();
+        //                            },
+        //                            criteria: criteria
+        //                        });
+        //                        if (anchorTag.children[4].innerHTML != "") {
+        //                            var masks = anchorTag.children[4].innerHTML.split(", ");
+        //                            var values = tree.jstree().get_node(selectedId).data.Value.split(",");
+        //                            for (var i = 0; i < masks.length; i++) {
+        //                                initDropdown($("#" + inputId), masks[i], values[i]);
+        //                            }
+        //                        }
+        //                        $("#" + inputId).select2("open");
+        //                        $("#" + inputId)
+        //                            .on("select2:close",
+        //                                function() {
+        //                                    tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
+        //                                    $('#tempSelectValue').remove();
+        //                                });
+        //                        $("#" + inputId)
+        //                            .change(function() {
+        //                                var a = $("#" + inputId).select2('data');
+        //                                var text = "";
+        //                                var val = "";
+        //                                if (a != null && a.length > 0) {
+        //                                    text = a[0].text;
+        //                                    val = a[0].id;
+        //                                    if (a.length > 1)
+        //                                        for (var i = 1; i < a.length; i++) {
+        //                                            text += ", " + a[i].text;
+        //                                            val += "," + a[i].id;
+        //                                        }
+        //                                }
+        //                                p[0].innerHTML = text;
+        //                                anchorTag.children[4].innerHTML = text;
+        //                                tree.jstree().get_node(selectedId).data.Value = val;
+        //                            });
+        //                        break;
+        //                }
+        //            }
+        //        }
+        //    });
 
-                if (clickedId.indexOf("rule_condition") != -1) {
-                    var criteria = anchorTag.children[2].innerHTML;
-                    if (criteria == "-- Select criteria --") {
-                        alert("Please select the criteria first.");
-                    } else {
-                        var inputId = clickedId + '_inp';
-                        var p = $("#" + clickedId);
-                        p.addClass('list-open');
-                        $('#rulecriteria_fs')
-                            .append('<div id="tempSelectCondition" class="tempDiv select-sublinks-single" style="top:' +
-                                p[0].offsetTop +
-                                'px; left:' +
-                                p[0].offsetLeft +
-                                'px; "><select id="' +
-                                inputId +
-                                '"></select></div>');
-                        initConditionDropdown({
-                            control: $("#" + inputId),
-                            criteria: criteria,
-                            ignore: function() {
-                                return [];
-                            }
-                        });
-                        $('b[role="presentation"]').hide();
-                        $('#tempSelectCondition .select2-selection__rendered').hide();
-                        $("#" + inputId).select2("open");
+        //$(document)
+        //    .bind("dnd_start.vakata",
+        //        function(e, data) {
+        //            $('#tempSelectValue').select2('destroy');
+        //            $('#tempSelectValue').remove();
+        //        })
+        //    .bind("dnd_move.vakata",
+        //        function(e, data) {
 
-                        $("#" + inputId)
-                            .on("change",
-                                function() {
-                                    anchorTag.children[3].innerHTML = $("#" + inputId).text();
-                                    tree.jstree().get_node(selectedId).data.Condition = $("#" + inputId).val();
-                                    anchorTag.children[4].innerHTML = "";
-                                    tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                    $('.tempDiv').remove();
-                                });
-                        $("#" + inputId)
-                            .on("blur",
-                                function() {
-                                    $("#" + inputId).select2("close");
-                                    $('.tempDiv').remove();
-                                });
-                    }
-                }
+        //        })
+        //    .bind("dnd_stop.vakata",
+        //        function(e, data) {
+        //            //
+        //        });
 
-                if (clickedId.indexOf("rule_value") != -1) {
-                    $('.tempDiv').remove();
-                    var criteria = anchorTag.children[2].innerHTML;
-                    var condition = anchorTag.children[3].innerHTML;
-                    if (criteria == "-- Select criteria --") {
-                        alert("Please select the criteria first.");
-                    } else if (condition == "-- Select condition --") {
-                        alert("Please select the condition.");
-                    } else {
-                        var inputId = clickedId + '_inp';
-                        var p = $("#" + clickedId);
-                        switch (criteria) {
-                            case "Subject":
-                            case "Description":
-                                $('#rulecriteria_fs')
-                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                        p[0].offsetTop +
-                                        'px; left:' +
-                                        p[0].offsetLeft +
-                                        'px; "><input style="width:200px; font-size: 14px;" id="' +
-                                        inputId +
-                                        '"></input></div>');
-                                if (tree.jstree().get_node(selectedId).data.Value)
-                                    $("#" + inputId).val(tree.jstree().get_node(selectedId).data.Value);
-                                $("#" + inputId).focus();
-                                $("#" + inputId)
-                                    .focusout(function() {
-                                        anchorTag.children[4].innerHTML = $("#" + inputId)[0].value;
-                                        tree.jstree().get_node(selectedId).data.Value = $("#" + inputId)[0].value;
-                                        tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                        $('#tempSelectValue').remove();
-                                    });
-                                break;
-                            case "Requester Name":
-                                var top = p[0].offsetTop + 24;
-                                $('#rulecriteria_fs')
-                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                        top +
-                                        'px; left:' +
-                                        p[0].offsetLeft +
-                                        'px; "><select multiple="multiple" id="' +
-                                        inputId +
-                                        '"></select></div>');
-                                initRequesterDropdown({
-                                    control: $("#" + inputId),
-                                    ignore: function() {
-                                        return []; //$("#" + inputId).val();
-                                    }
-                                });
-                                if (anchorTag.children[4].innerHTML != "") {
-                                    var masks = anchorTag.children[4].innerHTML.split(", ");
-                                    var values = tree.jstree().get_node(selectedId).data.Value.split(",");
-                                    for (var i = 0; i < masks.length; i++) {
-                                        initDropdown($("#" + inputId), masks[i], values[i]);
-                                    }
-                                }
-                                $("#" + inputId).select2("open");
-                                $("#" + inputId)
-                                    .on("select2:close",
-                                        function() {
-                                            tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                            $('#tempSelectValue').remove();
-                                        });
-                                $("#" + inputId)
-                                    .change(function() {
-                                        var a = $("#" + inputId).select2('data');
-                                        var text = "";
-                                        var val = "";
-                                        if (a != null && a.length > 0) {
-                                            text = a[0].text;
-                                            val = a[0].id;
-                                            if (a.length > 1)
-                                                for (var i = 1; i < a.length; i++) {
-                                                    text += ", " + a[i].text;
-                                                    val += "," + a[i].id;
-                                                }
-                                        }
-                                        p[0].innerHTML = text;
-                                        anchorTag.children[4].innerHTML = text;
-                                        tree.jstree().get_node(selectedId).data.Value = val;
-                                        //tree.jstree().get_node(selectedId).data.ValueText = text;
-                                    });
-                                $("#" + inputId)
-                                    .on("select2-blur",
-                                        function() {
-                                            alert("grr");
-                                            //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                            //$('#tempSelectValue').remove();
-                                        });
-                                break;
-                            case "Department":
-                            case "Priority":
-                            case "Impact":
-                            case "Urgency":
-                            case "Category":
-                            case "Mode":
-                                var top = p[0].offsetTop + 24;
-                                $('#rulecriteria_fs')
-                                    .append('<div id="tempSelectValue" class="tempDiv select-sublinks-single" style="top:' +
-                                        top +
-                                        'px; left:' +
-                                        p[0].offsetLeft +
-                                        'px; "><select multiple="multiple" id="' +
-                                        inputId +
-                                        '"></select></div>');
-                                initConditionValueDropdown({
-                                    control: $("#" + inputId),
-                                    ignore: function() {
-                                        return $("#" + inputId).val();
-                                    },
-                                    criteria: criteria
-                                });
-                                if (anchorTag.children[4].innerHTML != "") {
-                                    var masks = anchorTag.children[4].innerHTML.split(", ");
-                                    var values = tree.jstree().get_node(selectedId).data.Value.split(",");
-                                    for (var i = 0; i < masks.length; i++) {
-                                        initDropdown($("#" + inputId), masks[i], values[i]);
-                                    }
-                                }
-                                $("#" + inputId).select2("open");
-                                $("#" + inputId)
-                                    .on("select2:close",
-                                        function() {
-                                            tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                            $('#tempSelectValue').remove();
-                                        });
-                                $("#" + inputId)
-                                    .change(function() {
-                                        var a = $("#" + inputId).select2('data');
-                                        var text = "";
-                                        var val = "";
-                                        if (a != null && a.length > 0) {
-                                            text = a[0].text;
-                                            val = a[0].id;
-                                            if (a.length > 1)
-                                                for (var i = 1; i < a.length; i++) {
-                                                    text += ", " + a[i].text;
-                                                    val += "," + a[i].id;
-                                                }
-                                        }
-                                        p[0].innerHTML = text;
-                                        anchorTag.children[4].innerHTML = text;
-                                        tree.jstree().get_node(selectedId).data.Value = val;
-                                    });
-                                $("#" + inputId)
-                                    .on("select2-blur",
-                                        function() {
-                                            alert("grr");
-                                            //tree.jstree().set_text(data.node.id, anchorTag.innerHTML);
-                                            //$('#tempSelectValue').remove();
-                                        });
-                                break;
-                        }
-                    }
+        //function onSelectBRActionChange() {
+        //    switch ($("#rule-action").val()) {
+        //        case "1":
+        //            initTechnicianDropdown({
+        //                control: $("#rule-action-select"),
+        //                ignore: function() {
+        //                    return [];
+        //                }
+        //            });
+        //            break;
+        //        case "2":
+        //            initDepartmentDropdown({
+        //                control: $("#rule-action-select"),
+        //                ignore: function() {
+        //                    return [];
+        //                }
+        //            });
+        //            break;
+        //        case "3":
+        //            initCategoryDropdownByLevel({
+        //                control: $("#rule-action-select"),
+        //                ignore: function() {
+        //                    return [];
+        //                },
+        //                level: 1
+        //            });
+        //            break;
+        //        case "4":
+        //            initCategoryDropdownByLevel({
+        //                control: $("#rule-action-select"),
+        //                ignore: function() {
+        //                    return [];
+        //                },
+        //                level: 2
+        //            });
+        //            break;
+        //        case "5":
+        //            initCategoryDropdownByLevel({
+        //                control: $("#rule-action-select"),
+        //                ignore: function() {
+        //                    return [];
+        //                },
+        //                level: 3
+        //            });
+        //            break;
+        //        case "6":
+        //            initPriorityDropdown({
+        //                control: $("#rule-action-select"),
+        //                ignore: function() {
+        //                    return [];
+        //                }
+        //            });
+        //            break;
+        //        case "7":
+        //            initStatusDropdown({
+        //                control: $("#rule-action-select"),
+        //                ignore: function() {
+        //                    return [];
+        //                }
+        //            });
+        //            break;
+        //        default:
+        //    }
+        //};
 
-                }
+        //$("#add-action")
+        //    .click(function() {
+        //        if ($("#rule-action").val() == null) alert("Please choose action.");
+        //        else if ($("#rule-action-select").val() == null) alert("Please set value for action.");
+        //        else {
+        //            var actionSet = $("#rule-action").select2('data')[0].text +
+        //                ' \"' +
+        //                $("#rule-action-select").select2('data')[0].text +
+        //                '\"';
+        //            var actionKey = $("#rule-action").val();
+        //            var actionValue = $("#rule-action-select").val();
+        //            $('#action-table tr:last')
+        //                .after('<tr class="actionSet" data-id=' +
+        //                    actionKey +
+        //                    ' data-value=' +
+        //                    actionValue +
+        //                    '><td><i class="fa fa-trash remove-action"></i></td><td>' +
+        //                    actionSet +
+        //                    '</td></tr>');
+        //            //$("#rule-action").val('').trigger("change");
+        //            $("#rule-action-select").val('').trigger("change");
+        //            //$("#rule-action-select").children().remove();
+        //            //$("#rule-action-select").select2('data', null);
+        //        }
+        //    });
 
-                //var parents = [];
-                //data.rslt.obj.parents("li").each(function () {
-                //    parents.push({ id: $(this).attr("id"), description: $(this).children("a").text() });
-                //});
+        //$('#action-table')
+        //    .on('click',
+        //        'tr i.remove-action',
+        //        function(e) {
+        //            $(this).closest('tr').remove();
+        //        });
 
-                //var children = [];
-                //data.rslt.obj.find("li").each(function () {
-                //    children.push({ id: $(this).attr("id"), description: $(this).children("a").text() });
-                //});
+        //$("#submitBtn")
+        //    .click(function() {
+        //        $("#submitBtn").prop("disabled", true);
+        //        $("#cancelBtn").prop("disabled", true);
 
-                //alert("Selected node = " + data.rslt.obj.attr("id"));
-                //alert("Parent of Selected node = " + data.inst._get_parent(data.rslt.obj).attr("id"));
+        //        var ruleName = $("#rule-name").val().trim();
+        //        if (!ruleName) {
+        //            noty({
+        //                text: "Please enter rule name!",
+        //                type: "error",
+        //                layout: "topRight",
+        //                timeout: 2000
+        //            });
+        //            return;
+        //        } else {
+        //            if (ruleName.length > 100) {
+        //                noty({
+        //                    text: "Rule name must be under 100 characters!",
+        //                    type: "error",
+        //                    layout: "topRight",
+        //                    timeout: 2000
+        //                });
+        //                return;
+        //            }
+        //        }
+        //        var ruleDescription = $("#rule-description").val();
+        //        var ruleTechnicians = $("#ddl-technician").val();
+        //        var treeData = null;
+        //        // rule
+        //        treeData = tree.jstree(true)
+        //            .get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
+        //        for (var i = 0; i < treeData.length; i++) {
+        //            delete treeData[i].text;
+        //            delete treeData[i].icon;
+        //        };
 
-            });
+        //        //action
+        //        var actionSet = [];
+        //        $(".actionSet")
+        //            .each(function(index, element) {
+        //                var actionId = element.getAttribute("data-id");
+        //                var actionValue = element.getAttribute("data-value");
+        //                actionSet.push({ id: actionId, value: actionValue });
+        //            });
 
-        $(document)
-            .bind("dnd_start.vakata",
-                function(e, data) {
-                    $('#tempSelectValue').select2('destroy');
-                    $('#tempSelectValue').remove();
-                })
-            .bind("dnd_move.vakata",
-                function(e, data) {
-
-                })
-            .bind("dnd_stop.vakata",
-                function(e, data) {
-                    //
-                });
-
-        function onSelectBRActionChange() {
-            switch ($("#rule-action").val()) {
-                case "1":
-                    initTechnicianDropdown({
-                        control: $("#rule-action-select"),
-                        ignore: function() {
-                            return [];
-                        }
-                    });
-                    break;
-                case "2":
-                    initDepartmentDropdown({
-                        control: $("#rule-action-select"),
-                        ignore: function() {
-                            return [];
-                        }
-                    });
-                    break;
-                case "3":
-                    initCategoryDropdownByLevel({
-                        control: $("#rule-action-select"),
-                        ignore: function() {
-                            return [];
-                        },
-                        level: 1
-                    });
-                    break;
-                case "4":
-                    initCategoryDropdownByLevel({
-                        control: $("#rule-action-select"),
-                        ignore: function() {
-                            return [];
-                        },
-                        level: 2
-                    });
-                    break;
-                case "5":
-                    initCategoryDropdownByLevel({
-                        control: $("#rule-action-select"),
-                        ignore: function() {
-                            return [];
-                        },
-                        level: 3
-                    });
-                    break;
-                case "6":
-                    initPriorityDropdown({
-                        control: $("#rule-action-select"),
-                        ignore: function() {
-                            return [];
-                        }
-                    });
-                    break;
-                case "7":
-                    initStatusDropdown({
-                        control: $("#rule-action-select"),
-                        ignore: function() {
-                            return [];
-                        }
-                    });
-                    break;
-                default:
-            }
-        }
-
-        $("#rule-action-select")
-            .click(function() {
-
-            });
-
-        $("#add-action")
-            .click(function() {
-                if ($("#rule-action").text() == "") alert("Please choose action.");
-                else if ($("#rule-action-select").text() == "") alert("Please set value for action.");
-                else {
-                    var actionSet = $("#rule-action").select2('data')[0].text +
-                        ' \"' +
-                        $("#rule-action-select").select2('data')[0].text +
-                        '\"';
-                    var actionKey = $("#rule-action").val();
-                    var actionValue = $("#rule-action-select").val();
-                    $('#action-table tr:last')
-                        .after('<tr class="actionSet" data-id=' +
-                            actionKey +
-                            ' data-value=' +
-                            actionValue +
-                            '><td><i class="fa fa-trash remove-action"></i></td><td>' +
-                            actionSet +
-                            '</td></tr>');
-                    $("#rule-action").select2('val', "");
-                    $("#rule-action-select").select2('val', "");
-                    $("#rule-action-select").select2('destroy');
-                }
-            });
-
-        $('#action-table')
-            .on('click',
-                'tr i.remove-action',
-                function(e) {
-                    $(this).closest('tr').remove();
-                });
-
-        $("#updateBtn")
-            .click(function() {
-                $("#updateBtn").prop("disabled", true);
-                $("#cancelBtn").prop("disabled", true);
-
-                var ruleName = $("#rule-name").val().trim();
-                if (!ruleName) {
-                    noty({
-                        text: "Please enter rule name!",
-                        type: "error",
-                        layout: "topRight",
-                        timeout: 2000
-                    });
-                    return;
-                } else {
-                    if (ruleName.length > 100) {
-                        noty({
-                            text: "Rule name must be under 100 characters!",
-                            type: "error",
-                            layout: "topRight",
-                            timeout: 2000
-                        });
-                        return;
-                    }
-                }
-                var ruleDescription = $("#rule-description").val();
-                var ruleTechnicians = $("#ddl-technician").val();
-                var treeData = null;
-                // rule
-                if ($("#enableRule").prop('checked') == true) {
-                    treeData = tree.jstree(true)
-                        .get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
-                    for (var i = 0; i < treeData.length; i++) {
-                        delete treeData[i].text;
-                        delete treeData[i].icon;
-                    };
-                }
-
-                //action
-                var actionSet = [];
-                $(".actionSet")
-                    .each(function(index, element) {
-                        var actionId = element.getAttribute("data-id");
-                        var actionValue = element.getAttribute("data-value");
-                        actionSet.push({ id: actionId, value: actionValue });
-                    });
-
-                $.ajax({
-                    "url": "/BusinessRule/Update",
-                    "method": "POST",
-                    "data": {
-                        Name: ruleName,
-                        Description: ruleDescription,
-                        Rules: JSON.stringify(treeData),
-                        Actions: JSON.stringify(actionSet),
-                        Technicians: JSON.stringify(ruleTechnicians),
-                        brId: $("#brId").val()
-                    },
-                    "success": function(data) {
-                        if (data.success) {
-                            noty({
-                                text: "Business rule is updated successfully!",
-                                layout: "topCenter",
-                                type: "success",
-                                timeout: 300,
-                                callback: {
-                                    onClose: function() {
-                                        window.location.href = "/HelpDesk/BusinessRule/";
-                                    }
-                                }
-                            });
-                        } else {
-                            $("#updateBtn").prop("disabled", false);
-                            $("#cancelBtn").prop("disabled", false);
-                            noty({
-                                text: data.msg,
-                                type: "error",
-                                layout: "topRight",
-                                timeout: 2000
-                            });
-                        }
-                    },
-                    "error": function() {
-                        $("#updateBtn").prop("disabled", false);
-                        $("#cancelBtn").prop("disabled", false);
-                        noty({
-                            text: "Cannot connect to server!",
-                            type: "error",
-                            layout: "topRight",
-                            timeout: 2000
-                        });
-                    }
-                });
-            });
+        //        $.ajax({
+        //            "url": "/BusinessRule/" + $(this).attr("data-url"),
+        //            "method": "POST",
+        //            "data": {
+        //                Id: $("#busnessruleId").val(),
+        //                Name: ruleName,
+        //                Description: ruleDescription,
+        //                Enable: $("#enableRule").prop('checked'),
+        //                Conditions: JSON.stringify(treeData),
+        //                Actions: JSON.stringify(actionSet),
+        //                Technicians: JSON.stringify(ruleTechnicians)
+        //            },
+        //            "success": function(data) {
+        //                if (data.success) {
+        //                    noty({
+        //                        text: "Business rule was updated successfully!",
+        //                        layout: "topCenter",
+        //                        type: "success",
+        //                        timeout: 300,
+        //                        callback: {
+        //                            onClose: function() {
+        //                                window.location.href = "/HelpDesk/BusinessRule/";
+        //                            }
+        //                        }
+        //                    });
+        //                } else {
+        //                    $("#submitBtn").prop("disabled", false);
+        //                    $("#cancelBtn").prop("disabled", false);
+        //                    noty({
+        //                        text: "Some error occur! Please try again later!",
+        //                        type: "error",
+        //                        layout: "topRight",
+        //                        timeout: 2000
+        //                    });
+        //                }
+        //            },
+        //            "error": function() {
+        //                $("#submitBtn").prop("disabled", false);
+        //                $("#cancelBtn").prop("disabled", false);
+        //                noty({
+        //                    text: "Cannot connect to server!",
+        //                    type: "error",
+        //                    layout: "topRight",
+        //                    timeout: 2000
+        //                });
+        //            }
+        //        });
+        //    });
 
         function addChildRule(parentNode, id) {
             @foreach (var item in Model.Rules)
-            {
+                {
                 <text>
-            if ('@item.ParentId' == id) {
-                var createdId = tree.jstree(true)
-                    .create_node(parentNode,
-                        {
-                            "data": {
-                                Logic: '@item.Logic',
-                                LogicText: '@item.LogicText',
-                                Criteria: '@item.Criteria',
-                                CriteriaText: '@item.CriteriaText',
-                                Condition: '@item.Condition',
-                                ConditionText: '@item.ConditionText',
-                                Value: '@item.Value',
-                                ValueMask: '@item.ValueMask'
-                            }
-                        },
-                        "last");
-                @*tree.jstree().get_node(createdId).data.Logic = @item.Logic;
-                        tree.jstree().get_node(createdId).data.Criteria = @item.Criteria;
-                        tree.jstree().get_node(createdId).data.Condition = @item.Condition;
-                        tree.jstree().get_node(createdId).data.Value = @item.Value;*@
-                //var anchorTag = $("<a/>").append(tree.jstree().get_node(createdId).data.text)[0];
-                //anchorTag.children[1].innerHTML = logic;
-                addChildRule(createdId, @item.Id);
-            }
-            </text>
-            }
+                if ('@item.ParentId' == id) {
+                    var createdId = tree.jstree().create_node(parentNode, { "data": {
+                        Logic: '@item.Logic',
+                        LogicText: '@item.LogicText',
+                        Criteria: '@item.Criteria',
+                        CriteriaText: '@item.CriteriaText',
+                        Condition: '@item.Condition',
+                        ConditionText: '@item.ConditionText',
+                        Value: '@item.Value',
+                        ValueMask: '@item.ValueMask'
+                    }}, "last");
+                    addChildRule(createdId, @item.Id);
+                }
+                </text>
+                }
         }
 
         function initData() {
-            addChildRule('#', '');
-            var selectedValues = [];
+            if (@Model.Rules.Count > 0) {
+                addChildRule('#', '');
+            } else {
+                tree.jstree().create_node('#', { "data": {} }, "last");
+            }
+            //Hide logic at first row
+            if (tree.jstree().get_node("#").children.length > 0) {
+                var nodeId = tree.jstree().get_node("#").children[0];
+                var node = tree.jstree().get_node(nodeId);
+                var anchorTag = $("<a/>").append(node.text)[0];
+                if (anchorTag.children[1].className.indexOf("invisible") == -1) {
+                    anchorTag.children[1].className += " invisible";
+                }
+                tree.jstree().set_text(nodeId, anchorTag.innerHTML);
+            }
             @foreach (var item in Model.technicianList)
             {
                 <text>
@@ -992,8 +933,6 @@
 
         $(document)
             .ready(function() {
-
-                //setActiveTicketMenu();
                 initDropdownControl();
                 initData();
             });

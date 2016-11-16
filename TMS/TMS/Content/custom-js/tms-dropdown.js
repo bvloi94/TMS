@@ -188,7 +188,7 @@ function initCategoryDropdown(param) {
                     });
                 }
                 for (var i = 0; i < data.length; i++) {
-                    data[i].id = data[i].ID;
+                    data[i].id = data[i].ID+"";
                     data[i].text = data[i].Name;
                     result.results.push(data[i]);
                 }
@@ -201,7 +201,7 @@ function initCategoryDropdown(param) {
             return markup;
         },
         minimumInputLength: 0,
-        templateResult: formatt, // omitted for brevity, see the source of this page
+        templateResult: formatt,
         templateSelection: function (data) {
             return data.text;
         }
@@ -274,14 +274,6 @@ function initTechnicianDropdown(param) {
         return markup;
     }
     param.control.select2({
-        language: {
-            // You can find all of the options in the language files provided in the
-            // build. They all must be functions that return the string that should be
-            // displayed.
-            inputTooShort: function () {
-                return "You must enter more characters...";
-            }
-        },
         ajax: {
             url: "/dropdown/loadtechniciandropdown",
             dataType: "json",
@@ -316,12 +308,12 @@ function initTechnicianDropdown(param) {
         placeholder: "-- Select Technician --",
         escapeMarkup: function (markup) {
             return markup;
-        }, // let our custom formatter work
+        },
         minimumInputLength: 0,
-        templateResult: formatt, // omitted for brevity, see the source of this page
+        templateResult: formatt,
         templateSelection: function (data) {
             return data.text;
-        } // omitted for brevity, see the source of this page
+        }
     });
 }
 
@@ -457,14 +449,6 @@ function initRequesterDropdown(param) {
         return markup;
     }
     param.control.select2({
-        language: {
-            // You can find all of the options in the language files provided in the
-            // build. They all must be functions that return the string that should be
-            // displayed.
-            inputTooShort: function () {
-                return "You must enter more characters...";
-            }
-        },
         ajax: {
             url: "/dropdown/LoadRequesterDropdown",
             dataType: "json",
@@ -496,16 +480,17 @@ function initRequesterDropdown(param) {
             },
             cache: true
         },
+        multiple: true,
         //placeholder: "-- Select Requester --",
         escapeMarkup: function (markup) {
             return markup;
-        }, // let our custom formatter work
+        },
         minimumInputLength: 0,
         closeOnSelect: false,
-        templateResult: formatt, // omitted for brevity, see the source of this page
+        templateResult: formatt,
         templateSelection: function (data) {
             return data.text;
-        } // omitted for brevity, see the source of this page
+        }
     });
 }
 
@@ -514,8 +499,9 @@ function initConditionValueDropdown(param) {
         var markup = "";
         if (repo.allowAll) {
             markup = "<div><label>All</label></div>";
+        } else {
+            markup = "<div><label>" + repo.Name + "</label></div>";
         }
-        else { markup = "<div><label >" + repo.Name + "</label></div>"; }
         return markup;
     }
     param.control.select2({
@@ -543,7 +529,7 @@ function initConditionValueDropdown(param) {
                     });
                 }
                 for (var i = 0; i < data.length; i++) {
-                    data[i].id = data[i].Id;
+                    data[i].id = data[i].Id + "";
                     data[i].text = data[i].Name;
                     result.results.push(data[i]);
                 }
@@ -551,6 +537,7 @@ function initConditionValueDropdown(param) {
             },
             cache: true
         },
+        multiple: true,
         escapeMarkup: function (markup) {
             return markup;
         },
@@ -560,19 +547,6 @@ function initConditionValueDropdown(param) {
         templateSelection: function (data) {
             return data.text;
         }
-        //current: function (element, callback) {
-        //        return $.ajax({
-        //            url: "/dropdown/LoadConditionValueDropdownInit",
-        //            type: "POST",
-        //            dataType: "json",
-        //            data: {
-        //                ids: param.initValues,
-        //                criteria: param.criteria
-        //            }
-        //        }).done(function (data) {
-        //            callback(data.results);
-        //        });
-        //}
     });
 }
 
@@ -658,7 +632,7 @@ function initStatusDropdown(param) {
                     });
                 }
                 for (var i = 0; i < data.length; i++) {
-                    data[i].id = data[i].Id;
+                    data[i].id = data[i].Id+"";
                     data[i].text = data[i].Name;
                     result.results.push(data[i]);
                 }
@@ -710,7 +684,7 @@ function initCategoryDropdownByLevel(param) {
                     });
                 }
                 for (var i = 0; i < data.length; i++) {
-                    data[i].id = data[i].Id;
+                    data[i].id = data[i].Id+"";
                     data[i].text = data[i].Name;
                     result.results.push(data[i]);
                 }
