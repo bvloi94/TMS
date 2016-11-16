@@ -6,6 +6,45 @@
     .table > thead > tr > th {
         white-space: nowrap;
     }
+
+    .ticket-time {
+        margin: 10px 0px 5px 0px;
+    }
+
+    .ticket-subject {
+        font-size: 16px;
+    }
+
+    .label-status {
+        display: inline-block;
+    }
+
+        .label-status .label {
+            display: inline-block;
+            min-width: 80px;
+            border-radius: unset;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+    .priority-color {
+        display: inline-block;
+        margin-top: 10px;
+        width: 12px;
+        height: 12px;
+    }
+
+    .overdue {
+        background-color: #de1515;
+        color: #ffffff;
+        margin-left: 15px;
+        margin-top: 5px;
+        width: 100px;
+        padding: 5px 8px;
+        text-transform: uppercase;
+        text-align: center;
+        font-weight: bold;
+    }
 </style>
 <link rel="stylesheet" href="~/Content/css/graph.css" />
 
@@ -87,21 +126,15 @@
                 <table class="table table-bordered table-hover" id="ticket-table-report">
                     <thead>
                         <tr>
-                            <th>Code</th>
                             <th>Subject</th>
-                            <th>Created Time</th>
                             <th>Schedule End Date</th>
-
                             <th>Actual End Date</th>
                             <th>Type</th>
-                            <th>Status</th> <!--Comlumn 6-->
                             <th>Mode</th>
-
-                            <th>Catagory</th>
+                            <th>Category</th>
                             <th>Impact</th>
                             <th>Urgency</th>
                             <th>Priority</th>
-
                             <th>Department</th>
                         </tr>
                     </thead>
@@ -130,8 +163,8 @@
 </div>
 
 <form class="hidden" id="export-report-form" action="/HelpDesk/Report/Export" method="POST">
-    <input type="hidden" name="GraphImage" id="graph-txt"/>
-    <input type="hidden" name="DataImage" id="data-txt"/>
+    <input type="hidden" name="GraphImage" id="graph-txt" />
+    <input type="hidden" name="DataImage" id="data-txt" />
 </form>
 
 @section Scripts {
@@ -167,7 +200,7 @@
                 numberOfData += chartData[i];
             }
 
-         if (numberOfData == 0) {
+            if (numberOfData == 0) {
                 $('#pieChart').replaceWith('<div id="pieChart"><center><h2>No data</h2></center></div>');
                 return;
             }
@@ -222,111 +255,143 @@
                         d.by = $("#dropdownBy").val()
                     }
                 }),
-                drawCallback: function (settings) {
-                    //var api = this.api();
-                },
-                "columnDefs": [
+                autoWidth: false,
+                columnDefs: [
                     {
                         "render": function (data, type, row) {
-                            return row[0];
+                            var ticketInfo = "";
+                            var code = $("<span/>",
+                            {
+                                "class": "text-muted text-sm",
+                                "text": "#" + row.Code
+                            })[0].outerHTML;
+
+                            var status = $("<div/>",
+                            {
+                                "class": "label-status",
+                                "html": getStatusLabel(row.Status)
+                            })[0].outerHTML;
+
+                            var subject = $("<span/>",
+                            {
+                                "class": "ticket-subject",
+                                "html": row.Subject
+                            })[0].outerHTML;
+
+                            var createdTime = $("<span/>",
+                            {
+                                "html": 'Created time: <span class="text-bold">' + row.CreatedTimeString + '. </span>',
+                            })[0].outerHTML;
+
+                            var dueByDate = "";
+                            if (row.DueByDateString != "") {
+                                var dueByDate = $("<span/>",
+                                {
+                                    "html": 'Due by date: <span class="text-bold">' + row.DueByDateString + '. </span>',
+                                })[0].outerHTML;
+                            }
+
+                            var overdueDiv = "";
+                            if (row.IsOverdue) {
+                                overdueDiv = $("<span/>",
+                                {
+                                    "class": "overdue",
+                                    "html": "Overdue"
+                                })[0].outerHTML;
+                            }
+
+                            ticketInfo = $("<div/>",
+                            {
+                                "class": "col-lg-12 col-sm-12",
+                                "style": "line-height: 14px",
+                                "html": status + '&nbsp;&nbsp;' + subject + '&nbsp;&nbsp;' + code + overdueDiv
+                            })[0].outerHTML;
+
+                            var ticketInfoContainer = $("<div/>",
+                            {
+                                "class": "row ticket-info",
+                                "html": ticketInfo
+                            })[0].outerHTML;
+
+                            var ticketTimeContainer = $("<div/>",
+                            {
+                                "class": "row ticket-time",
+                                "html": createdTime + dueByDate
+                            })[0].outerHTML;
+
+                            return ticketInfoContainer + ticketTimeContainer;
                         },
-                        // Code
+                        // Subject
                         "targets": 0,
+                        "width": "60%"
                     },
                     {
                         "render": function (data, type, row) {
-                            if (row[4] > row[3]) {
-                                return row[1] + "&nbsp;&nbsp;<label class='label label-danger'>Overdue</label>";
-                            } else {
-                                return row[1];
-                            }
+                            return row.ScheduleEndDateString
                         },
-                        // Subject
+                        // Schedule End Date
                         "targets": 1
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[2]
+                            return row.ActualEndDateString;
                         },
-                        // CreatedTime
-                        "targets": 2
+                        // Actual End Date
+                        "targets": 2,
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[3]
+                            return row.TypeString;
                         },
-                        // Schedule End Date
+                        // Type
                         "targets": 3
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[4];
-
-                        },
-                        // Actual End Date
-                        "targets": 4,
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return row[5];
-                        },
-                        // Type
-                        "targets": 5
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return getStatusLabel(row[6]);
-                        },
-                        // Status
-                        "targets": 6,
-                        "visible": true
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return row[7];
+                            return row.ModeString;
                         },
                         // Mode
+                        "targets": 4,
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row.Category;
+                        },
+                        // Category
+                        "targets": 5,
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row.Impact;
+                        },
+                        // impact
+                        "targets": 6,
+                        "visible": false
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            return row.Urgency;
+                        },
+                        // Urgency
                         "targets": 7,
                         "visible": false
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[8];
+                            return row.Priority;
                         },
-                        // Category
+                        //  Priority
                         "targets": 8,
                         "visible": false
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[9];
-                        },
-                        // impact
-                        "targets": 9,
-                        "visible": false
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return row[10];
-                        },
-                        // Urgency
-                        "targets": 10,
-                        "visible": false
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return row[11];
-                        },
-                        //  Priority
-                        "targets": 11,
-                        "visible": false
-                    },
-                    {
-                        "render": function (data, type, row) {
-                            return row[12];
+                            return row.Department;
                         },
                         // Department
-                        "targets": 12,
+                        "targets": 9,
                         "visible": false
                     }
                 ]
@@ -342,17 +407,17 @@
         });
 
         var resetVisibleColumns = function () {
-            var column = $("#ticket-table-report").dataTable().api().column("7");
+            var column = $("#ticket-table-report").dataTable().api().column("4");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("5");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("6");
+            column.visible(false);
+            column = $("#ticket-table-report").dataTable().api().column("7");
             column.visible(false);
             column = $("#ticket-table-report").dataTable().api().column("8");
             column.visible(false);
             column = $("#ticket-table-report").dataTable().api().column("9");
-            column.visible(false);
-            column = $("#ticket-table-report").dataTable().api().column("10");
-            column.visible(false);
-            column = $("#ticket-table-report").dataTable().api().column("11");
-            column.visible(false);
-            column = $("#ticket-table-report").dataTable().api().column("12");
             column.visible(false);
         }
 
@@ -362,31 +427,31 @@
             resetVisibleColumns();
             switch (byValue) {
                 case "0": // Mode
-                    var column = $("#ticket-table-report").dataTable().api().column("7");
+                    var column = $("#ticket-table-report").dataTable().api().column("4");
                     column.visible(true);
                     break;
                 case "1": // Category
-                    var column = $("#ticket-table-report").dataTable().api().column("8");
+                    var column = $("#ticket-table-report").dataTable().api().column("5");
                     column.visible(true);
                     break;
 
                 case "2": //impact
-                    var column = $("#ticket-table-report").dataTable().api().column("9");
+                    var column = $("#ticket-table-report").dataTable().api().column("6");
                     column.visible(true);
                     break;
 
                 case "3": //Urgency
-                    var column = $("#ticket-table-report").dataTable().api().column("10");
+                    var column = $("#ticket-table-report").dataTable().api().column("7");
                     column.visible(true);
                     break;
 
                 case "4": // Priority
-                    var column = $("#ticket-table-report").dataTable().api().column("11");
+                    var column = $("#ticket-table-report").dataTable().api().column("8");
                     column.visible(true);
                     break;
 
                 case "5": // Department
-                    var column = $("#ticket-table-report").dataTable().api().column("12");
+                    var column = $("#ticket-table-report").dataTable().api().column("9");
                     column.visible(true);
                     break;
             }

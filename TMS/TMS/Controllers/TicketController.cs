@@ -448,7 +448,7 @@ namespace TMS.Controllers
                     if (ticket.MergedID.HasValue)
                     {
                         Ticket mergedTicket = _ticketService.GetTicketByID(ticket.MergedID.Value);
-                        model.MergedTicketString = GeneralUtil.GetRequesterMergedTicketInfo(mergedTicket);
+                        model.MergedTicketString = GeneralUtil.GetMergedTicketInfo(mergedTicket);
                     }
                     model.Status = GeneralUtil.GetTicketStatusByID(ticket.Status);
                     IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);

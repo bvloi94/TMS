@@ -7,6 +7,7 @@ using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
 using TMS.Utils;
+using TMS.ViewModels;
 
 namespace TMS.Areas.HelpDesk.Controllers
 {
@@ -93,21 +94,24 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
-            var result = filteredListItems.Select(p => new IConvertible[]
+
+            var result = filteredListItems.Select(p => new TicketViewModel
             {
-                p.Code,
-                p.Subject,
-                (p.CreatedTime == null) ? "" : ((DateTime) p.CreatedTime).ToString("dd/MM/yyyy HH:mm"),
-                (p.ScheduleEndDate == null) ? "-": ((DateTime) p.ScheduleEndDate).ToString("dd/MM/yyyy"),
-                (p.ActualEndDate == null) ? "-": ((DateTime) p.ActualEndDate).ToString("dd/MM/yyyy"),
-                TMSUtils.ConvertTypeFromInt(p.Type),
-                TMSUtils.ConvertStatusFromInt(p.Status),
-                TMSUtils.ConvertModeFromInt(p.Mode),
-                p.CategoryID == null ? "-" : _categoryService.GetCategoryById((int) p.CategoryID).Name,
-                p.ImpactID == null ? "-" : _impactService.GetImpactById((int)p.ImpactID).Name,
-                p.UrgencyID == null ? "-" : _urgencyService.GetUrgencyByID((int)p.UrgencyID).Name,
-                p.PriorityID == null ? "-" : _priorityService.GetPriorityByID((int) p.PriorityID).Name,
-                p.TechnicianID == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name
+                Code = p.Code,
+                Subject = p.Subject,
+                CreatedTimeString = p.CreatedTime.ToString(ConstantUtil.DateTimeFormat),
+                DueByDateString = p.DueByDate.HasValue ? p.DueByDate.Value.ToString(ConstantUtil.DateTimeFormat) : string.Empty,
+                ScheduleEndDateString = p.ScheduleEndDate.HasValue ? p.ScheduleEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-",
+                ActualEndDateString = p.ActualEndDate.HasValue ? p.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-",
+                TypeString = GeneralUtil.GetTypeNameByType(p.Type),
+                Status = GeneralUtil.GetTicketStatusByID(p.Status),
+                ModeString = GeneralUtil.GetModeNameByMode(p.Mode),
+                Category = (p.Category == null) ? "-" : p.Category.Name,
+                Impact = (p.Impact == null) ? "-" : p.Impact.Name,
+                Urgency = (p.Urgency == null) ? "-" : p.Urgency.Name,
+                Priority = (p.Priority == null) ? "-" : p.Priority.Name,
+                Technician = (_userService.GetUserById(p.TechnicianID) == null) ? "-" : (_userService.GetUserById(p.TechnicianID).Department == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name),
+                IsOverdue = p.DueByDate.HasValue ? (DateTime.Now > p.DueByDate.Value) : false
             });
 
             return Json(new

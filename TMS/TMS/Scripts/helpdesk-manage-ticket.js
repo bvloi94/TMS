@@ -115,7 +115,6 @@ function initTicketTable() {
                         })[0].outerHTML;
                     }
 
-
                     ticketInfo = $("<div/>",
                     {
                         "class": "col-lg-10 col-sm-9",
