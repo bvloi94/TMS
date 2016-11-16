@@ -12,7 +12,7 @@
 }
 <link rel="stylesheet" href="~/Content/css/graph.css" />
 <style>
-    h3 {
+    h1, h3 {
         margin-top: 0px;
         padding-bottom: 10px;
     }
@@ -86,21 +86,21 @@
             <span class="info-box-icon"><i class="fa fa-warning"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Unapproved tickets</span>
-                <h3 class="info-box-number">@unapprovedTickets.Count()</h3>
+                <h1>@unapprovedTickets.Count()</h1>
             </div>
         </div>
         <div class="info-box bg-red">
             <span class="info-box-icon"><i class="fa fa-bell"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Coming overdue tickets</span>
-                <h3 class="info-box-number">@warningTickets.Count()</h3>
+                <h1>@warningTickets.Count()</h1>
             </div>
         </div>
         <div class="box box-solid">
             <div class="box-header bg-red-active">
                 <h4><i class="fa fa-tags"></i>&nbsp;&nbsp;Coming overdue Tickets</h4>
             </div>
-            @if (warningTickets != null)
+            @if (warningTickets != null && warningTickets.Count() > 0)
             {
                 <div class="box-body">
                     @foreach (BasicTicketViewModel ticket in warningTickets)
