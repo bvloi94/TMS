@@ -667,7 +667,6 @@ namespace TMS.Services
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
                         technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
                         technicianNoti.ActID = actId;
-                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}", ticket.Subject, ticket.Code, ticketAssigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -684,7 +683,6 @@ namespace TMS.Services
                         technicianNoti.BeNotifiedID = oldTicket.TechnicianID;
                         technicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiUnassign;
                         technicianNoti.ActID = actId;
-                        //technicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                         technicianNoti.NotifiedTime = DateTime.Now;
                         _unitOfWork.NotificationRepository.Insert(technicianNoti);
                     }
@@ -711,12 +709,22 @@ namespace TMS.Services
                             newTechnicianNoti.IsForHelpDesk = false;
                             newTechnicianNoti.TicketID = ticket.ID;
                             newTechnicianNoti.BeNotifiedID = ticket.TechnicianID;
-                            oldTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
-                            oldTechnicianNoti.ActID = actId;
-                            //newTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was assigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
+                            newTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiAssign;
+                            newTechnicianNoti.ActID = actId;
                             newTechnicianNoti.NotifiedTime = DateTime.Now;
                             _unitOfWork.NotificationRepository.Insert(newTechnicianNoti);
                         }
+                    }
+                    if (oldTicket.DueByDate != ticket.DueByDate)
+                    {
+                        Notification newTechnicianNoti = new Notification();
+                        newTechnicianNoti.IsForHelpDesk = false;
+                        newTechnicianNoti.TicketID = ticket.ID;
+                        newTechnicianNoti.BeNotifiedID = ticket.TechnicianID;
+                        newTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiChangeDueByDate;
+                        newTechnicianNoti.ActID = actId;
+                        newTechnicianNoti.NotifiedTime = DateTime.Now;
+                        _unitOfWork.NotificationRepository.Insert(newTechnicianNoti);
                     }
                 }
                 //end notification

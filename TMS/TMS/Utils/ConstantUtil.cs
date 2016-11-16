@@ -222,6 +222,7 @@ namespace TMS.Utils
             public const int TechnicianNotiCancel = 11;
             public const int TechnicianNotiMerge = 12;
             public const int TechnicianNotiIsMerged = 13;
+            public const int TechnicianNotiChangeDueByDate = 14;
         }
     }
 }

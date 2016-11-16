@@ -48,8 +48,8 @@ namespace TMS.ViewModels
         public DateTime? ScheduleStartDate { get; set; }
         [CompareValidateDate(CompareToOperation.GreaterThan, "ScheduleStartDate", ErrorMessage = "Schedule End Date must greater than Schedule Start Date")]
         public DateTime? ScheduleEndDate { get; set; }
+        [CompareValidateDate(CompareToOperation.LessThan, "ScheduleEndDate", ErrorMessage = "Due By Date must less than Schedule End Date")]
         [CompareValidateDate(CompareToOperation.GreaterThan, "ScheduleStartDate", ErrorMessage = "Due By Date must greater than Schedule Start Date")]
-        [DueByDateValidate(ConstantUtil.DayToCloseTicket, "ScheduleEndDate")]
         public DateTime? DueByDate { get; set; }
         public DateTime? ActualStartDate { get; set; }
         [CompareValidateDate(CompareToOperation.GreaterThan, "ActualStartDate", ErrorMessage = "Actual End Date must greater than Actual Start Date")]

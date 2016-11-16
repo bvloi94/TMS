@@ -356,7 +356,6 @@
     <Compile Include="Utils\ValidateAttribute\MaxFileSizeAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\PathFormatAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\TagFormatAttribute.cs" />
-    <Compile Include="Utils\ValidateAttribute\DueByDateValidateAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\ValidateDateAttribute.cs" />
     <Compile Include="Utils\ValidateAttribute\ValidateDateSQLAttribute.cs" />
     <Compile Include="ViewModels\BasicTicketViewModel.cs" />
