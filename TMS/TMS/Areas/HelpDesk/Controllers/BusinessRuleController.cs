@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -388,6 +389,18 @@ namespace TMS.Areas.HelpDesk.Controllers
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = rules;
             return Json(rsModel, JsonRequestBehavior.AllowGet);
+        }
+
+        protected override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            string id = User.Identity.GetUserId();
+            AspNetUser admin = _userService.GetUserById(id);
+            if (admin != null)
+            {
+                ViewBag.LayoutName = admin.Fullname;
+                ViewBag.LayoutAvatarURL = admin.AvatarURL;
+            }
+            base.OnActionExecuting(filterContext);
         }
     }
 }

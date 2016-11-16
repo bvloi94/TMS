@@ -82,7 +82,7 @@ function initTicketTable() {
                         "html": 'Request by <span class="text-bold">' + creater + '</span>'
                     })[0].outerHTML;
 
-                    var priority = row.Priority == "" ? " None" : '<div class="priority-color" style="background-color: ' + row.PriorityColor + '"></div>&nbsp;<span class="text-bold">' + row.Priority
+                    var priority = row.Priority == "" ? " Unassigned" : '<div class="priority-color" style="background-color: ' + row.PriorityColor + '"></div>&nbsp;<span class="text-bold">' + row.Priority
                     var priorityRow = $("<span/>",
                     {
                         "html": 'Priority: ' + priority
@@ -114,7 +114,6 @@ function initTicketTable() {
                             "text": row.OverdueDateString
                         })[0].outerHTML;
                     }
-
 
                     ticketInfo = $("<div/>",
                     {

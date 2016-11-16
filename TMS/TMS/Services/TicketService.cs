@@ -180,44 +180,47 @@ namespace TMS.Services
             switch (businessRuleCondition.Criteria)
             {
                 case ConstantUtil.BusinessRuleCriteria.Subject:
-                    switch (businessRuleCondition.Condition)
+                    if (!string.IsNullOrWhiteSpace(businessRuleCondition.Value))
                     {
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                            if (handlingTicket.Subject.Equals(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                            if (!handlingTicket.Subject.Equals(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.BeginsWith:
-                            if (handlingTicket.Subject.StartsWith(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.EndsWith:
-                            if (handlingTicket.Subject.EndsWith(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.Contains:
-                            if (handlingTicket.Subject.Contains(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.DoesNotContain:
-                            if (!handlingTicket.Subject.Contains(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
+                        switch (businessRuleCondition.Condition)
+                        {
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
+                                if (handlingTicket.Subject.ToLower().Equals(businessRuleCondition.Value.ToLower()))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
+                                if (!handlingTicket.Subject.ToLower().Equals(businessRuleCondition.Value.ToLower()))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.BeginsWith:
+                                if (handlingTicket.Subject.ToLower().StartsWith(businessRuleCondition.Value.ToLower()))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.EndsWith:
+                                if (handlingTicket.Subject.ToLower().EndsWith(businessRuleCondition.Value.ToLower()))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.Contains:
+                                if (handlingTicket.Subject.ToLower().Contains(businessRuleCondition.Value.ToLower()))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.DoesNotContain:
+                                if (!handlingTicket.Subject.ToLower().Contains(businessRuleCondition.Value.ToLower()))
+                                {
+                                    return true;
+                                }
+                                break;
+                        }
                     }
                     break;
                 case ConstantUtil.BusinessRuleCriteria.Description:
