@@ -222,6 +222,7 @@
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\BusinessRuleController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ReportController.cs" />
+    <Compile Include="Areas\Manager\Controllers\HomeController.cs" />
     <Compile Include="Areas\Manager\Controllers\ProfileController.cs" />
     <Compile Include="Areas\Manager\ManagerAreaRegistration.cs" />
     <Compile Include="Areas\Technician\Controllers\HomeController.cs" />
@@ -655,6 +656,7 @@
     <Content Include="Areas\HelpDesk\Views\BusinessRule\Edit.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Shared\_TopLayout.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Manager\Views\Shared\_TopLayout.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

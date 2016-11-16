@@ -11,16 +11,6 @@
     @Styles.Render("~/Content/datatables")
     @Scripts.Render("~/bundles/modernizr")
     <title>@ViewBag.Title</title>
-    <style>
-        #notification-list {
-            max-height: 400px;
-        }
-
-            #notification-list li a {
-                white-space: pre-wrap;
-                height: 80px;
-            }
-    </style>
 </head>
 <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
 <body class="hold-transition skin-blue layout-top-nav">
@@ -36,10 +26,8 @@
                     <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                         <ul class="nav navbar-nav">
                             @RenderSection("SidebarMenu", false)
-                            <li class="@Html.Raw((controllerName == "ManageTicket" || controllerName == "Ticket") ? "active" : "")"><a href="/Helpdesk/ManageTicket">Ticket</a></li>
-                            <li class="@Html.Raw((controllerName == "KnowledgeBase") ? "active" : "")"><a href="/KnowledgeBase">Knowledge Base</a></li>
-                            <li class="@Html.Raw((controllerName == "BusinessRule") ? "active" : "")"><a href="/Helpdesk/BusinessRule">Business Rules</a></li>
-                            <li class="@Html.Raw((controllerName == "Report") ? "active" : "")"><a href="/Helpdesk/Report">Report</a></li>
+                            <li class="@Html.Raw((controllerName == "Department") ? "active" : "")"><a href="/Helpdesk/ManageTicket">Ticket</a></li>
+                            <li class="@Html.Raw((controllerName == "Manage System Config") ? "active" : "")"><a href="/KnowledgeBase">Knowledge Base</a></li>
                             <li class="@Html.Raw((controllerName == "Profile") ? "active" : "")"><a href="/Helpdesk/Profile">My profile</a></li>
                         </ul>
                     </div>
