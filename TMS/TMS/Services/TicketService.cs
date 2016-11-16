@@ -1366,6 +1366,24 @@ namespace TMS.Services
                     sb.Append(string.Format(@"<p>Actual End Date changed from <b>{0}</b> to <b>{1}</b></p>", oldDate, newDate));
                 }
             }
+            //due by date
+            if (oldTicket.DueByDate != null || newTicket.DueByDate != null)
+            {
+                if (oldTicket.DueByDate != newTicket.DueByDate)
+                {
+                    string oldDate = "Unassigned";
+                    string newDate = "Unassigned";
+                    if (oldTicket.DueByDate != null)
+                    {
+                        oldDate = oldTicket.DueByDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    if (newTicket.DueByDate != null)
+                    {
+                        newDate = newTicket.DueByDate.Value.ToString(ConstantUtil.DateTimeFormat);
+                    }
+                    sb.Append(string.Format(@"<p>Due By Date changed from <b>{0}</b> to <b>{1}</b></p>", oldDate, newDate));
+                }
+            }
             //technician
             if (oldTicket.TechnicianID != null || newTicket.TechnicianID != null)
             {
