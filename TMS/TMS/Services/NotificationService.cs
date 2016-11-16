@@ -56,114 +56,77 @@ namespace TMS.Services
                 string subject = ticket.Subject.Length > 120 ? ticket.Subject.Substring(0, 119) + "..." : ticket.Subject;
                 switch (actionType)
                 {
-                    
                     case ConstantUtil.NotificationActionType.RequesterNotiCreate:
-                        return string.Format("You created a ticket: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
+                        return string.Format("Ticket #{0} was created: <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
                     case ConstantUtil.NotificationActionType.RequesterNotiCancel:
-                        return string.Format("One of your ticket was cancelled: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
+                        return string.Format("Ticket #{0} was cancelled: <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
                     case ConstantUtil.NotificationActionType.RequesterNotiIsMerged:
-                        mergedTicket = _unitOfWork.TicketRepository.GetByID(ticket.MergedID);
                         if (mergedTicket != null)
                         {
-                            return string.Format("Ticket #{0} <b>\"{1}\"</b> was merged into ticket #{2}.", ticket.Code, subject, mergedTicket.Code);
+                            return string.Format("Ticket #{0} <b>\"{1}\"</b> was merged into ticket #{2} <b>\"{3}\"</b>.", ticket.Code, subject, mergedTicket.Code, mergedTicket.Subject);
                         }
-                        else
-                        {
-                            return string.Format("A ticket was merged: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
-                        }
+                        break;
                     case ConstantUtil.NotificationActionType.RequesterNotiSolve:
-                        return string.Format("<b>{0}</b> solved a ticket: #{1} <b>\"{2}\"</b>.", solver.Fullname, ticket.Code, ticket.Subject);
+                        return string.Format("Ticket #{0} was solved: <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
                     case ConstantUtil.NotificationActionType.RequesterNotiClose:
-                        return string.Format("A ticket was closed: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
+                        return string.Format("Ticket #{0} was closed: <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
                     case ConstantUtil.NotificationActionType.HelpDeskNotiCreate:
-                        AspNetUser createdUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
-                        if (createdUser != null)
+                        if (actedUser != null)
                         {
-                            return string.Format("<b>{0}</b> created a ticket: #{1} <b>\"{2}\"</b>.", createdUser.Fullname, ticket.Code, ticket.Subject);
+                            return string.Format("<b>{0}</b> created the ticket #{1}: <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
-                        else
-                        {
-                            return string.Format("A ticket was created: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
-                        }
+                        break;
                     case ConstantUtil.NotificationActionType.HelpDeskNotiUnapprove:
-                        AspNetUser unapprovedUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
-                        if (unapprovedUser != null)
+                        if (actedUser != null)
                         {
-                            return string.Format("<b>Requester {0}</b> unapproved a ticket: #{1} <b>\"{2}\"</b>", unapprovedUser.Fullname, ticket.Code, ticket.Subject);
+                            return string.Format("<b>Requester {0}</b> unapproved the ticket #{1}: <b>\"{2}\"</b>", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
-                        else
-                        {
-                            return string.Format("A ticket was unapproved: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
-                        }
+                        break;
                     case ConstantUtil.NotificationActionType.TechnicianNotiAssign:
-                        AspNetUser assigedUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
-                        if (assigedUser != null)
+                        if (actedUser != null)
                         {
-                            return string.Format("<b>{0}</b> assigned a ticket to you: #{1} <b>\"{2}\"</b>.", assigedUser.Fullname, ticket.Code, ticket.Subject);
+                            return string.Format("<b>{0}</b> assigned the ticket #{1} to you: <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
-                        else
-                        {
-                            return string.Format("A ticket was assigned: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
-                        }
+                        break;
                     case ConstantUtil.NotificationActionType.TechnicianNotiUnassign:
-                        AspNetUser unassigedUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
-                        if (unassigedUser != null)
+                        if (actedUser != null)
                         {
-                            return string.Format("<b>{0}</b> unassigned a ticket: #{1} <b>\"{2}\"</b>.", unassigedUser.Fullname, ticket.Code, ticket.Subject);
+                            return string.Format("<b>{0}</b> unassigned the ticket #{1}: <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
-                        else
-                        {
-                            return string.Format("A ticket was unassigned: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
-                        }
+                        break;
                     case ConstantUtil.NotificationActionType.TechnicianNotiReassign:
-                        AspNetUser reassigedUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
-                        if (reassigedUser != null)
+                        if (actedUser != null)
                         {
-                            return string.Format("<b>{0}</b> reassigned a ticket to you: #{1} <b>\"{2}\"</b>.", ticket.Code, ticket.Subject, reassigedUser.Fullname);
+                            return string.Format("<b>{0}</b> reassigned the ticket #{1} to you: <b>\"{2}\"</b>.", ticket.Code, ticket.Subject, actedUser.Fullname);
                         }
-                        else
-                        {
-                            return string.Format("A ticket was reassigned: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
-                        }
+                        break;
                     case ConstantUtil.NotificationActionType.TechnicianNotiCancel:
-                        AspNetUser cancelledUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
-                        if (cancelledUser != null)
+                        if (actedUser != null)
                         {
-                            return string.Format("<b>{0}</b> cancelled a ticket: #{1} <b>\"{2}\"</b>.", cancelledUser.Fullname, ticket.Code, ticket.Subject);
+                            return string.Format("<b>{0}</b> cancelled the ticket #{1}: <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
-                        else
-                        {
-                            return string.Format("A ticket was cancelled: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
-                        }
+                        break;
                     case ConstantUtil.NotificationActionType.TechnicianNotiIsMerged:
                         if (actedUser != null)
                         {
-                            if (ticket.MergedID.HasValue)
+                            if (mergedTicket != null)
                             {
-                                mergedTicket = _unitOfWork.TicketRepository.GetByID(ticket.MergedID);
-                                string ticketSubject = ticket.Subject.Length > 50 ? ticket.Subject.Substring(0, 49) + "..." : ticket.Subject;
-                                string mergedTicketSubject = ticket.Subject.Length > 50 ? ticket.Subject.Substring(0, 49) + "..." : ticket.Subject;
                                 return string.Format("<b>{0}</b> merged ticket #{1} <b>\"{2}\"</b> into ticket #{3} <b>\"{4}\"</b>.", actedUser.Fullname, ticket.Code, subject, mergedTicket.Code, mergedTicket.Subject);
-                            }
-                        }
-                        else
-                        {
-                            if (ticket.MergedID.HasValue)
-                            {
-                                mergedTicket = _unitOfWork.TicketRepository.GetByID(ticket.MergedID);
-                                return string.Format("Ticket #{0} <b>\"{1}\"</b> was merged into ticket #{2} <b>\"{3}\"</b>.", ticket.Code, subject, mergedTicket.Code, mergedTicket.Subject);
                             }
                         }
                         break;
                     case ConstantUtil.NotificationActionType.TechnicianNotiMerge:
                         if (actedUser != null)
                         {
-                            return string.Format("<b>{0}</b> merge 2 ticket: #{1} <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
+                            return string.Format("<b>{0}</b> merged some tickets into ticket: #{1} <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
-                        else
+                        break;
+                    case ConstantUtil.NotificationActionType.TechnicianNotiChangeDueByDate:
+                        if (actedUser != null)
                         {
-                            return string.Format("A ticket was merged: #{0} <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
+                            return string.Format("<b>{0}</b> changed due by date of ticket #{1}:  <b>\"{3}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
+                        break;
                 }
             }
             return string.Empty;

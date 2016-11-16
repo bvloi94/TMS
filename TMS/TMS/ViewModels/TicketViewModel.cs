@@ -64,6 +64,7 @@ namespace TMS.ViewModels
         public string ScheduleEndDateString { get; set; }
         public string ActualStartDateString { get; set; }
         public string ActualEndDateString { get; set; }
+        public string DueByDateString { get; set; }
         public string OverdueDateString { get; set; }
         public bool IsOverdue { get; set; }
         public string CreatedBy { get; set; }

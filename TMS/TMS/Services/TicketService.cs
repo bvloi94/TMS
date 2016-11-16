@@ -701,7 +701,6 @@ namespace TMS.Services
                             oldTechnicianNoti.BeNotifiedID = oldTicket.TechnicianID;
                             oldTechnicianNoti.ActionType = ConstantUtil.NotificationActionType.TechnicianNotiUnassign;
                             oldTechnicianNoti.ActID = actId;
-                            //oldTechnicianNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was unassigned by {2}.", ticket.Subject, ticket.Code, ticketUnassigner.Fullname);
                             oldTechnicianNoti.NotifiedTime = DateTime.Now;
                             _unitOfWork.NotificationRepository.Insert(oldTechnicianNoti);
                             //send notification to new technician
@@ -715,7 +714,7 @@ namespace TMS.Services
                             _unitOfWork.NotificationRepository.Insert(newTechnicianNoti);
                         }
                     }
-                    if (oldTicket.DueByDate != ticket.DueByDate)
+                    if (ticket.DueByDate.HasValue && oldTicket.DueByDate != ticket.DueByDate)
                     {
                         Notification newTechnicianNoti = new Notification();
                         newTechnicianNoti.IsForHelpDesk = false;

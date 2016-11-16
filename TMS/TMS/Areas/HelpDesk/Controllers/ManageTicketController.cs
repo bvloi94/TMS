@@ -619,7 +619,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     return Json(new
                     {
                         success = false,
-                        msg = "There are some children tickets which cannot be merged! \nOnly New or Assigned children tickets can be merged!"
+                        msg = "There are some children tickets which cannot be merged! \nOnly Open or Assigned children tickets can be merged!"
                     });
                 }
             }
