@@ -70,7 +70,6 @@ namespace TMS.Services
 
         private void AddAllBusinessRuleRelatedInfo(int id, string conditions, string actions, string technicians)
         {
-            List<BusinessRuleCondition> businessRuleConditions = new List<BusinessRuleCondition>();
             List<Rule> ruleList = new List<Rule>();
             var js = new JavaScriptSerializer();
             object[] ruleTree = (object[])js.DeserializeObject(conditions);
@@ -101,10 +100,15 @@ namespace TMS.Services
                 {
                     Dictionary<string, object> action = (Dictionary<string, object>)actionSet[i];
                     BusinessRuleTrigger trigger = new BusinessRuleTrigger();
-                    trigger.BusinessRuleID = id;
-                    trigger.Action = Convert.ToInt32(action["id"]);
-                    trigger.Value = (string)action["value"];
-                    AddTrigger(trigger);
+                    var actionId = TMSUtils.StrToIntDef(action["id"].ToString(), 0);
+                    var actionValue = (string)action["value"];
+                    if (actionId != 0 && !string.IsNullOrEmpty(actionValue))
+                    {
+                        trigger.BusinessRuleID = id;
+                        trigger.Action = actionId;
+                        trigger.Value = actionValue;
+                        AddTrigger(trigger);
+                    }
                 }
             }
 

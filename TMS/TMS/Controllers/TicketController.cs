@@ -962,7 +962,7 @@ namespace TMS.Controllers
                 filteredListItems = ticketList;
             }
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"], 2);
             var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)

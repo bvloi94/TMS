@@ -792,7 +792,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(param.order[0]["column"], 1);
             var sortDirection = param.order[0]["dir"];
 
             switch (sortColumnIndex)
@@ -933,9 +933,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 filteredListItems = requesterList;
             }
             // Sort.
-            //var sortColumnIndex = Convert.ToInt32(param.order[0].column);
-            //var sortDirection = param.order[0].dir;
-            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(param.order[0]["column"], 0);
             var sortDirection = param.order[0]["dir"];
 
             switch (sortColumnIndex)
@@ -1112,7 +1110,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             }
 
             // Sort.
-            var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
+            var sortColumnIndex = TMSUtils.StrToIntDef(param.order[0]["column"], 1);
             var sortDirection = param.order[0]["dir"];
 
             switch (sortColumnIndex)
