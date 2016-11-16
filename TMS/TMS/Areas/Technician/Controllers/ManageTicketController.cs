@@ -118,9 +118,9 @@ namespace TMS.Areas.Technician.Controllers
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
-                s.OverdueDateString = GeneralUtil.GetOverdueDate(item.ScheduleEndDate, item.Status);
+                s.OverdueDateString = GeneralUtil.GetOverdueDate(item.DueByDate, item.Status);
                 s.IsOverdue = false;
-                if (item.ScheduleEndDate.HasValue)
+                if (item.DueByDate.HasValue)
                 {
                     s.IsOverdue = (item.ScheduleEndDate.Value.Date.Subtract(DateTime.Now.Date).Days < 0) ? true : false;
                 }

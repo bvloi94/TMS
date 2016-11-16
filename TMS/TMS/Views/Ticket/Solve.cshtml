@@ -1,6 +1,7 @@
 ﻿@model TMS.ViewModels.TicketSolveViewModel
 @{
     ViewBag.Title = "Solve Ticket";
+    string UserRole = ViewBag.Role;
 }
 @{
     if (ViewBag.Role == "Technician")
@@ -48,11 +49,16 @@
         font-weight: bold;
     }
 
-    .header-content {
-        border-bottom: 1px solid #a6c6e9;
-        padding: 20px 0px 0px 30px;
-        margin-bottom: 5px;
+    .heading {
+        padding: 5px 40px;
+        font-weight: bold;
+        font-size: 18px;
     }
+
+        .heading a:hover {
+            cursor: pointer;
+            background-color: transparent !important;
+        }
 
     .row-content {
         padding: 5px 0px;
@@ -60,6 +66,23 @@
 
     .datetimerow {
         line-height: 20px;
+    }
+
+    .pre-wrap {
+        white-space: pre-wrap;
+    }
+
+    .button {
+        margin: 10px 5px;
+        width: 80px;
+    }
+
+    .select2-dropdown {
+        z-index: 1200;
+    }
+
+    .select2-container {
+        width: 100% !important;
     }
 
     input, textarea {
@@ -84,20 +107,141 @@
         width: 70px;
     }
 </style>
+
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-sm-12" style="padding: 10px 55px; margin-top: 0px">
+        <h3>#@Model.Code - <span class="text-purple">@Model.Subject</span></h3>
+    </div>
+    <div class="col-sm-12">
         <div class="box box-solid">
-            <div class="box-body ticket-contents">
-                <div class="col-sm-12 header-content">
-                    <h4><i class="fa fa-info-circle"></i>  Detail</h4>
+            <div class="box-header bg-gray with-border heading">
+                <a class="text-uppercase" data-widget="collapse"><i class="fa fa-file-text header-content"></i> Main Information</a>
+            </div>
+            <div class="box-body" style="display: block;">
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Subject: </b>
+                        </div>
+                        <div class="col-sm-10" id="Subject">@Html.DisplayFor(model => model.Subject)</div>
+                    </div>
                 </div>
-                <div class="col-sm-12 row-content">
-                    @*<div class="col-sm-6 col-content ">
-                            <div class="col-sm-4 labels">
-                                <b>Created by: </b>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Description: </b>
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="pre-wrap">@Html.Raw(Model.Description)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>Attachment: </b>
+                        </div>
+                        <div class="col-sm-10 pre-wrap">@Html.Raw(Model.DescriptionAttachmentsURL)</div>
+                    </div>
+                </div>
+                <form id="solveForm" role="form" method="POST">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ID" value="@Model.ID" />
+                    <input type="hidden" id="command" name="Command" />
+                    <div class="col-sm-12 row-content ">
+                        <div class="col-sm-12">
+                            <div class="col-sm-2 labels">
+                                <b>Solution: </b>
                             </div>
-                            <div class="col-sm-8">@Html.DisplayFor(model => model.CreatedBy)</div>
-                        </div>*@
+                            <div class="col-sm-10">
+                                @Html.TextAreaFor(m => m.Solution, new { @class = "form-control", id = "new-solution", rows = "8" })
+                                @Html.ValidationMessageFor(m => m.Solution, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 row-content ">
+                        <div class="col-sm-12">
+                            <div class="col-sm-2 labels">
+                                <b>Attachment: </b>
+                            </div>
+                            <div class="col-sm-10">
+                                <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
+                                <div class="col-sm-12 no-padding" style="margin-top: 10px">
+                                    @for (int i = 0; i < Model.SolutionAttachments.Count; i++)
+                                    {
+                                        <div class="attachment-div" style="display: inline;">
+                                            @Html.HiddenFor(it => Model.SolutionAttachments[i].id)
+                                            @Html.HiddenFor(it => Model.SolutionAttachments[i].name)
+                                            <label class="attachments btn-xs btn-primary btn-flat" data-id="@Model.SolutionAttachments[i].id">@Model.SolutionAttachments[i].name</label>
+                                            <span class='attachment-delete'> x </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                    
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-12">
+                        <div class="col-sm-2">
+                        </div>
+                        <div class="col-sm-10">
+                            <a id="refer-solution" href="javascript:openReferKnowledgebaseModal()">Refer knowledge base</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Requester:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.Requester)</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Assigned By:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.AssignedBy)</div>
+                    </div>
+                </div>
+                <div class="col-sm-12 row-content ">
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Created By:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.CreatedBy)</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="col-sm-4 labels">
+                            <b>Solved by:  </b>
+                        </div>
+                        <div class="col-sm-8">@Html.DisplayFor(model => model.SolvedBy)</div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.MergedTicketString))
+                {
+                    <div class="col-sm-12 row-content ">
+                        <div class="col-sm-12">
+                            <div class="col-sm-2 labels">
+                                <b>Merged into:  </b>
+                            </div>
+                            <div class="col-sm-10">
+                                @Html.Raw(Model.MergedTicketString)
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="box box-solid">
+            <div class="box-header bg-gray with-border heading">
+                <a class="text-uppercase" data-widget="collapse"><i class="fa fa-info-circle header-content"></i> Detail</a>
+            </div>
+            <div class="box-body" style="display: block;">
+                <div class="col-sm-12 row-content">
                     <div class="col-sm-6 col-content ">
                         <div class="col-sm-4 labels">
                             <b>Type: </b>
@@ -168,35 +312,40 @@
                         <div class="col-sm-2 labels">
                             <b>Tags: </b>
                         </div>
-                        <div class="col-sm-10">
-                            <span id="tags"></span>
-                        </div>
+                        <div class="col-sm-10"><span id="tags"></span></div>
                     </div>
-
                 </div>
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-12 col-content ">
                         <div class="col-sm-2 labels">
                             <b>Note: </b>
                         </div>
-                        <div class="col-sm-10">@Html.DisplayFor(model => model.Note)</div>
+                        <div class="col-sm-10">
+                            <span class="pre-wrap">@Html.DisplayFor(m => m.Note)</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-sm-12 header-content">
-                    <h4><i class="fa fa-clock-o"></i>  Date and time</h4>
-                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="box box-solid">
+            <div class="box-header bg-gray with-border heading">
+                <a class="text-uppercase" data-widget="collapse"><i class="fa fa-clock-o header-content"></i> Date & Time</a>
+            </div>
+            <div class="box-body" style="display: block;">
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-6">
                         <div class="col-sm-4 labels">
                             <b>Created time: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.CreateTime)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.CreatedTimeString)</div>
                     </div>
                     <div class="col-sm-6">
                         <div class="col-sm-4 labels">
                             <b>Last modified time: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ModifiedTime)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ModifiedTimeString)</div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -204,13 +353,13 @@
                         <div class="col-sm-4 labels">
                             <b>Schedule start date: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleStartDate)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleStartDateString)</div>
                     </div>
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
                             <b>Schedule end date: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleEndDate)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ScheduleEndDateString)</div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -218,90 +367,44 @@
                         <div class="col-sm-4 labels">
                             <b>Actual start date: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualStartDate)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualStartDateString)</div>
                     </div>
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
                             <b>Actual end date: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualEndDate)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualEndDateString)</div>
                     </div>
                 </div>
-                <div class="col-sm-12 header-content">
-                    <h4><i class="fa fa-file-text"></i>  Information</h4>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Subject: </b>
+                <div class="col-sm-12 row-content">
+                    <div class="col-sm-6 ">
+                        <div class="col-sm-4 labels">
+                            <b>Solved date: </b>
                         </div>
-                        <div class="col-sm-10" id="Subject">@Html.DisplayFor(model => model.Subject)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.SolvedDateString)</div>
                     </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Description: </b>
+                    <div class="col-sm-6 ">
+                        <div class="col-sm-4 labels">
+                            <b>Due date: </b>
                         </div>
-                        <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.Description)</div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Attachment: </b>
-                        </div>
-                        <div class="col-sm-10 pre-wrap">@Html.DisplayFor(model => model.AttachmentURL)</div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Solved by:  </b>
-                        </div>
-                        <div class="col-sm-10">@Html.DisplayFor(model => model.SolvedBy)</div>
-                    </div>
-                </div>
-
-                <input type="hidden" id="ticketId" value="@Model.ID" />
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2 labels">
-                            <b>Solution: </b>
-                        </div>
-                        <div class="col-sm-10">
-                            @Html.TextAreaFor(m => m.Solution, new { @class = "form-control", id = "new-solution", rows = "8" })
-                            @Html.ValidationMessageFor(m => m.Solution, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12 row-content ">
-                    <div class="col-sm-12">
-                        <div class="col-sm-2">
-                        </div>
-                        <div class="col-sm-10">
-                            <a id="refer-solution" href="javascript:openReferKnowledgebaseModal()">Refer knowledge base</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-12">
-                    <hr />
-                </div>
-                <div class="row" style="text-align: center;">
-                    <div class="col-sm-12" style="padding: 0px">
-                        <input type="button" id="solveBtn" class="btn btn-primary btn-flat row-button" value="Solve" name="command" />
-                        <input type="button" id="saveBtn" class="btn btn-success btn-flat row-button" value="Save" name="command" />
-                        @if (ViewBag.Role == "Technician")
-                        {
-                            @Html.Raw("<a class='btn btn-default btn-flat row-button' href='" + Url.Action("Index", "ManageTicket", new { Area = "Technician" }) + "'>Cancel</a>")
-                        }
-                        else
-                        {
-                            @Html.Raw("<a class='btn btn-default btn-flat' class='row-button' href='" + Url.Action("Index", "ManageTicket", new { Area = "HelpDesk" }) + "'>Cancel</a>")
-                        }
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.OverdueDateString)</div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row" style="text-align: center;">
+        <div class="col-sm-12" style="margin-bottom: 20px">
+            <input type="button" id="solveBtn" class="btn btn-primary btn-flat row-button" value="Solve"  />
+            <input type="button" id="saveBtn" class="btn btn-success btn-flat row-button" value="Save" />
+            @if (ViewBag.Role == "Technician")
+            {
+                @Html.Raw("<a class='btn btn-default btn-flat row-button' href='" + Url.Action("Index", "ManageTicket", new { Area = "Technician" }) + "'>Cancel</a>")
+            }
+            else
+            {
+                @Html.Raw("<a class='btn btn-default btn-flat row-button' href='" + Url.Action("Index", "ManageTicket", new { Area = "HelpDesk" }) + "'>Cancel</a>")
+            }
         </div>
     </div>
 </div>
@@ -341,6 +444,16 @@
     <script>
         $(document).ready(function () {
             $("#tags").html(loadKeywordToTags('@Model.Tags'));
+
+            $(".attachment-delete")
+                .on("click",
+                    function () {
+                        var inputs = $(this).parent().find(':input');
+                        inputs.each(function (index, element) {
+                            element.value = "";
+                        });
+                        $(this).parent().addClass("hidden");
+                    })
         });
 
         $("#search-btn").on("click", function () {
@@ -425,6 +538,8 @@
             }
         });
 
+
+
         function insertURL(url) {
             $("#new-solution").val($("#new-solution").val() + '\n' + url);
             noty({
@@ -446,14 +561,26 @@
         });
 
         $("#solveBtn, #saveBtn").on("click", function () {
+            if (!checkUploadFile()) {
+                return;
+            }
+            $("#command").val($(this).val());
+            var dict = new Array();
+            $(".attachments")
+                .each(function (index) {
+                    dict.push({
+                        "id": $(".attachments")[index].getAttribute("data-id"),
+                        "name": $(".attachments")[index].textContent
+                    });
+                });
+            var formData = new FormData($("#solveForm")[0]);
             $.ajax({
-                "url": "/Ticket/SolveTicket/",
-                "method": "POST",
-                "data": {
-                    id: $("#ticketId").val(),
-                    solution: $("#new-solution").val(),
-                    command: $(this)[0].id
-                },
+                url: "/Ticket/SolveTicket/",
+                method: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                enctype: 'multipart/form-data',
                 success: function (data) {
                     if (!data.success) {
                         noty({
