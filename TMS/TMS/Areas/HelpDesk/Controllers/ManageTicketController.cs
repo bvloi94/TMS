@@ -61,7 +61,6 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
-        [CustomAuthorize(Roles = "Helpdesk")]
         [ValidateAntiForgeryToken]
         public ActionResult AddNewTicket(TicketViewModel model)
         {
@@ -182,7 +181,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             else
             {
                 Ticket ticket = _ticketService.GetTicketByID(id.Value);
-                if (ticket == null)
+                if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled)
                 {
                     return HttpNotFound();
                 }

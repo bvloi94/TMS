@@ -222,7 +222,7 @@ function initTicketTable() {
                             links += edit + history + detail;
                             break;
                         case "Cancelled":
-                            links += edit + history + detail;
+                            links += history + detail;
                             break;
                     }
                     var action = '<div class="btn-group" style="padding-top: 10px">'
@@ -363,38 +363,44 @@ function openTicketDetailModal(ticketId) {
                 }
 
                 //solve: new
-                //edit: all
+                //edit: except cancelled
                 //cancel: new, assigned
                 //reopen: unapproved
                 if (data.status == 1) {
                     $('#ticket-status').html(getStatusLabel('Open'));
                     $('#action-solve-btn').show();
                     $("#action-cancel-btn").show();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").hide();
                 } else if (data.status == 2) {
                     $('#ticket-status').html(getStatusLabel('Assigned'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").show();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").hide();
                 } else if (data.status == 3) {
                     $('#ticket-status').html(getStatusLabel('Solved'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").hide();
                 } else if (data.status == 4) {
                     $('#ticket-status').html(getStatusLabel('Unapproved'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").show();
                 } else if (data.status == 5) {
                     $('#ticket-status').html(getStatusLabel('Cancelled'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
+                    $("#action-edit-btn").hide();
                     $(".reopen-li").hide();
                 } else if (data.status == 6) {
                     $('#ticket-status').html(getStatusLabel('Closed'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").hide();
                 }
 
