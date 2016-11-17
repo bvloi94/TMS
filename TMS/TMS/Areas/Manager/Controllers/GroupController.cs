@@ -34,7 +34,6 @@ namespace TMS.Areas.Manager.Controllers
         [HttpGet]
         public ActionResult GetGroup(jQueryDataTableParamModel param)
         {
-
             IEnumerable<Group> groupList = _groupService.GetAllGroup();
             var default_search_key = Request["search[value]"];
             IEnumerable<Group> filteredListItems;

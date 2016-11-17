@@ -1080,13 +1080,6 @@ namespace TMS.Services
 
         public IEnumerable<FrequentlyAskedTicketViewModel> GetFrequentlyAskedSubjects(IEnumerable<Ticket> tickets)
         {
-            //IEnumerable<FrequentlyAskedTicketViewModel> results = tickets.Where(m => m.Tags != null && m.Tags.Trim() != string.Empty)
-            //    .GroupBy(m => m.Tags).Select(m => new FrequentlyAskedTicketViewModel
-            //    {
-            //        Tags = m.Key,
-            //        Count = m.Count()
-            //    }).OrderByDescending(m => m.Count);
-
             tickets = tickets.OrderByDescending(m => GeneralUtil.GetNumberOfTags(m.Tags));
             List<FrequentlyAskedTicketViewModel> result = new List<FrequentlyAskedTicketViewModel>();
             List<Ticket> temp = tickets.ToList();
@@ -1104,22 +1097,21 @@ namespace TMS.Services
                     foreach (Ticket remainingTicket in temp)
                     {
                         int matchTag = 0;
-                        //string itemTags = string.IsNullOrWhiteSpace(remainingTicket.Tags) ? "" : remainingTicket.Tags;
-                        //int itemNumOfTags = GeneralUtil.GetNumberOfTags(itemTags);
-                        //if (itemNumOfTags >= numOfTags && compareTicket.Tags != remainingTicket.Tags)
-                        //{
-                        //    continue;
-                        //}
-                        if (!string.IsNullOrWhiteSpace(remainingTicket.Tags))
+
+                        if (!compareTicket.CategoryID.HasValue || compareTicket.CategoryID == remainingTicket.CategoryID)
                         {
-                            foreach (string tag in tagArr)
+                            if (!string.IsNullOrWhiteSpace(remainingTicket.Tags))
                             {
-                                if (remainingTicket.Tags.Contains(tag))
+                                foreach (string tag in tagArr)
                                 {
-                                    matchTag++;
+                                    if (remainingTicket.Tags.Contains(tag))
+                                    {
+                                        matchTag++;
+                                    }
                                 }
                             }
                         }
+                        
                         if (numOfTags <= 3)
                         {
                             if (matchTag == numOfTags)
