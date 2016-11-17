@@ -95,17 +95,6 @@
                             }, 1000);
                         }
                     },
-                    contentType: false,
-                    processData: false,
-                    enctype: 'multipart/form-data',
-                    error: function (e) {
-                        noty({
-                            text: "Some error occured! Please try again!",
-                            type: "error",
-                            layout: "topRight",
-                            timeout: 2500
-                        });
-                    },
                     complete: function () {
                         $("#saveBtn").attr("disabled", false);
                     }

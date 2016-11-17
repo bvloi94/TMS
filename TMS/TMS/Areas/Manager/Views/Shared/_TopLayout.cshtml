@@ -11,25 +11,15 @@
     @Styles.Render("~/Content/datatables")
     @Scripts.Render("~/bundles/modernizr")
     <title>@ViewBag.Title</title>
-    @*<style>
-        #notification-list {
-            max-height: 400px;
-        }
-
-            #notification-list li a {
-                white-space: pre-wrap;
-                height: 80px;
-            }
-    </style>*@
 </head>
 <!-- ADD THE CLASS layout-top-nav TO REMOVE THE SIDEBAR. -->
 <body class="hold-transition skin-black layout-top-nav">
     <div class="wrapper">
         <header class="main-header">
             <nav class="navbar navbar-static-top">
-                <div class="container" style="min-width: 1000px">
+                <div class="container" style="min-width: 800px">
                     <div class="navbar-header">
-                        <a href="/Helpdesk/Home" class="navbar-brand"><b>TMS</b></a>
+                        <a href="/Manager/Home" class="navbar-brand"><b>TMS</b></a>
                     </div>
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -37,7 +27,16 @@
                         <ul class="nav navbar-nav">
                             @RenderSection("SidebarMenu", false)
                             <li class="@Html.Raw((controllerName == "Department") ? "active" : "")"><a href="/Manager/Department">Department</a></li>
-                            <li class="@Html.Raw((controllerName == "Manage System Config") ? "active" : "")"><a href="/Manager/ManageSC/Priority">System Configuration</a></li>
+                            <li class="@Html.Raw((controllerName == "ManageSC") ? "active" : "") dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">System Configuration <span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="/Manager/ManageSC/Impact">Impact</a></li>
+                                    <li><a href="/Manager/ManageSC/Priority">Priority</a></li>
+                                    <li><a href="/Manager/ManageSC/Urgency">Urgency</a></li>
+                                    <li><a href="/Manager/ManageSC/PriorityMatrix">PriorityMatrix</a></li>
+                                    <li><a href="/Manager/ManageSC/Category">Category</a></li>
+                                </ul>
+                            </li>
                             <li class="@Html.Raw((controllerName == "Profile") ? "active" : "")"><a href="/Manager/Profile">Profile </a></li>
                         </ul>
                     </div>
@@ -63,7 +62,7 @@
                                     <!-- Menu Footer-->
                                     <li class="user-footer">
                                         <div class="pull-left">
-                                            <a href="/HelpDesk/Profile" class="btn btn-default btn-flat">Profile</a>
+                                            <a href="/Manager/Profile" class="btn btn-default btn-flat">Profile</a>
                                         </div>
                                         <div class="pull-right">
                                             @using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
@@ -83,15 +82,15 @@
             </nav>
         </header>
         <!-- Full Width Column -->
-        <div class="content-wrapper bg-lighter-blue">
-            <div class="container" style="min-width: 1000px; padding-top: 20px">
+        <div class="content-wrapper">
+            <div class="container light-skin" style="min-width: 1000px; padding-top: 20px">
                 @RenderBody()
                 <!-- /.content -->
             </div>
             <!-- /.container -->
         </div>
         <!-- /.content-wrapper -->
-        <footer class="main-footer bg-blue">
+        <footer class="main-footer text-black">
             <div class="pull-right hidden-xs">
                 <b>Version</b> 1.1.1
             </div>
@@ -108,6 +107,5 @@
     @Scripts.Render("~/bundles/datatables")
     @RenderSection("InitScript", false)
     @RenderSection("Scripts", false)
-    <script src="~/Content/custom-js/notification-menu-bar.js"></script>
 </body>
 </html>

@@ -41,7 +41,11 @@ function initTicketTable() {
                 lines: 2,
                 tooltip: false
             });
-
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+                increaseArea: '20%' // optional
+            });
         },
         autoWidth: false,
         columnDefs: [
@@ -49,7 +53,12 @@ function initTicketTable() {
                 "targets": [0],
                 "sortable": false,
                 "render": function (data, type, row) {
-                    return '<div class="text-center"><input type="checkbox" data-role="cbo-ticket" data-id="' + row.Id + '" data-requester="' + row.Requester + '"/></div>';
+                    return $("<div/>",
+                   {
+                       "class": "text-center",
+                       "style": "padding-top: 10px",
+                       "html": '<input type="checkbox" data-role="cbo-ticket" data-id="' + row.Id + '" data-requester="' + row.Requester + '"/>'
+                   })[0].outerHTML;
                 }
             },
             {
@@ -125,6 +134,7 @@ function initTicketTable() {
                     ticketInfo += $("<div/>",
                     {
                         "class": "col-lg-2 col-sm-3 pull-right",
+                        "style": "padding-top: 15px",
                         "html": priorityRow + overdueDiv
                     })[0].outerHTML;
 
@@ -215,7 +225,7 @@ function initTicketTable() {
                             links += edit + history + detail;
                             break;
                     }
-                    var action = '<div class="btn-group">'
+                    var action = '<div class="btn-group" style="padding-top: 10px">'
                         + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
                         + 'Action <span class="caret"></span>'
                         + '</button>'
@@ -479,11 +489,15 @@ function initFilter() {
                     ticketTable.draw();
                 }
             });
-    $('.due_by_item, [data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]')
+    $('[data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]')
         .on("change",
             function () {
                 ticketTable.draw();
             });
+
+    $('.filter_due_by').on("ifToggled", 'input[class="due_by_item"]', function () {
+        ticketTable.draw();
+    });
 
     time_period_inp.on("change",
         function () {
@@ -498,23 +512,11 @@ $(document).ready(function () {
     // Init ticket table
     initTicketTable();
 
-    //$("#filterBtn").on("click", function () {
-
-    //    // if submenu is hidden, does not have active class
-    //    if (!$('#filterBtn').hasClass("active")) {
-
-    //        $('#filter-div').removeClass("hidden");
-    //        $('#filterBtn').addClass("active");
-    //        $('#filter-div').slideDown(400);
-
-    //        //if submenu is visible
-    //    } else if ($('#filterBtn').hasClass("active")) {
-
-    //        $('#filter-div').slideToggle(400);
-    //        $('#filter-div').addClass("hidden");
-    //        $('#filterBtn').removeClass("active");
-    //    }
-    //});
+    $('input').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+        increaseArea: '20%' // optional
+    });
 
     $("#search-txt").keyup(function () {
         ticketTable.draw();
@@ -627,7 +629,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#ticket-table tbody').on('click', 'input[data-role="cbo-ticket"]', function (e) {
+    $('#ticket-table tbody').on('ifToggled', 'input[data-role="cbo-ticket"]', function (e) {
         var id = $(this).attr("data-id");
         if (selectedTickets.indexOf(id) == -1) {
             selectedTickets.push(id);

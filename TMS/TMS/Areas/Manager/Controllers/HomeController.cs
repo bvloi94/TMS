@@ -25,6 +25,13 @@ namespace TMS.Areas.Manager.Controllers
         [HttpGet]
         public ActionResult Index()
         {
+            var name = User.Identity.Name;
+            AspNetUser currentUser = _userService.GetUserById(User.Identity.GetUserId());
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            ViewBag.UserInfo = currentUser;
             return View();
         }
 

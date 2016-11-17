@@ -1,0 +1,151 @@
+﻿@using TMS.Models;
+@{
+    Layout = "~/Areas/Manager/Views/Shared/_TopLayout.cshtml";
+    ViewBag.Title = "TMS - Home";
+    AspNetUser user = ViewBag.UserInfo;
+}
+
+<style>
+    .menu-item {
+        margin: 15px 0px;
+        text-align: left;
+        color: #2d4b92;
+        display: table-cell;
+        transition: all .2s ease-in-out;
+    }
+
+        .menu-item a {
+            color: #2d4b92;
+        }
+
+        .menu-item .img-circle {
+            text-align: center;
+            padding: 16px;
+            height: 60px;
+            width: 60px;
+            color: #ffffff;
+            background-color: #2d4b92;
+        }
+
+    .user-avatar .img-circle {
+        height: 100px;
+        width: 100px;
+    }
+
+    .user-avatar, .user-info {
+        position: relative;
+        float: left;
+    }
+
+    .user-avatar {
+        padding: 10px 10px;
+    }
+
+    .user-info {
+        padding-left: 10px;
+        color: #2d4b92;
+    }
+
+    .vertical-center {
+        display: inline-block;
+        vertical-align: middle;
+        float: none;
+    }
+
+    .link-title {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-solid">
+            <div class="box-body">
+                <div class="user-avatar vertical-center">
+                    <img src="@ViewBag.LayoutAvatarURL" class="img-circle" alt="User Image">
+                </div>
+                <div class="user-info vertical-center">
+                    <div class="user-name">
+                        <span style="color: #2d4b92; font-size: 30px; text-transform: uppercase">@user.Fullname </span>
+                        @if (!string.IsNullOrWhiteSpace(user.DepartmentName))
+                        {
+                            <span style="font-size: 20px">@user.DepartmentName </span>
+                        }
+                    </div>
+                    <p>
+                        <i class="fa fa-envelope"></i>&nbsp;&nbsp; @user.Email  &nbsp;&nbsp;&nbsp;&nbsp;
+                        <i class="fa fa-phone"></i>
+                        @if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+                        {
+                            @Html.Raw("&nbsp;&nbsp;")@user.PhoneNumber;
+                        }
+                        else
+                        {
+                            <span>&nbsp;&nbsp; - </span>
+                        }
+                    </p>
+                    <p>
+                        <i class="fa fa-vcard"></i>
+                        @if (!string.IsNullOrWhiteSpace(user.Address))
+                        {
+                            @Html.Raw("&nbsp;&nbsp;")@user.Address;
+                        }
+                        else
+                        {
+                            <span>&nbsp;&nbsp;- </span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="box box-solid">
+            <div class="box-body">
+                <div class="col-xs-6 menu-item">
+                    <div class="col-xs-2">
+                        <i class="fa fa-group fa-2x img-circle vertical-center"></i>
+                    </div>
+                    <div class="col-xs-10 vertical-center">
+                        <p class="link-title text-left">User Configuration</p>
+                        <div class="text-left">
+                            <a href="/Manager/Department">Technician Group</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6 menu-item">
+                    <div class="col-xs-2">
+                        <i class="fa fa-gears fa-2x img-circle vertical-center"></i>
+                    </div>
+                    <div class="col-xs-10 vertical-center">
+                        <p class="link-title text-left">System Configuration</p>
+                        <div class="text-left">
+                            <a href="/Manager/ManageSC/Impact">Impact</a>&nbsp; | &nbsp;
+                            <a href="/Manager/ManageSC/Priority">Priority</a>&nbsp; | &nbsp;
+                            <a href="/Manager/ManageSC/Urgency">Urgency</a>&nbsp; | &nbsp;
+                            <a href="/Manager/ManageSC/PriorityMatrix">Priority Matrix</a>&nbsp; | &nbsp;
+                            <a href="/Manager/ManageSC/Category">Category</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6 menu-item">
+                    <div class="col-xs-2">
+                        <i class="fa fa-user fa-2x img-circle vertical-center"></i>
+                    </div>
+                    <div class="col-xs-10 vertical-center">
+                        <p class="link-title text-left">Profile</p>
+                        <div class="text-left">
+                            <a href="/Manager/Profile">My profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
