@@ -1111,7 +1111,11 @@ namespace TMS.Services
                                 }
                             }
                         }
-                        
+                        else
+                        {
+                            continue;
+                        }
+
                         if (numOfTags <= 3)
                         {
                             if (matchTag == numOfTags)

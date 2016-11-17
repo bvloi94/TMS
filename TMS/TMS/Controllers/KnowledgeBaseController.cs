@@ -471,7 +471,7 @@ namespace TMS.Controllers
                             }
                         }
                     }
-                    if (numOfTags <= 2)
+                    if (numOfTags <= 3)
                     {
                         if (matchTag == numOfTags)
                         {
@@ -482,7 +482,7 @@ namespace TMS.Controllers
                             filteredListItems.Add(ticket);
                         }
                     }
-                    else if (2 < numOfTags && numOfTags <= 4)
+                    else if (3 < numOfTags && numOfTags <= 5)
                     {
                         if (matchTag >= numOfTags - 1 && matchTag <= numOfTags + 1)
                         {
