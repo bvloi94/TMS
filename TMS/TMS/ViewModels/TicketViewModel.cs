@@ -42,8 +42,8 @@ namespace TMS.ViewModels
         public string ImpactDetail { get; set; }
         public int CategoryId { get; set; }
         public string Category { get; set; }
-        public int DepartmentId { get; set; }
-        public string Department { get; set; }
+        public int GroupId { get; set; }
+        public string Group { get; set; }
         public string UnapproveReason { get; set; }
         public DateTime? ScheduleStartDate { get; set; }
         [CompareValidateDate(CompareToOperation.GreaterThan, "ScheduleStartDate", ErrorMessage = "Schedule End Date must greater than Schedule Start Date")]

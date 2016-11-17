@@ -12,10 +12,10 @@ namespace TMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Department
+    public partial class Group
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Department()
+        public Group()
         {
             this.AspNetUsers = new HashSet<AspNetUser>();
         }

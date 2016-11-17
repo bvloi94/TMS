@@ -15,14 +15,14 @@ namespace TMS.Areas.Technician.Controllers
     {
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
-        public DepartmentService _departmentService { get; set; }
+        public GroupService _groupService { get; set; }
 
         public ManageTicketController()
         {
             var unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(unitOfWork);
             _userService = new UserService(unitOfWork);
-            _departmentService = new DepartmentService(unitOfWork);
+            _groupService = new GroupService(unitOfWork);
         }
 
         // GET: Technician/Ticket

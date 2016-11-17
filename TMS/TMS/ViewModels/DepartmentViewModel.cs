@@ -6,7 +6,7 @@ using System.Web;
 
 namespace TMS.ViewModels
 {
-    public class DepartmentViewModel
+    public class GroupViewModel
     {
         public int Id { get; set; }
         [Required(ErrorMessage ="Name is required!")]

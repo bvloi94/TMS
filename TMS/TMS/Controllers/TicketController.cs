@@ -20,7 +20,7 @@ namespace TMS.Controllers
         UnitOfWork _unitOfWork = new UnitOfWork();
         TicketService _ticketService;
         UserService _userService;
-        DepartmentService _departmentService;
+        GroupService _groupService;
         TicketAttachmentService _ticketAttachmentService;
         CategoryService _categoryService;
         SolutionService _solutionService;
@@ -30,7 +30,7 @@ namespace TMS.Controllers
         {
             _ticketService = new TicketService(_unitOfWork);
             _userService = new UserService(_unitOfWork);
-            _departmentService = new DepartmentService(_unitOfWork);
+            _groupService = new GroupService(_unitOfWork);
             _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
             _categoryService = new CategoryService(_unitOfWork);
             _solutionService = new SolutionService(_unitOfWork);
@@ -493,12 +493,12 @@ namespace TMS.Controllers
                     model.ActualEndDateString = ticket.ActualEndDate == null ? "-" : ticket.ActualEndDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.SolvedDateString = ticket.SolvedDate == null ? "-" : ticket.SolvedDate.Value.ToString("MMM d yyyy, hh:mm");
                     model.DueByDateString = ticket.DueByDate == null ? "-" : ticket.DueByDate.Value.ToString("MMM d yyyy, hh:mm");
-                    model.Department = "-";
+                    model.Group = "-";
                     if (technician != null)
                     {
-                        if (technician.Department != null)
+                        if (technician.Group != null)
                         {
-                            model.Department = technician.Department.Name;
+                            model.Group = technician.Group.Name;
                         }
                     }
                     model.Technician = GeneralUtil.GetUserInfo(technician);
@@ -534,7 +534,7 @@ namespace TMS.Controllers
                     AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
                     AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
 
-                    string ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, department, category, description, note;
+                    string ticketType, ticketMode, solution, ticketUrgency, ticketPriority, ticketImpact, group, category, description, note;
                     string createdTime, modifiedTime, scheduleStartDate, scheduleEndDate, actualStartDate, actualEndDate, solvedDate, dueByDate;
 
                     string userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
@@ -595,12 +595,12 @@ namespace TMS.Controllers
                     solvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
                     dueByDate = ticket.DueByDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
 
-                    department = "-";
+                    group = "-";
                     if (technician != null)
                     {
-                        if (technician.Department != null)
+                        if (technician.Group != null)
                         {
-                            department = technician.Department.Name;
+                            group = technician.Group.Name;
                         }
                     }
 
@@ -651,7 +651,7 @@ namespace TMS.Controllers
                         assigner = GeneralUtil.GetUserInfo(assignedUser),
                         technician = GeneralUtil.GetUserInfo(technician),
                         requester = GeneralUtil.GetUserInfo(requester),
-                        department = department,
+                        group = group,
                         descriptionAttachment = descriptionAttachment,
                         solutionAttachment = solutionAttachment,
                         mergeTicket = mergedTicketString,

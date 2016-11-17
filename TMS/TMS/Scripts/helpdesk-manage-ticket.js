@@ -281,8 +281,8 @@ function initDropdownControl() {
             return [];
         }
     });
-    initDepartmentDropdown({
-        control: $("[data-role=ddl-department]"),
+    initGroupDropdown({
+        control: $("[data-role=ddl-group]"),
         ignore: function () {
             return [];
         }
@@ -314,7 +314,7 @@ function openTicketDetailModal(ticketId) {
             if (data.success) {
                 $('#ticket-subject').text(data.subject);
                 //$('#ticket-description').text(data.description);
-                $('#ticket-department').text(data.department);
+                $('#ticket-group').text(data.group);
                 $('#ticket-technician').text(data.technician);
                 $('#ticket-created-by').text(data.creater);
                 $('#ticket-assigned-by').text(data.assigner);
@@ -643,7 +643,7 @@ $(document).ready(function () {
         }
     });
 
-    $("[data-role='ddl-department']").on("change", function () {
+    $("[data-role='ddl-group']").on("change", function () {
         $("[data-role='ddl-technician']").select2("val", "");
     });
 
@@ -864,8 +864,8 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
                 if (ticket.CategoryId != 0) {
                     loadInitDropdown('ddl-category', ticket.Category, ticket.CategoryId);
                 }
-                if (ticket.DepartmentId != 0) {
-                    loadInitDropdown('ddl-department', ticket.Department, ticket.DepartmentId);
+                if (ticket.GroupId != 0) {
+                    loadInitDropdown('ddl-group', ticket.Group, ticket.GroupId);
                 }
                 if (ticket.TechnicianId != null) {
                     loadInitDropdown('ddl-technician', ticket.Technician, ticket.TechnicianId);
@@ -910,7 +910,7 @@ var showReassignModal = function (obj) {
         },
         success: function (data) {
             if (data.success) {
-                loadInitDropdown('ddl-department', data.department, data.departmentId);
+                loadInitDropdown('ddl-group', data.group, data.groupId);
                 loadInitDropdown('ddl-technician', data.technician, data.technicianId);
             } else {
                 noty({

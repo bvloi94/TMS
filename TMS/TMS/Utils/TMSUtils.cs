@@ -127,7 +127,7 @@ namespace TMS.Utils
             list.Add((new DropDownViewModel("1", "Subject")));
             list.Add((new DropDownViewModel("2", "Description")));
             list.Add((new DropDownViewModel("3", "Requester Name")));
-            list.Add((new DropDownViewModel("4", "Department")));
+            list.Add((new DropDownViewModel("4", "Group")));
             list.Add((new DropDownViewModel("5", "Priority")));
             list.Add((new DropDownViewModel("6", "Impact")));
             list.Add((new DropDownViewModel("7", "Urgency")));

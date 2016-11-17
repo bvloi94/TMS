@@ -60,7 +60,7 @@
           <Property Name="Address" Type="nvarchar" MaxLength="256" />
           <Property Name="Gender" Type="bit" />
           <Property Name="AvatarURL" Type="nvarchar(max)" />
-          <Property Name="DepartmentID" Type="int" />
+          <Property Name="GroupID" Type="int" />
           <Property Name="DepartmentName" Type="nvarchar" MaxLength="100" />
           <Property Name="JobTitle" Type="nvarchar" MaxLength="100" />
           <Property Name="CompanyName" Type="nvarchar" MaxLength="100" />
@@ -118,7 +118,7 @@
           <Property Name="ParentID" Type="int" />
           <Property Name="CategoryLevel" Type="int" />
         </EntityType>
-        <EntityType Name="Department">
+        <EntityType Name="Group">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
@@ -252,14 +252,14 @@
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
         </EntityType>
         <Association Name="FK_AspNetUsers_Department">
-          <End Role="Department" Type="Self.Department" Multiplicity="0..1" />
+          <End Role="Group" Type="Self.Group" Multiplicity="0..1" />
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Department">
+            <Principal Role="Group">
               <PropertyRef Name="ID" />
             </Principal>
             <Dependent Role="AspNetUsers">
-              <PropertyRef Name="DepartmentID" />
+              <PropertyRef Name="GroupID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -642,7 +642,7 @@
           <EntitySet Name="BusinessRuleNotification" EntityType="Self.BusinessRuleNotification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BusinessRuleTrigger" EntityType="Self.BusinessRuleTrigger" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Department" EntityType="Self.Department" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Group" EntityType="Self.Group" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Impact" EntityType="Self.Impact" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Notification" EntityType="Self.Notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Priority" EntityType="Self.Priority" Schema="dbo" store:Type="Tables" />
@@ -654,7 +654,7 @@
           <EntitySet Name="TicketHistory" EntityType="Self.TicketHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Urgency" EntityType="Self.Urgency" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_AspNetUsers_Department" Association="Self.FK_AspNetUsers_Department">
-            <End Role="Department" EntitySet="Department" />
+            <End Role="Group" EntitySet="Group" />
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
           </AssociationSet>
           <AssociationSet Name="FK_BusinessRuleCondition_BusinessRule" Association="Self.FK_BusinessRuleCondition_BusinessRule">
@@ -792,7 +792,7 @@
           <EntitySet Name="BusinessRuleNotifications" EntityType="TMSModel.BusinessRuleNotification" />
           <EntitySet Name="BusinessRuleTriggers" EntityType="TMSModel.BusinessRuleTrigger" />
           <EntitySet Name="Categories" EntityType="TMSModel.Category" />
-          <EntitySet Name="Departments" EntityType="TMSModel.Department" />
+          <EntitySet Name="Groups" EntityType="TMSModel.Group" />
           <EntitySet Name="Impacts" EntityType="TMSModel.Impact" />
           <EntitySet Name="Notifications" EntityType="TMSModel.Notification" />
           <EntitySet Name="Priorities" EntityType="TMSModel.Priority" />
@@ -812,7 +812,7 @@
             <End Role="AspNetUserLogin" EntitySet="AspNetUserLogins" />
           </AssociationSet>
           <AssociationSet Name="FK_AspNetUsers_Department" Association="TMSModel.FK_AspNetUsers_Department">
-            <End Role="Department" EntitySet="Departments" />
+            <End Role="Group" EntitySet="Groups" />
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
           </AssociationSet>
           <AssociationSet Name="FK_BusinessRuleNotification_AspNetUsers" Association="TMSModel.FK_BusinessRuleNotification_AspNetUsers">
@@ -974,7 +974,7 @@
           <Property Name="Address" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="Gender" Type="Boolean" />
           <Property Name="AvatarURL" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="DepartmentID" Type="Int32" />
+          <Property Name="GroupID" Type="Int32" />
           <Property Name="DepartmentName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="JobTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="CompanyName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
@@ -983,7 +983,7 @@
           <Property Name="IsActive" Type="Boolean" />
           <NavigationProperty Name="AspNetUserClaims" Relationship="TMSModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserClaim" />
           <NavigationProperty Name="AspNetUserLogins" Relationship="TMSModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserLogin" />
-          <NavigationProperty Name="Department" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="AspNetUser" ToRole="Department" />
+          <NavigationProperty Name="Group" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="AspNetUser" ToRole="Group" />
           <NavigationProperty Name="BusinessRuleNotifications" Relationship="TMSModel.FK_BusinessRuleNotification_AspNetUsers" FromRole="AspNetUser" ToRole="BusinessRuleNotification" />
           <NavigationProperty Name="Notifications" Relationship="TMSModel.FK_Notification_AspNetUsers" FromRole="AspNetUser" ToRole="Notification" />
           <NavigationProperty Name="Notifications1" Relationship="TMSModel.FK_Notification_AspNetUsers1" FromRole="AspNetUser" ToRole="Notification" />
@@ -1057,14 +1057,14 @@
           <NavigationProperty Name="Solutions" Relationship="TMSModel.FK_KnowledgeBase_Category" FromRole="Category" ToRole="Solution" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Category" FromRole="Category" ToRole="Ticket" />
         </EntityType>
-        <EntityType Name="Department">
+        <EntityType Name="Group">
           <Key>
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUsers" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="Department" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUsers" Relationship="TMSModel.FK_AspNetUsers_Department" FromRole="Group" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="Impact">
           <Key>
@@ -1251,14 +1251,14 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_AspNetUsers_Department">
-          <End Type="TMSModel.Department" Role="Department" Multiplicity="0..1" />
+          <End Type="TMSModel.Group" Role="Group" Multiplicity="0..1" />
           <End Type="TMSModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Department">
+            <Principal Role="Group">
               <PropertyRef Name="ID" />
             </Principal>
             <Dependent Role="AspNetUser">
-              <PropertyRef Name="DepartmentID" />
+              <PropertyRef Name="GroupID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1620,7 +1620,7 @@
                 <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
                 <ScalarProperty Name="JobTitle" ColumnName="JobTitle" />
                 <ScalarProperty Name="DepartmentName" ColumnName="DepartmentName" />
-                <ScalarProperty Name="DepartmentID" ColumnName="DepartmentID" />
+                <ScalarProperty Name="GroupID" ColumnName="GroupID" />
                 <ScalarProperty Name="AvatarURL" ColumnName="AvatarURL" />
                 <ScalarProperty Name="Gender" ColumnName="Gender" />
                 <ScalarProperty Name="Address" ColumnName="Address" />
@@ -1696,9 +1696,9 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Departments">
-            <EntityTypeMapping TypeName="TMSModel.Department">
-              <MappingFragment StoreEntitySet="Department">
+          <EntitySetMapping Name="Groups">
+            <EntityTypeMapping TypeName="TMSModel.Group">
+              <MappingFragment StoreEntitySet="Group">
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ID" ColumnName="ID" />

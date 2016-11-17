@@ -20,7 +20,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         public BusinessRuleService _businessRuleService { get; set; }
         public UserService _userService { get; set; }
-        public DepartmentService _departmentService { get; set; }
+        public GroupService _groupService { get; set; }
         public UrgencyService _urgencyService { get; set; }
         public PriorityService _priorityService { get; set; }
         public ImpactService _impactService { get; set; }
@@ -32,7 +32,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         {
             _businessRuleService = new BusinessRuleService(unitOfWork);
             _userService = new UserService(unitOfWork);
-            _departmentService = new DepartmentService(unitOfWork);
+            _groupService = new GroupService(unitOfWork);
             _urgencyService = new UrgencyService(unitOfWork);
             _priorityService = new PriorityService(unitOfWork);
             _impactService = new ImpactService(unitOfWork);
@@ -112,20 +112,20 @@ namespace TMS.Areas.HelpDesk.Controllers
                                 }
                             }
                             break;
-                        case ConstantUtil.BusinessRuleCriteria.Department:
-                            var dep = _departmentService.GetDepartmentById(TMSUtils.StrToIntDef(list[0], 0));
-                            if (dep != null)
+                        case ConstantUtil.BusinessRuleCriteria.Group:
+                            var group = _groupService.GetGroupById(TMSUtils.StrToIntDef(list[0], 0));
+                            if (group != null)
                             {
-                                rule.ValueMask = dep.Name;
+                                rule.ValueMask = group.Name;
                                 if (list.Length > 1)
                                 {
                                     for (int i = 1; i < list.Length; i++)
                                     {
-                                        var nextDep = _departmentService.GetDepartmentById(TMSUtils.StrToIntDef(list[i], 0));
-                                        if (nextDep != null)
+                                        var nextGroup = _groupService.GetGroupById(TMSUtils.StrToIntDef(list[i], 0));
+                                        if (nextGroup != null)
                                         {
                                             {
-                                                rule.ValueMask += ", " + nextDep.Name;
+                                                rule.ValueMask += ", " + nextGroup.Name;
                                             }
                                         }
                                     }

@@ -208,10 +208,10 @@ function initCategoryDropdown(param) {
     });
 }
 
-function initDepartmentDropdown(param) {
+function initGroupDropdown(param) {
     param.control.select2({
         ajax: {
-            url: "/dropdown/loaddepartmentdropdown",
+            url: "/dropdown/loadgroupdropdown",
             dataType: "json",
             data: function (params) {
                 var ajaxData = {
@@ -245,7 +245,7 @@ function initDepartmentDropdown(param) {
             },
             cache: true
         },
-        placeholder: "-- Select Department --",
+        placeholder: "-- Select Group --",
         minimumResultsForSearch: Infinity,
         escapeMarkup: function (markup) {
             return markup;
@@ -281,7 +281,7 @@ function initTechnicianDropdown(param) {
                 var ajaxData = {
                     ignore: JSON.stringify(param.ignore()),
                     query: params.term,
-                    departmentId: $("[data-role='ddl-department']").val()
+                    groupId: $("[data-role='ddl-group']").val()
                 };
                 return ajaxData;
             },

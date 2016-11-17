@@ -17,7 +17,7 @@ namespace TMS.Controllers
     {
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
-        public DepartmentService _departmentService { get; set; }
+        public GroupService _groupService { get; set; }
         public UrgencyService _urgencyService { get; set; }
         public PriorityService _priorityService { get; set; }
         public ImpactService _impactService { get; set; }
@@ -28,7 +28,7 @@ namespace TMS.Controllers
             var unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(unitOfWork);
             _userService = new UserService(unitOfWork);
-            _departmentService = new DepartmentService(unitOfWork);
+            _groupService = new GroupService(unitOfWork);
             _urgencyService = new UrgencyService(unitOfWork);
             _priorityService = new PriorityService(unitOfWork);
             _impactService = new ImpactService(unitOfWork);
@@ -101,11 +101,11 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult LoadDepartmentDropdown()
+        public ActionResult LoadGroupDropdown()
         {
-            var result = new List<DepartmentViewModel>();
-            var queryResult = _departmentService.GetAll();
-            result.Add(new DepartmentViewModel()
+            var result = new List<GroupViewModel>();
+            var queryResult = _groupService.GetAll();
+            result.Add(new GroupViewModel()
             {
                 Name = "None",
                 Description = "None",
@@ -113,7 +113,7 @@ namespace TMS.Controllers
             });
             foreach (var urg in queryResult)
             {
-                result.Add(new DepartmentViewModel()
+                result.Add(new GroupViewModel()
                 {
                     Name = urg.Name,
                     Description = urg.Description,
@@ -124,13 +124,13 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult LoadTechnicianDropdown(string ignore, string query, int? departmentId)
+        public ActionResult LoadTechnicianDropdown(string ignore, string query, int? groupId)
         {
             var js = new JavaScriptSerializer();
             var ignoreItems = (object[])js.DeserializeObject(ignore);
 
             var result = new List<DropdownTechnicianViewModel>();
-            List<AspNetUser> queryResult = _userService.GetTechnicianByPattern(query, departmentId).ToList();
+            List<AspNetUser> queryResult = _userService.GetTechnicianByPattern(query, groupId).ToList();
             foreach (var tech in queryResult)
             {
                 if (ignoreItems != null && ignoreItems.Length > 0)
@@ -305,6 +305,32 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult LoadGroupConditionDropdown(string ignore, string query)
+        {
+            var js = new JavaScriptSerializer();
+            var ignoreItems = (object[])js.DeserializeObject(ignore);
+
+            var result = new List<GroupViewModel>();
+            var queryResult = _groupService.GetAll();
+            foreach (var group in queryResult)
+            {
+                if (ignoreItems != null && ignoreItems.Length > 0)
+                {
+                    if (ignoreItems.Any(a => (string)a == group.ID.ToString()))
+                    {
+                        continue;
+                    }
+                }
+                var dep = new GroupViewModel
+                {
+                    Id = group.ID,
+                    Name = group.Name,
+                };
+                result.Add(dep);
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult LoadConditionValueDropdown(string ignore, string query, string criteria)
         {
             var js = new JavaScriptSerializer();
@@ -314,10 +340,10 @@ namespace TMS.Controllers
             query = query.ToLower();
             switch (criteria)
             {
-                case "Department":
-                    var departmentResult = _departmentService.GetAll();
-                    departmentResult = departmentResult.Where(d => d.Name.ToString().ToLower().Contains(query));
-                    foreach (var item in departmentResult)
+                case "Group":
+                    var groupResult = _groupService.GetAll();
+                    groupResult = groupResult.Where(d => d.Name.Contains(query));
+                    foreach (var item in groupResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
@@ -435,10 +461,10 @@ namespace TMS.Controllers
             {
                 switch (criteria)
                 {
-                    case "Department":
+                    case "Group":
                         foreach (var id in idList)
                         {
-                            var item = _departmentService.GetDepartmentById(Int32.Parse(id));
+                            var item = _groupService.GetGroupById(Int32.Parse(id));
                             if (item != null)
                             {
                                 var newItem = new DropDownViewModel

@@ -27,14 +27,14 @@ namespace TMS.Areas.Admin.Controllers
         private ApplicationUserManager _userManager;
         private UnitOfWork _unitOfWork;
         private UserService _userService;
-        private DepartmentService _departmentService;
+        private GroupService _groupService;
         private ILog log = LogManager.GetLogger(typeof(EmailUtil));
 
         public ManageUserController()
         {
             _unitOfWork = new UnitOfWork();
             _userService = new UserService(_unitOfWork);
-            _departmentService = new DepartmentService(_unitOfWork);
+            _groupService = new GroupService(_unitOfWork);
         }
 
         public ManageUserController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -43,7 +43,7 @@ namespace TMS.Areas.Admin.Controllers
             SignInManager = signInManager;
             _unitOfWork = new UnitOfWork();
             _userService = new UserService(_unitOfWork);
-            _departmentService = new DepartmentService(_unitOfWork);
+            _groupService = new GroupService(_unitOfWork);
         }
 
         public ApplicationSignInManager SignInManager
@@ -332,7 +332,7 @@ namespace TMS.Areas.Admin.Controllers
                 p.Email,
                 (p.Birthday == null) ? "-" : ((DateTime) p.Birthday).ToString("dd/MM/yyyy"),
                 p.IsActive,
-                _departmentService.GetDepartmentById((int) p.DepartmentID).Name
+                _groupService.GetGroupById((int) p.GroupID).Name
             }.ToArray());
 
             return Json(new
@@ -517,7 +517,7 @@ namespace TMS.Areas.Admin.Controllers
         // GET: Admin/ManageUser/CreateTechnician
         public ActionResult CreateTechnician()
         {
-            ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
+            ViewBag.groupList = new SelectList(_groupService.GetAll(), "ID", "Name");
             return View();
         }
 
@@ -703,7 +703,7 @@ namespace TMS.Areas.Admin.Controllers
                     technician.Birthday = model.Birthday;
                     technician.Address = model.Address;
                     technician.Gender = model.Gender;
-                    technician.DepartmentID = model.DepartmentID;
+                    technician.GroupID = model.GroupID;
                     technician.IsActive = true;
                     // handle avatar
                     if (model.Avatar != null)
@@ -756,7 +756,7 @@ namespace TMS.Areas.Admin.Controllers
                 AddErrors(result);
             }
 
-            ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
+            ViewBag.groupList = new SelectList(_groupService.GetAll(), "ID", "Name");
             return View(model);
         }
 
@@ -973,12 +973,12 @@ namespace TMS.Areas.Admin.Controllers
                 model.Birthday = technician.Birthday;
                 model.Address = technician.Address;
                 model.Gender = technician.Gender;
-                model.DepartmentID = technician.DepartmentID;
+                model.GroupID = technician.GroupID;
 
                 ViewBag.id = id;
                 ViewBag.username = technician.UserName;
                 ViewBag.AvatarURL = technician.AvatarURL;
-                ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
+                ViewBag.groupList = new SelectList(_groupService.GetAll(), "ID", "Name");
                 return View(model);
             }
             else
@@ -1176,7 +1176,7 @@ namespace TMS.Areas.Admin.Controllers
                     technician.Birthday = model.Birthday;
                     technician.Address = model.Address;
                     technician.Gender = model.Gender;
-                    technician.DepartmentID = model.DepartmentID;
+                    technician.GroupID = model.GroupID;
                     // handle avatar
                     if (model.Avatar != null)
                     {
@@ -1202,7 +1202,7 @@ namespace TMS.Areas.Admin.Controllers
                 ViewBag.id = id;
                 ViewBag.username = technician.UserName;
                 ViewBag.AvatarURL = technician.AvatarURL;
-                ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
+                ViewBag.groupList = new SelectList(_groupService.GetAll(), "ID", "Name");
                 return View(model);
             }
             else

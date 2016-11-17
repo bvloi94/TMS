@@ -47,7 +47,7 @@ namespace TMS.Models
         public string Address { get; set; }
         public Nullable<bool> Gender { get; set; }
         public string AvatarURL { get; set; }
-        public Nullable<int> DepartmentID { get; set; }
+        public Nullable<int> GroupID { get; set; }
         public string DepartmentName { get; set; }
         public string JobTitle { get; set; }
         public string CompanyName { get; set; }
@@ -59,7 +59,7 @@ namespace TMS.Models
         public virtual ICollection<AspNetUserClaim> AspNetUserClaims { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetUserLogin> AspNetUserLogins { get; set; }
-        public virtual Department Department { get; set; }
+        public virtual Group Group { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BusinessRuleNotification> BusinessRuleNotifications { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

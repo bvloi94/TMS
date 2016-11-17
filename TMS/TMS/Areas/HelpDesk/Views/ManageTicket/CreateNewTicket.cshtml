@@ -67,7 +67,7 @@
                         <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">DEPARTMENT</label>
-                                <select class="form-control" name="DepartmentId" data-role="ddl-department"></select>
+                                <select class="form-control" name="GroupId" data-role="ddl-group"></select>
                             </div>
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">TECHNICIAN</label>
@@ -199,7 +199,7 @@
                         <tr>
                             <th style="width: 30%;">Name</th>
                             <th style="width: 20%;">Email</th>
-                            <th style="width: 25%;">Department</th>
+                            <th style="width: 25%;">Group</th>
                             <th style="width: 15%;">Phone</th>
                             <th style="width: 10%;">Job</th>
                         </tr>
@@ -420,9 +420,9 @@
                             <div class="col-sm-12 row-content">
                                 <div class="col-sm-4 ">
                                     <div class="col-sm-6 labels">
-                                        <b>Department: </b>
+                                        <b>Group: </b>
                                     </div>
-                                    <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-department"></span></div>
+                                    <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-group"></span></div>
                                 </div>
                                 <div class="col-sm-4 ">
                                     <div class="col-sm-6 labels">
@@ -582,8 +582,8 @@
                     return [];
                 }
             });
-            initDepartmentDropdown({
-                control: $("[data-role=ddl-department]"),
+            initGroupDropdown({
+                control: $("[data-role=ddl-group]"),
                 ignore: function () {
                     return [];
                 }
@@ -599,8 +599,8 @@
                 ignore: function () {
                     return [];
                 },
-                departmentId: function () {
-                    return $("[data-role=ddl-department]").val();
+                groupId: function () {
+                    return $("[data-role=ddl-group]").val();
                 }
             });
         }
@@ -616,7 +616,7 @@
             $("#modal-add-requester").modal("hide");
         }
 
-        $("[data-role='ddl-department']")
+        $("[data-role='ddl-group']")
             .on("change",
                 function () {
                     loadInitDropdown('ddl-technician', 'Not assigned', "");
@@ -631,7 +631,7 @@
                 loadInitDropdown('ddl-priority', 'None', 0);
                 loadInitDropdown('ddl-impact', 'None', 0);
                 loadInitDropdown('ddl-category', 'None', 0);
-                loadInitDropdown('ddl-department', 'Choose Department', 0);
+                loadInitDropdown('ddl-group', 'Choose Group', 0);
                 requesterTable = initRequesterTable($("#requester-table"));
                 initOlderTicketsTable();
                 $(self._select2).parent().find(".select2-container").css('width', '');

@@ -98,7 +98,7 @@ namespace TMS.Controllers
                             switch (role)
                             {
                                 case "admin":
-                                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                                    return RedirectToAction("Requester", "ManageUser", new { area = "Admin" });
                                 case "technician":
                                     return RedirectToAction("Index", "Home", new { area = "Technician" });
                                 case "helpdesk":
@@ -232,7 +232,7 @@ namespace TMS.Controllers
         //            //requester.Birthday = model.Birthday;
         //            requester.Address = model.Address;
         //            requester.Gender = model.Gender;
-        //            requester.DepartmentName = model.DepartmentName;
+        //            requester.GroupName = model.GroupName;
         //            requester.JobTitle = model.JobTitle;
         //            requester.CompanyName = model.CompanyName;
         //            requester.CompanyAddress = model.CompanyAddress;

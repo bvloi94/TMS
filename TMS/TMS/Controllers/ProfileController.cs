@@ -58,8 +58,6 @@ namespace TMS.Controllers
             }
         }
 
-
-
         // GET: Profile
         //[CustomAuthorize(Roles = "Requester")]
         public ActionResult Index()
@@ -74,7 +72,6 @@ namespace TMS.Controllers
             model.Birthday = user.Birthday;
             model.Gender = user.Gender;
             model.JobTitle = user.JobTitle;
-            model.DepartmentID = user.DepartmentID;
             model.DepartmentName = user.DepartmentName;
             model.CompanyName = user.CompanyName;
             model.CompanyAddress = user.CompanyAddress;
@@ -97,7 +94,6 @@ namespace TMS.Controllers
             model.Birthday = user.Birthday;
             model.Gender = user.Gender;
             model.JobTitle = user.JobTitle;
-            model.DepartmentID = user.DepartmentID;
             model.DepartmentName = user.DepartmentName;
             model.CompanyName = user.CompanyName;
             model.CompanyAddress = user.CompanyAddress;
@@ -125,7 +121,6 @@ namespace TMS.Controllers
                 requester.Birthday = model.Birthday;
                 requester.Gender = model.Gender;
                 requester.JobTitle = model.JobTitle;
-                requester.DepartmentID = model.DepartmentID;
                 requester.DepartmentName = model.DepartmentName;
                 requester.CompanyName = model.CompanyName;
                 requester.CompanyAddress = model.CompanyAddress;

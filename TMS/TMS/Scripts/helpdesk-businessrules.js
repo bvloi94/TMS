@@ -235,7 +235,7 @@ tree.on("select_node.jstree", function (event, data) {
                             }
                         });
                         break;
-                    case "Department":
+                    case "Group":
                     case "Priority":
                     case "Impact":
                     case "Urgency":
