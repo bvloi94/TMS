@@ -249,7 +249,7 @@ tree.on("select_node.jstree", function (event, data) {
                         });
                         break;
                     case "Category":
-                        initCategoryDropdown({
+                        initCategoryConditionDropdown({
                             control: tempInput,
                             ignore: function () {
                                 return [];//tempInput.val();
@@ -288,10 +288,12 @@ tree.on("select_node.jstree", function (event, data) {
                     tree.jstree().get_node(selectedNodeId).data.Value = val;
                     tree.jstree().get_node(selectedNodeId).data.ValueMask = text;
                     var $search = tempInput.data('select2').dropdown.$search || tempInput.data('select2').selection.$search;
-                    $search.val("");
-                    $search.trigger('keydown');
+                    //$search.val("");
+                    //$search.trigger('keydown');
                     $search.focus();
-                    //window.dispatchEvent(new Event('resize'));
+                    //tempInput.select2('data').dropdown._positionDropdown();
+                    //tempInput.select2('data').dropdown._resizeDropdown();
+                    window.dispatchEvent(new Event('resize'));
                 });
             }
         }

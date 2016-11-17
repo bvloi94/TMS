@@ -147,7 +147,7 @@ function initCategoryDropdown(param) {
     var formatt = function (repo) {
         var markup = "";
         if (repo.allowAll) {
-            markup = "<div class='technician-dropdown'>" +
+            markup = "<div class='category-dropdown'>" +
                 "<label class='category-name'>All</label>" +
                 "</div>";
 
@@ -166,7 +166,8 @@ function initCategoryDropdown(param) {
             dataType: "json",
             data: function (params) {
                 var ajaxData = {
-                    ignore: param.ignore()
+                    ignore: param.ignore(),
+                    query: params.term
                 };
                 if (param.data != undefined) {
                     var dat = param.data();
@@ -645,6 +646,73 @@ function initStatusDropdown(param) {
             return markup;
         },
         minimumInputLength: 0,
+        templateResult: formatt,
+        templateSelection: function (data) {
+            return data.text;
+        }
+    });
+}
+
+function initCategoryConditionDropdown(param) {
+    var formatt = function (repo) {
+        var markup = "";
+        if (repo.allowAll) {
+            markup = "<div class='category-dropdown'>" +
+                "<label class='category-name'>All</label>" +
+                "</div>";
+
+        } else {
+            markup = "<div class='category-dropdown'>" +
+                "<label class='category-" + repo.Level + "'>" +
+                repo.Name +
+                "</label>" +
+                "</div>";
+        }
+        return markup;
+    }
+    param.control.select2({
+        ajax: {
+            url: "/dropdown/loadcategorydropdown",
+            dataType: "json",
+            data: function(params) {
+                var ajaxData = {
+                    ignore: param.ignore(),
+                    query: params.term
+                };
+                if (param.data != undefined) {
+                    var dat = param.data();
+                    for (var i in dat) {
+                        ajaxData[i] = dat[i];
+                    }
+                }
+                return ajaxData;
+            },
+            processResults: function(data) {
+                var result = {
+                    results: []
+                };
+                if (param.allowAll) {
+                    result.results.push({
+                        allowAll: true,
+                        id: "",
+                        text: "All"
+                    });
+                }
+                for (var i = 0; i < data.length; i++) {
+                    data[i].id = data[i].ID + "";
+                    data[i].text = data[i].Name;
+                    result.results.push(data[i]);
+                }
+                return result;
+            },
+            cache: true
+        },
+        multiple: true,
+        minimumResultsForSearch: Infinity,
+        escapeMarkup: function(markup) {
+            return markup;
+        },
+        closeOnSelect: false,
         templateResult: formatt,
         templateSelection: function (data) {
             return data.text;

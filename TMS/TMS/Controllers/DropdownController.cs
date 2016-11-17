@@ -151,10 +151,23 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult LoadCategoryDropDown()
+        public ActionResult LoadCategoryDropDown(string query)
         {
             var result = new List<CategoryViewModel>();
             addChildCates(ref result, 1, 0);
+            List<CategoryViewModel> queriedList = new List<CategoryViewModel>();
+            if (!string.IsNullOrEmpty(query))
+            {
+                foreach (var cate in result)
+                {
+                    if (cate.Name.ToLower().Contains(query.ToLower()))
+                    {
+                        cate.Level = 1;
+                        queriedList.Add(cate);
+                    }
+                }
+                return Json(queriedList, JsonRequestBehavior.AllowGet);
+            }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
