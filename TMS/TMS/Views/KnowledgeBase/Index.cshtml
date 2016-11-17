@@ -76,8 +76,9 @@
 
     .header-content {
         color: #666;
-        background-color: #E4E4E4;
+        background-color: transparent;
         padding: 8px 12px;
+        margin: 15px 0px;
     }
 
     .question-row {
@@ -162,22 +163,22 @@
             </div>
         </div>
         <div class="col-xs-9">
-            <div class="box box-solid questions">
-                <div class="header-content col-xs-12">
-                    <div class="col-md-8 col-xs-9">
-                        <a class="btn btn-default btn-flat" href="/KnowledgeBase/Create">
-                            <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
-                        </a>
-                        <a href="javascript:void(0)" class="btn btn-flat btn-default" onclick="showFrequentlyAskedSubjects();">Frequently Asked Subjects</a>
-                        <a class="btn btn-default btn-flat" id="delete-solutions" href="javascript:void(0)"><i class="fa fa-trash"></i></a>
-                    </div>
-                    <div class="box-tools col-md-4 col-xs-3" style="text-align: right">
-                        <div class="has-feedback">
-                            <input type="text" id="key_search" class="form-control input" placeholder="Search solution..." />
-                            <span class="glyphicon glyphicon-search form-control-feedback"></span>
-                        </div>
+            <div class="header-content col-sm-12 no-padding">
+                <div class="col-md-8 col-xs-9 no-padding">
+                    <a class="btn btn-success btn-flat" href="/KnowledgeBase/Create">
+                        <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
+                    </a>
+                    <a href="javascript:void(0)" class="btn btn-primary btn-flat" onclick="showFrequentlyAskedSubjects();">Frequently Asked Subjects</a>
+                    <a class="btn btn-warning btn-flat" id="delete-solutions" href="javascript:void(0)"><i class="fa fa-trash"></i></a>
+                </div>
+                <div class="box-tools col-md-4 col-xs-3 no-padding" style="text-align: right">
+                    <div class="has-feedback">
+                        <input type="text" id="key_search" class="form-control input" placeholder="Search solution..." />
+                        <span class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
                 </div>
+            </div>
+            <div class="box box-solid questions">
                 <div class="question-list col-md-12">
                 </div>
             </div>

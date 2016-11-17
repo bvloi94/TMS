@@ -9,7 +9,7 @@
 
 <style>
     .post-title {
-        font-size: 30px !important;
+        font-size: 20px !important;
     }
 
     .page-content {
@@ -96,21 +96,24 @@
                 else if (!string.IsNullOrWhiteSpace(ViewBag.Category))
                 {
                     <li><h2>Category: @ViewBag.Category</h2></li>
+                    <li style="text-align: center"><h4>There are @Model.Count() result(s) found in category <i>"@ViewBag.Category"</i>.</h4></li>
                 }
                 else if (!string.IsNullOrWhiteSpace(ViewBag.Tag))
                 {
                     <li><h2>Tag: @ViewBag.Tag</h2></li>
+                    <li style="text-align: center"><h4>There are @Model.Count() result(s) matched tag <i>@ViewBag.Tag</i>.</h4></li>
                 }
                 else
                 {
                     <li><h2>All articles</h2></li>
+                    <li><h5>Total @Model.Count() result(s).</h5></li>
                 }
 
                 foreach (KnowledgeBaseViewModel solution in Model)
                 {
                     <li>
                         <article class="type-post format-standard hentry clearfix">
-                            <br /><h2 class="post-title"><a href="/FAQ/Detail/@solution.Path">@solution.Subject</a></h2>
+                            <br /><h3 class="post-title"><a href="/FAQ/Detail/@solution.Path">@solution.Subject</a></h3>
                             <div class="post-meta clearfix">
                                 <span class="date">@solution.ModifiedTime</span>
                                 <span class="category" id="@solution.CategoryID" data-id="">
@@ -128,13 +131,13 @@
             }
             else
             {
-                if (Request.Url.ToString().Contains("SearchKey"))
+                if (Request.Url.ToString().Contains("search"))
                 {
-                    <li style="text-align: center"><h4>There is no result matched your keywords.</h4></li>
+                    <li style="text-align: center"><h4>There is no result matched keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
                 }
-                else
+                else if (Request.Url.ToString().Contains("Category"))
                 {
-                    <li style="text-align: center"><h4>There is no result.</h4></li>
+                    <li style="text-align: center"><h4>There is no result in category <i>"@ViewBag.Category"</i>.</h4></li>
                 }
             }
         </ul>
