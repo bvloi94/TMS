@@ -84,7 +84,7 @@ namespace TMS.Services
         public IEnumerable<AspNetUser> SearchRequesters(string query)
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "requester"
-                                                        && (query == null || r.Fullname.Contains(query)));
+                                                        && (query == null || query == "" || r.Fullname.ToLower().Contains(query.ToLower())));
         }
 
         public IEnumerable<AspNetUser> GetHelpDesks()
