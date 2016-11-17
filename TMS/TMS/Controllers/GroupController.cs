@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using LumiSoft.Net.Mime.vCard;
 using TMS.Services;
 using TMS.DAL;
 using TMS.Models;
@@ -13,7 +11,7 @@ using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
-    public class DropdownController : Controller
+    public class GroupController : Controller
     {
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
@@ -23,7 +21,7 @@ namespace TMS.Controllers
         public ImpactService _impactService { get; set; }
         public CategoryService _categoryService { get; set; }
 
-        public DropdownController()
+        public GroupController()
         {
             var unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(unitOfWork);
