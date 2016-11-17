@@ -209,3 +209,32 @@ ERROR 2016-11-17 12:24:36,705 JobManager             ExecuteAllJobs     - The Jo
 DEBUG 2016-11-17 12:24:36,706 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
 DEBUG 2016-11-17 12:24:36,707 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
 DEBUG 2016-11-17 12:24:36,711 JobManager             ExecuteAllJobs     - End Method
+DEBUG 2016-11-17 12:35:07,630 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-17 12:35:08,274 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-17 12:35:08,275 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-17 12:35:08,276 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-17 12:35:08,276 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-17 12:35:08,276 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-17 12:35:08,277 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-17 12:35:08,278 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-17 12:35:08,282 JobManager             ExecuteAllJobs     - End Method
+ERROR 2016-11-17 12:35:23,197 EmailUtil              ailsUsingEAGetMail - Authentication failed because the remote party has closed the transport stream.
+DEBUG 2016-11-17 12:39:02,912 EmailUtil              MoveNext           - System.Net.Mail.SmtpException: Failure sending mail. ---> System.IO.IOException: Authentication failed because the remote party has closed the transport stream.
+   at System.Net.Mail.SmtpConnection.ConnectAndHandshakeAsyncResult.End(IAsyncResult result)
+   at System.Net.Mail.SmtpTransport.EndGetConnection(IAsyncResult result)
+   at System.Net.Mail.SmtpClient.ConnectCallback(IAsyncResult result)
+   --- End of inner exception stack trace ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult()
+   at TMS.Utils.EmailUtil.<SendEmail>d__11.MoveNext() in F:\Documents\Capstone\TMS\TMS\TMS\TMS\TMS\Utils\EmailUtil.cs:line 222
+WARN  2016-11-17 12:39:02,983 EmailUtil              MoveNext           - Send created ticket notification email to REQ Nguyen Hoang Thy unsuccessfully!
+DEBUG 2016-11-17 12:58:38,433 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-17 12:58:38,641 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-17 12:58:38,642 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-17 12:58:38,642 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-17 12:58:38,643 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-17 12:58:38,643 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-17 12:58:38,644 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-17 12:58:38,645 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-17 12:58:38,647 JobManager             ExecuteAllJobs     - End Method

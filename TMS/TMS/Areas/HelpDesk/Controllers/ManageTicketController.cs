@@ -765,10 +765,10 @@ namespace TMS.Areas.HelpDesk.Controllers
                 filteredListItems =
                     filteredListItems.Where(
                         p => p.ScheduleEndDate.HasValue && (
-                        (duebyFilterItems.Contains("Overdue") && p.ScheduleEndDate.Value < DateTime.Now)
-                        || (duebyFilterItems.Contains("Today") && p.ScheduleEndDate.Value.Date == DateTime.Today)
-                        || (duebyFilterItems.Contains("Tomorrow") && p.ScheduleEndDate.Value.Date == DateTime.Today.AddDays(1))
-                        || (duebyFilterItems.Contains("Next_8_hours") && p.ScheduleEndDate.Value >= DateTime.Now && p.ScheduleEndDate.Value <= DateTime.Now.AddHours(8))
+                        (duebyFilterItems.Contains("Overdue") && p.DueByDate.Value < DateTime.Now)
+                        || (duebyFilterItems.Contains("Today") && p.DueByDate.Value.Date == DateTime.Today)
+                        || (duebyFilterItems.Contains("Tomorrow") && p.DueByDate.Value.Date == DateTime.Today.AddDays(1))
+                        || (duebyFilterItems.Contains("Next_8_hours") && p.DueByDate.Value >= DateTime.Now && p.ScheduleEndDate.Value <= DateTime.Now.AddHours(8))
                         ));
             }
 
