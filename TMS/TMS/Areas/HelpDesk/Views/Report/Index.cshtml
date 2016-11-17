@@ -87,7 +87,7 @@
                                 <option value="2">Impact</option>
                                 <option value="3">Urgency</option>
                                 <option value="4">Priority</option>
-                                <option value="5">Department</option>
+                                <option value="5">Group</option>
                                 <option value="6" selected="selected">Status</option>
                             </select>
                         </div>
@@ -135,7 +135,7 @@
                             <th>Impact</th>
                             <th>Urgency</th>
                             <th>Priority</th>
-                            <th>Department</th>
+                            <th>Group</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -388,9 +388,9 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return row.Department;
+                            return row.Group;
                         },
-                        // Department
+                        // Group
                         "targets": 9,
                         "visible": false
                     }
@@ -450,7 +450,7 @@
                     column.visible(true);
                     break;
 
-                case "5": // Department
+                case "5": // Group
                     var column = $("#ticket-table-report").dataTable().api().column("9");
                     column.visible(true);
                     break;

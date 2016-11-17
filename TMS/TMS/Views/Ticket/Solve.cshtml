@@ -181,7 +181,7 @@
                         </div>
                     </div>
                 </form>
-                    
+
                 <div class="col-sm-12 row-content ">
                     <div class="col-sm-12">
                         <div class="col-sm-2">
@@ -395,7 +395,7 @@
     </div>
     <div class="row" style="text-align: center;">
         <div class="col-sm-12" style="margin-bottom: 20px">
-            <input type="button" id="solveBtn" class="btn btn-primary btn-flat row-button" value="Solve"  />
+            <input type="button" id="solveBtn" class="btn btn-primary btn-flat row-button" value="Solve" />
             <input type="button" id="saveBtn" class="btn btn-success btn-flat row-button" value="Save" />
             @if (ViewBag.Role == "Technician")
             {
@@ -445,25 +445,23 @@
         $(document).ready(function () {
             $("#tags").html(loadKeywordToTags('@Model.Tags'));
 
-            $(".attachment-delete")
-                .on("click",
-                    function () {
-                        var inputs = $(this).parent().find(':input');
-                        inputs.each(function (index, element) {
-                            element.value = "";
-                        });
-                        $(this).parent().addClass("hidden");
-                    })
+            $(".attachment-delete").on("click", function () {
+                var inputs = $(this).parent().find(':input');
+                inputs.each(function (index, element) {
+                    element.value = "";
+                });
+                $(this).parent().addClass("hidden");
+            })
         });
 
         $("#search-btn").on("click", function () {
             $.ajax({
-                "url": "/Ticket/SearchSolution/",
-                "method": "POST",
-                "data": {
+                url: "/Ticket/SearchSolution/",
+                method: "POST",
+                data: {
                     searchtxt: $("#solution-search").val()
                 },
-                "success": function (data) {
+                success: function (data) {
                     if (data.success) {
                         $('#result-list').empty();
                         if (data.data.length == 0) {
@@ -492,7 +490,7 @@
                         });
                     }
                 },
-                "error": function (e) {
+                error: function (e) {
                     noty({
                         text: "Cannot connect to server!",
                         type: "error",

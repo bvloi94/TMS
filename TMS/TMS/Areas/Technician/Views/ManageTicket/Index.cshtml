@@ -64,10 +64,6 @@
         white-space: pre-wrap;
     }
 
-        table.dataTable tbody td {
-        vertical-align: middle;
-    }
-
     .select2-dropdown {
         z-index: 1200;
     }
@@ -156,7 +152,7 @@
 
                 @*<table class="table" id="ticket-table">
 
-                </table>*@
+                    </table>*@
 
                 <!-- View ticket detail modal -->
                 <div id="detail-modal" class="modal fade" role="dialog">
@@ -322,9 +318,9 @@
                                             <div class="col-sm-12 row-content">
                                                 <div class="col-sm-4 ">
                                                     <div class="col-sm-6 labels">
-                                                        <b>Department: </b>
+                                                        <b>Group: </b>
                                                     </div>
-                                                    <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-department"></span></div>
+                                                    <div class="col-sm-6" style="padding-left: 19px"><span id="ticket-group"></span></div>
                                                 </div>
                                                 <div class="col-sm-4 ">
                                                     <div class="col-sm-6 labels">
@@ -480,6 +476,7 @@
                             ticketInfo += $("<div/>",
                             {
                                 "class": "col-lg-2 col-sm-3 pull-right",
+                                "style": "padding-top: 12px",
                                 "html": priorityRow + overdueDiv
                             })[0].outerHTML;
 
@@ -496,7 +493,11 @@
                         "render": function (data, type, row) {
                             var solveUrl = '/Ticket/Solve/' + row.Id;
                             if (row.Status == "Assigned") {
-                                return "<a href='" + solveUrl + "' class='btn btn-success btn-flat' >Solve</a>";
+                                return $("<div/>",
+                                   {
+                                       "style": "padding-top: 10px",
+                                       "html": "<a href='" + solveUrl + "' class='btn btn-success btn-flat' >Solve</a>"
+                                   })[0].outerHTML;;
                             }
                             else {
                                 return "<a class='btn btn-default btn-flat' disabled>Solve</a>";

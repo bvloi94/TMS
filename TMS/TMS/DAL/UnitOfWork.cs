@@ -24,7 +24,7 @@ namespace TMS.DAL
         private GenericRepository<BusinessRuleCondition> _businessRuleConditionRepository;
         private GenericRepository<BusinessRuleNotification> _businessRuleNotificationRepository;
         private GenericRepository<BusinessRuleTrigger> _businessRuleTriggerRepository;
-        private GenericRepository<Department> _departmentRepository;
+        private GenericRepository<Group> _groupRepository;
         private GenericRepository<Impact> _impactRepository;
         private GenericRepository<Solution> _solutionRepository;
         private GenericRepository<SolutionAttachment> _solutionAttachmentRepository;
@@ -144,15 +144,15 @@ namespace TMS.DAL
             }
         }
 
-        public GenericRepository<Department> DepartmentRepository
+        public GenericRepository<Group> GroupRepository
         {
             get
             {
-                if (this._departmentRepository == null)
+                if (this._groupRepository == null)
                 {
-                    this._departmentRepository = new GenericRepository<Department>(_context);
+                    this._groupRepository = new GenericRepository<Group>(_context);
                 }
-                return _departmentRepository;
+                return _groupRepository;
             }
         }
 

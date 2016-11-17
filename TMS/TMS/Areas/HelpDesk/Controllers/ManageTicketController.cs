@@ -29,7 +29,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
-        public DepartmentService _departmentService { get; set; }
+        public GroupService _groupService { get; set; }
         public UrgencyService _urgencyService { get; set; }
         public PriorityService _priorityService { get; set; }
         public ImpactService _impactService { get; set; }
@@ -42,7 +42,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         {
             _ticketService = new TicketService(unitOfWork);
             _userService = new UserService(unitOfWork);
-            _departmentService = new DepartmentService(unitOfWork);
+            _groupService = new GroupService(unitOfWork);
             _urgencyService = new UrgencyService(unitOfWork);
             _priorityService = new PriorityService(unitOfWork);
             _impactService = new ImpactService(unitOfWork);
@@ -250,10 +250,10 @@ namespace TMS.Areas.HelpDesk.Controllers
                     AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
                     model.TechnicianId = technician.Id;
                     model.Technician = technician.Fullname;
-                    if (technician.DepartmentID.HasValue)
+                    if (technician.GroupID.HasValue)
                     {
-                        model.DepartmentId = technician.DepartmentID.Value;
-                        model.Department = technician.Department.Name;
+                        model.GroupId = technician.GroupID.Value;
+                        model.Group = technician.Group.Name;
                     }
                 }
 
@@ -765,10 +765,10 @@ namespace TMS.Areas.HelpDesk.Controllers
                 filteredListItems =
                     filteredListItems.Where(
                         p => p.ScheduleEndDate.HasValue && (
-                        (duebyFilterItems.Contains("Overdue") && p.ScheduleEndDate.Value < DateTime.Now)
-                        || (duebyFilterItems.Contains("Today") && p.ScheduleEndDate.Value.Date == DateTime.Today)
-                        || (duebyFilterItems.Contains("Tomorrow") && p.ScheduleEndDate.Value.Date == DateTime.Today.AddDays(1))
-                        || (duebyFilterItems.Contains("Next_8_hours") && p.ScheduleEndDate.Value >= DateTime.Now && p.ScheduleEndDate.Value <= DateTime.Now.AddHours(8))
+                        (duebyFilterItems.Contains("Overdue") && p.DueByDate.Value < DateTime.Now)
+                        || (duebyFilterItems.Contains("Today") && p.DueByDate.Value.Date == DateTime.Today)
+                        || (duebyFilterItems.Contains("Tomorrow") && p.DueByDate.Value.Date == DateTime.Today.AddDays(1))
+                        || (duebyFilterItems.Contains("Next_8_hours") && p.DueByDate.Value >= DateTime.Now && p.ScheduleEndDate.Value <= DateTime.Now.AddHours(8))
                         ));
             }
 
@@ -894,10 +894,10 @@ namespace TMS.Areas.HelpDesk.Controllers
                         {
                             model.TechnicianId = technician.Id;
                             model.Technician = technician.Fullname;
-                            if (technician.DepartmentID.HasValue)
+                            if (technician.GroupID.HasValue)
                             {
-                                model.DepartmentId = technician.DepartmentID.Value;
-                                model.Department = _departmentService.GetDepartmentById(technician.DepartmentID.Value).Name;
+                                model.GroupId = technician.GroupID.Value;
+                                model.Group = technician.Group.Name;
                             }
                         }
                     }
@@ -988,8 +988,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                             success = true,
                             technicianId = ticket.TechnicianID,
                             technician = technician.Fullname,
-                            departmentId = technician.DepartmentID,
-                            department = technician.Department.Name
+                            groupId = technician.GroupID,
+                            group = technician.Group.Name
                         }, JsonRequestBehavior.AllowGet);
                     }
                     else
@@ -999,8 +999,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                             success = true,
                             technicianId = "",
                             technician = "",
-                            departmentId = "",
-                            department = ""
+                            groupId = "",
+                            group = ""
                         }, JsonRequestBehavior.AllowGet);
                     }
                 }

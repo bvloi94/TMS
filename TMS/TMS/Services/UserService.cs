@@ -97,11 +97,11 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician");
         }
 
-        public IEnumerable<AspNetUser> GetTechnicianByPattern(string query, int? departmentId)
+        public IEnumerable<AspNetUser> GetTechnicianByPattern(string query, int? groupId)
         {
             return _unitOfWork.AspNetUserRepository.Get(
                     r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician"
-                         && (!departmentId.HasValue || departmentId == 0 || r.DepartmentID == departmentId)
+                         && (!groupId.HasValue || groupId == 0 || r.GroupID == groupId)
                          && (query == null || r.Fullname.Contains(query)));
         }
 

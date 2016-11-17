@@ -216,7 +216,7 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\HomeController.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\Manager\Controllers\DepartmentController.cs" />
+    <Compile Include="Areas\Manager\Controllers\GroupController.cs" />
     <Compile Include="Areas\Manager\Controllers\ManageSCController.cs" />
     <Compile Include="Areas\Admin\Controllers\ManageUserController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProfileController.cs" />
@@ -240,6 +240,9 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Models\Group.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Notification.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
@@ -280,9 +283,6 @@
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Category.cs">
-      <DependentUpon>TMSModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Department.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Impact.cs">
@@ -337,7 +337,7 @@
     <Compile Include="Schedulers\Job.cs" />
     <Compile Include="Schedulers\JobManager.cs" />
     <Compile Include="Schedulers\ConvertTicketJob.cs" />
-    <Compile Include="Services\DepartmentService.cs" />
+    <Compile Include="Services\GroupService.cs" />
     <Compile Include="Services\BusinessRuleService.cs" />
     <Compile Include="Utils\FileUploader.cs" />
     <Compile Include="Services\UserRoleService.cs" />
@@ -376,7 +376,7 @@
     <Compile Include="ViewModels\ProfileManagerViewModel.cs" />
     <Compile Include="ViewModels\ProfileRequesterViewModel.cs" />
     <Compile Include="ViewModels\ProfileTechnicianViewModel.cs" />
-    <Compile Include="ViewModels\RecentTicketViewModel.cs" />
+    <Compile Include="ViewModels\FrequentlyAskedTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
@@ -640,7 +640,7 @@
     <Content Include="Areas\HelpDesk\Views\Report\Index.cshtml" />
     <Content Include="Areas\Manager\Views\ManageSC\PriorityMatrix.cshtml" />
     <Content Include="Areas\Manager\Views\ManageSC\_PriorityMatrixTable.cshtml" />
-    <Content Include="Areas\Manager\Views\Department\Index.cshtml" />
+    <Content Include="Areas\Manager\Views\Group\Index.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
@@ -657,6 +657,7 @@
     <Content Include="Areas\HelpDesk\Views\Shared\_TopLayout.cshtml" />
     <Content Include="Areas\HelpDesk\Views\Home\Index.cshtml" />
     <Content Include="Areas\Manager\Views\Shared\_TopLayout.cshtml" />
+    <Content Include="Areas\Manager\Views\Home\Index.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
@@ -735,7 +736,6 @@
     <Content Include="Views\Account\CreateRequester.cshtml" />
     <Content Include="Views\Error\Error403.cshtml" />
     <Content Include="Views\FAQ\Index.cshtml" />
-    <Content Include="Views\Profile\Edit.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Shared\TMSRequesterLayout.cshtml" />
     <Content Include="Views\Error\Error500.cshtml" />
@@ -762,7 +762,6 @@
     <Folder Include="Content\knowledgebase\images\" />
     <Folder Include="Content\Plugins\icheck\skins\" />
     <Folder Include="Content\Plugins\jquery.ui\images\" />
-    <Folder Include="Views\Notification\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

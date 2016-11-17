@@ -20,7 +20,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         public CategoryService _categoryService { get; set; }
         public UrgencyService _urgencyService { get; set; }
         public PriorityService _priorityService { get; set; }
-        public DepartmentService _departmentService { get; set; }
+        public GroupService _groupService { get; set; }
 
         public ReportController()
         {
@@ -31,7 +31,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             _categoryService = new CategoryService(_UnitofWork);
             _urgencyService = new UrgencyService(_UnitofWork);
             _priorityService = new PriorityService(_UnitofWork);
-            _departmentService = new DepartmentService(_UnitofWork);
+            _groupService = new GroupService(_UnitofWork);
         }
         // GET: HelpDesk/Report
         public ActionResult Index()
@@ -110,7 +110,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Impact = (p.Impact == null) ? "-" : p.Impact.Name,
                 Urgency = (p.Urgency == null) ? "-" : p.Urgency.Name,
                 Priority = (p.Priority == null) ? "-" : p.Priority.Name,
-                Technician = (_userService.GetUserById(p.TechnicianID) == null) ? "-" : (_userService.GetUserById(p.TechnicianID).Department == null ? "-" : _userService.GetUserById(p.TechnicianID).Department.Name),
+                Group = (_userService.GetUserById(p.TechnicianID) == null) ? "-" : (_userService.GetUserById(p.TechnicianID).Group == null ? "-" : _userService.GetUserById(p.TechnicianID).Group.Name),
                 IsOverdue = p.DueByDate.HasValue ? (DateTime.Now > p.DueByDate.Value) : false
             });
 
@@ -275,26 +275,26 @@ namespace TMS.Areas.HelpDesk.Controllers
                         });
 
                     }
-                // Department
+                // Group
                 case 5:
                     {
                         IEnumerable<AspNetUser> allTehnicians = _userService.GetTechnicians();
                         IEnumerable<Ticket> techinicianInteTickets = new List<Ticket>();
                         labels.Add("Unassigned");
                         data.Add(filteredListItems.Where(p => p.TechnicianID == null).Count());
-                        IEnumerable<Department> departments = _departmentService.GetAll();
-                        foreach (var department in departments)
+                        IEnumerable<Group> groups = _groupService.GetAll();
+                        foreach (var group in groups)
                         {
                             int ticketCount = 0;
-                            var listTechOfDepartment = allTehnicians.Where(p => p.DepartmentID == department.ID);
-                            // lay list technician co department la "department"
-                            foreach (var techinician in listTechOfDepartment)
+                            var listTechOfGroup = allTehnicians.Where(p => p.GroupID == group.ID);
+                            // lay list technician co group la "group"
+                            foreach (var techinician in listTechOfGroup)
                             {
                                 // duyet list ticket theo technician ID 
                                 techinicianInteTickets = filteredListItems.Where(p => p.TechnicianID == techinician.Id);
                                 ticketCount += techinicianInteTickets.Count();
                             }
-                            labels.Add(department.Name);
+                            labels.Add(group.Name);
                             data.Add(ticketCount);
                         }
                         return Json(new

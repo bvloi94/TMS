@@ -224,44 +224,47 @@ namespace TMS.Services
                     }
                     break;
                 case ConstantUtil.BusinessRuleCriteria.Description:
-                    switch (businessRuleCondition.Condition)
+                    if (!string.IsNullOrWhiteSpace(handlingTicket.Description))
                     {
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
-                            if (handlingTicket.Description.Equals(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
-                            if (!handlingTicket.Description.Equals(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.BeginsWith:
-                            if (handlingTicket.Description.StartsWith(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.EndsWith:
-                            if (handlingTicket.Description.EndsWith(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.Contains:
-                            if (handlingTicket.Description.Contains(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case ConstantUtil.ConditionOfBusinessRuleCondition.DoesNotContain:
-                            if (!handlingTicket.Description.Contains(businessRuleCondition.Value))
-                            {
-                                return true;
-                            }
-                            break;
+                        switch (businessRuleCondition.Condition)
+                        {
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.Is:
+                                if (handlingTicket.Description.Equals(businessRuleCondition.Value))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.IsNot:
+                                if (!handlingTicket.Description.Equals(businessRuleCondition.Value))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.BeginsWith:
+                                if (handlingTicket.Description.StartsWith(businessRuleCondition.Value))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.EndsWith:
+                                if (handlingTicket.Description.EndsWith(businessRuleCondition.Value))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.Contains:
+                                if (handlingTicket.Description.Contains(businessRuleCondition.Value))
+                                {
+                                    return true;
+                                }
+                                break;
+                            case ConstantUtil.ConditionOfBusinessRuleCondition.DoesNotContain:
+                                if (!handlingTicket.Description.Contains(businessRuleCondition.Value))
+                                {
+                                    return true;
+                                }
+                                break;
+                        }
                     }
                     break;
                 case ConstantUtil.BusinessRuleCriteria.RequesterName:
@@ -299,14 +302,14 @@ namespace TMS.Services
                         }
                     }
                     break;
-                case ConstantUtil.BusinessRuleCriteria.Department:
+                case ConstantUtil.BusinessRuleCriteria.Group:
                     AspNetUser technician = _unitOfWork.AspNetUserRepository.GetByID(handlingTicket.TechnicianID);
                     if (technician != null)
                     {
-                        Department department = technician.Department;
-                        if (department != null)
+                        Group group = technician.Group;
+                        if (group != null)
                         {
-                            int departmentId = department.ID;
+                            int groupId = group.ID;
                             values = businessRuleCondition.Value.Split(',');
                             switch (businessRuleCondition.Condition)
                             {
@@ -315,7 +318,7 @@ namespace TMS.Services
                                     {
                                         int intVal = 0;
                                         Int32.TryParse(value, out intVal);
-                                        if (departmentId == intVal)
+                                        if (groupId == intVal)
                                         {
                                             return true;
                                         }
@@ -327,7 +330,7 @@ namespace TMS.Services
                                     {
                                         int intVal = 0;
                                         Int32.TryParse(value, out intVal);
-                                        if (departmentId == intVal)
+                                        if (groupId == intVal)
                                         {
                                             result = false;
                                             break;
@@ -1077,13 +1080,6 @@ namespace TMS.Services
 
         public IEnumerable<FrequentlyAskedTicketViewModel> GetFrequentlyAskedSubjects(IEnumerable<Ticket> tickets)
         {
-            //IEnumerable<FrequentlyAskedTicketViewModel> results = tickets.Where(m => m.Tags != null && m.Tags.Trim() != string.Empty)
-            //    .GroupBy(m => m.Tags).Select(m => new FrequentlyAskedTicketViewModel
-            //    {
-            //        Tags = m.Key,
-            //        Count = m.Count()
-            //    }).OrderByDescending(m => m.Count);
-
             tickets = tickets.OrderByDescending(m => GeneralUtil.GetNumberOfTags(m.Tags));
             List<FrequentlyAskedTicketViewModel> result = new List<FrequentlyAskedTicketViewModel>();
             List<Ticket> temp = tickets.ToList();
@@ -1101,22 +1097,21 @@ namespace TMS.Services
                     foreach (Ticket remainingTicket in temp)
                     {
                         int matchTag = 0;
-                        //string itemTags = string.IsNullOrWhiteSpace(remainingTicket.Tags) ? "" : remainingTicket.Tags;
-                        //int itemNumOfTags = GeneralUtil.GetNumberOfTags(itemTags);
-                        //if (itemNumOfTags >= numOfTags && compareTicket.Tags != remainingTicket.Tags)
-                        //{
-                        //    continue;
-                        //}
-                        if (!string.IsNullOrWhiteSpace(remainingTicket.Tags))
+
+                        if (!compareTicket.CategoryID.HasValue || compareTicket.CategoryID == remainingTicket.CategoryID)
                         {
-                            foreach (string tag in tagArr)
+                            if (!string.IsNullOrWhiteSpace(remainingTicket.Tags))
                             {
-                                if (remainingTicket.Tags.Contains(tag))
+                                foreach (string tag in tagArr)
                                 {
-                                    matchTag++;
+                                    if (remainingTicket.Tags.Contains(tag))
+                                    {
+                                        matchTag++;
+                                    }
                                 }
                             }
                         }
+                        
                         if (numOfTags <= 3)
                         {
                             if (matchTag == numOfTags)

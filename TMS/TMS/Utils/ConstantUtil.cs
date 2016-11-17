@@ -108,7 +108,7 @@ namespace TMS.Utils
             public const int Subject = 1;
             public const int Description = 2;
             public const int RequesterName = 3;
-            public const int Department = 4;
+            public const int Group = 4;
             public const int Priority = 5;
             public const int Impact = 6;
             public const int Urgency = 7;
@@ -121,7 +121,7 @@ namespace TMS.Utils
             public const int Subject = 1;
             public const int Description = 2;
             public const int RequesterName = 3;
-            public const int Department = 4;
+            public const int Group = 4;
             public const int Priority = 5;
             public const int Impact = 6;
             public const int Urgency = 7;

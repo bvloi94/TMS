@@ -1,6 +1,6 @@
-﻿@model TMS.Models.Department
+﻿@model TMS.Models.Group
 @{
-    ViewBag.Title = "Department";
+    ViewBag.Title = "Group";
     Layout = "~/Areas/Manager/Views/Shared/_TopLayout.cshtml";
 }
 
@@ -8,8 +8,8 @@
     <div class="col-xs-12">
         <div class="box box-primary">
             <div class="box-body">
-                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Department</button>
-                <table class="table dataTable" id="department-table">
+                <button type="button" class="btn btn-flat btn-primary" onclick="showCreateModal()"><i class="fa fa-plus"></i>&nbsp;New Group</button>
+                <table class="table dataTable" id="group-table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -35,7 +35,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Department</h4>
+                <h4 class="modal-title">Group</h4>
             </div>
             <div class="modal-body">
                 <div class="form-horizontal">
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" id="create-btn" onclick="createDepartment()">Save</button>
+                <button type="button" class="btn btn-success" id="create-btn" onclick="createGroup()">Save</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             </div>
         </div>
@@ -93,7 +93,7 @@
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
-        $("#department-table")
+        $("#group-table")
             .DataTable({
                 processing: true,
                 serverSide: true,
@@ -101,7 +101,7 @@
                 sort: false,
                 filter: false,
                 ajax: {
-                    url: "/Manager/Department/GetDepartment"
+                    url: "/Manager/Group/GetGroup"
                 },
                 "columnDefs": [
                     {
@@ -119,7 +119,7 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getDepartmentDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getGroupDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
                                    '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                         },
                         "targets": 2
@@ -130,11 +130,11 @@
         var showCreateModal = function () {
             clearModal();
             $("#myModal").modal('show');
-            $('#create-btn').attr('onclick', 'createDepartment()');
+            $('#create-btn').attr('onclick', 'createGroup()');
         }
 
         var reloadDataTable = function () {
-            var oTable = $("#department-table").dataTable();
+            var oTable = $("#group-table").dataTable();
             oTable._fnPageChange(0);
             oTable._fnAjaxUpdate();
         };
@@ -145,9 +145,9 @@
             $(".text-danger").hide();
         }
 
-        var createDepartment = function () {
+        var createGroup = function () {
             $.ajax({
-                url: "/Manager/Department/CreateDepartment",
+                url: "/Manager/Group/CreateGroup",
                 type: "POST",
                 dataTpye: "JSON",
                 data: {
@@ -186,10 +186,10 @@
             });
         }
 
-        var getDepartmentDetail = function (id) {
+        var getGroupDetail = function (id) {
             clearModal();
             $.ajax({
-                url: "/Manager/Department/GetDepartmentDetail",
+                url: "/Manager/Group/GetGroupDetail",
                 dataType: "json",
                 type: "GET",
                 data: {
@@ -200,7 +200,7 @@
                         $("#myModal").modal("show");
                         $("#name-txt").val(data.name);
                         $("#description-txt").val(data.description);
-                        $("#create-btn").attr("onclick", "editDepartment('" + id + "')");
+                        $("#create-btn").attr("onclick", "editGroup('" + id + "')");
                     } else {
                         if (data.error) {
                             noty({
@@ -223,9 +223,9 @@
             });
         }
 
-        var editDepartment = function (id) {
+        var editGroup = function (id) {
             $.ajax({
-                url: "/Manager/Department/EditDepartment",
+                url: "/Manager/Group/EditGroup",
                 dataType: "json",
                 type: "POST",
                 data: {
@@ -266,13 +266,13 @@
         }
 
         var showDeleteModal = function (id) {
-            $("#yes-btn").attr("onclick", "deleteDepartment('" + id + "')");
+            $("#yes-btn").attr("onclick", "deleteGroup('" + id + "')");
             $("#delete-modal").modal("show");
         };
 
-        var deleteDepartment = function (id) {
+        var deleteGroup = function (id) {
             $.ajax({
-                url: "/Manager/Department/DeleteDepartment",
+                url: "/Manager/Group/DeleteGroup",
                 dataType: "json",
                 type: "POST",
                 data: { id: id },

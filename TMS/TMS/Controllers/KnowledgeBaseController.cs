@@ -398,10 +398,6 @@ namespace TMS.Controllers
             IEnumerable<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedSubjects(recentTickets);
 
             IEnumerable<FrequentlyAskedTicketViewModel> filteredListItems = frequentlyAskedTickets;
-            //if (!string.IsNullOrEmpty(param.search["value"]))
-            //{
-            //    filteredListItems = filteredListItems.Where(p => p.Tags != null && (p.Tags.ToLower().Contains(param.search["value"].ToLower())));
-            //}
 
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
@@ -450,7 +446,8 @@ namespace TMS.Controllers
             {
                 Id = m.ID,
                 Subject = m.Subject,
-                Tags = m.Tags == null ? "" : m.Tags
+                Tags = m.Tags == null ? "" : m.Tags,
+                CategoryId = m.CategoryID.HasValue ? m.CategoryID.Value : 0
             }).AsQueryable();
 
             List<TicketViewModel> filteredListItems = new List<TicketViewModel>();
@@ -460,20 +457,28 @@ namespace TMS.Controllers
                 tags = GeneralUtil.ConvertToFormatKeyword(tags);
                 string[] tagsArr = tags.Split(',');
                 int numOfTags = tagsArr.Count();
+                int categoryId = 0;
                 foreach (TicketViewModel ticket in temp)
                 {
                     int matchTag = 0;
-                    foreach (string tagItem in tagsArr)
+                    if (categoryId == 0 || ticket.CategoryId == categoryId)
                     {
-                        if (ticket.Tags != null && ticket.Tags.ToLower().Contains(tagItem.ToLower()))
+                        foreach (string tagItem in tagsArr)
                         {
-                            matchTag++;
+                            if (ticket.Tags != null && ticket.Tags.ToLower().Contains(tagItem.ToLower()))
+                            {
+                                matchTag++;
+                            }
                         }
                     }
                     if (numOfTags <= 2)
                     {
                         if (matchTag == numOfTags)
                         {
+                            if (!filteredListItems.Any())
+                            {
+                                categoryId = ticket.CategoryId;
+                            }
                             filteredListItems.Add(ticket);
                         }
                     }
@@ -481,6 +486,10 @@ namespace TMS.Controllers
                     {
                         if (matchTag >= numOfTags - 1 && matchTag <= numOfTags + 1)
                         {
+                            if (!filteredListItems.Any())
+                            {
+                                categoryId = ticket.CategoryId;
+                            }
                             filteredListItems.Add(ticket);
                         }
                     }
@@ -488,6 +497,10 @@ namespace TMS.Controllers
                     {
                         if (matchTag >= numOfTags - 2 && matchTag <= numOfTags + 2)
                         {
+                            if (!filteredListItems.Any())
+                            {
+                                categoryId = ticket.CategoryId;
+                            }
                             filteredListItems.Add(ticket);
                         }
                     }

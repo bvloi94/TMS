@@ -74,6 +74,8 @@
                     url: "/Ticket/Create/",
                     method: "POST",
                     data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function (data) {
                         if (!data.success) {
                             noty({
@@ -82,6 +84,7 @@
                                 type: "error",
                                 timeout: 2500
                             });
+                            $("#saveBtn").attr("disabled", false);
                         }
                         else {
                             noty({
@@ -95,18 +98,13 @@
                             }, 1000);
                         }
                     },
-                    contentType: false,
-                    processData: false,
-                    enctype: 'multipart/form-data',
-                    error: function (e) {
+                    error: function () {
                         noty({
-                            text: "Some error occured! Please try again!",
-                            type: "error",
+                            text: "Cannot connect to server!",
                             layout: "topRight",
+                            type: "error",
                             timeout: 2500
                         });
-                    },
-                    complete: function () {
                         $("#saveBtn").attr("disabled", false);
                     }
                 });

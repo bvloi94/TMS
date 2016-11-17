@@ -9,7 +9,7 @@ function loadNotification() {
         method: "GET",
         success: function (data) {
             var dataItems = data.data;
-            if (dataItems != null) {
+            if (dataItems != "" || dataItems.length > 0) {
                 $("#notification-list").empty();
                 var url = "";
                 var count = 0;
@@ -40,7 +40,7 @@ function loadNotification() {
             }
             else {
                 $("#notification-count").text('');
-                $("#notification-list").empty().append('<li class="text-center" style="padding-top: 130px"><i>There is no new notification at this moment</i></li>');
+                $("#notification-list").empty().append('<li class="text-center" style="padding-top: 45px"><i>There is no new notification at this moment</i></li>');
             }
         }
     });

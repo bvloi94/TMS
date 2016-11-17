@@ -3,15 +3,11 @@
     Layout = "~/Areas/HelpDesk/Views/Shared/_TopLayout.cshtml";
     ViewBag.Title = "Ticket Management";
 }
-<link href="~/Content/Plugins/icheck/skins/square/blue.css" rel="stylesheet">
+<link href="~/Content/Plugins/icheck/skins/square/green.css" rel="stylesheet">
 <link rel="stylesheet" href="~/Content/custom-css/ticket-detail.css" />
 <link rel="stylesheet" href="~/Content/css/daterangepicker.css" />
 
 <style>
-    table.dataTable tbody td {
-        vertical-align: middle;
-    }
-
     .select2-dropdown {
         z-index: 1200;
     }
@@ -174,9 +170,9 @@
                 <div class="modal-body">
                     <div class="form-horizontal">
                         <div class="form-group">
-                            <label class="control-label col-md-3">Department</label>
+                            <label class="control-label col-md-3">Group</label>
                             <div class="col-md-9">
-                                <select class="form-control" id="department-select" data-role="ddl-department"></select>
+                                <select class="form-control" id="group-select" data-role="ddl-group"></select>
                             </div>
                         </div>
                         <div class="form-group">
@@ -414,9 +410,9 @@
                                 <div class="col-sm-12 row-content">
                                     <div class="col-sm-6">
                                         <div class="col-sm-4 labels">
-                                            <b>Department: </b>
+                                            <b>Group: </b>
                                         </div>
-                                        <div class="col-sm-8" style="padding-left: 19px"><span id="ticket-department"></span></div>
+                                        <div class="col-sm-8" style="padding-left: 19px"><span id="ticket-group"></span></div>
                                     </div>
                                     <div class="col-sm-6">
                                         <div class="col-sm-4 labels">
@@ -577,19 +573,19 @@
                                     <label>Due by</label>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="due_by_item" id="Overdue" name="Overdue" type="checkbox" value="Overdue">
+                                    <input class="due_by_item" id="Overdue" name="Overdue" type="checkbox" value="Overdue"> &nbsp;
                                     <label>Overdue</label>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="due_by_item" id="Today" name="Today" type="checkbox" value="Today">
+                                    <input class="due_by_item" id="Today" name="Today" type="checkbox" value="Today"> &nbsp;
                                     <label>Today</label>
                                 </div>
                                 <div class="col-sm-offset-4 col-sm-4">
-                                    <input class="due_by_item" id="Tomorrow" name="Tomorrow" type="checkbox" value="Tomorrow">
+                                    <input class="due_by_item" id="Tomorrow" name="Tomorrow" type="checkbox" value="Tomorrow"> &nbsp;
                                     <label>Tomorrow</label>
                                 </div>
                                 <div class="col-sm-4">
-                                    <input class="due_by_item" id="Next_8_hours" name="Next 8 hours" type="checkbox" value="Next_8_hours">
+                                    <input class="due_by_item" id="Next_8_hours" name="Next 8 hours" type="checkbox" value="Next_8_hours"> &nbsp;
                                     <label>Next 8 hours</label>
                                 </div>
                             </div>

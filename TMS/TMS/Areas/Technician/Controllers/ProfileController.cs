@@ -13,14 +13,14 @@ namespace TMS.Areas.Technician.Controllers
     public class ProfileController : Controller
     {
         private UserService _userService;
-        private DepartmentService _departmentService;
+        private GroupService _groupService;
         private UnitOfWork _unitOfWork;
 
 
         public ProfileController()
         {
             _unitOfWork = new UnitOfWork();
-            _departmentService = new DepartmentService(_unitOfWork);
+            _groupService = new GroupService(_unitOfWork);
             _userService = new UserService(_unitOfWork);
         }
         // GET: Technician/Profile
@@ -37,10 +37,10 @@ namespace TMS.Areas.Technician.Controllers
             model.Gender = user.Gender;
             model.PhoneNumber = user.PhoneNumber;
             model.Email = user.Email;
-            model.DepartmentID = user.DepartmentID;
-            model.DepartmentName = _departmentService.GetDepartmentById(model.DepartmentID.Value).Name;
+            model.GroupID = user.GroupID;
+            model.GroupName = _groupService.GetGroupById(model.GroupID.Value).Name;
 
-            ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
+            ViewBag.groupList = new SelectList(_groupService.GetAll(), "ID", "Name");
             ViewBag.Username = user.UserName;
             ViewBag.AvatarURL = user.AvatarURL;
             return View(model);
@@ -60,10 +60,10 @@ namespace TMS.Areas.Technician.Controllers
             model.Gender = user.Gender;
             model.PhoneNumber = user.PhoneNumber;
             model.Email = user.Email;
-            model.DepartmentID = user.DepartmentID;
-            model.DepartmentName = _departmentService.GetDepartmentById(model.DepartmentID.Value).Name;
+            model.GroupID = user.GroupID;
+            model.GroupName = _groupService.GetGroupById(model.GroupID.Value).Name;
 
-            ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
+            ViewBag.groupList = new SelectList(_groupService.GetAll(), "ID", "Name");
             ViewBag.Username = user.UserName;
             ViewBag.AvatarURL = user.AvatarURL;
             return View(model);
@@ -100,7 +100,7 @@ namespace TMS.Areas.Technician.Controllers
                 _userService.EditUser(technician);
                 return RedirectToAction("Index");
             }
-            ViewBag.departmentList = new SelectList(_departmentService.GetAll(), "ID", "Name");
+            ViewBag.groupList = new SelectList(_groupService.GetAll(), "ID", "Name");
             ViewBag.Username = technician.UserName;
             ViewBag.AvatarURL = technician.AvatarURL;
             return View("UpdateProfile", model);

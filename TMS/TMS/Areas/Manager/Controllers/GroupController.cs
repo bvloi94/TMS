@@ -12,39 +12,38 @@ using TMS.ViewModels;
 namespace TMS.Areas.Manager.Controllers
 {
     [CustomAuthorize(Roles = "Manager")]
-    public class DepartmentController : Controller
+    public class GroupController : Controller
     {
         private UnitOfWork _unitOfWork;
         private UserService _userService;
-        private DepartmentService _departmentService;
+        private GroupService _groupService;
 
-        public DepartmentController()
+        public GroupController()
         {
             _unitOfWork = new UnitOfWork();
             _userService = new UserService(_unitOfWork);
-            _departmentService = new DepartmentService(_unitOfWork);
+            _groupService = new GroupService(_unitOfWork);
         }
 
-        // GET: Manager/Department
+        // GET: Manager/Group
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpGet]
-        public ActionResult GetDepartment(jQueryDataTableParamModel param)
+        public ActionResult GetGroup(jQueryDataTableParamModel param)
         {
-
-            IEnumerable<Department> departmentList = _departmentService.GetAllDepartment();
+            IEnumerable<Group> groupList = _groupService.GetAllGroup();
             var default_search_key = Request["search[value]"];
-            IEnumerable<Department> filteredListItems;
+            IEnumerable<Group> filteredListItems;
             if (!string.IsNullOrEmpty(default_search_key))
             {
-                filteredListItems = departmentList.Where(p => p.Name.ToLower().Contains(default_search_key));
+                filteredListItems = groupList.Where(p => p.Name.ToLower().Contains(default_search_key));
             }
             else
             {
-                filteredListItems = departmentList;
+                filteredListItems = groupList;
             }
 
             // sort 
@@ -83,12 +82,12 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateDepartment(DepartmentViewModel model)
+        public ActionResult CreateGroup(GroupViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(model.Name))
             {
                 model.Name = model.Name.Trim();
-                bool isDuplicateName = _departmentService.IsDuplicateName(null, model.Name);
+                bool isDuplicateName = _groupService.IsDuplicateName(null, model.Name);
                 if (isDuplicateName)
                 {
                     return Json(new
@@ -114,17 +113,17 @@ namespace TMS.Areas.Manager.Controllers
             }
             else
             {
-                Department department = new Department();
-                department.Name = model.Name;
-                department.Description = model.Description;
+                Group group = new Group();
+                group.Name = model.Name;
+                group.Description = model.Description;
 
-                bool addResult = _departmentService.AddDepartment(department);
+                bool addResult = _groupService.AddGroup(group);
                 if (addResult)
                 {
                     return Json(new
                     {
                         success = true,
-                        message = "Create department succesfully!"
+                        message = "Create group succesfully!"
                     });
                 }
             }
@@ -136,17 +135,17 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetDepartmentDetail()
+        public ActionResult GetGroupDetail()
         {
             try
             {
                 int id = Int32.Parse(Request["id"]);
-                Department department = _departmentService.GetDepartmentById(id);
+                Group group = _groupService.GetGroupById(id);
                 return Json(new
                 {
                     success = true,
-                    name = department.Name,
-                    description = department.Description
+                    name = group.Name,
+                    description = group.Description
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex) when (ex is FormatException || ex is ArgumentNullException)
@@ -155,20 +154,20 @@ namespace TMS.Areas.Manager.Controllers
                 {
                     success = false,
                     error = true,
-                    message = "Cannot get department detail!"
+                    message = "Cannot get group detail!"
                 }, JsonRequestBehavior.AllowGet);
             }
         }
 
         [HttpPost]
-        public ActionResult EditDepartment(int? id, DepartmentViewModel model)
+        public ActionResult EditGroup(int? id, GroupViewModel model)
         {
             if (id.HasValue)
             {
                 if (!string.IsNullOrWhiteSpace(model.Name))
                 {
                     model.Name = model.Name.Trim();
-                    bool isDuplicateName = _departmentService.IsDuplicateName(id, model.Name);
+                    bool isDuplicateName = _groupService.IsDuplicateName(id, model.Name);
                     if (isDuplicateName)
                     {
                         return Json(new
@@ -195,17 +194,17 @@ namespace TMS.Areas.Manager.Controllers
                 else
                 {
                     var name = model.Name.Trim();
-                    Department department = _departmentService.GetDepartmentById(id.Value);
-                    department.Name = name;
-                    department.Description = model.Description;
+                    Group group = _groupService.GetGroupById(id.Value);
+                    group.Name = name;
+                    group.Description = model.Description;
 
-                    bool resultEdit = _departmentService.EditDepartment(department);
+                    bool resultEdit = _groupService.EditGroup(group);
                     if (resultEdit)
                     {
                         return Json(new
                         {
                             success = true,
-                            message = "Update department successfully!"
+                            message = "Update group successfully!"
                         });
                     }
                     else
@@ -228,48 +227,48 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "Unavailable Department!"
+                    message = "Unavailable Group!"
                 });
             }
         }
 
         [HttpPost]
-        public ActionResult DeleteDepartment(int? id)
+        public ActionResult DeleteGroup(int? id)
         {
             if (!id.HasValue)
             {
                 return Json(new
                 {
                     success = false,
-                    message = "Unavailable Department!"
+                    message = "Unavailable Group!"
                 });
             }
-            Department department = _departmentService.GetDepartmentById(id.Value);
-            if (department == null)
+            Group group = _groupService.GetGroupById(id.Value);
+            if (group == null)
             {
                 return Json(new
                 {
                     success = false,
-                    message = "Unavailable Department!"
+                    message = "Unavailable Group!"
                 });
             }
             else
             {
-                if (_departmentService.IsInUse(department))
+                if (_groupService.IsInUse(group))
                 {
                     return Json(new
                     {
                         success = false,
-                        message = "Department is being used! Can not be deleted!"
+                        message = "Group is being used! Can not be deleted!"
                     });
                 }
-                bool resultDelete = _departmentService.DeleteDepartment(department);
+                bool resultDelete = _groupService.DeleteGroup(group);
                 if (resultDelete)
                 {
                     return Json(new
                     {
                         success = true,
-                        message = "Delete department successfully!"
+                        message = "Delete group successfully!"
                     });
                 }
                 else

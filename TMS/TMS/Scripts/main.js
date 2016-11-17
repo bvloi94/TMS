@@ -114,7 +114,7 @@ function initRequesterTable(selector) {
                 "targets": 2,
                 "sortable": false,
                 "render": function (data, type, row) {
-                    return (!row.DepartmentName || 0 === row.DepartmentName.length) ? "-" : row.DepartmentName;
+                    return (!row.GroupName || 0 === row.GroupName.length) ? "-" : row.GroupName;
                 }
             },
             {
