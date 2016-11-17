@@ -257,10 +257,10 @@ namespace TMS.Controllers
         {
             List<DropDownViewModel> conditions = TMSUtils.GetDefaultCondition();
             List<DropDownViewModel> result = new List<DropDownViewModel>();
-            if (query == null) query = "";
+            query = query ?? "";
             foreach (var condition in conditions)
             {
-                if (condition.Name.Contains(query))
+                if (condition.Name.ToLower().Contains(query.ToLower()))
                 {
                     if (criteria != "Subject" && criteria != "Description")
                     {
@@ -283,7 +283,6 @@ namespace TMS.Controllers
         {
             var js = new JavaScriptSerializer();
             var ignoreItems = (object[])js.DeserializeObject(ignore);
-
             var result = new List<DropdownTechnicianViewModel>();
             List<AspNetUser> queryResult = _userService.SearchRequesters(query).ToList();
             foreach (var tech in queryResult)
@@ -306,48 +305,23 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult LoadDepartmentConditionDropdown(string ignore, string query)
-        {
-            var js = new JavaScriptSerializer();
-            var ignoreItems = (object[])js.DeserializeObject(ignore);
-
-            var result = new List<DepartmentViewModel>();
-            var queryResult = _departmentService.GetAll();
-            foreach (var department in queryResult)
-            {
-                if (ignoreItems != null && ignoreItems.Length > 0)
-                {
-                    if (ignoreItems.Any(a => (string)a == department.ID.ToString()))
-                    {
-                        continue;
-                    }
-                }
-                var dep = new DepartmentViewModel
-                {
-                    Id = department.ID,
-                    Name = department.Name,
-                };
-                result.Add(dep);
-            }
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
         public ActionResult LoadConditionValueDropdown(string ignore, string query, string criteria)
         {
             var js = new JavaScriptSerializer();
             var ignoreItems = (object[])js.DeserializeObject(ignore);
             var result = new List<DropDownViewModel>();
             query = query ?? "";
+            query = query.ToLower();
             switch (criteria)
             {
                 case "Department":
                     var departmentResult = _departmentService.GetAll();
-                    departmentResult = departmentResult.Where(d => d.Name.Contains(query));
+                    departmentResult = departmentResult.Where(d => d.Name.ToString().ToLower().Contains(query));
                     foreach (var item in departmentResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.ID.ToString().ToLower()))
+                            if (ignoreItems.Any(a => a.ToString() == item.ID.ToString()))
                             {
                                 continue;
                             }
@@ -362,12 +336,12 @@ namespace TMS.Controllers
                     break;
                 case "Priority":
                     var priorityResult = _priorityService.GetAll();
-                    priorityResult = priorityResult.Where(d => d.Name.Contains(query));
+                    priorityResult = priorityResult.Where(d => d.Name.ToString().ToLower().Contains(query));
                     foreach (var item in priorityResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.ID.ToString().ToLower()))
+                            if (ignoreItems.Any(a => a.ToString() == item.ID.ToString()))
                             {
                                 continue;
                             }
@@ -382,12 +356,12 @@ namespace TMS.Controllers
                     break;
                 case "Impact":
                     var impactResult = _impactService.GetAll();
-                    impactResult = impactResult.Where(d => d.Name.Contains(query));
+                    impactResult = impactResult.Where(d => d.Name.ToString().ToLower().Contains(query));
                     foreach (var item in impactResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.ID.ToString().ToLower()))
+                            if (ignoreItems.Any(a => a.ToString() == item.ID.ToString()))
                             {
                                 continue;
                             }
@@ -402,12 +376,12 @@ namespace TMS.Controllers
                     break;
                 case "Urgency":
                     var urgencyResult = _urgencyService.GetAll();
-                    urgencyResult = urgencyResult.Where(d => d.Name.Contains(query));
+                    urgencyResult = urgencyResult.Where(d => d.Name.ToString().ToLower().Contains(query));
                     foreach (var item in urgencyResult)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.ID.ToString().ToLower()))
+                            if (ignoreItems.Any(a => a.ToString() == item.ID.ToString()))
                             {
                                 continue;
                             }
@@ -422,12 +396,12 @@ namespace TMS.Controllers
                     break;
                 case "Mode":
                     IEnumerable<DropDownViewModel> modeList = TMSUtils.GetDefaultMode();
-                    modeList = modeList.Where(m => m.Name.Contains(query));
+                    modeList = modeList.Where(m => m.Name.ToString().ToLower().Contains(query));
                     foreach (var item in modeList)
                     {
                         if (ignoreItems != null && ignoreItems.Length > 0)
                         {
-                            if (ignoreItems.Any(a => a.ToString().ToLower() == item.Id.ToString().ToLower()))
+                            if (ignoreItems.Any(a => a.ToString() == item.Id.ToString()))
                             {
                                 continue;
                             }
