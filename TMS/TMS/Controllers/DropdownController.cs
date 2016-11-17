@@ -11,7 +11,7 @@ using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
-    public class GroupController : Controller
+    public class DropdownController : Controller
     {
         public TicketService _ticketService { get; set; }
         public UserService _userService { get; set; }
@@ -21,7 +21,7 @@ namespace TMS.Controllers
         public ImpactService _impactService { get; set; }
         public CategoryService _categoryService { get; set; }
 
-        public GroupController()
+        public DropdownController()
         {
             var unitOfWork = new UnitOfWork();
             _ticketService = new TicketService(unitOfWork);

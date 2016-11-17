@@ -232,7 +232,7 @@
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\GroupController.cs" />
+    <Compile Include="Controllers\DropdownController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FAQController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -376,7 +376,7 @@
     <Compile Include="ViewModels\ProfileManagerViewModel.cs" />
     <Compile Include="ViewModels\ProfileRequesterViewModel.cs" />
     <Compile Include="ViewModels\ProfileTechnicianViewModel.cs" />
-    <Compile Include="ViewModels\RecentTicketViewModel.cs" />
+    <Compile Include="ViewModels\FrequentlyAskedTicketViewModel.cs" />
     <Compile Include="ViewModels\ProfileHelpdeskViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\RequesterViewModel.cs" />
