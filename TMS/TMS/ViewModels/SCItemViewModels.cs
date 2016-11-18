@@ -12,6 +12,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Name is required!")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name length is between 2 and 100 characters")]
         public string Name { get; set; }
+        [StringLength(255, ErrorMessage = "Description length is less than 255 characters")]
         public string Description { get; set; }
         public bool IsSystem { get; set; }
     }
@@ -22,6 +23,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Name is required!")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name length is between 2 and 100 characters")]
         public string Name { get; set; }
+        [StringLength(255, ErrorMessage = "Description length is less than 255 characters")]
         public string Description { get; set; }
         [Required(ErrorMessage = "Duration is required!")]
         public int Duration { get; set; }
@@ -35,6 +37,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Name is required!")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name length is between 2 and 100 characters")]
         public string Name { get; set; }
+        [StringLength(255, ErrorMessage = "Description length is less than 255 characters")]
         public string Description { get; set; }
         [Required(ErrorMessage = "Color is required!")]
         public string Color { get; set; }

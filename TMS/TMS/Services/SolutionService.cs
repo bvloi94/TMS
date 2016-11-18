@@ -133,5 +133,15 @@ namespace TMS.Services
             }
             return _unitOfWork.CommitTransaction();
         }
+
+        public IEnumerable<Solution> GetSolutionsByTag(string tag)
+        {
+            if (tag != null)
+            {
+                tag = tag.ToLower();
+            }
+            return _unitOfWork.SolutionRepository.Get(m => m.SolutionKeywords
+                .Any(n => n.Keyword.Name.Equals(tag)));
+        }
     }
 }

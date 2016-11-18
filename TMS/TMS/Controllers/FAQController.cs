@@ -21,6 +21,7 @@ namespace TMS.Controllers
         private SolutionService _solutionService;
         private FileUploader _fileUploader;
         private CategoryService _categoryService;
+        private KeywordService _keywordService;
 
         public FAQController()
         {
@@ -29,6 +30,7 @@ namespace TMS.Controllers
             _solutionService = new SolutionService(_unitOfWork);
             _fileUploader = new FileUploader();
             _categoryService = new CategoryService(_unitOfWork);
+            _keywordService = new KeywordService(_unitOfWork);
         }
         // GET: FAQ
         public ActionResult Index(string search)
@@ -42,7 +44,7 @@ namespace TMS.Controllers
                 CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
-                //Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
@@ -50,20 +52,8 @@ namespace TMS.Controllers
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                //var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
-
-                //search = GeneralUtil.RemoveSpecialCharacters(search);
-                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                //search = regex.Replace(search, " ");
-                //string[] keywordArr = search.Split(' ');
-                //foreach (string keyword in keywordArr)
-                //{
-                //    string keywordSearch = '"' + keyword.ToLower() + '"';
-                //    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordSearch));
-                //}
-                //predicate = predicate.Or(p => p.Subject.ToLower().Contains(search.ToLower()));
-                //model = model.Where(predicate);
-                //ViewBag.SearchKey = search;
+                model = model.Where(p => p.Subject.ToLower().Contains(search.ToLower()));
+                ViewBag.SearchKey = search;
             }
 
             return View(model);
@@ -191,7 +181,7 @@ namespace TMS.Controllers
                         model.CreatedTime = solution.CreatedTime;
                         model.ModifiedTime = solution.ModifiedTime;
                     }
-                    //model.Keyword = solution.Keyword == null ? "-" : solution.Keyword;
+                    model.Keywords = _keywordService.GetSolutionKeywordForDisplay(solution.ID);
                     model.Path = solution.Path;
                     ViewBag.relatedSolution = LoadRelatedArticle(solution.ID);
 
@@ -241,7 +231,7 @@ namespace TMS.Controllers
                 CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
-                //Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
@@ -264,7 +254,7 @@ namespace TMS.Controllers
 
         public ActionResult Tags(string tag)
         {
-            IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
+            IEnumerable<Solution> solutions = _solutionService.GetSolutionsByTag(tag);
             IQueryable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
             {
                 ID = m.ID,
@@ -273,17 +263,12 @@ namespace TMS.Controllers
                 CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
-                //Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
             }).AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(tag))
-            {
-                //tag = '"' + tag + '"';
-                //model = model.Where(m => m.Keyword.Contains(tag.ToLower()));
-            };
             model = model.OrderBy(m => m.Subject);
 
             ViewBag.Tag = tag;
