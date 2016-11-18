@@ -243,12 +243,12 @@ namespace TMS.Utils
             }
         }
 
-        public static string GetOverdueDate(DateTime? scheduleDate, int status)
+        public static string GetOverdueDate(DateTime dueByDate, int status)
         {
-            if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
+            if (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved)
             {
-                TimeSpan distance = scheduleDate.Value.Subtract(DateTime.Now);
-                int distanceDay = distance.Days;
+                TimeSpan distance = dueByDate.Subtract(DateTime.Now);
+                int distanceDay = (int)dueByDate.Date.Subtract(DateTime.Now.Date).TotalDays;
                 int distanceMinute = (int)distance.TotalMinutes;
                 if (distanceDay < 0)
                 {
@@ -256,37 +256,40 @@ namespace TMS.Utils
                     {
                         return "Overdue by yesterday";
                     }
-                    return "Overdue by " + Math.Abs(distanceDay) + " days";
+                    else
+                    {
+                        return "Overdue by " + Math.Abs(distanceDay) + " days";
+                    }
                 }
                 else if (distanceDay == 0)
                 {
                     if (distanceMinute < 0)
                     {
-                        return "Overdue by today at " + scheduleDate.Value.ToString("hh:mm");
+                        return "Overdue by today at " + dueByDate.ToString("hh:mm");
                     }
                     else
                     {
-                        return "Due on today at " + scheduleDate.Value.ToString("hh:mm");
+                        return "Due on today at " + dueByDate.ToString("hh:mm");
                     }
                 }
                 else
                 {
                     if (distanceDay == 1)
                     {
-                        return "Due on tomorrow at " + scheduleDate.Value.ToString("hh:mm");
+                        return "Due on tomorrow at " + dueByDate.ToString("hh:mm");
                     }
-                    return "Due on " + scheduleDate.Value.ToString("MMMM dd yyyy  hh:mm");
+                    return "Due on " + dueByDate.ToString("MMMM dd yyyy  hh:mm");
                 }
             }
             return string.Empty;
         }
 
-        public static bool IsOverdue(DateTime? scheduleDate, int status)
+        public static bool IsOverdue(DateTime dueByDate, int status)
         {
-            if (scheduleDate.HasValue && (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned || status == ConstantUtil.TicketStatus.Unapproved))
+            if (status == ConstantUtil.TicketStatus.Open || status == ConstantUtil.TicketStatus.Assigned)
             {
-                TimeSpan distance = scheduleDate.Value.Subtract(DateTime.Now);
-                int distanceDay = distance.Days;
+                TimeSpan distance = dueByDate.Subtract(DateTime.Now);
+                int distanceDay = (int)dueByDate.Date.Subtract(DateTime.Now.Date).TotalDays;
                 int distanceMinute = (int)distance.TotalMinutes;
                 if (distanceDay < 0)
                 {

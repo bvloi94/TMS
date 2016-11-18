@@ -301,9 +301,9 @@
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
-                            <b>Actual start date: </b>
+                            <b>Due date: </b>
                         </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.ActualStartDateString)</div>
+                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.DueByDateString)</div>
                     </div>
                     <div class="col-sm-6 ">
                         <div class="col-sm-4 labels">
@@ -318,12 +318,6 @@
                             <b>Solved date: </b>
                         </div>
                         <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.SolvedDateString)</div>
-                    </div>
-                    <div class="col-sm-6 ">
-                        <div class="col-sm-4 labels">
-                            <b>Due date: </b>
-                        </div>
-                        <div class="col-sm-8 datetimerow">@Html.DisplayFor(model => model.DueByDateString)</div>
                     </div>
                 </div>
             </div>
@@ -454,7 +448,7 @@
     <script src="~/Scripts/helpdesk-manage-ticket.js"></script>
     <script>
         $(document).ready(function () {
-            $("#tags").html(loadKeywordToTags('@Model.Tags'));
+            $("#tags").html(loadKeywordToTags('@Model.Keywords'));
         });
 
         $("#btn-confirm-close").on('click', function () {
