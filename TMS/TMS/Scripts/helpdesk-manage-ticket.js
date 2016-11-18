@@ -859,29 +859,21 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
                 }
                 $("[name='ImpactDetail']").val(ticket.ImpactDetail);
                 $("[name='ScheduleStartDate']").val(ticket.ScheduleStartDateString);
-                $("[name='ScheduleEndDate']").val(ticket.ScheduleEndDateString);
-                $("[name='ActualStartDate']").val(ticket.ActualStartDateString);
-                $("[name='ActualEndDate']").val(ticket.ActualEndDateString);
                 $("[name='Solution']").val(ticket.Solution);
-                if (ticket.Tags) {
-                    var tags = ticket.Tags.split(',');
+                if (ticket.Keywords) {
+                    var tags = ticket.Keywords.split(',');
                     for (i = 0; i < tags.length; i++) {
                         $('#tags').tagit('createTag', tags[i]);
                     }
                 }
-                $("[name='Note']").val(ticket.Solution);
+                $("[name='Note']").val(ticket.Note);
 
-                if (ticket.UrgencyId != 0) {
-                    loadInitDropdown('ddl-urgency', ticket.Urgency, ticket.UrgencyId);
-                }
-                if (ticket.PriorityId != 0) {
-                    loadInitDropdown('ddl-priority', ticket.Priority, ticket.PriorityId);
+                if (ticket.CategoryId != 0) {
+                    loadInitDropdown('ddl-category', ticket.Category, ticket.CategoryId);
+                    $("#categoryId").trigger("change");
                 }
                 if (ticket.ImpactId != 0) {
                     loadInitDropdown('ddl-impact', ticket.Impact, ticket.ImpactId);
-                }
-                if (ticket.CategoryId != 0) {
-                    loadInitDropdown('ddl-category', ticket.Category, ticket.CategoryId);
                 }
                 if (ticket.GroupId != 0) {
                     loadInitDropdown('ddl-group', ticket.Group, ticket.GroupId);

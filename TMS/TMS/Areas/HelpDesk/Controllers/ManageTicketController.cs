@@ -917,9 +917,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     model.Subject = ticket.Subject;
                     model.Description = ticket.Description;
                     model.Solution = ticket.Solution;
-                    model.RequesterId = ticket.RequesterID;
-                    model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
-                    model.Mode = ticket.Mode;
+
                     if (ticket.Type.HasValue)
                     {
                         model.Type = ticket.Type.Value;
@@ -930,16 +928,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                         model.CategoryId = ticket.CategoryID.Value;
                         model.Category = _categoryService.GetCategoryById(ticket.CategoryID.Value).Name;
                     }
-                    model.UrgencyId = ticket.UrgencyID;
-                    model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
-                    model.PriorityId = ticket.PriorityID;
-                    model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
+
                     model.ImpactId = ticket.ImpactID;
-                    model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+                    model.Impact = ticket.Impact.Name;
                     model.ImpactDetail = ticket.ImpactDetail;
                     model.ScheduleStartDateString = ticket.ScheduleStartDate.ToString(ConstantUtil.DateTimeFormat);
                     model.ScheduleEndDateString = ticket.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat);
-                    model.ActualEndDateString = ticket.ActualEndDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "";
 
                     if (!string.IsNullOrEmpty(ticket.TechnicianID))
                     {
@@ -956,7 +950,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                         }
                     }
 
-                    //model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Keywords = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
                     model.Note = ticket.Note;
                     return Json(new
                     {

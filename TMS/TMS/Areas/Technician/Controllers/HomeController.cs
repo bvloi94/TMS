@@ -56,14 +56,14 @@ namespace TMS.Areas.Technician.Controllers
                 closedTickets = technicianList.Where(p => p.Status == ConstantUtil.TicketStatus.Closed).Count();
 
                 IEnumerable<BasicTicketViewModel> incomingTickets = technicianList
-                    .Where(p => p.DueByDate.Subtract(DateTime.Now).Days < 3 && p.Status == ConstantUtil.TicketStatus.Assigned)
+                    .Where(p => ((int) p.DueByDate.Date.Subtract(DateTime.Now.Date).TotalDays) < 3 && p.Status == ConstantUtil.TicketStatus.Assigned)
                     .Select(m => new BasicTicketViewModel
                     {
                         Code = m.Code,
                         ID = m.ID,
                         Status = m.Status,
                         Subject = m.Subject,
-                        ScheduleEndTime = m.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat2),
+                        DueByDate = m.DueByDate.ToString(ConstantUtil.DateTimeFormat2),
                     }).ToArray();
                 ViewBag.IncomingTickets = incomingTickets;
             }

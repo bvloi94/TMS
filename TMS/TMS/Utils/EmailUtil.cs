@@ -108,9 +108,9 @@ namespace TMS.Utils
         public static async void SendToHelpdesksWhenTicketIsOverdue(Ticket ticket, IEnumerable<AspNetUser> helpdesks)
         {
             string emailSubject = "[TMS] Overdue Ticket Notification";
-            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/OverdueTicketTechnicianTemplate.txt"));
             foreach (AspNetUser helpdesk in helpdesks)
             {
+                string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/OverdueTicketTechnicianTemplate.txt"));
                 emailMessage = emailMessage.Replace("$fullname", helpdesk.Fullname);
                 emailMessage = emailMessage.Replace("$code", ticket.Code);
                 emailMessage = emailMessage.Replace("$delayDay", ((int)(DateTime.Now.Date - ticket.DueByDate.Date).TotalDays).ToString());
