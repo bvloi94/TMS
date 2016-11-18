@@ -99,12 +99,13 @@ namespace TMS.Areas.Manager.Controllers
                 displayedList = filteredListItems.Skip(param.start).Take(param.length);
             }
 
-            var result = displayedList.Select(p => new IConvertible[]
+            IEnumerable<ImpactViewModel> result = displayedList.Select(p => new ImpactViewModel
             {
-                p.ID,
-                p.Name,
-                p.Description
-            }.ToArray());
+                Id = p.ID,
+                Name = p.Name,
+                Description = p.Description,
+                IsSystem = p.IsSystem
+            }).ToArray();
 
             return Json(new
             {
@@ -149,12 +150,15 @@ namespace TMS.Areas.Manager.Controllers
                 displayedList = filteredListItems.Skip(param.start).Take(param.length);
             }
 
-            var result = displayedList.Select(p => new IConvertible[]
+            IEnumerable<UrgencyViewModel> result = displayedList.Select(p => new UrgencyViewModel
             {
-                p.ID,
-                p.Name,
-                p.Description
-            }.ToArray());
+                Id = p.ID,
+                Name = p.Name,
+                Description = p.Description,
+                Duration = GeneralUtil.GetDuration(p.Duration),
+                DurationOption = GeneralUtil.GetDurationOption(p.Duration),
+                IsSystem = p.IsSystem
+            }).ToArray();
 
             return Json(new
             {
@@ -200,13 +204,15 @@ namespace TMS.Areas.Manager.Controllers
                 displayedList = filteredListItems.Skip(param.start).Take(param.length);
             }
 
-            var result = displayedList.Select(p => new IConvertible[]
+            IEnumerable<PriorityViewModel> result = displayedList.Select(p => new PriorityViewModel
             {
-                p.ID,
-                p.Name,
-                p.Description,
-                p.Color
-            }.ToArray());
+                Id = p.ID,
+                Name = p.Name,
+                Description = p.Description,
+                Color = p.Color,
+                Level = p.PriorityLevel,
+                IsSystem = p.IsSystem
+            }).OrderByDescending(m => m.Level).ToArray();
 
             return Json(new
             {
@@ -251,19 +257,25 @@ namespace TMS.Areas.Manager.Controllers
                 ID = p.ID,
                 Name = p.Name,
                 Description = p.Description,
-                Level = p.CategoryLevel.Value,
+                Level = p.CategoryLevel,
+                Impact = (p.Impact == null) ? "-" : p.Impact.Name,
+                Urgency = (p.Urgency == null) ? "-" : p.Urgency.Name,
                 Categories = _categoryService.GetSubCategories(p.ID).Select(m => new CategoryViewModel
                 {
                     ID = m.ID,
                     Name = m.Name,
                     Description = m.Description,
-                    Level = m.CategoryLevel.Value,
+                    Level = m.CategoryLevel,
+                    Impact = (m.Impact == null) ? "-" : m.Impact.Name,
+                    Urgency = (m.Urgency == null) ? "-" : m.Urgency.Name,
                     Categories = _categoryService.GetItems(m.ID).Select(n => new CategoryViewModel
                     {
                         ID = n.ID,
                         Name = n.Name,
                         Description = n.Description,
-                        Level = n.CategoryLevel.Value
+                        Level = n.CategoryLevel,
+                        Impact = (n.Impact == null) ? "-" : n.Impact.Name,
+                        Urgency = (n.Urgency == null) ? "-" : n.Urgency.Name,
                     }).ToArray()
                 }).ToArray()
             }).ToArray();
@@ -278,30 +290,82 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetCategories()
+        public ActionResult GetCategoryModal()
+        {
+            var impactList = _impactService.GetAll().Select(m => new
+            {
+                m.ID,
+                m.Name
+            }).ToArray();
+
+            var urgencyList = _urgencyService.GetAll().Select(m => new
+            {
+                m.ID,
+                m.Name
+            }).ToArray();
+
+            return Json(new
+            {
+                impacts = impactList,
+                urgencies = urgencyList
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetSubCategoryModal()
         {
             var categoryList = _categoryService.GetCategories().Select(m => new
             {
                 m.ID,
                 m.Name
             }).ToArray();
+
+            var impactList = _impactService.GetAll().Select(m => new
+            {
+                m.ID,
+                m.Name
+            }).ToArray();
+
+            var urgencyList = _urgencyService.GetAll().Select(m => new
+            {
+                m.ID,
+                m.Name
+            }).ToArray();
+
             return Json(new
             {
-                data = categoryList
+                categories = categoryList,
+                impacts = impactList,
+                urgencies = urgencyList
             }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public ActionResult GetSubCategories()
+        public ActionResult GetItemModal()
         {
             var categoryList = _categoryService.GetSubCategories().OrderBy(m => m.ParentID).Select(m => new Category
             {
                 ID = m.ID,
                 Name = _categoryService.GetCategoryById(m.ParentID.Value).Name + " > " + m.Name
             }).ToArray();
+
+            var impactList = _impactService.GetAll().Select(m => new
+            {
+                m.ID,
+                m.Name
+            }).ToArray();
+
+            var urgencyList = _urgencyService.GetAll().Select(m => new
+            {
+                m.ID,
+                m.Name
+            }).ToArray();
+
             return Json(new
             {
-                data = categoryList
+                categories = categoryList,
+                impacts = impactList,
+                urgencies = urgencyList
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -509,16 +573,24 @@ namespace TMS.Areas.Manager.Controllers
                     message = "Unavailable impact!"
                 });
             }
-            if (_impactService.IsInUse(impact))
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Impact is being used! Can not be deleted!"
-                });
-            }
             else
             {
+                if (_impactService.IsInUse(impact))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Impact is being used! Can not be deleted!"
+                    });
+                }
+                if (impact.IsSystem)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "This is system impact! Can not be deleted!"
+                    });
+                }
                 bool resultDelete = _impactService.DeleteImpact(impact);
                 if (resultDelete)
                 {
@@ -575,6 +647,7 @@ namespace TMS.Areas.Manager.Controllers
                 priority.Name = model.Name.Trim();
                 priority.Description = model.Description;
                 priority.Color = model.Color;
+                priority.PriorityLevel = model.Level;
                 bool resultInsert = _priorityService.AddPriority(priority);
                 if (resultInsert)
                 {
@@ -606,14 +679,20 @@ namespace TMS.Areas.Manager.Controllers
             if (id.HasValue)
             {
                 Priority priority = _priorityService.GetPriorityByID(id.Value);
+                PriorityViewModel model = new PriorityViewModel
+                {
+                    Id = priority.ID,
+                    Name = priority.Name,
+                    Description = priority.Description,
+                    Color = priority.Color,
+                    Level = priority.PriorityLevel
+                };
                 if (priority != null)
                 {
                     return Json(new
                     {
                         success = true,
-                        name = priority.Name,
-                        description = priority.Description,
-                        color = priority.Color
+                        priority = model
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -659,6 +738,16 @@ namespace TMS.Areas.Manager.Controllers
                 Urgency urgency = new Urgency();
                 urgency.Name = model.Name.Trim();
                 urgency.Description = model.Description;
+                urgency.Duration = 168;
+                switch (model.DurationOption)
+                {
+                    case "hours":
+                        urgency.Duration = model.Duration;
+                        break;
+                    case "days":
+                        urgency.Duration = model.Duration * 24;
+                        break;
+                }
 
                 bool resultInsert = _urgencyService.AddUrgency(urgency);
                 if (resultInsert)
@@ -686,25 +775,29 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetUrgencyDetail()
+        public ActionResult GetUrgencyDetail(int? id)
         {
-            try
+            if (id.HasValue)
             {
-                int id = Int32.Parse(Request["id"]);
-                Urgency urgency = _urgencyService.GetUrgencyByID(id);
+                Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
+                UrgencyViewModel model = new UrgencyViewModel
+                {
+                    Name = urgency.Name,
+                    Description = urgency.Description,
+                    Duration = GeneralUtil.GetDuration(urgency.Duration),
+                    DurationOption = GeneralUtil.GetDurationOption(urgency.Duration)
+                };
                 return Json(new
                 {
                     success = true,
-                    name = urgency.Name,
-                    description = urgency.Description
+                    urgency = model
                 }, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception ex) when (ex is FormatException || ex is ArgumentNullException)
+            else
             {
                 return Json(new
                 {
                     success = false,
-                    error = true,
                     message = "Cannot get urgency detail!"
                 }, JsonRequestBehavior.AllowGet);
             }
@@ -747,6 +840,15 @@ namespace TMS.Areas.Manager.Controllers
                     Urgency urgency = _urgencyService.GetUrgencyByID(id.Value);
                     urgency.Name = model.Name.Trim();
                     urgency.Description = model.Description;
+                    switch (model.DurationOption)
+                    {
+                        case "hours":
+                            urgency.Duration = model.Duration;
+                            break;
+                        case "days":
+                            urgency.Duration = model.Duration * 24;
+                            break;
+                    }
 
                     bool resultUpdate = _urgencyService.UpdateUrgency(urgency);
                     if (resultUpdate)
@@ -820,7 +922,7 @@ namespace TMS.Areas.Manager.Controllers
                     priority.Name = model.Name.Trim();
                     priority.Description = model.Description;
                     priority.Color = model.Color;
-
+                    priority.PriorityLevel = model.Level;
                     bool resultUpdate = _priorityService.UpdatePriority(priority);
                     if (resultUpdate)
                     {
@@ -887,6 +989,15 @@ namespace TMS.Areas.Manager.Controllers
                     });
                 }
 
+                if (priority.IsSystem)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "This is system priority! Can not be deleted!"
+                    });
+                }
+
                 bool resultDelete = _priorityService.DeletePriority(priority);
                 if (resultDelete)
                 {
@@ -937,6 +1048,16 @@ namespace TMS.Areas.Manager.Controllers
                         message = "Urgency is being used! Can not be deleted!"
                     });
                 }
+
+                if (urgency.IsSystem)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "This is system urgency! Can not be deleted!"
+                    });
+                }
+
                 bool resultDelete = _urgencyService.DeleteUrgency(urgency);
                 if (resultDelete)
                 {
@@ -990,6 +1111,8 @@ namespace TMS.Areas.Manager.Controllers
                 category.Name = model.Name;
                 category.Description = model.Description;
                 category.CategoryLevel = ConstantUtil.CategoryLevel.Category;
+                category.ImpactID = model.ImpactId;
+                category.UrgencyID = model.UrgencyId;
 
                 bool addResult = _categoryService.AddCategory(category);
                 if (addResult)
@@ -1059,6 +1182,8 @@ namespace TMS.Areas.Manager.Controllers
                     category.Description = model.Description;
                     category.CategoryLevel = ConstantUtil.CategoryLevel.SubCategory;
                     category.ParentID = model.ParentId;
+                    category.ImpactID = model.ImpactId;
+                    category.UrgencyID = model.UrgencyId;
                     bool addResult = _categoryService.AddCategory(category);
                     if (addResult)
                     {
@@ -1128,6 +1253,8 @@ namespace TMS.Areas.Manager.Controllers
                     category.Description = model.Description;
                     category.CategoryLevel = ConstantUtil.CategoryLevel.Item;
                     category.ParentID = model.ParentId;
+                    category.ImpactID = model.ImpactId;
+                    category.UrgencyID = model.UrgencyId;
 
                     bool addResult = _categoryService.AddCategory(category);
                     if (addResult)
@@ -1160,14 +1287,35 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (id.HasValue)
             {
+                var impactList = _impactService.GetAll().Select(m => new
+                {
+                    m.ID,
+                    m.Name
+                }).ToArray();
+
+                var urgencyList = _urgencyService.GetAll().Select(m => new
+                {
+                    m.ID,
+                    m.Name
+                }).ToArray();
+
                 Category category = _categoryService.GetCategoryById(id.Value);
+                CategoryViewModel model = new CategoryViewModel
+                {
+                    Name = category.Name,
+                    Description = category.Description,
+                    ImpactId = category.ImpactID,
+                    UrgencyId = category.UrgencyID
+                };
+
                 if (category != null)
                 {
                     return Json(new
                     {
                         success = true,
-                        name = category.Name,
-                        description = category.Description
+                        category = model,
+                        impacts = impactList,
+                        urgencies = urgencyList
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -1184,20 +1332,43 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (id.HasValue)
             {
+                var categories = _categoryService.GetCategories().Select(m => new
+                {
+                    m.ID,
+                    m.Name
+                }).ToArray();
+
+                var impactList = _impactService.GetAll().Select(m => new
+                {
+                    m.ID,
+                    m.Name
+                }).ToArray();
+
+                var urgencyList = _urgencyService.GetAll().Select(m => new
+                {
+                    m.ID,
+                    m.Name
+                }).ToArray();
+
                 Category category = _categoryService.GetCategoryById(id.Value);
+                CategoryViewModel model = new CategoryViewModel
+                {
+                    Name = category.Name,
+                    Description = category.Description,
+                    ParentId = category.ParentID,
+                    ImpactId = category.ImpactID,
+                    UrgencyId = category.UrgencyID
+                };
+
                 if (category != null)
                 {
                     return Json(new
                     {
                         success = true,
-                        name = category.Name,
-                        description = category.Description,
-                        parentId = category.ParentID,
-                        categories = _categoryService.GetCategories().Select(m => new
-                        {
-                            m.ID,
-                            m.Name
-                        }).ToArray()
+                        category = model,
+                        categories = categories,
+                        impacts = impactList,
+                        urgencies = urgencyList
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -1214,20 +1385,43 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (id.HasValue)
             {
+                var categoryList = _categoryService.GetSubCategories().OrderBy(m => m.ParentID).Select(m => new Category
+                {
+                    ID = m.ID,
+                    Name = _categoryService.GetCategoryById(m.ParentID.Value).Name + " > " + m.Name
+                }).ToArray();
+
+                var impactList = _impactService.GetAll().Select(m => new
+                {
+                    m.ID,
+                    m.Name
+                }).ToArray();
+
+                var urgencyList = _urgencyService.GetAll().Select(m => new
+                {
+                    m.ID,
+                    m.Name
+                }).ToArray();
+
                 Category category = _categoryService.GetCategoryById(id.Value);
+                CategoryViewModel model = new CategoryViewModel
+                {
+                    Name = category.Name,
+                    Description = category.Description,
+                    ParentId = category.ParentID,
+                    ImpactId = category.ImpactID,
+                    UrgencyId = category.UrgencyID
+                };
+
                 if (category != null)
                 {
                     return Json(new
                     {
                         success = true,
-                        name = category.Name,
-                        description = category.Description,
-                        parentId = category.ParentID,
-                        categories = _categoryService.GetSubCategories().OrderBy(m => m.ParentID).Select(m => new CategoryViewModel
-                        {
-                            ID = m.ID,
-                            Name = _categoryService.GetCategoryById(m.ParentID.Value).Name + " > " + m.Name
-                        }).ToArray()
+                        category = model,
+                        categories = categoryList,
+                        impacts = impactList,
+                        urgencies = urgencyList
                     }, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -1280,6 +1474,8 @@ namespace TMS.Areas.Manager.Controllers
                     }
                     category.Name = model.Name;
                     category.Description = model.Description;
+                    category.ImpactID = model.ImpactId;
+                    category.UrgencyID = model.UrgencyId;
 
                     bool updateResult = _categoryService.UpdateCategory(category);
                     if (updateResult)
@@ -1368,6 +1564,8 @@ namespace TMS.Areas.Manager.Controllers
                         category.Name = model.Name;
                         category.Description = model.Description;
                         category.ParentID = model.ParentId;
+                        category.ImpactID = model.ImpactId;
+                        category.UrgencyID = model.UrgencyId;
 
                         bool updateResult = _categoryService.UpdateCategory(category);
                         if (updateResult)
@@ -1456,6 +1654,8 @@ namespace TMS.Areas.Manager.Controllers
                         category.Name = model.Name;
                         category.Description = model.Description;
                         category.ParentID = model.ParentId;
+                        category.ImpactID = model.ImpactId;
+                        category.UrgencyID = model.UrgencyId;
 
                         bool updateResult = _categoryService.UpdateCategory(category);
                         if (updateResult)
@@ -1548,7 +1748,6 @@ namespace TMS.Areas.Manager.Controllers
         {
             if (model.ImpactID.HasValue && model.UrgencyID.HasValue)
             {
-
                 bool changeResult = _priorityMatrixService.ChangePriorityMatrixItem(model.ImpactID.Value, model.UrgencyID.Value, model.PriorityID);
                 if (changeResult)
                 {
@@ -1572,7 +1771,7 @@ namespace TMS.Areas.Manager.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "Change priority matrix item unsuccessfully!"
+                    message = "Unavailable impact or urgency!"
                 });
             }
         }

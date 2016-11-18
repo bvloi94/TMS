@@ -26,11 +26,15 @@ namespace TMS.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public Nullable<int> ParentID { get; set; }
-        public Nullable<int> CategoryLevel { get; set; }
+        public int CategoryLevel { get; set; }
+        public int ImpactID { get; set; }
+        public int UrgencyID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Category> Category1 { get; set; }
         public virtual Category Category2 { get; set; }
+        public virtual Impact Impact { get; set; }
+        public virtual Urgency Urgency { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Solution> Solutions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

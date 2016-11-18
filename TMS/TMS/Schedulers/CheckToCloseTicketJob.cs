@@ -36,7 +36,6 @@ namespace TMS.Schedulers
 
         public override void DoJob()
         {
-            
             IEnumerable<Ticket> tickets = _ticketService.GetSolvedTickets();
             foreach (Ticket ticket in tickets)
             {
@@ -46,18 +45,19 @@ namespace TMS.Schedulers
                     {
                         ticket.Status = ConstantUtil.TicketStatus.Closed;
                         ticket.ModifiedTime = DateTime.Now;
-                        try
+                        ticket.ActualEndDate = DateTime.Now;
+                        bool closeResult = _ticketService.CloseTicket(ticket, null);
+                        if (closeResult)
                         {
-                            _ticketService.UpdateTicket(ticket, null);
                             AspNetUser requester = _userService.GetActiveUserById(ticket.RequesterID);
                             if (requester != null)
                             {
                                 EmailUtil.SendToRequesterWhenCloseTicket(ticket, requester);
                             }
                         }
-                        catch (Exception e)
+                        else
                         {
-                            log.Error("Scheduler close ticket error", e);
+                            log.Error("Scheduler close ticket error");
                         }
                     }
                 }
@@ -81,7 +81,7 @@ namespace TMS.Schedulers
         /// executed repeatadly.</returns>
         public override int GetRepetitionIntervalTime()
         {
-            return (int) TimeSpan.FromDays(1).TotalMilliseconds;
+            return (int)TimeSpan.FromDays(1).TotalMilliseconds;
         }
     }
 }

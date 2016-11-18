@@ -390,7 +390,7 @@
                                 length: 350,
                             });
                             var sId = data.data[i].ID;
-                            var keywordTags = (data.data[i].Keyword).split(',');
+                            var keywordTags = (data.data[i].Keywords).split(',');
                             $(".question-list").append(
                              '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-role="cbox-solution" data-id="' + sId + '"/>'
                              + '&nbsp;&nbsp;<a class="question-title" href="javascrip:void(0)"> ' + data.data[i].Subject + '</a>'
@@ -401,7 +401,7 @@
                              + content + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
                              + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></div></div>');
                             $("#keyword" + sId).empty();
-                            if (data.data[i].Keyword != "-") {
+                            if (data.data[i].Keywords != "") {
                                 $("#keyword" + sId).append("<li style='padding: 5px 0px'>Keywords: </li>");
                                 for (j = 0; j < keywordTags.length; j++) {
                                     var key = keywordTags[j].replace(/"/g, '');

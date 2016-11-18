@@ -34,18 +34,32 @@ namespace TMS.Services
             PriorityMatrixItem entity = _unitOfWork.PriorityMatrixItemRepository.Get(m => m.ImpactID == impactID && m.UrgencyID == urgencyID).FirstOrDefault();
             if (entity != null)
             {
-                entity.PriorityID = priorityID;
-                _unitOfWork.PriorityMatrixItemRepository.Update(entity);
+                if (priorityID.HasValue)
+                {
+                    entity.PriorityID = priorityID.Value;
+                    _unitOfWork.PriorityMatrixItemRepository.Update(entity);
+                }
+                else
+                {
+                    _unitOfWork.PriorityMatrixItemRepository.Delete(entity);
+                }
             }
             else
             {
-                entity = new PriorityMatrixItem
+                if (priorityID.HasValue)
                 {
-                    ImpactID = impactID,
-                    UrgencyID = urgencyID,
-                    PriorityID = priorityID
-                };
-                _unitOfWork.PriorityMatrixItemRepository.Insert(entity);
+                    entity = new PriorityMatrixItem
+                    {
+                        ImpactID = impactID,
+                        UrgencyID = urgencyID,
+                        PriorityID = priorityID.Value
+                    };
+                    _unitOfWork.PriorityMatrixItemRepository.Insert(entity);
+                }
+                else
+                {
+                    return true;
+                }
             }
             return _unitOfWork.Commit();
         }

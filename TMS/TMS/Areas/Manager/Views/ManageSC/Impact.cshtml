@@ -103,24 +103,29 @@
                 ajax: {
                     url: "/Manager/ManageSC/GetImpacts"
                 },
-                "columnDefs": [
+                columnDefs: [
                     {
                         "render": function (data, type, row) {
-                            return row[1];
+                            return row.Name;
                         },
                         "targets": 0,
-                        "type": "date"
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[2];
+                            return row.Description;
                         },
                         "targets": 1
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getImpactDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
-                                   '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
+                            var content = "";
+                            if (row.IsSystem) {
+                                content = '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getImpactDetail(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>';
+                            } else {
+                                content = '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getImpactDetail(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                                   '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.Id + '\')"><i class="fa fa-trash-o"></i></a>';
+                            }
+                            return content;
                         },
                         "targets": 2
                     }

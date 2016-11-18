@@ -98,15 +98,15 @@ namespace TMS.Areas.HelpDesk.Controllers
 
         public IEnumerable<BasicTicketViewModel> LoadWarningTickets()
         {
-            IEnumerable<BasicTicketViewModel> incomingTickets = _ticketService.GetAll().Where(p => p.ScheduleEndDate.HasValue &&
-                    p.ScheduleEndDate.Value.Subtract(DateTime.Now).Days < 3 && p.Status == ConstantUtil.TicketStatus.Assigned)
+            IEnumerable<BasicTicketViewModel> incomingTickets = _ticketService.GetAll()
+                .Where(p => p.DueByDate.Subtract(DateTime.Now).Days < 3 && p.Status == ConstantUtil.TicketStatus.Assigned)
                     .Select(m => new BasicTicketViewModel
                     {
                         Code = m.Code,
                         ID = m.ID,
                         Status = m.Status,
                         Subject = m.Subject,
-                        ScheduleEndTime = m.ScheduleEndDate.Value.ToString("MMMM dd, yyyy  hh:mm"),
+                        ScheduleEndTime = m.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat2),
                     }).ToArray().OrderByDescending(m => m.ScheduleEndTime);
             return incomingTickets;
         }

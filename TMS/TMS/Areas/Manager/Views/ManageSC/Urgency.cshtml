@@ -2,6 +2,16 @@
     ViewBag.Title = "Urgency";
     Layout = "~/Areas/Manager/Views/Shared/_TopLayout.cshtml";
 }
+<style>
+    input.duration {
+        width: 100px;
+        padding: 5px;
+    }
+
+    select.duration {
+        padding: 5px;
+    }
+</style>
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
@@ -10,14 +20,10 @@
                 <table class="table dataTable" id="urgency-table" dt-options="dtOptions">
                     <thead>
                         <tr>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                                Description
-                            </th>
-                            <th>
-                            </th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Duration</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -46,13 +52,22 @@
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="name-txt">
-
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Description</label>
                         <div class="col-sm-10">
                             <textarea class="form-control" rows="3" placeholder="Description" id="description-txt"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Duration&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="duration" placeholder="Duration" id="duration-txt">&nbsp;&nbsp;
+                            <select id="duration-option" class="duration">
+                                <option value="hours">Hours</option>
+                                <option value="days">Days</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -112,26 +127,37 @@
                 ajax: {
                     url: "/Manager/ManageSC/GetUrgency"
                 },
-                "columnDefs": [
+                columnDefs: [
                     {
                         "render": function (data, type, row) {
-                            return row[1];
+                            return row.Name;
                         },
                         "targets": 0,
-                        "type": "date"
                     },
                     {
                         "render": function (data, type, row) {
-                            return row[2];
+                            return row.Description;
                         },
                         "targets": 1
                     },
                     {
                         "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getUrgencyDetail(\'' + row[0] + '\')"><i class = "fa fa-pencil"></i></a>&nbsp;&nbsp;' +
-                                '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
+                            return row.Duration + " " + row.DurationOption;
                         },
                         "targets": 2
+                    },
+                    {
+                        "render": function (data, type, row) {
+                            var content = "";
+                            if (row.IsSystem) {
+                                content = '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getUrgencyDetail(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>';
+                            } else {
+                                content = '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getUrgencyDetail(\'' + row.Id + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                                   '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.Id + '\')"><i class="fa fa-trash-o"></i></a>';
+                            }
+                            return content;
+                        },
+                        "targets": 3
                     }
                 ]
             });
@@ -144,6 +170,7 @@
         var clearModal = function () {
             $("#myModal").find("input").val("");
             $("#myModal").find("textarea").val("");
+            $("#duration-option").val("hours");
             $(".text-danger").hide();
         }
 
@@ -160,7 +187,9 @@
                 type: "POST",
                 data: {
                     name: $("#name-txt").val(),
-                    description: $("#description-txt").val()
+                    description: $("#description-txt").val(),
+                    duration: $("#duration-txt").val(),
+                    durationOption: $("#duration-option").val()
                 },
                 success: function (data) {
                     if (data.success) {
@@ -206,8 +235,10 @@
                 success: function (data) {
                     if (data.success) {
                         $("#myModal").modal("show");
-                        $("#name-txt").val(data.name);
-                        $("#description-txt").val(data.description);
+                        $("#name-txt").val(data.urgency.Name);
+                        $("#description-txt").val(data.urgency.Description);
+                        $("#duration-txt").val(data.urgency.Duration);
+                        $("#duration-option").val(data.urgency.DurationOption);
                         $("#create-btn").attr("onclick", "editUrgency('" + id + "')");
                     } else {
                         if (data.error) {
@@ -239,7 +270,9 @@
                 data: {
                     id: id,
                     name: $("#name-txt").val(),
-                    description: $("#description-txt").val()
+                    description: $("#description-txt").val(),
+                    duration: $("#duration-txt").val(),
+                    durationOption: $("#duration-option").val()
                 },
                 success: function (data) {
                     if (data.success) {

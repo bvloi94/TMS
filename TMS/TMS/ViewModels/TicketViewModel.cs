@@ -45,18 +45,20 @@ namespace TMS.ViewModels
         public int GroupId { get; set; }
         public string Group { get; set; }
         public string UnapproveReason { get; set; }
-        public DateTime? ScheduleStartDate { get; set; }
-        [CompareValidateDate(CompareToOperation.GreaterThan, "ScheduleStartDate", ErrorMessage = "Schedule End Date must greater than Schedule Start Date")]
-        public DateTime? ScheduleEndDate { get; set; }
-        [CompareValidateDate(CompareToOperation.LessThan, "ScheduleEndDate", ErrorMessage = "Due By Date must less than Schedule End Date")]
+        [Required(ErrorMessage = "Schedule Start Date is required!")]
+        [ValidateDate(0, ErrorMessage = "Invalid Schedule Start Date")]
+        [ValidateDateSQL(ErrorMessage = "Invalid date")]
+        public DateTime ScheduleStartDate { get; set; }
+        public DateTime ScheduleEndDate { get; set; }
+        [Required(ErrorMessage = "Schedule Start Date is required!")]
+        [DataType(DataType.DateTime)]
+        [ValidateDateSQL(ErrorMessage = "Invalid date")]
         [CompareValidateDate(CompareToOperation.GreaterThan, "ScheduleStartDate", ErrorMessage = "Due By Date must greater than Schedule Start Date")]
-        public DateTime? DueByDate { get; set; }
-        public DateTime? ActualStartDate { get; set; }
-        [CompareValidateDate(CompareToOperation.GreaterThan, "ActualStartDate", ErrorMessage = "Actual End Date must greater than Actual Start Date")]
+        public DateTime DueByDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
         public DateTime? SolvedDate { get; set; }
-        public DateTime? CreatedTime { get; set; }
-        public DateTime? ModifiedTime { get; set; }
+        public DateTime CreatedTime { get; set; }
+        public DateTime ModifiedTime { get; set; }
         public string CreatedTimeString { get; set; }
         public string ModifiedTimeString { get; set; }
         public string SolvedDateString { get; set; }
@@ -75,9 +77,8 @@ namespace TMS.ViewModels
         public string MergedTicketString { get; set; }
         public string DescriptionAttachmentsURL { get; set; }
         public string SolutionAttachmentsURL { get; set; }
-        [TagFormat(ErrorMessage = "Tags only contain characters 'a-z', '0-9' and separated by commas!")]
-        [StringLength(255, ErrorMessage = "Tags length is less than 255 characters")]
-        public string Tags { get; set; }
+        [TagFormat(ErrorMessage = "Keywords only contain characters 'a-z', '0-9' and separated by commas!")]
+        public string Keywords { get; set; }
         public string Note { get; set; }
         [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
         public IEnumerable<HttpPostedFileBase> DescriptionFiles { get; set; }

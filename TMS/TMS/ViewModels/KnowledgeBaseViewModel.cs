@@ -22,7 +22,7 @@ namespace TMS.ViewModels
         public string CategoryPath { get; set; }
         public string Category { get; set; }
         [TagFormat(ErrorMessage = "Keyword only contain characters 'a-z', 'A-Z', '0-9' and separated by commas!")]
-        public string Keyword { get; set; }
+        public string Keywords { get; set; }
         public Nullable<DateTime> CreatedTime { get; set; }
         public Nullable<DateTime> ModifiedTime { get; set; }
         [Required(ErrorMessage = "Please input a path!")]

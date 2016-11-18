@@ -26,6 +26,7 @@ namespace TMS.Controllers
         private CategoryService _categoryService;
         private SolutionAttachmentService _solutionAttachmentService;
         private TicketAttachmentService _ticketAttachmentService;
+        private KeywordService _keywordService;
 
         public KnowledgeBaseController()
         {
@@ -36,6 +37,7 @@ namespace TMS.Controllers
             _categoryService = new CategoryService(_unitOfWork);
             _solutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
             _ticketAttachmentService = new TicketAttachmentService(_unitOfWork);
+            _keywordService = new KeywordService(_unitOfWork);
         }
 
         // GET: KB
@@ -55,7 +57,7 @@ namespace TMS.Controllers
                 if (ticket != null)
                 {
                     model.Subject = ticket.Subject;
-                    model.Keyword = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Keywords = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
                     model.Content = ticket.Solution;
                     model.CategoryID = ticket.CategoryID.HasValue ? ticket.CategoryID.Value : 0;
                     if (ticket.Category != null)
@@ -82,7 +84,7 @@ namespace TMS.Controllers
                     KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
                     model.Subject = solution.Subject;
                     model.Content = solution.ContentText;
-                    model.Keyword = string.IsNullOrWhiteSpace(solution.Keyword) ? "" : solution.Keyword.Replace("\"", "");
+                    model.Keywords = _keywordService.GetSolutionKeywordForDisplay(solution.ID);
                     model.CategoryID = solution.CategoryID;
                     model.Category = _categoryService.GetCategoryById(solution.CategoryID).Name;
                     model.Path = solution.Path;
@@ -172,7 +174,7 @@ namespace TMS.Controllers
                 }
 
                 // Keyword is null or whitespace
-                solution.Keyword = GeneralUtil.ConvertToFormatKeyword(model.Keyword);
+                solution.SolutionKeywords = _keywordService.GetSolutionKeywordsForCreate(model.Keywords);
                 solution.Path = model.Path.Trim().ToLower();
                 solution.CreatedTime = DateTime.Now;
                 solution.ModifiedTime = DateTime.Now;
@@ -242,7 +244,7 @@ namespace TMS.Controllers
                     {
                         solution.Subject = model.Subject.Trim();
                         solution.ContentText = model.Content;
-                        solution.Keyword = GeneralUtil.ConvertToFormatKeyword(model.Keyword);
+                        solution.SolutionKeywords = _keywordService.GetSolutionKeywordsForEdit(model.Keywords, solution.ID);
                         solution.CategoryID = model.CategoryID;
                         solution.Path = model.Path.Trim().ToLower();
                         solution.ModifiedTime = DateTime.Now;
@@ -352,7 +354,7 @@ namespace TMS.Controllers
                 CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
-                Keyword = m.Keyword == null ? "-" : m.Keyword,
+                Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
@@ -362,17 +364,17 @@ namespace TMS.Controllers
 
             if (!string.IsNullOrWhiteSpace(key_search))
             {
-                keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
-                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                keywords = regex.Replace(keywords, " ");
-                string[] keywordArr = keywords.Split(' ');
-                foreach (string keyword in keywordArr)
-                {
-                    string keywordTemp = '"' + keyword + '"';
-                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordTemp.ToLower()));
-                }
-                predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
-                filteredListItems = filteredListItems.Where(predicate);
+                //keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                //keywords = regex.Replace(keywords, " ");
+                //string[] keywordArr = keywords.Split(' ');
+                //foreach (string keyword in keywordArr)
+                //{
+                //    string keywordTemp = '"' + keyword + '"';
+                //    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordTemp.ToLower()));
+                //}
+                //predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                //filteredListItems = filteredListItems.Where(predicate);
             }
 
             if (id.HasValue)
@@ -446,7 +448,7 @@ namespace TMS.Controllers
             {
                 Id = m.ID,
                 Subject = m.Subject,
-                Tags = m.Tags == null ? "" : m.Tags,
+                //Tags = m.Tags == null ? "" : m.Tags,
                 CategoryId = m.CategoryID.HasValue ? m.CategoryID.Value : 0
             }).AsQueryable();
 
@@ -454,57 +456,57 @@ namespace TMS.Controllers
 
             if (!string.IsNullOrEmpty(tags))
             {
-                tags = GeneralUtil.ConvertToFormatKeyword(tags);
-                string[] tagsArr = tags.Split(',');
-                int numOfTags = tagsArr.Count();
-                int categoryId = 0;
-                foreach (TicketViewModel ticket in temp)
-                {
-                    int matchTag = 0;
-                    if (categoryId == 0 || ticket.CategoryId == categoryId)
-                    {
-                        foreach (string tagItem in tagsArr)
-                        {
-                            if (ticket.Tags != null && ticket.Tags.ToLower().Contains(tagItem.ToLower()))
-                            {
-                                matchTag++;
-                            }
-                        }
-                    }
-                    if (numOfTags <= 3)
-                    {
-                        if (matchTag == numOfTags)
-                        {
-                            if (!filteredListItems.Any())
-                            {
-                                categoryId = ticket.CategoryId;
-                            }
-                            filteredListItems.Add(ticket);
-                        }
-                    }
-                    else if (3 < numOfTags && numOfTags <= 5)
-                    {
-                        if (matchTag >= numOfTags - 1 && matchTag <= numOfTags + 1)
-                        {
-                            if (!filteredListItems.Any())
-                            {
-                                categoryId = ticket.CategoryId;
-                            }
-                            filteredListItems.Add(ticket);
-                        }
-                    }
-                    else
-                    {
-                        if (matchTag >= numOfTags - 2 && matchTag <= numOfTags + 2)
-                        {
-                            if (!filteredListItems.Any())
-                            {
-                                categoryId = ticket.CategoryId;
-                            }
-                            filteredListItems.Add(ticket);
-                        }
-                    }
-                }
+                //tags = GeneralUtil.ConvertToFormatKeyword(tags);
+                //string[] tagsArr = tags.Split(',');
+                //int numOfTags = tagsArr.Count();
+                //int categoryId = 0;
+                //foreach (TicketViewModel ticket in temp)
+                //{
+                //    int matchTag = 0;
+                //    if (categoryId == 0 || ticket.CategoryId == categoryId)
+                //    {
+                //        foreach (string tagItem in tagsArr)
+                //        {
+                //            if (ticket.Tags != null && ticket.Tags.ToLower().Contains(tagItem.ToLower()))
+                //            {
+                //                matchTag++;
+                //            }
+                //        }
+                //    }
+                //    if (numOfTags <= 3)
+                //    {
+                //        if (matchTag == numOfTags)
+                //        {
+                //            if (!filteredListItems.Any())
+                //            {
+                //                categoryId = ticket.CategoryId;
+                //            }
+                //            filteredListItems.Add(ticket);
+                //        }
+                //    }
+                //    else if (3 < numOfTags && numOfTags <= 5)
+                //    {
+                //        if (matchTag >= numOfTags - 1 && matchTag <= numOfTags + 1)
+                //        {
+                //            if (!filteredListItems.Any())
+                //            {
+                //                categoryId = ticket.CategoryId;
+                //            }
+                //            filteredListItems.Add(ticket);
+                //        }
+                //    }
+                //    else
+                //    {
+                //        if (matchTag >= numOfTags - 2 && matchTag <= numOfTags + 2)
+                //        {
+                //            if (!filteredListItems.Any())
+                //            {
+                //                categoryId = ticket.CategoryId;
+                //            }
+                //            filteredListItems.Add(ticket);
+                //        }
+                //    }
+                //}
             }
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);

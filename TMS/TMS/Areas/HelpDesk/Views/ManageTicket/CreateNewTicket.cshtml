@@ -75,6 +75,12 @@
                             </div>
                         </div>
                         <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">CATEGORY</label>
+                                <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
                             <div class="col-md-4 col-xs-4">
                                 <label class="control-label">IMPACT</label>
                                 <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
@@ -85,10 +91,9 @@
                             </div>
                             <div class="col-md-4 col-xs-4">
                                 <label class="control-label">PRIORITY</label>
-                                <select class="form-control" name="PriorityId" data-role="ddl-priority"></select>
+                                <div id="div-priority"></div>
                             </div>
                         </div>
-
                         <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">IMPACT DETAIL</label>
@@ -112,31 +117,13 @@
                             </div>
                         </div>
                         <div class="row form-group">
-                            <div class="col-md-12 col-xs-12">
-                                <label class="control-label">CATEGORY</label>
-                                <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
-                            </div>
-                        </div>
-                        <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
-                                <label class="control-label">SCHEDULE START DATE</label>
+                                <label class="control-label">SCHEDULE START DATE <font color="red">*</font></label>
                                 @Html.TextBoxFor(m => m.ScheduleStartDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.ToString(ConstantUtil.DateTimeFormat) })
                             </div>
                             <div class="col-md-6 col-xs-6">
-                                <label class="control-label">SCHEDULE END DATE</label>
-                                @Html.TextBoxFor(m => m.ScheduleEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.AddDays(+7).ToString(ConstantUtil.DateTimeFormat) })
-                            </div>
-                            <div class="col-md-6 col-xs-6">
-                                <label class="control-label">ACTUAL START DATE</label>
-                                @Html.TextBoxFor(m => m.ActualStartDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.ToString(ConstantUtil.DateTimeFormat) })
-                            </div>
-                            <div class="col-md-6 col-xs-6">
-                                <label class="control-label">ACTUAL END DATE</label>
-                                @Html.TextBoxFor(m => m.ActualEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.AddDays(+7).ToString(ConstantUtil.DateTimeFormat) })
-                            </div>
-                            <div class="col-md-12 col-xs-12">
-                                <label class="control-label">DUE BY DATE</label>
-                                @Html.TextBoxFor(m => m.DueByDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep", @Value = DateTime.Now.AddDays(+7).AddDays(-ConstantUtil.DayToCloseTicket).ToString(ConstantUtil.DateTimeFormat) })
+                                <label class="control-label">DUE BY DATE <font color="red">*</font></label>
+                                @Html.TextBoxFor(m => m.DueByDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
                             </div>
                         </div>
                         <div class="row form-group">
@@ -152,11 +139,10 @@
                         </div>
                         <div class="row form-group">
                             <div class="col-md-12 col-xs-12">
-                                <label class="control-label">TAGS</label>
+                                <label class="control-label">KEYWORDS</label>
                             </div>
                             <div class="col-md-12 col-xs-12">
-                                <input type="text" name="Tags" id="tags" class="form-control" />
-                                <a href="javascript:generateTags()">Generate tags</a>
+                                <input type="text" name="Keywords" id="keywords" class="form-control" />
                             </div>
                         </div>
                         <div class="row form-group">
@@ -616,26 +602,26 @@
             $("#modal-add-requester").modal("hide");
         }
 
-        $("[data-role='ddl-group']")
-            .on("change",
-                function () {
-                    loadInitDropdown('ddl-technician', 'Not assigned', "");
-                    //$("[data-role='ddl-technician']").select2("val", "");
-                });
+        $("[data-role='ddl-group']").on("change", function () {
+            loadInitDropdown('ddl-technician', 'Not assigned', "");
+            //$("[data-role='ddl-technician']").select2("val", "");
+        });
 
         $(document)
             .ready(function () {
                 setActiveTicketMenu();
                 initDropdownControl();
-                loadInitDropdown('ddl-urgency', 'None', 0);
-                loadInitDropdown('ddl-priority', 'None', 0);
-                loadInitDropdown('ddl-impact', 'None', 0);
+                loadInitDropdown('ddl-urgency', '@ViewBag.Urgency', @ViewBag.UrgencyId);
+                loadInitDropdown('ddl-impact', '@ViewBag.Impact', @ViewBag.ImpactId);
                 loadInitDropdown('ddl-category', 'None', 0);
                 loadInitDropdown('ddl-group', 'Choose Group', 0);
                 requesterTable = initRequesterTable($("#requester-table"));
                 initOlderTicketsTable();
                 $(self._select2).parent().find(".select2-container").css('width', '');
-                $("#tags").tagit();
+                $("#keywords").tagit({
+                    allowSpaces: true
+                });
+                getDueByDate();
             });
     </script>
 }

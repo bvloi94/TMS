@@ -65,5 +65,10 @@ namespace TMS.Services
             _unitOfWork.UrgencyRepository.Delete(urgency);
             return _unitOfWork.CommitTransaction();
         }
+
+        public Urgency GetSystemUrgency()
+        {
+            return _unitOfWork.UrgencyRepository.Get(m => m.IsSystem == true).FirstOrDefault();
+        }
     }
 }

@@ -6,6 +6,8 @@ namespace TMS.Utils
     public class ConstantUtil
     {
         public static readonly string DateTimeFormat = "dd/MM/yyyy HH:mm";
+        public static readonly string DateTimeFormat2 = "MMMM dd, yyyy hh:mm";
+        public static readonly string DateTimeFormat3 = "MMM d yyyy, hh:mm";
         public static readonly string DateFormat = "dd/MM/yyyy";
         public const int DayToCloseTicket = 3;
 

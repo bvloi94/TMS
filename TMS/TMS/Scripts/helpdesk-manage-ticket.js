@@ -969,3 +969,84 @@ function loadKeywordToTags(keyword) {
     content += '</ul>';
     return content;
 }
+
+
+function getDueByDate() {
+    var scheduleStartDate = $("[name='ScheduleStartDate']").val();
+    var urgencyId = $("[name='UrgencyId']").val();
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetDueByDate",
+        method: "GET",
+        data: {
+            scheduleStartDate: scheduleStartDate,
+            urgencyId: urgencyId
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                $("[name='DueByDate']").val(data.dueByDate);
+            }
+        }
+    });
+}
+
+$("[name='UrgencyId']").change(function () {
+    getDueByDate();
+    getPriority();
+});
+
+$("[name='ImpactId']").change(function () {
+    getPriority();
+});
+
+$("[name='ScheduleStartDate']").change(function () {
+    getDueByDate();
+});
+
+$("[name='CategoryId']").change(function () {
+    GetImpactUrgency();
+})
+
+function GetImpactUrgency() {
+    var categoryId = $("[name='CategoryId']").val();
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetImpactUrgencyByCategory",
+        method: "GET",
+        data: {
+            categoryId: categoryId
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                loadInitDropdown('ddl-urgency', data.urgency, data.urgencyId);
+                loadInitDropdown('ddl-impact', data.impact, data.impactId);
+                $("[name='UrgencyId']").trigger('change');
+            }
+        }
+    });
+}
+
+function getPriority() {
+    var impactId = $("[name='ImpactId']").val();
+    var urgencyId = $("[name='UrgencyId']").val();
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetPriority",
+        method: "GET",
+        data: {
+            impactId: impactId,
+            urgencyId: urgencyId
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                var priority = $("<small/>",
+                {
+                    "class": "label",
+                    "html": data.priority,
+                    "style": "color: #000000; background-color: " + data.priorityColor
+                })[0].outerHTML;
+                $("#div-priority").html(priority);
+            }
+        }
+    });
+}
