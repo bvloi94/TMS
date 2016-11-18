@@ -1,5 +1,4 @@
-﻿using log4net;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
@@ -356,8 +355,8 @@ namespace TMS.Controllers
                 Content = m.ContentText,
                 Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
-                CreatedTime = m.CreatedTime,
-                ModifiedTime = m.ModifiedTime
+                CreatedTimeString = m.CreatedTime.ToString("MMMM dd yyyy, hh:mm"),
+                ModifiedTimeString = m.ModifiedTime.ToString("MMMM dd yyyy, hh:mm")
             }).AsQueryable();
 
             var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();

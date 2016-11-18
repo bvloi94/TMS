@@ -66,7 +66,6 @@
                     <label class="control-label col-md-2">Keywords</label>
                     <div class="col-md-10" style="max-width: 704px;">
                         @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keyword" })
-                        <a href="javascript:generateKeywords()">Generate keywords</a>
                         @Html.ValidationMessageFor(m => m.Keywords, "", new { @class = "text-danger" })
                     </div>
                 </div>

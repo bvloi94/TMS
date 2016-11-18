@@ -34,13 +34,18 @@ namespace TMS.Schedulers
 
         public override void DoJob()
         {
-            IEnumerable<Ticket> tickets = _ticketService.GetPendingTickets();
+            IEnumerable<Ticket> tickets = _ticketService.GetOverdueTickets();
             IEnumerable<AspNetUser> helpdesks = _userService.GetHelpDesks().Where(m => m.IsActive == true);
             foreach (Ticket ticket in tickets)
             {
-                if (DateTime.Now.Date > ticket.DueByDate.Date)
+                EmailUtil.SendToHelpdesksWhenTicketIsOverdue(ticket, helpdesks);
+                if (!string.IsNullOrWhiteSpace(ticket.TechnicianID))
                 {
-                    EmailUtil.SendToHelpdesksWhenTicketIsOverdue(ticket, helpdesks);
+                    AspNetUser technician = _userService.GetUserById(ticket.TechnicianID);
+                    if (technician != null)
+                    {
+                        EmailUtil.SendToTechnicianWhenTicketIsOverdue(ticket, technician);
+                    }
                 }
             }
         }

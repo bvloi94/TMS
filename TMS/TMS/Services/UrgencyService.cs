@@ -61,10 +61,7 @@ namespace TMS.Services
         public bool DeleteUrgency(Urgency urgency)
         {
             _unitOfWork.BeginTransaction();
-            foreach (PriorityMatrixItem priorityMatrixItem in urgency.PriorityMatrixItems.ToList())
-            {
-                _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
-            }
+            _unitOfWork.PriorityMatrixItemRepository.Delete(m => m.UrgencyID == urgency.ID);
             _unitOfWork.UrgencyRepository.Delete(urgency);
             return _unitOfWork.CommitTransaction();
         }

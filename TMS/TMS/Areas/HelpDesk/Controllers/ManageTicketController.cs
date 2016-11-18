@@ -692,6 +692,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         {
             var searchText = Request["filter_search"];
             var createdFilter = Request["filter_created"];
+            var sortFilter = Request["filter_sort"];
             var duebyFilter = Request["filter_dueby"];
             var statusFilter = Request["filter_status"];
             var modeFilter = Request["filter_mode"];
@@ -848,6 +849,23 @@ namespace TMS.Areas.HelpDesk.Controllers
                     break;
             }
 
+            if (!string.IsNullOrEmpty(sortFilter))
+            {
+                switch (sortFilter)
+                {
+                    case "SubjectAsc": filteredListItems = filteredListItems.OrderBy(p => p.Subject); break;
+                    case "SubjectDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.Subject); break;
+                    case "PriorityAsc": filteredListItems = filteredListItems.OrderBy(p => p.Priority.PriorityLevel); break;
+                    case "PriorityDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.Priority.PriorityLevel); break;
+                    case "DueDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.DueByDate); break;
+                    case "DueDateDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.DueByDate); break;
+                    case "CreatedDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.CreatedTime); break;
+                    case "CreatedDateDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.CreatedTime); break;
+                    case "ModifiedDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.ModifiedTime); break;
+                    default: filteredListItems = filteredListItems.OrderByDescending(p => p.ModifiedTime); break;
+                }
+            }
+
             var result = filteredListItems.Skip(param.start).Take(param.length).ToList();
             var tickets = new List<TicketViewModel>();
             int startNo = param.start;
@@ -858,6 +876,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 s.Code = item.Code;
                 s.Id = item.ID;
                 s.Subject = item.Subject;
+                s.CreatedBy = item.CreatedID == null ? "" : _userService.GetUserById(item.CreatedID).Fullname;
                 s.Requester = item.RequesterID == null ? "" : _userService.GetUserById(item.RequesterID).Fullname;
                 if (item.TechnicianID != null)
                 {
@@ -870,6 +889,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 }
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
+                s.CreatedTimeString = GeneralUtil.ShowDateTime(item.CreatedTime);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 s.OverdueDateString = GeneralUtil.GetOverdueDate(item.DueByDate, item.Status);
                 s.IsOverdue = GeneralUtil.IsOverdue(item.DueByDate, item.Status);
@@ -897,9 +917,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     model.Subject = ticket.Subject;
                     model.Description = ticket.Description;
                     model.Solution = ticket.Solution;
-                    model.RequesterId = ticket.RequesterID;
-                    model.Requester = _userService.GetUserById(ticket.RequesterID).Fullname;
-                    model.Mode = ticket.Mode;
+
                     if (ticket.Type.HasValue)
                     {
                         model.Type = ticket.Type.Value;
@@ -910,16 +928,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                         model.CategoryId = ticket.CategoryID.Value;
                         model.Category = _categoryService.GetCategoryById(ticket.CategoryID.Value).Name;
                     }
-                    model.UrgencyId = ticket.UrgencyID;
-                    model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
-                    model.PriorityId = ticket.PriorityID;
-                    model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
+
                     model.ImpactId = ticket.ImpactID;
-                    model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+                    model.Impact = ticket.Impact.Name;
                     model.ImpactDetail = ticket.ImpactDetail;
                     model.ScheduleStartDateString = ticket.ScheduleStartDate.ToString(ConstantUtil.DateTimeFormat);
                     model.ScheduleEndDateString = ticket.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat);
-                    model.ActualEndDateString = ticket.ActualEndDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "";
 
                     if (!string.IsNullOrEmpty(ticket.TechnicianID))
                     {
@@ -936,7 +950,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                         }
                     }
 
-                    //model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Keywords = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
                     model.Note = ticket.Note;
                     return Json(new
                     {
@@ -1059,7 +1073,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                     {
                         if (ticket.Status == ConstantUtil.TicketStatus.Unapproved)
                         {
+                            Urgency defaultUrgency = _urgencyService.GetSystemUrgency();
                             ticket.TechnicianID = technicianId;
+                            ticket.UrgencyID = defaultUrgency.ID;
+                            ticket.DueByDate = DateTime.Now.AddHours(defaultUrgency.Duration);
+                            ticket.PriorityID = _ticketService.GetPriorityId(ticket.ImpactID, ticket.DueByDate);
+                            ticket.ScheduleEndDate = ticket.DueByDate.AddDays(ConstantUtil.DayToCloseTicket);
                             bool assignResult = _ticketService.ReassignTicket(ticket, User.Identity.GetUserId());
                             if (assignResult)
                             {

@@ -119,6 +119,11 @@ namespace TMS.Services
             return handlingTicket;
         }
 
+        public IEnumerable<Ticket> GetOverdueTickets()
+        {
+            return _unitOfWork.TicketRepository.Get().Where(m => GeneralUtil.IsOverdue(m.DueByDate, m.Status));
+        }
+
         public bool CheckTicketPriority(Ticket ticket)
         {
             _unitOfWork.TicketRepository.Update(ticket);
@@ -918,6 +923,7 @@ namespace TMS.Services
         {
             ticket.Status = ConstantUtil.TicketStatus.Closed;
             ticket.ModifiedTime = DateTime.Now;
+            ticket.ActualEndDate = DateTime.Now;
             _unitOfWork.BeginTransaction();
 
             //send notification to requester
@@ -926,7 +932,6 @@ namespace TMS.Services
             requesterNoti.TicketID = ticket.ID;
             requesterNoti.BeNotifiedID = ticket.RequesterID;
             requesterNoti.ActionType = ConstantUtil.NotificationActionType.RequesterNotiClose;
-            //requesterNoti.NotificationContent = string.Format("Ticket '{0}'[#{1}] was closed.", ticket.Subject, ticket.Code);
             requesterNoti.NotifiedTime = DateTime.Now;
             _unitOfWork.NotificationRepository.Insert(requesterNoti);
             //end notification
@@ -1178,10 +1183,10 @@ namespace TMS.Services
         public int GetUrgencyId(DateTime dueByDate)
         {
             int totalHours = (int)dueByDate.Subtract(DateTime.Now).TotalHours;
+            IEnumerable<Urgency> urgencies = _unitOfWork.UrgencyRepository.Get().OrderByDescending(m => m.Duration);
+            Urgency result = urgencies.FirstOrDefault();
             if (totalHours > 0)
             {
-                IEnumerable<Urgency> urgencies = _unitOfWork.UrgencyRepository.Get().OrderByDescending(m => m.Duration);
-                Urgency result = urgencies.FirstOrDefault();
                 foreach (Urgency urgency in urgencies)
                 {
                     if (totalHours < urgency.Duration)
@@ -1193,7 +1198,7 @@ namespace TMS.Services
             }
             else
             {
-                return _unitOfWork.UrgencyRepository.Get(m => m.IsSystem == true).FirstOrDefault().ID;
+                return urgencies.LastOrDefault().ID;
             }
         }
 

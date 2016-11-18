@@ -575,7 +575,7 @@
     <Content Include="EmailTemplates\CloseTicketRequesterTemplate.txt" />
     <Content Include="EmailTemplates\AssignTicketTechnicianTemplate.txt" />
     <Content Include="EmailTemplates\CreateTicketRequesterTemplate.txt" />
-    <Content Include="EmailTemplates\OverdueTicketHelpdeskTemplate.txt" />
+    <Content Include="EmailTemplates\OverdueTicketTechnicianTemplate.txt" />
     <Content Include="EmailTemplates\CancelTicketTechnicianTemplate.txt" />
     <Content Include="EmailTemplates\CreateRequesterEmailTemplate.txt" />
     <Content Include="EmailTemplates\SolveTicketRequesterTemplate.txt" />

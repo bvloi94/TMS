@@ -43,9 +43,9 @@ textarea {
     vertical-align: middle;
 }
 
-.page-header-custom *{
-    margin: 0px;
-}
+    .page-header-custom * {
+        margin: 0px;
+    }
 
 .large-text-container * {
     font-size: 16px;
@@ -87,25 +87,34 @@ tr.shown td.details-control {
 }
 
 .keywords {
-        margin-left: 0px;
-        padding-left: 0px;
-        margin-bottom: 5px;
+    margin-left: 0px;
+    padding-left: 0px;
+    margin-bottom: 5px;
+    float: left;
+    list-style: none;
+}
+
+    .keywords li {
         float: left;
-        list-style: none;
+        margin-right: 1em;
     }
 
-        .keywords li {
-            float: left;
-            margin-right: 1em;
-        }
-
-    .key-tags {
-        position: relative;
+.key-tags {
+    /*position: relative;
         height: 30px;
         line-height: 30px;
         padding: 0 15px;
         background-color: #e6e6e6;
         border-left: solid 5px #3393d8;
         color: #191919;
-        margin: 5px 0px;
-    }
+        margin: 5px 0px;*/
+    position: relative;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 12px;
+    background-color: #dee9ff;
+    border: 1px solid #d9dfe9;
+    border-radius: 10px;
+    color: #191919;
+    margin: 2px 0px 6px;
+}

@@ -24,8 +24,8 @@ namespace TMS.ViewModels
         public string CreatedTime { get; set; }
         public string SolvedTime { get; set; }
         public string ScheduleStartTime { get; set; }
+        public string DueByDate { get; set; }
         public string ScheduleEndTime { get; set; }
-        public string ActualStartTime { get; set; }
         public string ActualEndTime { get; set; }
         public string Solution { get; set; }
         public string SolutionAttachment { get; set; }

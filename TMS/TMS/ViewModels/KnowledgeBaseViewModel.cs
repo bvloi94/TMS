@@ -25,6 +25,8 @@ namespace TMS.ViewModels
         public string Keywords { get; set; }
         public Nullable<DateTime> CreatedTime { get; set; }
         public Nullable<DateTime> ModifiedTime { get; set; }
+        public string CreatedTimeString { get; set; }
+        public string ModifiedTimeString { get; set; }
         [Required(ErrorMessage = "Please input a path!")]
         [PathFormat(ErrorMessage = "Path can not contain special characters and spaces!")]
         public string Path { get; set; }

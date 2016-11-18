@@ -11,6 +11,7 @@ using TMS.ViewModels;
 
 namespace TMS.Areas.Technician.Controllers
 {
+    [CustomAuthorize(Roles = "Technician")]
     public class ManageTicketController : Controller
     {
         public TicketService _ticketService { get; set; }
@@ -39,8 +40,8 @@ namespace TMS.Areas.Technician.Controllers
             var ticketList = _ticketService.GetTechnicianTickets(technicianId);
             var default_search_key = Request["search[value]"];
             var select_status = Request["select_status"];
+            var sort_Filter = Request["filter_sort"];
             var search_text = Request["search_text"];
-
 
             // Initial variables
             IEnumerable<Ticket> filteredListItems;
@@ -48,7 +49,6 @@ namespace TMS.Areas.Technician.Controllers
             // Query data by params
             if (!string.IsNullOrEmpty(default_search_key)) //user have inputed keyword to search textbox
             {
-                //contains(keyword) = like "%keyword%" in SQL query
                 filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
             }
             else
@@ -91,8 +91,25 @@ namespace TMS.Areas.Technician.Controllers
             if (sortColumnIndex == 0)
             {
                 filteredListItems = sortDirection == "asc"
-                     ? filteredListItems.OrderBy(p => p.ModifiedTime)
-                     : filteredListItems.OrderByDescending(p => p.ModifiedTime);
+                     ? filteredListItems.OrderBy(p => p.Priority.PriorityLevel)
+                     : filteredListItems.OrderByDescending(p => p.Priority.PriorityLevel);
+            }
+
+            if (!string.IsNullOrEmpty(sort_Filter))
+            {
+                switch (sort_Filter)
+                {
+                    case "SubjectAsc": filteredListItems = filteredListItems.OrderBy(p => p.Subject); break;
+                    case "SubjectDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.Subject); break;
+                    case "PriorityAsc": filteredListItems = filteredListItems.OrderBy(p => p.Priority.PriorityLevel); break;
+                    case "PriorityDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.Priority.PriorityLevel); break;
+                    case "DueDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.DueByDate); break;
+                    case "DueDateDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.DueByDate); break;
+                    case "CreatedDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.CreatedTime); break;
+                    case "CreatedDateDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.CreatedTime); break;
+                    case "ModifiedDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.ModifiedTime); break;
+                    default: filteredListItems = filteredListItems.OrderByDescending(p => p.ModifiedTime); break;
+                }
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
@@ -105,6 +122,7 @@ namespace TMS.Areas.Technician.Controllers
                 s.Code = item.Code;
                 s.Id = item.ID;
                 s.Subject = item.Subject;
+                s.CreatedBy = item.CreatedID == null ? "" : _userService.GetUserById(item.CreatedID).Fullname;
                 s.Requester = item.RequesterID == null ? "" : _userService.GetUserById(item.RequesterID).Fullname;
                 if (item.TechnicianID != null)
                 {
@@ -117,11 +135,12 @@ namespace TMS.Areas.Technician.Controllers
                 }
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
+                s.CreatedTimeString = GeneralUtil.ShowDateTime(item.CreatedTime);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 s.OverdueDateString = GeneralUtil.GetOverdueDate(item.DueByDate, item.Status);
-                s.IsOverdue = item.ScheduleEndDate.Date.Subtract(DateTime.Now.Date).Days < 0;
-                s.Priority = item.Priority == null ? "" : item.Priority.Name;
-                s.PriorityColor = item.Priority == null ? "" : item.Priority.Color;
+                s.IsOverdue = GeneralUtil.IsOverdue(item.DueByDate, item.Status);
+                s.Priority = item.Priority.Name;
+                s.PriorityColor = item.Priority.Color;
                 tickets.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();

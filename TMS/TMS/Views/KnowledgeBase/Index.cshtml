@@ -16,6 +16,19 @@
 <link href="~/Content/Plugins/icheck/skins/square/blue.css" rel="stylesheet">
 
 <style>
+    a:hover {
+        cursor: pointer;
+    }
+
+    .btn-sm {
+        border-radius: unset;
+    }
+
+    .content-wrapper .container {
+        background-color: #fff !important;
+        padding-top: 0px !important;
+    }
+
     #custom-search-input {
         padding: 3px;
         border: solid 1px #E4E4E4;
@@ -59,7 +72,7 @@
     /*header line style and border*/
     .header {
         color: #2c2c2c;
-        padding: 4px 12px;
+        padding: 15px 20px;
         font-size: 16px;
         font-weight: bold;
         text-transform: uppercase;
@@ -77,13 +90,13 @@
     .header-content {
         color: #666;
         background-color: transparent;
-        padding: 8px 12px;
+        padding: 8px 15px;
         margin: 15px 0px;
     }
 
     .question-row {
-        border-bottom: solid 1px #ccc;
-        padding: 10px;
+        border-bottom: solid 1px #E4E4E4;
+        padding: 10px 0px;
         overflow-y: auto;
     }
 
@@ -94,6 +107,7 @@
     .question-list {
         height: 70vh;
         overflow-y: auto;
+        padding: 10px 0px;
     }
 
     .question-detail {
@@ -122,7 +136,6 @@
 
     .jstree-default .jstree-anchor {
         min-height: 30px;
-        line-height: 30px;
     }
 
     .jstree-anchor {
@@ -152,33 +165,51 @@
         border: none !important;
         box-shadow: unset !important;
     }
+
+    .border-left {
+        border-left: solid 1px #E4E4E4;
+    }
+    .border-bottom {
+        border-bottom: solid 1px #E4E4E4;
+    }
+
 </style>
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="left-menu col-xs-3 menu-collapse">
-            <div class="header"><span>Topic</span></div>
-            <div id="category-treeview-div">
-
-            </div>
+    <div class="col-sm-12 no-padding border-bottom">
+        <div class="left-menu col-xs-3 menu-collapse" style="padding: 23px 20px">
+            <a href="javascript:void(0)" class="btn btn-primary btn-flat" onclick="showFrequentlyAskedSubjects();">Frequently Asked Subjects</a>
         </div>
-        <div class="col-xs-9">
-            <div class="header-content col-sm-12 no-padding">
+        <div class="col-xs-9 no-padding border-left">
+            <div class="header-content col-sm-12">
                 <div class="col-md-8 col-xs-9 no-padding">
                     <a class="btn btn-success btn-flat" href="/KnowledgeBase/Create">
                         <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;&nbsp; New solution
                     </a>
-                    <a href="javascript:void(0)" class="btn btn-primary btn-flat" onclick="showFrequentlyAskedSubjects();">Frequently Asked Subjects</a>
-                    <a class="btn btn-warning btn-flat" id="delete-solutions" href="javascript:void(0)"><i class="fa fa-trash"></i></a>
+                    &nbsp;&nbsp;
+                    <a class="btn btn-warning btn-flat" id="delete-solutions" href="javascript:void(0)"><i class="fa fa-trash"></i>&nbsp;&nbsp; Delete</a>
                 </div>
-                <div class="box-tools col-md-4 col-xs-3 no-padding" style="text-align: right">
+                <div class="col-md-4 col-xs-3 no-padding" style="text-align: right">
                     <div class="has-feedback">
                         <input type="text" id="key_search" class="form-control input" placeholder="Search solution..." />
                         <span class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
                 </div>
             </div>
-            <div class="box box-solid questions">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 no-padding">
+        <div class="left-menu col-xs-3 menu-collapse">
+            <div class="header"><span>Categories</span></div>
+            <div id="category-treeview-div">
+
+            </div>
+        </div>
+        <div class="col-xs-9 no-padding border-left">
+            <div class="questions">
                 <div class="question-list col-md-12">
                 </div>
             </div>
@@ -391,15 +422,54 @@
                             });
                             var sId = data.data[i].ID;
                             var keywordTags = (data.data[i].Keywords).split(',');
-                            $(".question-list").append(
-                             '<div class="question-row"><div class="question-header col-lg-10"><input type="checkbox" data-role="cbox-solution" data-id="' + sId + '"/>'
-                             + '&nbsp;&nbsp;<a class="question-title" href="javascrip:void(0)"> ' + data.data[i].Subject + '</a>'
-                             + '</div><div class="col-lg-2 button"><a class="btn-sm btn-success" href="/FAQ/Detail?Path=' + data.data[i].Path + '"><i class="fa fa-eye"></i></a>'
-                             + '&nbsp;&nbsp;<a class="btn-sm btn-primary" href="/KnowledgeBase/Edit/' + sId + '"><i class="fa fa-pencil"></i></a></div>'
-                             + '<div class="question-detail col-sm-12">'
-                             + '<p><i class="fa fa-calendar"></i>&nbsp;Created time: ' + formatDateTime(new Date(parseInt(data.data[i].CreatedTime.substr(6)))) + '</p>'
-                             + content + '<a href="/FAQ/Detail?Path=' + data.data[i].Path + '">...Continue Reading</a>'
-                             + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></div></div>');
+                            var checkbox = $("<input/>", {
+                                "type": "checkbox",
+                                "data-role": "cbox-solution",
+                                "data-id": sId,
+                            })[0].outerHTML;
+                            var subject = $("<a/>", {
+                                "class": "question-title",
+                                "html": data.data[i].Subject
+                            })[0].outerHTML;
+                            var buttons = $("<div/>", {
+                                "class": "col-lg-2 button",
+                                "html": $("<a/>", {
+                                    "class": "btn-sm btn-success",
+                                    "href": '/FAQ/Detail/' + data.data[i].Path,
+                                    "html": '<i class="fa fa-eye"></i>'
+                                })[0].outerHTML + '&nbsp;&nbsp;' + $("<a/>", {
+                                    "class": "btn-sm btn-primary",
+                                    "href": '/KnowledgeBase/Edit/' + sId,
+                                    "html": '<i class="fa fa-pencil"></i>'
+                                })[0].outerHTML
+                            })[0].outerHTML;
+                            var createdTime = $("<p/>", {
+                                "html": '<i class="fa fa-calendar"></i>&nbsp;Created time: ' + data.data[i].CreatedTimeString
+                            })[0].outerHTML;
+                            var solutionContent = $("<p/>", {
+                                "html": content + '<a href="/FAQ/Detail/' + data.data[i].Path + '">...Continue Reading</a>'
+                            })[0].outerHTML;
+                            var keywords = $("<p/>", {
+                                "html": '<ul class="keywords" id="keyword' + sId + '"></ul>'
+                            })[0].outerHTML;
+                            var questionRowDiv = $("<div/>",
+                                   {
+                                       "class": "question-row",
+                                       "html": $("<div/>",
+                                               {
+                                                   "class": "question-header col-lg-10",
+                                                   "html": checkbox + '&nbsp;&nbsp;' + subject
+                                               })[0].outerHTML + buttons +
+                                               $("<div/>",
+                                               {
+                                                   "class": "question-detail col-sm-12",
+                                                   "html": createdTime + solutionContent + keywords
+                                               })[0].outerHTML
+                                   })[0].outerHTML;
+
+                            $(".question-list").append(questionRowDiv);
+
+
                             $("#keyword" + sId).empty();
                             if (data.data[i].Keywords != "") {
                                 $("#keyword" + sId).append("<li style='padding: 5px 0px'>Keywords: </li>");

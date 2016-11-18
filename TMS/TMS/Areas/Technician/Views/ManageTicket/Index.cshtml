@@ -124,6 +124,22 @@
             <div class="box-body">
                 <div class="form-inline pull-right" style="margin-right: 20px">
                     <div class="form-group">
+                        <label>Sort by &nbsp;</label>
+                        <select class="form-control" id="sort-ticket">
+                            <option value="Default" default>Default</option>
+                            <option value="SubjectAsc">Subject - A to Z</option>
+                            <option value="SubjectDsc">Subject - Z to A</option>
+                            <option value="PriorityAsc">Priority - Low to High</option>
+                            <option value="PriorityDsc">Priority - High to Low</option>
+                            <option value="DueDateAsc">Due by date - Oldest to Lastest</option>
+                            <option value="DueDateDsc">Due by date - Lastest to Oldest</option>
+                            <option value="CreatedDateAsc">Date created - Oldest to Lastest</option>
+                            <option value="CreatedDateDsc">Date created - Lastest to Oldest</option>
+                            <option value="ModifiedDateAsc">Date modified - Oldest to Lastest</option>
+                            <option value="ModifiedDateDsc">Date modified - Lastest to Oldest</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Status: &nbsp;</label>
                         <select class="form-control" id="filter-by-status">
                             <option value="1">All</option>
@@ -386,7 +402,7 @@
                 serverSide: true,
                 paging: true,
                 sort: true,
-                order: [[0, 'asc']],
+                order: [[0, 'desc']],
                 lengthChange: false,
                 filter: false,
                 drawCallback: function () {
@@ -398,6 +414,7 @@
                 ajax: {
                     url: "/Technician/ManageTicket/GetTechnicianTickets",
                     data: function (d) {
+                        d.filter_sort = $("#sort-ticket").val(),
                         d.select_status = $("#filter-by-status").val(),
                         d.search_text = $("#search-txt").val()
                     }
@@ -426,11 +443,17 @@
                                 "html": row.Subject
                             })[0].outerHTML;
 
-                            var creater = row.Requester != "" ? row.Requester : "-";
+                            var requester = row.Requester != "" ? row.Requester : "-";
+
                             var createdBy = $("<p/>",
                             {
                                 "class": "text-muted",
-                                "html": 'Request by <span class="text-bold">' + creater + '</span>'
+                                "html": 'Created by &nbsp;<span class="text-blue text-bold">' + row.CreatedBy + '</span>,&nbsp;&nbsp;<span class="text-bold">' + row.CreatedTimeString + '.</span>'
+                            })[0].outerHTML;
+                            var requestedBy = $("<p/>",
+                            {
+                                "class": "text-muted",
+                                "html": 'Request by <span class="text-bold text-blue">' + requester + '.</span>'
                             })[0].outerHTML;
 
                             var priority = row.Priority == "" ? " Unassigned" : '<div class="priority-color" style="background-color: ' + row.PriorityColor + '"></div>&nbsp;<span class="text-bold">' + row.Priority
@@ -491,17 +514,36 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            var solveUrl = '/Ticket/Solve/' + row.Id;
+                            var history = '<li>'
+                            + '<a href="/Ticket/History/' + row.Id + '">'
+                            + '<i class="fa fa-history" aria-hidden="true"></i> Ticket History'
+                            + '</a>'
+                            + '</li>';
+                            var detail = '<li>'
+                            + '<a href="/Ticket/TicketDetail/' + row.Id + '">'
+                            + '<i class="fa fa-info-circle" aria-hidden="true"></i> Ticket Detail'
+                            + '</a>'
+                            + '</li>';
+                            var solve = ''
                             if (row.Status == "Assigned") {
-                                return $("<div/>",
-                                   {
-                                       "style": "padding-top: 10px",
-                                       "html": "<a href='" + solveUrl + "' class='btn btn-success btn-flat' >Solve</a>"
-                                   })[0].outerHTML;;
+                                solve = '<li>'
+                                + '<a href="/Ticket/Solve/' + row.Id + '">'
+                                + '<i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket'
+                                + '</a>'
+                                + '</li>'
+                                + '<li>';
                             }
-                            else {
-                                return "<a class='btn btn-default btn-flat' disabled>Solve</a>";
-                            }
+
+                            var links = detail + history + solve;
+                            var action = '<div class="btn-group" style="padding-top: 10px">'
+                            + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
+                            + 'Action <span class="caret"></span>'
+                            + '</button>'
+                            + '<ul class="dropdown-menu dropdown-menu-right">';
+                            action += links;
+                            action += '</ul>'
+                                + '</div>';
+                            return action;
                         },
                         "sortable": false,
                         "targets": 1
@@ -525,6 +567,10 @@
         });
 
         $("#filter-by-status").change(function () {
+            reloadDataTable();
+        });
+
+        $("#sort-ticket").on("change", function () {
             reloadDataTable();
         });
 

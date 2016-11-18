@@ -22,11 +22,24 @@ function initTicketTable() {
         lengthMenu: [10],
         order: [[1, 'des']],
         lengthChange: false,
+        oLanguage: {
+            "sInfo": "Found _TOTAL_ tickets",
+            "sLast": "Last page",
+            "sFirst": "First",
+            //"sSearch": "Search:",
+            "sZeroRecords": "No records",
+            "sEmptyTable": "No data",
+            "sInfoFiltered": " - filter from _MAX_ rows",
+            "sLengthMenu": "Show _MENU_ rows",
+            "sProcessing": "Processing..."
+        },
+        bAutoWidth: false,
         ajax: {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
             "type": "POST",
             "data": function (d) {
                 d.filter_created = $("[data-role='filter_created_select']").val();
+                d.filter_sort = $("[data-role='sort_ticket_select']").val();
                 d.filter_time_period = $("[data-role='filter_time_period_input']").val();
                 d.filter_dueby = JSON.stringify(getDueByFilter());
                 d.filter_status = JSON.stringify($("[data-role='filter_status_select']").val());
@@ -63,6 +76,7 @@ function initTicketTable() {
             },
             {
                 "targets": [1],
+                "sortable": false,
                 "render": function (data, type, row) {
                     var ticketInfo = "";
                     var code = $("<span/>",
@@ -84,11 +98,17 @@ function initTicketTable() {
                         "html": row.Subject
                     })[0].outerHTML;
 
-                    var creater = row.Requester != "" ? row.Requester : "-";
+                    var requester = row.Requester != "" ? row.Requester : "-";
+
                     var createdBy = $("<p/>",
                     {
                         "class": "text-muted",
-                        "html": 'Request by <span class="text-bold">' + creater + '</span>'
+                        "html": 'Created by &nbsp;<span class="text-blue text-bold">' + row.CreatedBy + '</span>,&nbsp;&nbsp;<span class="text-bold">' + row.CreatedTimeString + '.</span>'
+                    })[0].outerHTML;
+                    var requestedBy = $("<p/>",
+                    {
+                        "class": "text-muted",
+                        "html": 'Request by <span class="text-bold text-blue">' + requester + '.</span>'
                     })[0].outerHTML;
 
                     var priority = row.Priority == "" ? " Unassigned" : '<div class="priority-color" style="background-color: ' + row.PriorityColor + '"></div>&nbsp;<span class="text-bold">' + row.Priority
@@ -238,18 +258,6 @@ function initTicketTable() {
                 }
             }
         ],
-        "oLanguage": {
-            "sInfo": "Found _TOTAL_ tickets",
-            "sLast": "Last page",
-            "sFirst": "First",
-            //"sSearch": "Search:",
-            "sZeroRecords": "No records",
-            "sEmptyTable": "No data",
-            "sInfoFiltered": " - filter from _MAX_ rows",
-            "sLengthMenu": "Show _MENU_ rows",
-            "sProcessing": "Processing..."
-        },
-        "bAutoWidth": false
     });
 }
 
@@ -456,6 +464,7 @@ function getDueByFilter() {
 
 function initFilter() {
     var created_select = $('[data-role="filter_created_select"');
+    var sort_select = $('[data-role="sort_ticket_select"');
     var mode_select = $('[data-role="filter_mode_select"');
     var status_select = $('[data-role="filter_status_select"');
     var requester_select = $('[data-role="filter_requester_select"');
@@ -470,6 +479,7 @@ function initFilter() {
             }
         });
     }
+    sort_select.select2();
     time_period_inp.val("");
     mode_select.select2();
     status_select.select2();
@@ -495,6 +505,9 @@ function initFilter() {
                     ticketTable.draw();
                 }
             });
+    sort_select.on("change", function () {
+        ticketTable.draw();
+    });
     $('[data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]')
         .on("change",
             function () {
@@ -846,29 +859,21 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
                 }
                 $("[name='ImpactDetail']").val(ticket.ImpactDetail);
                 $("[name='ScheduleStartDate']").val(ticket.ScheduleStartDateString);
-                $("[name='ScheduleEndDate']").val(ticket.ScheduleEndDateString);
-                $("[name='ActualStartDate']").val(ticket.ActualStartDateString);
-                $("[name='ActualEndDate']").val(ticket.ActualEndDateString);
                 $("[name='Solution']").val(ticket.Solution);
-                if (ticket.Tags) {
-                    var tags = ticket.Tags.split(',');
+                if (ticket.Keywords) {
+                    var tags = ticket.Keywords.split(',');
                     for (i = 0; i < tags.length; i++) {
                         $('#tags').tagit('createTag', tags[i]);
                     }
                 }
-                $("[name='Note']").val(ticket.Solution);
+                $("[name='Note']").val(ticket.Note);
 
-                if (ticket.UrgencyId != 0) {
-                    loadInitDropdown('ddl-urgency', ticket.Urgency, ticket.UrgencyId);
-                }
-                if (ticket.PriorityId != 0) {
-                    loadInitDropdown('ddl-priority', ticket.Priority, ticket.PriorityId);
+                if (ticket.CategoryId != 0) {
+                    loadInitDropdown('ddl-category', ticket.Category, ticket.CategoryId);
+                    $("#categoryId").trigger("change");
                 }
                 if (ticket.ImpactId != 0) {
                     loadInitDropdown('ddl-impact', ticket.Impact, ticket.ImpactId);
-                }
-                if (ticket.CategoryId != 0) {
-                    loadInitDropdown('ddl-category', ticket.Category, ticket.CategoryId);
                 }
                 if (ticket.GroupId != 0) {
                     loadInitDropdown('ddl-group', ticket.Group, ticket.GroupId);

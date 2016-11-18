@@ -88,12 +88,29 @@ namespace TMS.Utils
             }
         }
 
+        public static async void SendToTechnicianWhenTicketIsOverdue(Ticket ticket, AspNetUser technician)
+        {
+            string emailSubject = "[TMS] Overdue Ticket Notification";
+            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/OverdueTicketTechnicianTemplate.txt"));
+            emailMessage = emailMessage.Replace("$fullname", technician.Fullname);
+            emailMessage = emailMessage.Replace("$code", ticket.Code);
+            emailMessage = emailMessage.Replace("$delayDay", ((int)(DateTime.Now.Date - ticket.DueByDate.Date).TotalDays).ToString());
+            try
+            {
+                await SendEmail(technician.Email, emailSubject, emailMessage);
+            }
+            catch
+            {
+                log.Warn(string.Format("Send overdue ticket notification email to {0} unsuccessfully!", technician.Fullname));
+            }
+        }
+
         public static async void SendToHelpdesksWhenTicketIsOverdue(Ticket ticket, IEnumerable<AspNetUser> helpdesks)
         {
             string emailSubject = "[TMS] Overdue Ticket Notification";
-            string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/OverdueTicketHelpdeskTemplate.txt"));
             foreach (AspNetUser helpdesk in helpdesks)
             {
+                string emailMessage = File.ReadAllText(HostingEnvironment.MapPath(@"~/EmailTemplates/OverdueTicketTechnicianTemplate.txt"));
                 emailMessage = emailMessage.Replace("$fullname", helpdesk.Fullname);
                 emailMessage = emailMessage.Replace("$code", ticket.Code);
                 emailMessage = emailMessage.Replace("$delayDay", ((int)(DateTime.Now.Date - ticket.DueByDate.Date).TotalDays).ToString());
@@ -278,6 +295,6 @@ namespace TMS.Utils
             }
             return mailList;
         }
-        
+
     }
 }
