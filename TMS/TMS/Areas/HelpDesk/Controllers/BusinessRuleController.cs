@@ -319,6 +319,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult Update(BusinessRuleViewModel viewModel)
         {
             var result = false;

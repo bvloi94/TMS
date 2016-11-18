@@ -96,8 +96,8 @@ namespace TMS.Controllers
                     ViewBag.Profile = "/Helpdesk/Profile"; break;
                 case "Requester":
                     ViewBag.Home = "/FAQ/Index";
-                    ViewBag.ItemLink1 = "/FAQ/Index";
-                    ViewBag.Item1 = "FAQ";
+                    ViewBag.ItemLink1 = "/Index";
+                    ViewBag.Item1 = "Home";
                     ViewBag.ItemLink2 = "/Ticket/Index";
                     ViewBag.Item2 = "Ticket";
                     ViewBag.Profile = "/Profile";
