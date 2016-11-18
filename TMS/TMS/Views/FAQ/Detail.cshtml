@@ -112,15 +112,6 @@
             margin-right: 1em;
         }
 
-    .key-tags {
-        position: relative;
-        height: 30px;
-        line-height: 30px;
-        padding: 0 15px;
-        background-color: #e6e6e6;
-        border-left: solid 5px #3393d8;
-        color: #191919;
-    }
 </style>
 
 <div class="col-lg-12">
@@ -135,7 +126,7 @@
                         <span class="category"><a class="category-link" id="@Model.CategoryID" href="/FAQ/Category/@Model.Category">@Html.DisplayFor(m => m.CategoryPath)</a></span>
                     </div>
                     <p class="pre-wrap">@Html.Raw(Model.Content)</p>
-                    <p><ul class="keywords" id="keyword">@Model.Keyword</ul></p>
+                    <p><ul class="keywords" id="keyword">@Model.Keywords</ul></p>
                 </article>
             </li>
         </ul>
@@ -176,7 +167,7 @@
         function loadKeyword(keyword, obj) {
             var keywordTags = (keyword).split(',');
             $(obj).empty();
-            if (keywordTags[0] != "-") {
+            if (keywordTags[0] != "-" || keywordTags[0] != "") {
                 for (j = 0; j < keywordTags.length; j++) {
                     var key = keywordTags[j].replace(/"/g, '');
                     $(obj).append('<li><div class="key-tags"><a href="/FAQ/Tags/' + key + ' ">' + key + '</a></div></li>');

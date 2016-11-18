@@ -124,6 +124,22 @@
             <div class="box-body">
                 <div class="form-inline pull-right" style="margin-right: 20px">
                     <div class="form-group">
+                        <label>Sort by &nbsp;</label>
+                        <select class="form-control" id="sort-ticket">
+                            <option value="Default" default>Default</option>
+                            <option value="SubjectAsc">Subject - A to Z</option>
+                            <option value="SubjectDsc">Subject - Z to A</option>
+                            <option value="PriorityAsc">Priority - Low to High</option>
+                            <option value="PriorityDsc">Priority - High to Low</option>
+                            <option value="DueDateAsc">Due by date - Oldest to Lastest</option>
+                            <option value="DueDateDsc">Due by date - Lastest to Oldest</option>
+                            <option value="CreatedDateAsc">Date created - Oldest to Lastest</option>
+                            <option value="CreatedDateDsc">Date created - Lastest to Oldest</option>
+                            <option value="ModifiedDateAsc">Date modified - Oldest to Lastest</option>
+                            <option value="ModifiedDateDsc">Date modified - Lastest to Oldest</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Status: &nbsp;</label>
                         <select class="form-control" id="filter-by-status">
                             <option value="1">All</option>
@@ -398,6 +414,7 @@
                 ajax: {
                     url: "/Technician/ManageTicket/GetTechnicianTickets",
                     data: function (d) {
+                        d.filter_sort = $("#sort-ticket").val(),
                         d.select_status = $("#filter-by-status").val(),
                         d.search_text = $("#search-txt").val()
                     }
@@ -426,11 +443,17 @@
                                 "html": row.Subject
                             })[0].outerHTML;
 
-                            var creater = row.Requester != "" ? row.Requester : "-";
+                            var requester = row.Requester != "" ? row.Requester : "-";
+
                             var createdBy = $("<p/>",
                             {
                                 "class": "text-muted",
-                                "html": 'Request by <span class="text-bold">' + creater + '</span>'
+                                "html": 'Created by &nbsp;<span class="text-blue text-bold">' + row.CreatedBy + '</span>,&nbsp;&nbsp;<span class="text-bold">' + row.CreatedTimeString + '.</span>'
+                            })[0].outerHTML;
+                            var requestedBy = $("<p/>",
+                            {
+                                "class": "text-muted",
+                                "html": 'Request by <span class="text-bold text-blue">' + requester + '.</span>'
                             })[0].outerHTML;
 
                             var priority = row.Priority == "" ? " Unassigned" : '<div class="priority-color" style="background-color: ' + row.PriorityColor + '"></div>&nbsp;<span class="text-bold">' + row.Priority
@@ -525,6 +548,10 @@
         });
 
         $("#filter-by-status").change(function () {
+            reloadDataTable();
+        });
+
+        $("#sort-ticket").on("change", function () {
             reloadDataTable();
         });
 

@@ -39,6 +39,7 @@ namespace TMS.Areas.Technician.Controllers
             var ticketList = _ticketService.GetTechnicianTickets(technicianId);
             var default_search_key = Request["search[value]"];
             var select_status = Request["select_status"];
+            var sort_Filter = Request["filter_sort"];
             var search_text = Request["search_text"];
 
 
@@ -95,6 +96,23 @@ namespace TMS.Areas.Technician.Controllers
                      : filteredListItems.OrderByDescending(p => p.ModifiedTime);
             }
 
+            if (!string.IsNullOrEmpty(sort_Filter))
+            {
+                switch (sort_Filter)
+                {
+                    case "SubjectAsc": filteredListItems = filteredListItems.OrderBy(p => p.Subject); break;
+                    case "SubjectDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.Subject); break;
+                    case "PriorityAsc": filteredListItems = filteredListItems.OrderBy(p => p.Priority.PriorityLevel); break;
+                    case "PriorityDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.Priority.PriorityLevel); break;
+                    case "DueDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.DueByDate); break;
+                    case "DueDateDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.DueByDate); break;
+                    case "CreatedDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.CreatedTime); break;
+                    case "CreatedDateDsc": filteredListItems = filteredListItems.OrderByDescending(p => p.CreatedTime); break;
+                    case "ModifiedDateAsc": filteredListItems = filteredListItems.OrderBy(p => p.ModifiedTime); break;
+                    default: filteredListItems = filteredListItems.OrderByDescending(p => p.ModifiedTime); break;
+                }
+            }
+
             var displayedList = filteredListItems.Skip(param.start).Take(param.length);
             var tickets = new List<TicketViewModel>();
             int startNo = param.start;
@@ -105,6 +123,7 @@ namespace TMS.Areas.Technician.Controllers
                 s.Code = item.Code;
                 s.Id = item.ID;
                 s.Subject = item.Subject;
+                s.CreatedBy = item.CreatedID == null ? "" : _userService.GetUserById(item.CreatedID).Fullname;
                 s.Requester = item.RequesterID == null ? "" : _userService.GetUserById(item.RequesterID).Fullname;
                 if (item.TechnicianID != null)
                 {
@@ -117,6 +136,7 @@ namespace TMS.Areas.Technician.Controllers
                 }
                 s.SolvedDateString = item.SolvedDate.HasValue ? item.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                 s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
+                s.CreatedTimeString = GeneralUtil.ShowDateTime(item.CreatedTime);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 s.OverdueDateString = GeneralUtil.GetOverdueDate(item.DueByDate, item.Status);
                 s.IsOverdue = item.ScheduleEndDate.Date.Subtract(DateTime.Now.Date).Days < 0;

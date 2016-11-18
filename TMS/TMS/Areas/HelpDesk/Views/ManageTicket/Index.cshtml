@@ -530,27 +530,49 @@
                 <div class="col-sm-12 ticket_filter collapse" style="margin: 10px 0px; border: solid 1px rgb(189, 191, 191)" id="filter-div">
                     <div class="row" style="padding: 16px">
                         <div class="col-sm-6">
-                            <div class="form-group filter_created_time" data-role="filter_created_time">
-                                <label>Created</label>
-                                <select class="form-control" data-role="filter_created_select">
-                                    <option value="0" default>Any time</option>
-                                    <option value="5">Within 5 minutes</option>
-                                    <option value="15">Within 15 minutes</option>
-                                    <option value="30">Within 30 minutes</option>
-                                    <option value="60">Within 1 hour</option>
-                                    <option value="240">Within 4 hours</option>
-                                    <option value="720">Within 12 hours</option>
-                                    <option value="1440">Within 24 hours</option>
-                                    <option value="today">Today</option>
-                                    <option value="yesterday">Yesterday</option>
-                                    <option value="week">This Week</option>
-                                    <option value="last_week">Last 7 days</option>
-                                    <option value="month">This Month</option>
-                                    <option value="last_month">Last 30 days</option>
-                                    <option value="two_months">Last 60 days</option>
-                                    <option value="six_months">Last 180 days</option>
-                                    <option value="set_date">Select Time Period</option>
-                                </select>
+                            <div class="col-sm-12 no-padding">
+                                <div class="col-sm-6 no-padding" style="width: 48%; margin-right: 2%">
+                                    <div class="form-group filter_created_time" data-role="filter_created_time">
+                                        <label>Created</label>
+                                        <select class="form-control" data-role="filter_created_select">
+                                            <option value="0" default>Any time</option>
+                                            <option value="5">Within 5 minutes</option>
+                                            <option value="15">Within 15 minutes</option>
+                                            <option value="30">Within 30 minutes</option>
+                                            <option value="60">Within 1 hour</option>
+                                            <option value="240">Within 4 hours</option>
+                                            <option value="720">Within 12 hours</option>
+                                            <option value="1440">Within 24 hours</option>
+                                            <option value="today">Today</option>
+                                            <option value="yesterday">Yesterday</option>
+                                            <option value="week">This Week</option>
+                                            <option value="last_week">Last 7 days</option>
+                                            <option value="month">This Month</option>
+                                            <option value="last_month">Last 30 days</option>
+                                            <option value="two_months">Last 60 days</option>
+                                            <option value="six_months">Last 180 days</option>
+                                            <option value="set_date">Select Time Period</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 no-padding" style="width: 48%; margin-left: 2%">
+                                    <div class="form-group sort_ticket" data-role="sort_ticket">
+                                        <label>Sort by</label>
+                                        <select class="form-control" data-role="sort_ticket_select">
+                                            <option value="Default" default>Default</option>
+                                            <option value="SubjectAsc">Subject - A to Z</option>
+                                            <option value="SubjectDsc">Subject - Z to A</option>
+                                            <option value="PriorityAsc">Priority - Low to High</option>
+                                            <option value="PriorityDsc">Priority - High to Low</option>
+                                            <option value="DueDateAsc">Due by date - Oldest to Lastest</option>
+                                            <option value="DueDateDsc">Due by date - Lastest to Oldest</option>
+                                            <option value="CreatedDateAsc">Date created - Oldest to Lastest</option>
+                                            <option value="CreatedDateDsc">Date created - Lastest to Oldest</option>
+                                            <option value="ModifiedDateAsc">Date modified - Oldest to Lastest</option>
+                                            <option value="ModifiedDateDsc">Date modified - Lastest to Oldest</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <div class="filter_time_period hidden" data-role="filter_time_period">
                                 <h5>Time period</h5>
