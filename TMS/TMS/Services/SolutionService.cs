@@ -125,10 +125,8 @@ namespace TMS.Services
             var solutions = _unitOfWork.SolutionRepository.Get(m => selectedSolutions.Contains(m.ID));
             foreach (var solution in solutions.ToList())
             {
-                foreach (var solutionattachment in solution.SolutionAttachments.ToList())
-                {
-                    _unitOfWork.SolutionAttachmentRepository.Delete(solutionattachment.ID);
-                }
+                _unitOfWork.SolutionAttachmentRepository.Delete(m => m.SolutionID == solution.ID);
+                _unitOfWork.SolutionKeywordRepository.Delete(m => m.SolutionID == solution.ID);
                 _unitOfWork.SolutionRepository.Delete(solution.ID);
             }
             return _unitOfWork.CommitTransaction();

@@ -53,10 +53,7 @@ namespace TMS.Services
         public bool DeleteImpact(Impact impact)
         {
             _unitOfWork.BeginTransaction();
-            foreach (PriorityMatrixItem priorityMatrixItem in impact.PriorityMatrixItems.ToList())
-            {
-                _unitOfWork.PriorityMatrixItemRepository.Delete(priorityMatrixItem);
-            }
+            _unitOfWork.PriorityMatrixItemRepository.Delete(m => m.ImpactID == impact.ID);
             _unitOfWork.ImpactRepository.Delete(impact);
             return _unitOfWork.CommitTransaction();
         }
