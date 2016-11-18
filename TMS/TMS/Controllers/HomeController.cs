@@ -44,7 +44,7 @@ namespace TMS.Controllers
                         ID = m.ID,
                         Subject = m.Subject,
                         Category = m.Category == null ? "-" : m.Category.Name,
-                        SolvedBy = m.SolveID == null ? "-" : _userService.GetUserById(m.SolveID).Fullname,
+                        SolvedBy = m.SolvedID == null ? "-" : _userService.GetUserById(m.SolvedID).Fullname,
                         CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
                         SolvedTime = m.SolvedDate == null ? " - " : GeneralUtil.ShowDateTime(m.SolvedDate.Value)
                     }).ToArray();

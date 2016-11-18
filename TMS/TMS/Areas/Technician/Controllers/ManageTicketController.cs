@@ -119,11 +119,7 @@ namespace TMS.Areas.Technician.Controllers
                 s.Status = GeneralUtil.GetTicketStatusByID(item.Status);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 s.OverdueDateString = GeneralUtil.GetOverdueDate(item.DueByDate, item.Status);
-                s.IsOverdue = false;
-                if (item.DueByDate.HasValue)
-                {
-                    s.IsOverdue = (item.ScheduleEndDate.Value.Date.Subtract(DateTime.Now.Date).Days < 0) ? true : false;
-                }
+                s.IsOverdue = item.ScheduleEndDate.Date.Subtract(DateTime.Now.Date).Days < 0;
                 s.Priority = item.Priority == null ? "" : item.Priority.Name;
                 s.PriorityColor = item.Priority == null ? "" : item.Priority.Color;
                 tickets.Add(s);

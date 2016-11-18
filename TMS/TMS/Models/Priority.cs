@@ -25,6 +25,8 @@ namespace TMS.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string Color { get; set; }
+        public int PriorityLevel { get; set; }
+        public bool IsSystem { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PriorityMatrixItem> PriorityMatrixItems { get; set; }

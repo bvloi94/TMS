@@ -12,15 +12,13 @@ namespace TMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class PriorityMatrixItem
+    public partial class SolutionKeyword
     {
         public int ID { get; set; }
-        public int ImpactID { get; set; }
-        public int UrgencyID { get; set; }
-        public int PriorityID { get; set; }
+        public int SolutionID { get; set; }
+        public int KeywordID { get; set; }
     
-        public virtual Impact Impact { get; set; }
-        public virtual Priority Priority { get; set; }
-        public virtual Urgency Urgency { get; set; }
+        public virtual Keyword Keyword { get; set; }
+        public virtual Solution Solution { get; set; }
     }
 }

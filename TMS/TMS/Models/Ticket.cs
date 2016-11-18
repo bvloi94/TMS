@@ -21,37 +21,36 @@ namespace TMS.Models
             this.Ticket1 = new HashSet<Ticket>();
             this.TicketAttachments = new HashSet<TicketAttachment>();
             this.TicketHistories = new HashSet<TicketHistory>();
+            this.TicketKeywords = new HashSet<TicketKeyword>();
         }
     
         public int ID { get; set; }
         public string Code { get; set; }
         public Nullable<int> Type { get; set; }
         public int Mode { get; set; }
-        public Nullable<int> ImpactID { get; set; }
+        public int ImpactID { get; set; }
         public string ImpactDetail { get; set; }
-        public Nullable<int> UrgencyID { get; set; }
-        public Nullable<int> PriorityID { get; set; }
+        public int UrgencyID { get; set; }
+        public int PriorityID { get; set; }
         public Nullable<int> CategoryID { get; set; }
         public int Status { get; set; }
         public string Subject { get; set; }
         public string Description { get; set; }
         public string Solution { get; set; }
         public string UnapproveReason { get; set; }
-        public Nullable<System.DateTime> ScheduleStartDate { get; set; }
-        public Nullable<System.DateTime> ScheduleEndDate { get; set; }
-        public Nullable<System.DateTime> ActualStartDate { get; set; }
+        public System.DateTime ScheduleStartDate { get; set; }
+        public System.DateTime ScheduleEndDate { get; set; }
         public Nullable<System.DateTime> ActualEndDate { get; set; }
         public Nullable<System.DateTime> SolvedDate { get; set; }
-        public Nullable<System.DateTime> DueByDate { get; set; }
+        public System.DateTime DueByDate { get; set; }
         public System.DateTime CreatedTime { get; set; }
         public System.DateTime ModifiedTime { get; set; }
         public string CreatedID { get; set; }
-        public string SolveID { get; set; }
+        public string SolvedID { get; set; }
         public string TechnicianID { get; set; }
         public string AssignedByID { get; set; }
         public string RequesterID { get; set; }
         public string Note { get; set; }
-        public string Tags { get; set; }
         public Nullable<int> MergedID { get; set; }
     
         public virtual AspNetUser AspNetUser { get; set; }
@@ -71,5 +70,7 @@ namespace TMS.Models
         public virtual ICollection<TicketAttachment> TicketAttachments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TicketHistory> TicketHistories { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TicketKeyword> TicketKeywords { get; set; }
     }
 }

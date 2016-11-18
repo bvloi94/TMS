@@ -42,7 +42,7 @@ namespace TMS.Controllers
                 CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
-                Keyword = m.Keyword == null ? "-" : m.Keyword,
+                //Keyword = m.Keyword == null ? "-" : m.Keyword,
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
@@ -50,20 +50,20 @@ namespace TMS.Controllers
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
+                //var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
 
-                search = GeneralUtil.RemoveSpecialCharacters(search);
-                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                search = regex.Replace(search, " ");
-                string[] keywordArr = search.Split(' ');
-                foreach (string keyword in keywordArr)
-                {
-                    string keywordSearch = '"' + keyword.ToLower() + '"';
-                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordSearch));
-                }
-                predicate = predicate.Or(p => p.Subject.ToLower().Contains(search.ToLower()));
-                model = model.Where(predicate);
-                ViewBag.SearchKey = search;
+                //search = GeneralUtil.RemoveSpecialCharacters(search);
+                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                //search = regex.Replace(search, " ");
+                //string[] keywordArr = search.Split(' ');
+                //foreach (string keyword in keywordArr)
+                //{
+                //    string keywordSearch = '"' + keyword.ToLower() + '"';
+                //    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordSearch));
+                //}
+                //predicate = predicate.Or(p => p.Subject.ToLower().Contains(search.ToLower()));
+                //model = model.Where(predicate);
+                //ViewBag.SearchKey = search;
             }
 
             return View(model);
@@ -121,7 +121,7 @@ namespace TMS.Controllers
                 CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
-                Keyword = m.Keyword == null ? "-" : m.Keyword,
+                //Keyword = m.Keyword == null ? "-" : m.Keyword,
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
@@ -131,16 +131,16 @@ namespace TMS.Controllers
 
             if (!string.IsNullOrWhiteSpace(key_search))
             {
-                keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
-                Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                keywords = regex.Replace(keywords, " ");
-                string[] keywordArr = keywords.Split(' ');
-                foreach (string keyword in keywordArr)
-                {
-                    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keyword.ToLower()));
-                }
-                predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
-                filteredListItems = filteredListItems.Where(predicate);
+                //keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+                //keywords = regex.Replace(keywords, " ");
+                //string[] keywordArr = keywords.Split(' ');
+                //foreach (string keyword in keywordArr)
+                //{
+                //    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keyword.ToLower()));
+                //}
+                //predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+                //filteredListItems = filteredListItems.Where(predicate);
             }
 
             if (id.HasValue)
@@ -191,7 +191,7 @@ namespace TMS.Controllers
                         model.CreatedTime = solution.CreatedTime;
                         model.ModifiedTime = solution.ModifiedTime;
                     }
-                    model.Keyword = solution.Keyword == null ? "-" : solution.Keyword;
+                    //model.Keyword = solution.Keyword == null ? "-" : solution.Keyword;
                     model.Path = solution.Path;
                     ViewBag.relatedSolution = LoadRelatedArticle(solution.ID);
 
@@ -223,7 +223,7 @@ namespace TMS.Controllers
                     CategoryID = m.CategoryID,
                     ContentText = m.ContentText,
                     Path = m.Path,
-                    Keyword = m.Keyword == null ? "-" : m.Keyword,
+                    //Keyword = m.Keyword == null ? "-" : m.Keyword,
                     CreatedTime = m.CreatedTime,
                     ModifiedTime = m.ModifiedTime
                 }).OrderBy(m => m.Subject).ToList().Take(5);
@@ -241,7 +241,7 @@ namespace TMS.Controllers
                 CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
-                Keyword = m.Keyword == null ? "-" : m.Keyword,
+                //Keyword = m.Keyword == null ? "-" : m.Keyword,
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
@@ -273,7 +273,7 @@ namespace TMS.Controllers
                 CategoryID = m.Category.ID,
                 CategoryPath = _categoryService.GetCategoryPath(m.Category),
                 Content = m.ContentText,
-                Keyword = m.Keyword == null ? "-" : m.Keyword,
+                //Keyword = m.Keyword == null ? "-" : m.Keyword,
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
                 ModifiedTime = m.ModifiedTime
@@ -281,8 +281,8 @@ namespace TMS.Controllers
 
             if (!string.IsNullOrWhiteSpace(tag))
             {
-                tag = '"' + tag + '"';
-                model = model.Where(m => m.Keyword.Contains(tag.ToLower()));
+                //tag = '"' + tag + '"';
+                //model = model.Where(m => m.Keyword.Contains(tag.ToLower()));
             };
             model = model.OrderBy(m => m.Subject);
 

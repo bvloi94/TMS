@@ -61,8 +61,17 @@ namespace TMS.Services
 
         public bool EditSolution(Solution solution)
         {
+            _unitOfWork.BeginTransaction();
+            _unitOfWork.SolutionKeywordRepository.Delete(m => m.SolutionID == solution.ID);
+            if (solution.SolutionKeywords != null)
+            {
+                foreach (SolutionKeyword solutionKeyword in solution.SolutionKeywords)
+                {
+                    _unitOfWork.SolutionKeywordRepository.Insert(solutionKeyword);
+                }
+            }
             _unitOfWork.SolutionRepository.Update(solution);
-            return _unitOfWork.Commit();
+            return _unitOfWork.CommitTransaction();
         }
 
         public IEnumerable<Solution> GetSolutionsByCategory(int id)

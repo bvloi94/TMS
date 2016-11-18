@@ -12,27 +12,21 @@ namespace TMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Solution
+    public partial class Keyword
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Solution()
+        public Keyword()
         {
-            this.SolutionAttachments = new HashSet<SolutionAttachment>();
             this.SolutionKeywords = new HashSet<SolutionKeyword>();
+            this.TicketKeywords = new HashSet<TicketKeyword>();
         }
     
         public int ID { get; set; }
-        public string Subject { get; set; }
-        public string ContentText { get; set; }
-        public int CategoryID { get; set; }
-        public string Path { get; set; }
-        public System.DateTime CreatedTime { get; set; }
-        public System.DateTime ModifiedTime { get; set; }
+        public string Name { get; set; }
     
-        public virtual Category Category { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<SolutionAttachment> SolutionAttachments { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SolutionKeyword> SolutionKeywords { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TicketKeyword> TicketKeywords { get; set; }
     }
 }

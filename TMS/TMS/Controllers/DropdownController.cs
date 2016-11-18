@@ -36,12 +36,12 @@ namespace TMS.Controllers
         public ActionResult LoadUrgencyDropdown()
         {
             var result = new List<UrgencyViewModel>();
-            result.Add(new UrgencyViewModel()
-            {
-                Name = "None",
-                Description = "None",
-                Id = 0,
-            });
+            //result.Add(new UrgencyViewModel()
+            //{
+            //    Name = "None",
+            //    Description = "None",
+            //    Id = 0,
+            //});
             var queryResult = _urgencyService.GetAll();
             foreach (var urg in queryResult)
             {
@@ -58,12 +58,12 @@ namespace TMS.Controllers
         public ActionResult LoadPriorityDropdown()
         {
             var result = new List<PriorityViewModel>();
-            result.Add(new PriorityViewModel()
-            {
-                Name = "None",
-                Description = "None",
-                Id = 0,
-            });
+            //result.Add(new PriorityViewModel()
+            //{
+            //    Name = "None",
+            //    Description = "None",
+            //    Id = 0,
+            //});
             var queryResult = _priorityService.GetAll();
             foreach (var urg in queryResult)
             {
@@ -80,12 +80,12 @@ namespace TMS.Controllers
         public ActionResult LoadImpactDropDown()
         {
             var result = new List<ImpactViewModel>();
-            result.Add(new ImpactViewModel()
-            {
-                Name = "None",
-                Description = "None",
-                Id = 0,
-            });
+            //result.Add(new ImpactViewModel()
+            //{
+            //    Name = "None",
+            //    Description = "None",
+            //    Id = 0,
+            //});
             var queryResult = _impactService.GetAll();
             foreach (var urg in queryResult)
             {
@@ -149,10 +149,23 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult LoadCategoryDropDown()
+        public ActionResult LoadCategoryDropDown(string query)
         {
             var result = new List<CategoryViewModel>();
             addChildCates(ref result, 1, 0);
+            List<CategoryViewModel> queriedList = new List<CategoryViewModel>();
+            if (!string.IsNullOrEmpty(query))
+            {
+                foreach (var cate in result)
+                {
+                    if (cate.Name.ToLower().Contains(query.ToLower()))
+                    {
+                        cate.Level = 1;
+                        queriedList.Add(cate);
+                    }
+                }
+                return Json(queriedList, JsonRequestBehavior.AllowGet);
+            }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
@@ -178,8 +191,8 @@ namespace TMS.Controllers
                 cate.Name = child.Name;
                 cate.Description = child.Description;
                 cate.ID = child.ID;
-                if (child.CategoryLevel != null) cate.Level = (int)child.CategoryLevel;
-                if (child.ParentID != null) cate.ParentId = (int)child.ParentID;
+                cate.Level = child.CategoryLevel;
+                if (child.ParentID.HasValue) cate.ParentId = child.ParentID.Value;
                 cates.Add(cate);
                 if (level < ConstantUtil.CategoryLevel.Item) addChildCates(ref cates, level + 1, cate.ID.Value);
             }

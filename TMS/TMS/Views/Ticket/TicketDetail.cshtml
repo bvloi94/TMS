@@ -342,11 +342,14 @@
                         Action <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li>
-                            <a href="/HelpDesk/ManageTicket/EditTicket/@Model.Id">
-                                <i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket
-                            </a>
-                        </li>
+                        @if (Model.Status != "Cancelled")
+                        {
+                            <li>
+                                <a href="/HelpDesk/ManageTicket/EditTicket/@Model.Id">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i> Edit Ticket
+                                </a>
+                            </li>
+                        }
                         <li>
                             <a href="/Ticket/History/@Model.Id">
                                 <i class="fa fa-history" aria-hidden="true"></i> Ticket History

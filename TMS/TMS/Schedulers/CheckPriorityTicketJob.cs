@@ -1,4 +1,5 @@
 ﻿using EAGetMail;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,13 +15,14 @@ using TMS.Utils;
 
 namespace TMS.Schedulers
 {
-    public class CheckOverdueTicketJob : Job
+    public class CheckPriorityTicketJob : Job
     {
         private UnitOfWork _unitOfWork;
         private UserService _userService;
         private TicketService _ticketService;
+        private ILog log = LogManager.GetLogger(typeof(CheckPriorityTicketJob));
 
-        public CheckOverdueTicketJob()
+        public CheckPriorityTicketJob()
         {
             _unitOfWork = new UnitOfWork();
             _userService = new UserService(_unitOfWork);
@@ -34,13 +36,15 @@ namespace TMS.Schedulers
 
         public override void DoJob()
         {
-            IEnumerable<Ticket> tickets = _ticketService.GetPendingTickets();
-            IEnumerable<AspNetUser> helpdesks = _userService.GetHelpDesks().Where(m => m.IsActive == true);
+            IEnumerable<Ticket> tickets = _ticketService.GetOpenAssignedTickets();
             foreach (Ticket ticket in tickets)
             {
-                if (DateTime.Now.Date > ticket.DueByDate.Date)
+                ticket.UrgencyID = _ticketService.GetUrgencyId(ticket.DueByDate);
+                ticket.PriorityID = _ticketService.GetPriorityId(ticket.ImpactID, ticket.DueByDate);
+                bool updateResult = _ticketService.CheckTicketPriority(ticket);
+                if (!updateResult)
                 {
-                    EmailUtil.SendToHelpdesksWhenTicketIsOverdue(ticket, helpdesks);
+                    log.Error("Scheduler close ticket error");
                 }
             }
         }
@@ -62,7 +66,7 @@ namespace TMS.Schedulers
         /// executed repeatadly.</returns>
         public override int GetRepetitionIntervalTime()
         {
-            return (int)TimeSpan.FromDays(1).TotalMilliseconds;
+            return (int)TimeSpan.FromHours(1).TotalMilliseconds;
         }
     }
 }

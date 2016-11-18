@@ -302,5 +302,29 @@ namespace TMS.Utils
             }
             return false;
         }
+
+        public static int GetDuration(int duration)
+        {
+            if (duration > 24)
+            {
+                return (int)((double)duration / 24);
+            }
+            else
+            {
+                return duration;
+            }
+        }
+
+        public static string GetDurationOption(int duration)
+        {
+            if (duration > 24)
+            {
+                return "days";
+            }
+            else
+            {
+                return "hours";
+            }
+        }
     }
 }

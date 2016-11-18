@@ -36,6 +36,8 @@
                             <th></th>
                             <th>Name</th>
                             <th>Description</th>
+                            <th>Impact</th>
+                            <th>Urgency</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -61,13 +63,24 @@
                         <label class="col-sm-2 control-label">Name&nbsp;<span style="color: red">*</span></label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" placeholder="Name" id="category-name-txt">
-
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Description</label>
                         <div class="col-sm-10">
                             <textarea class="form-control" rows="3" placeholder="Description" id="category-description-txt"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Impact&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <select id="category-impact-dropdown" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Urgency&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <select id="category-urgency-dropdown" class="form-control"></select>
                         </div>
                     </div>
                     <div>
@@ -115,6 +128,18 @@
                             <p id="sub-category-category-validation-message" class="text-danger" style="display: none"></p>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Impact&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <select id="sub-category-impact-dropdown" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Urgency&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-10">
+                            <select id="sub-category-urgency-dropdown" class="form-control"></select>
+                        </div>
+                    </div>
                     <div>
                         <div class="col-sm-offset-2 col-sm-10">
                             <p id="sub-category-name-validation-message" class="text-danger" style="display: none"></p>
@@ -158,6 +183,18 @@
                         <div class="col-sm-9">
                             <select id="item-sub-category-dropdown" class="form-control"></select>
                             <p id="item-sub-category-validation-message" class="text-danger" style="display: none"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Impact&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-9">
+                            <select id="item-impact-dropdown" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Urgency&nbsp;<span style="color: red">*</span></label>
+                        <div class="col-sm-9">
+                            <select id="item-urgency-dropdown" class="form-control"></select>
                         </div>
                     </div>
                     <div>
@@ -256,6 +293,20 @@
                     "targets": [3],
                     "sortable": false,
                     "render": function (data, type, row) {
+                        return row.Impact;
+                    }
+                },
+                {
+                    "targets": [4],
+                    "sortable": false,
+                    "render": function (data, type, row) {
+                        return row.Urgency;
+                    }
+                },
+                {
+                    "targets": [5],
+                    "sortable": false,
+                    "render": function (data, type, row) {
                         return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showEditCategoryModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
                             + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a>';
                     }
@@ -293,6 +344,8 @@
                         content += "<th style='width: 35px'></th>";
                         content += "<th>Name</th>";
                         content += "<th>Description</th>";
+                        content += "<th>Impact</th>";
+                        content += "<th>Urgency</th>";
                         content += "<th>Action</th>";
                         content += "</tr>";
                         content += "</thead>";
@@ -339,6 +392,20 @@
                                     "targets": [3],
                                     "sortable": false,
                                     "render": function (data, type, row) {
+                                        return row.Impact;
+                                    }
+                                },
+                                {
+                                    "targets": [4],
+                                    "sortable": false,
+                                    "render": function (data, type, row) {
+                                        return row.Urgency;
+                                    }
+                                },
+                                {
+                                    "targets": [5],
+                                    "sortable": false,
+                                    "render": function (data, type, row) {
                                         return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showEditSubCategoryModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
                                             + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a>';
                                     }
@@ -354,6 +421,8 @@
                         content += "<tr>";
                         content += "<th width='200px'>Name</th>";
                         content += "<th>Description</th>";
+                        content += "<th>Impact</th>";
+                        content += "<th>Urgency</th>";
                         content += "<th width='100px'>Action</th>";
                         content += "</tr>";
                         content += "</thead>";
@@ -388,6 +457,20 @@
                                 },
                                 {
                                     "targets": [2],
+                                    "sortable": false,
+                                    "render": function (data, type, row) {
+                                        return row.Impact;
+                                    }
+                                },
+                                {
+                                    "targets": [3],
+                                    "sortable": false,
+                                    "render": function (data, type, row) {
+                                        return row.Urgency;
+                                    }
+                                },
+                                {
+                                    "targets": [4],
                                     "sortable": false,
                                     "render": function (data, type, row) {
                                         return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showEditItemModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
@@ -428,23 +511,67 @@
 
         var showCreateCategoryModal = function () {
             clearModal();
-            $("#category-modal").modal('show');
-            $('#category-action-btn').attr('onclick', 'createCategory()');
+            $.ajax({
+                url: "/Manager/ManageSC/GetCategoryModal",
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    var impact_dropdown = '';
+                    for (i = 0; i < data.impacts.length; i++) {
+                        var row = data.impacts[i];
+                        impact_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    }
+                    $("#category-impact-dropdown").html(impact_dropdown);
+
+                    var urgency_dropdown = '';
+                    for (i = 0; i < data.urgencies.length; i++) {
+                        var row = data.urgencies[i];
+                        urgency_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    }
+                    $("#category-urgency-dropdown").html(urgency_dropdown);
+
+                    $("#category-modal").modal('show');
+                    $('#category-action-btn').attr('onclick', 'createCategory()');
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        layout: "topRight",
+                        type: "error",
+                        timeout: 2000
+                    });
+                }
+            });
         };
 
         var showCreateSubCategoryModal = function () {
             clearModal();
             $.ajax({
-                url: "/Manager/ManageSC/GetCategories",
+                url: "/Manager/ManageSC/GetSubCategoryModal",
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
-                    var content = '<option value>--Select Category--</option>';
-                    for (i = 0; i < data.data.length; i++) {
-                        var row = data.data[i];
-                        content += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    var category_dropdown = '<option value>--Select Category--</option>';
+                    for (i = 0; i < data.categories.length; i++) {
+                        var row = data.categories[i];
+                        category_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
                     }
-                    $("#sub-category-category-dropdown").html(content);
+                    $("#sub-category-category-dropdown").html(category_dropdown);
+
+                    var impact_dropdown = '';
+                    for (i = 0; i < data.impacts.length; i++) {
+                        var row = data.impacts[i];
+                        impact_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    }
+                    $("#sub-category-impact-dropdown").html(impact_dropdown);
+
+                    var urgency_dropdown = '';
+                    for (i = 0; i < data.urgencies.length; i++) {
+                        var row = data.urgencies[i];
+                        urgency_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    }
+                    $("#sub-category-urgency-dropdown").html(urgency_dropdown);
+
                     $("#sub-category-modal").modal('show');
                     $('#sub-category-action-btn').attr('onclick', 'createSubCategory()');
                 },
@@ -462,16 +589,31 @@
         var showCreateItemModal = function () {
             clearModal();
             $.ajax({
-                url: "/Manager/ManageSC/GetSubCategories",
+                url: "/Manager/ManageSC/GetItemModal",
                 type: "GET",
                 dataType: "json",
                 success: function (data) {
-                    var content = '<option value>--Select Sub Category--</option>';
-                    for (i = 0; i < data.data.length; i++) {
-                        var row = data.data[i];
-                        content += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    var category_dropdown = '<option value>--Select Category--</option>';
+                    for (i = 0; i < data.categories.length; i++) {
+                        var row = data.categories[i];
+                        category_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
                     }
-                    $("#item-sub-category-dropdown").html(content);
+                    $("#item-sub-category-dropdown").html(category_dropdown);
+
+                    var impact_dropdown = '';
+                    for (i = 0; i < data.impacts.length; i++) {
+                        var row = data.impacts[i];
+                        impact_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    }
+                    $("#item-impact-dropdown").html(impact_dropdown);
+
+                    var urgency_dropdown = '';
+                    for (i = 0; i < data.urgencies.length; i++) {
+                        var row = data.urgencies[i];
+                        urgency_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                    }
+                    $("#item-urgency-dropdown").html(urgency_dropdown);
+
                     $("#item-modal").modal('show');
                     $('#item-action-btn').attr('onclick', 'createItem()');
                 },
@@ -495,7 +637,9 @@
                 type: "POST",
                 data: {
                     Name: $("#category-name-txt").val(),
-                    Description: $("#category-description-txt").val()
+                    Description: $("#category-description-txt").val(),
+                    ImpactId: $("#category-impact-dropdown").val(),
+                    UrgencyId: $("#category-urgency-dropdown").val()
                 },
                 success: function (data) {
                     if (data.success) {
@@ -541,7 +685,9 @@
                 data: {
                     Name: name,
                     Description: $("#sub-category-description-txt").val(),
-                    ParentId: category
+                    ParentId: category,
+                    ImpactId: $("#sub-category-impact-dropdown").val(),
+                    UrgencyId: $("#sub-category-urgency-dropdown").val()
                 },
                 success: function (data) {
                     if (data.success) {
@@ -587,7 +733,9 @@
                 data: {
                     Name: name,
                     Description: $("#item-description-txt").val(),
-                    ParentId: sub_category
+                    ParentId: sub_category,
+                    ImpactId: $("#item-impact-dropdown").val(),
+                    UrgencyId: $("#item-urgency-dropdown").val()
                 },
                 success: function (data) {
                     if (data.success) {
@@ -632,9 +780,25 @@
                 },
                 success: function (data) {
                     if (data.success) {
+                        var impact_dropdown = '';
+                        for (i = 0; i < data.impacts.length; i++) {
+                            var row = data.impacts[i];
+                            impact_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                        }
+                        $("#category-impact-dropdown").html(impact_dropdown);
+
+                        var urgency_dropdown = '';
+                        for (i = 0; i < data.urgencies.length; i++) {
+                            var row = data.urgencies[i];
+                            urgency_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                        }
+                        $("#category-urgency-dropdown").html(urgency_dropdown);
+
                         $('#category-action-btn').attr("onclick", "editCategory('" + id + "')");
-                        $("#category-name-txt").val(data.name);
-                        $("#category-description-txt").val(data.description);
+                        $("#category-name-txt").val(data.category.Name);
+                        $("#category-description-txt").val(data.category.Description);
+                        $("#category-impact-dropdown").val(data.category.ImpactId);
+                        $("#category-urgency-dropdown").val(data.category.UrgencyId);
                         $("#category-modal").modal('show');
                     } else {
                         if (data.error) {
@@ -669,15 +833,32 @@
                 },
                 success: function (data) {
                     if (data.success) {
-                        var content = '<option value>--Select Category--</option>';
+                        var category_dropdown = '<option value>--Select Category--</option>';
                         for (i = 0; i < data.categories.length; i++) {
                             var row = data.categories[i];
-                            content += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                            category_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
                         }
-                        $("#sub-category-category-dropdown").html(content);
-                        $("#sub-category-category-dropdown").val(data.parentId);
-                        $("#sub-category-name-txt").val(data.name);
-                        $("#sub-category-description-txt").val(data.description);
+                        $("#sub-category-category-dropdown").html(category_dropdown);
+
+                        var impact_dropdown = '';
+                        for (i = 0; i < data.impacts.length; i++) {
+                            var row = data.impacts[i];
+                            impact_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                        }
+                        $("#sub-category-impact-dropdown").html(impact_dropdown);
+
+                        var urgency_dropdown = '';
+                        for (i = 0; i < data.urgencies.length; i++) {
+                            var row = data.urgencies[i];
+                            urgency_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                        }
+                        $("#sub-category-urgency-dropdown").html(urgency_dropdown);
+
+                        $("#sub-category-category-dropdown").val(data.category.ParentId);
+                        $("#sub-category-name-txt").val(data.category.Name);
+                        $("#sub-category-description-txt").val(data.category.Description);
+                        $("#sub-category-impact-dropdown").val(data.category.ImpactId);
+                        $("#sub-category-urgency-dropdown").val(data.category.UrgencyId);
                         $('#sub-category-action-btn').attr("onclick", "editSubCategory('" + id + "')");
                         $("#sub-category-modal").modal('show');
                     } else {
@@ -711,15 +892,32 @@
                 },
                 success: function (data) {
                     if (data.success) {
-                        var content = '<option value>--Select Sub Category--</option>';
+                        var category_dropdown = '<option value>--Select Category--</option>';
                         for (i = 0; i < data.categories.length; i++) {
                             var row = data.categories[i];
-                            content += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                            category_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
                         }
-                        $("#item-sub-category-dropdown").html(content);
-                        $("#item-sub-category-dropdown").val(data.parentId);
-                        $("#item-name-txt").val(data.name);
-                        $("#item-description-txt").val(data.description);
+                        $("#item-sub-category-dropdown").html(category_dropdown);
+
+                        var impact_dropdown = '';
+                        for (i = 0; i < data.impacts.length; i++) {
+                            var row = data.impacts[i];
+                            impact_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                        }
+                        $("#item-impact-dropdown").html(impact_dropdown);
+
+                        var urgency_dropdown = '';
+                        for (i = 0; i < data.urgencies.length; i++) {
+                            var row = data.urgencies[i];
+                            urgency_dropdown += '<option value="' + row.ID + '">' + row.Name + '</option>';
+                        }
+                        $("#item-urgency-dropdown").html(urgency_dropdown);
+
+                        $("#item-impact-dropdown").val(data.category.ImpactId);
+                        $("#item-urgency-dropdown").val(data.category.UrgencyId);
+                        $("#item-sub-category-dropdown").val(data.category.ParentId);
+                        $("#item-name-txt").val(data.category.Name);
+                        $("#item-description-txt").val(data.category.Description);
                         $('#item-action-btn').attr("onclick", "editItem('" + id + "')");
                         $("#item-modal").modal('show');
                     } else {
@@ -753,7 +951,9 @@
                 data: {
                     ID: id,
                     Name: name,
-                    Description: $("#category-description-txt").val()
+                    Description: $("#category-description-txt").val(),
+                    ImpactId: $("#category-impact-dropdown").val(),
+                    UrgencyId: $("#category-urgency-dropdown").val()
                 },
                 success: function (data) {
                     if (data.success) {
@@ -800,7 +1000,9 @@
                     ID: id,
                     Name: name,
                     Description: $("#sub-category-description-txt").val(),
-                    ParentId: category
+                    ParentId: category,
+                    ImpactId: $("#sub-category-impact-dropdown").val(),
+                    UrgencyId: $("#sub-category-urgency-dropdown").val()
                 },
                 success: function (data) {
                     if (data.success) {
@@ -847,7 +1049,9 @@
                     ID: id,
                     Name: name,
                     Description: $("#item-description-txt").val(),
-                    ParentId: sub_category
+                    ParentId: sub_category,
+                    ImpactId: $("#item-impact-dropdown").val(),
+                    UrgencyId: $("#item-urgency-dropdown").val()
                 },
                 success: function (data) {
                     if (data.success) {

@@ -81,9 +81,9 @@
                 <div class="form-group">
                     <label class="control-label col-md-2">Keywords</label>
                     <div class="col-md-10" style="max-width: 704px;">
-                        @Html.TextBoxFor(m => m.Keyword, new { @class = "form-control", id = "keyword" })
+                        @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keyword" })
                         <a href="javascript:generateKeywords()">Generate keywords</a>
-                        @Html.ValidationMessageFor(m => m.Keyword, "", new { @class = "text-danger" })
+                        @Html.ValidationMessageFor(m => m.Keywords, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="form-group">
@@ -119,7 +119,9 @@
         $(document)
             .ready(function() {
                 $('#content-area').wysihtml5();
-                $("#keyword").tagit();
+                $("#keyword").tagit({
+                    allowSpaces: true
+                });
                 initCategoryDropdown({
                     control: $("[data-role=ddl-category]"),
                     ignore: function() {

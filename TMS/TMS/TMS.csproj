@@ -243,7 +243,16 @@
     <Compile Include="Models\Group.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Keyword.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Notification.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SolutionKeyword.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TicketKeyword.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\TMSModel.cs">
@@ -322,8 +331,10 @@
     <Compile Include="Models\Urgency.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Schedulers\CheckPriorityTicketJob.cs" />
     <Compile Include="Schedulers\CheckToCloseTicketJob.cs" />
     <Compile Include="Schedulers\CheckOverdueTicketJob.cs" />
+    <Compile Include="Services\KeywordService.cs" />
     <Compile Include="Services\NotificationService.cs" />
     <Compile Include="Services\PriorityMatrixService.cs" />
     <Compile Include="Services\SolutionAttachmentService.cs" />

@@ -35,6 +35,9 @@ namespace TMS.DAL
         private GenericRepository<TicketHistory> _ticketHistoryRepository;
         private GenericRepository<Urgency> _urgencyRepository;
         private GenericRepository<Notification> _notificationRepository;
+        private GenericRepository<Keyword> _keywordRepository;
+        private GenericRepository<TicketKeyword> _ticketKeywordRepository;
+        private GenericRepository<SolutionKeyword> _solutionKeywordRepository;
 
         public GenericRepository<Category> CategoryRepository
         {
@@ -275,6 +278,42 @@ namespace TMS.DAL
                     this._notificationRepository = new GenericRepository<Notification>(_context);
                 }
                 return _notificationRepository;
+            }
+        }
+
+        public GenericRepository<Keyword> KeywordRepository
+        {
+            get
+            {
+                if (this._keywordRepository == null)
+                {
+                    this._keywordRepository = new GenericRepository<Keyword>(_context);
+                }
+                return _keywordRepository;
+            }
+        }
+
+        public GenericRepository<TicketKeyword> TicketKeywordRepository
+        {
+            get
+            {
+                if (this._ticketKeywordRepository == null)
+                {
+                    this._ticketKeywordRepository = new GenericRepository<TicketKeyword>(_context);
+                }
+                return _ticketKeywordRepository;
+            }
+        }
+
+        public GenericRepository<SolutionKeyword> SolutionKeywordRepository
+        {
+            get
+            {
+                if (this._solutionKeywordRepository == null)
+                {
+                    this._solutionKeywordRepository = new GenericRepository<SolutionKeyword>(_context);
+                }
+                return _solutionKeywordRepository;
             }
         }
 

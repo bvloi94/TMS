@@ -55,20 +55,20 @@ namespace TMS.Areas.Technician.Controllers
                 solvedTickets = technicianList.Where(p => p.Status == ConstantUtil.TicketStatus.Solved).Count();
                 closedTickets = technicianList.Where(p => p.Status == ConstantUtil.TicketStatus.Closed).Count();
 
-                IEnumerable<BasicTicketViewModel> incomingTickets = technicianList.Where(p => p.ScheduleEndDate.HasValue &&
-                    p.ScheduleEndDate.Value.Subtract(DateTime.Now).Days < 3 && p.Status == ConstantUtil.TicketStatus.Assigned)
+                IEnumerable<BasicTicketViewModel> incomingTickets = technicianList
+                    .Where(p => p.DueByDate.Subtract(DateTime.Now).Days < 3 && p.Status == ConstantUtil.TicketStatus.Assigned)
                     .Select(m => new BasicTicketViewModel
                     {
                         Code = m.Code,
                         ID = m.ID,
                         Status = m.Status,
                         Subject = m.Subject,
-                        ScheduleEndTime = m.ScheduleEndDate.Value.ToString("MMMM dd, yyyy  hh:mm"),
+                        ScheduleEndTime = m.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat2),
                     }).ToArray();
                 ViewBag.IncomingTickets = incomingTickets;
             }
 
-            IEnumerable<Solution> solutionList = _solutionService.GetAllSolutions().Where(p => DateTime.Now.Subtract(p.CreatedTime.Value).Days <= 7);
+            IEnumerable<Solution> solutionList = _solutionService.GetAllSolutions().Where(p => DateTime.Now.Subtract(p.CreatedTime).Days <= 7);
             newSolutions = solutionList.Count();
             
             ViewBag.SolutionList = solutionList;

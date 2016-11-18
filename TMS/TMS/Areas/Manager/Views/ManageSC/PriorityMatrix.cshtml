@@ -32,7 +32,7 @@
                 url: "/Manager/ManageSC/GetPriorityMatrixTable",
                 type: "GET",
                 dataType: "html",
-                beforeSend: function() {
+                beforeSend: function () {
                     $("#priority-matrix-div").html("<center><img src='/Content/img/loading.gif' /></center>");
                 },
                 success: function (data) {
@@ -76,7 +76,7 @@
                         type: "error",
                         timeout: 2000
                     });
-                                  }
+                }
             });
         };
 

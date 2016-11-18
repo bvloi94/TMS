@@ -17,6 +17,7 @@ namespace TMS.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Urgency()
         {
+            this.Categories = new HashSet<Category>();
             this.PriorityMatrixItems = new HashSet<PriorityMatrixItem>();
             this.Tickets = new HashSet<Ticket>();
         }
@@ -24,7 +25,11 @@ namespace TMS.Models
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool IsSystem { get; set; }
+        public int Duration { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Category> Categories { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PriorityMatrixItem> PriorityMatrixItems { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

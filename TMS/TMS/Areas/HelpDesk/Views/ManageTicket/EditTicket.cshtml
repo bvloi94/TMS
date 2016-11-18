@@ -98,6 +98,12 @@
                         </div>
                         <div id="hidden-div"></div>
                         <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
+                                <label class="control-label">CATEGORY</label>
+                                <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
                             <div class="col-md-4 col-xs-4">
                                 <label class="control-label">IMPACT</label>
                                 <select class="form-control" name="ImpactId" data-role="ddl-impact"></select>
@@ -108,7 +114,7 @@
                             </div>
                             <div class="col-md-4 col-xs-4">
                                 <label class="control-label">PRIORITY</label>
-                                <select class="form-control" name="PriorityId" data-role="ddl-priority"></select>
+                                <div id="div-priority"></div>
                             </div>
                         </div>
                         <div class="row form-group">
@@ -136,29 +142,11 @@
                             </div>
                         </div>
                         <div class="row form-group">
-                            <div class="col-md-12 col-xs-12">
-                                <label class="control-label">CATEGORY</label>
-                                <select class="form-control" name="CategoryId" data-role="ddl-category"></select>
-                            </div>
-                        </div>
-                        <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
                                 <label class="control-label">SCHEDULE START DATE</label>
                                 @Html.TextBoxFor(m => m.ScheduleStartDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
                             </div>
                             <div class="col-md-6 col-xs-6">
-                                <label class="control-label">SCHEDULE END DATE</label>
-                                @Html.TextBoxFor(m => m.ScheduleEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
-                            </div>
-                            <div class="col-md-6 col-xs-6">
-                                <label class="control-label">ACTUAL START DATE</label>
-                                @Html.TextBoxFor(m => m.ActualStartDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
-                            </div>
-                            <div class="col-md-6 col-xs-6">
-                                <label class="control-label">ACTUAL END DATE</label>
-                                @Html.TextBoxFor(m => m.ActualEndDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
-                            </div>
-                            <div class="col-md-12 col-xs-12">
                                 <label class="control-label">DUE BY DATE</label>
                                 @Html.TextBoxFor(m => m.DueByDate, "{0:dd/MM/yyyy HH:mm}", new { @class = "form-control datetimep" })
                             </div>
@@ -205,11 +193,10 @@
                         </div>
                         <div class="row form-group">
                             <div class="col-md-12 col-xs-12">
-                                <label class="control-label">TAGS</label>
+                                <label class="control-label">KEYWORDS</label>
                             </div>
                             <div class="col-md-12 col-xs-12">
-                                @Html.TextBoxFor(m => m.Tags, new { @class = "form-control", id = "tags" })
-                                <a href="javascript:generateTags()">Generate tags</a>
+                                @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keywords" })
                             </div>
                         </div>
                         <div class="row form-group">
@@ -684,12 +671,18 @@
                 $('#hidden-div').append('<input type="hidden" name="Mode" value="@Model.Mode" />');
             };
 
+            var priority = $("<small/>",
+            {
+                "class": "label",
+                "html": '@Model.Priority',
+                "style": "color: #000000; background-color: @Model.PriorityColor"
+            })[0].outerHTML;
+            $("#div-priority").html(priority);
             $("#div-status").html(getStatusLabel('@Model.Status'));
             $("[name='Type']").val(@Model.Type);
             $("[name='Mode']").val(@Model.Mode);
-            loadInitDropdown('ddl-urgency', '@(Model.UrgencyId == 0 ? "None" : Model.Urgency)', @Model.UrgencyId);
-            loadInitDropdown('ddl-priority', '@(Model.PriorityId == 0 ? "None" : Model.Priority)', @Model.PriorityId);
-            loadInitDropdown('ddl-impact', '@(Model.ImpactId == 0 ? "None" : Model.Impact)', @Model.ImpactId);
+            loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
+            loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
             loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
             loadInitDropdown('ddl-group', '@(Model.GroupId == 0 ? "Chooose Group" :@Model.Group)', @Model.GroupId);
             loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
@@ -725,7 +718,9 @@
                 initDropdownControl();
                 loadEditData();
                 initOlderTicketsTable();
-                $("#tags").tagit();
+                $("#keywords").tagit({
+                    allowSpaces: true
+                });
             });
     </script>
 }

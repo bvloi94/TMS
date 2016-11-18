@@ -222,7 +222,7 @@ function initTicketTable() {
                             links += edit + history + detail;
                             break;
                         case "Cancelled":
-                            links += edit + history + detail;
+                            links += history + detail;
                             break;
                     }
                     var action = '<div class="btn-group" style="padding-top: 10px">'
@@ -363,38 +363,44 @@ function openTicketDetailModal(ticketId) {
                 }
 
                 //solve: new
-                //edit: all
+                //edit: except cancelled
                 //cancel: new, assigned
                 //reopen: unapproved
                 if (data.status == 1) {
                     $('#ticket-status').html(getStatusLabel('Open'));
                     $('#action-solve-btn').show();
                     $("#action-cancel-btn").show();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").hide();
                 } else if (data.status == 2) {
                     $('#ticket-status').html(getStatusLabel('Assigned'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").show();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").hide();
                 } else if (data.status == 3) {
                     $('#ticket-status').html(getStatusLabel('Solved'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").hide();
                 } else if (data.status == 4) {
                     $('#ticket-status').html(getStatusLabel('Unapproved'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").show();
                 } else if (data.status == 5) {
                     $('#ticket-status').html(getStatusLabel('Cancelled'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
+                    $("#action-edit-btn").hide();
                     $(".reopen-li").hide();
                 } else if (data.status == 6) {
                     $('#ticket-status').html(getStatusLabel('Closed'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
+                    $("#action-edit-btn").show();
                     $(".reopen-li").hide();
                 }
 
@@ -962,4 +968,85 @@ function loadKeywordToTags(keyword) {
     }
     content += '</ul>';
     return content;
+}
+
+
+function getDueByDate() {
+    var scheduleStartDate = $("[name='ScheduleStartDate']").val();
+    var urgencyId = $("[name='UrgencyId']").val();
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetDueByDate",
+        method: "GET",
+        data: {
+            scheduleStartDate: scheduleStartDate,
+            urgencyId: urgencyId
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                $("[name='DueByDate']").val(data.dueByDate);
+            }
+        }
+    });
+}
+
+$("[name='UrgencyId']").change(function () {
+    getDueByDate();
+    getPriority();
+});
+
+$("[name='ImpactId']").change(function () {
+    getPriority();
+});
+
+$("[name='ScheduleStartDate']").change(function () {
+    getDueByDate();
+});
+
+$("[name='CategoryId']").change(function () {
+    GetImpactUrgency();
+})
+
+function GetImpactUrgency() {
+    var categoryId = $("[name='CategoryId']").val();
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetImpactUrgencyByCategory",
+        method: "GET",
+        data: {
+            categoryId: categoryId
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                loadInitDropdown('ddl-urgency', data.urgency, data.urgencyId);
+                loadInitDropdown('ddl-impact', data.impact, data.impactId);
+                $("[name='UrgencyId']").trigger('change');
+            }
+        }
+    });
+}
+
+function getPriority() {
+    var impactId = $("[name='ImpactId']").val();
+    var urgencyId = $("[name='UrgencyId']").val();
+    $.ajax({
+        url: "/HelpDesk/ManageTicket/GetPriority",
+        method: "GET",
+        data: {
+            impactId: impactId,
+            urgencyId: urgencyId
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data.success) {
+                var priority = $("<small/>",
+                {
+                    "class": "label",
+                    "html": data.priority,
+                    "style": "color: #000000; background-color: " + data.priorityColor
+                })[0].outerHTML;
+                $("#div-priority").html(priority);
+            }
+        }
+    });
 }

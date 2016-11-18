@@ -65,5 +65,10 @@ namespace TMS.Services
         {
             return _unitOfWork.TicketRepository.Get(m => m.ImpactID == impact.ID).Any();
         }
+
+        public Impact GetSystemImpact()
+        {
+            return _unitOfWork.ImpactRepository.Get(m => m.IsSystem == true).FirstOrDefault();
+        }
     }
 }

@@ -113,10 +113,12 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="256" />
           <Property Name="ParentID" Type="int" />
-          <Property Name="CategoryLevel" Type="int" />
+          <Property Name="CategoryLevel" Type="int" Nullable="false" />
+          <Property Name="ImpactID" Type="int" Nullable="false" />
+          <Property Name="UrgencyID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Group">
           <Key>
@@ -133,6 +135,14 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsSystem" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Keyword">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="Notification">
           <Key>
@@ -154,7 +164,9 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
-          <Property Name="Color" Type="nvarchar" MaxLength="10" />
+          <Property Name="Color" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="PriorityLevel" Type="int" Nullable="false" />
+          <Property Name="IsSystem" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="PriorityMatrixItem">
           <Key>
@@ -163,7 +175,7 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ImpactID" Type="int" Nullable="false" />
           <Property Name="UrgencyID" Type="int" Nullable="false" />
-          <Property Name="PriorityID" Type="int" />
+          <Property Name="PriorityID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Solution">
           <Key>
@@ -173,10 +185,9 @@
           <Property Name="Subject" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="ContentText" Type="nvarchar(max)" />
           <Property Name="CategoryID" Type="int" Nullable="false" />
-          <Property Name="Keyword" Type="nvarchar" MaxLength="255" />
           <Property Name="Path" Type="nvarchar" MaxLength="255" Nullable="false" />
-          <Property Name="CreatedTime" Type="datetime" />
-          <Property Name="ModifiedTime" Type="datetime" />
+          <Property Name="CreatedTime" Type="datetime" Nullable="false" />
+          <Property Name="ModifiedTime" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="SolutionAttachment">
           <Key>
@@ -187,6 +198,14 @@
           <Property Name="Filename" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="SolutionID" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="SolutionKeyword">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SolutionID" Type="int" Nullable="false" />
+          <Property Name="KeywordID" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Ticket">
           <Key>
             <PropertyRef Name="ID" />
@@ -195,31 +214,29 @@
           <Property Name="Code" Type="nvarchar" MaxLength="8" Nullable="false" />
           <Property Name="Type" Type="int" />
           <Property Name="Mode" Type="int" Nullable="false" />
-          <Property Name="ImpactID" Type="int" />
+          <Property Name="ImpactID" Type="int" Nullable="false" />
           <Property Name="ImpactDetail" Type="nvarchar" MaxLength="255" />
-          <Property Name="UrgencyID" Type="int" />
-          <Property Name="PriorityID" Type="int" />
+          <Property Name="UrgencyID" Type="int" Nullable="false" />
+          <Property Name="PriorityID" Type="int" Nullable="false" />
           <Property Name="CategoryID" Type="int" />
           <Property Name="Status" Type="int" Nullable="false" />
           <Property Name="Subject" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="Solution" Type="nvarchar(max)" />
           <Property Name="UnapproveReason" Type="nvarchar(max)" />
-          <Property Name="ScheduleStartDate" Type="datetime" />
-          <Property Name="ScheduleEndDate" Type="datetime" />
-          <Property Name="ActualStartDate" Type="datetime" />
+          <Property Name="ScheduleStartDate" Type="datetime" Nullable="false" />
+          <Property Name="ScheduleEndDate" Type="datetime" Nullable="false" />
           <Property Name="ActualEndDate" Type="datetime" />
           <Property Name="SolvedDate" Type="datetime" />
-          <Property Name="DueByDate" Type="datetime" />
+          <Property Name="DueByDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedTime" Type="datetime" Nullable="false" />
           <Property Name="ModifiedTime" Type="datetime" Nullable="false" />
           <Property Name="CreatedID" Type="nvarchar" MaxLength="128" Nullable="false" />
-          <Property Name="SolveID" Type="nvarchar" MaxLength="128" />
+          <Property Name="SolvedID" Type="nvarchar" MaxLength="128" />
           <Property Name="TechnicianID" Type="nvarchar" MaxLength="128" />
           <Property Name="AssignedByID" Type="nvarchar" MaxLength="128" />
           <Property Name="RequesterID" Type="nvarchar" MaxLength="128" Nullable="false" />
           <Property Name="Note" Type="nvarchar(max)" />
-          <Property Name="Tags" Type="nvarchar" MaxLength="255" />
           <Property Name="MergedID" Type="int" />
         </EntityType>
         <EntityType Name="TicketAttachment">
@@ -243,6 +260,14 @@
           <Property Name="ActedTime" Type="datetime" />
           <Property Name="TicketID" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="TicketKeyword">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TicketID" Type="int" Nullable="false" />
+          <Property Name="KeywordID" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Urgency">
           <Key>
             <PropertyRef Name="ID" />
@@ -250,6 +275,8 @@
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsSystem" Type="bit" Nullable="false" />
+          <Property Name="Duration" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK_AspNetUsers_Department">
           <End Role="Group" Type="Self.Group" Multiplicity="0..1" />
@@ -332,6 +359,30 @@
             </Principal>
             <Dependent Role="Category1">
               <PropertyRef Name="ParentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Category_Impact">
+          <End Role="Impact" Type="Self.Impact" Multiplicity="1" />
+          <End Role="Category" Type="Self.Category" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Impact">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Category">
+              <PropertyRef Name="ImpactID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Category_Urgency">
+          <End Role="Urgency" Type="Self.Urgency" Multiplicity="1" />
+          <End Role="Category" Type="Self.Category" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Urgency">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Category">
+              <PropertyRef Name="UrgencyID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -452,7 +503,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PriorityMatrixItem_Priority">
-          <End Role="Priority" Type="Self.Priority" Multiplicity="0..1" />
+          <End Role="Priority" Type="Self.Priority" Multiplicity="1" />
           <End Role="PriorityMatrixItem" Type="Self.PriorityMatrixItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Priority">
@@ -487,6 +538,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SolutionKeyword_Keyword">
+          <End Role="Keyword" Type="Self.Keyword" Multiplicity="1" />
+          <End Role="SolutionKeyword" Type="Self.SolutionKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Keyword">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SolutionKeyword">
+              <PropertyRef Name="KeywordID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SolutionKeyword_Solution">
+          <End Role="Solution" Type="Self.Solution" Multiplicity="1" />
+          <End Role="SolutionKeyword" Type="Self.SolutionKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Solution">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SolutionKeyword">
+              <PropertyRef Name="SolutionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Ticket_AspNetUsers">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="0..1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
@@ -495,7 +570,7 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Ticket">
-              <PropertyRef Name="SolveID" />
+              <PropertyRef Name="SolvedID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -548,7 +623,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Impact">
-          <End Role="Impact" Type="Self.Impact" Multiplicity="0..1" />
+          <End Role="Impact" Type="Self.Impact" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Impact">
@@ -560,7 +635,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Priority">
-          <End Role="Priority" Type="Self.Priority" Multiplicity="0..1" />
+          <End Role="Priority" Type="Self.Priority" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Priority">
@@ -584,7 +659,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Urgency">
-          <End Role="Urgency" Type="Self.Urgency" Multiplicity="0..1" />
+          <End Role="Urgency" Type="Self.Urgency" Multiplicity="1" />
           <End Role="Ticket" Type="Self.Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Urgency">
@@ -631,6 +706,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_TicketKeyword_Keyword">
+          <End Role="Keyword" Type="Self.Keyword" Multiplicity="1" />
+          <End Role="TicketKeyword" Type="Self.TicketKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Keyword">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TicketKeyword">
+              <PropertyRef Name="KeywordID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TicketKeyword_Ticket">
+          <End Role="Ticket" Type="Self.Ticket" Multiplicity="1" />
+          <End Role="TicketKeyword" Type="Self.TicketKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ticket">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TicketKeyword">
+              <PropertyRef Name="TicketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="TMSModelStoreContainer">
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" Schema="dbo" store:Type="Tables" />
@@ -644,14 +743,17 @@
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Group" EntityType="Self.Group" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Impact" EntityType="Self.Impact" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Keyword" EntityType="Self.Keyword" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Notification" EntityType="Self.Notification" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Priority" EntityType="Self.Priority" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PriorityMatrixItem" EntityType="Self.PriorityMatrixItem" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Solution" EntityType="Self.Solution" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SolutionAttachment" EntityType="Self.SolutionAttachment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SolutionKeyword" EntityType="Self.SolutionKeyword" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Ticket" EntityType="Self.Ticket" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketAttachment" EntityType="Self.TicketAttachment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TicketHistory" EntityType="Self.TicketHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TicketKeyword" EntityType="Self.TicketKeyword" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Urgency" EntityType="Self.Urgency" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_AspNetUsers_Department" Association="Self.FK_AspNetUsers_Department">
             <End Role="Group" EntitySet="Group" />
@@ -680,6 +782,14 @@
           <AssociationSet Name="FK_Category_Category" Association="Self.FK_Category_Category">
             <End Role="Category" EntitySet="Category" />
             <End Role="Category1" EntitySet="Category" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Category_Impact" Association="Self.FK_Category_Impact">
+            <End Role="Impact" EntitySet="Impact" />
+            <End Role="Category" EntitySet="Category" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Category_Urgency" Association="Self.FK_Category_Urgency">
+            <End Role="Urgency" EntitySet="Urgency" />
+            <End Role="Category" EntitySet="Category" />
           </AssociationSet>
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -729,6 +839,14 @@
             <End Role="Solution" EntitySet="Solution" />
             <End Role="SolutionAttachment" EntitySet="SolutionAttachment" />
           </AssociationSet>
+          <AssociationSet Name="FK_SolutionKeyword_Keyword" Association="Self.FK_SolutionKeyword_Keyword">
+            <End Role="Keyword" EntitySet="Keyword" />
+            <End Role="SolutionKeyword" EntitySet="SolutionKeyword" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SolutionKeyword_Solution" Association="Self.FK_SolutionKeyword_Solution">
+            <End Role="Solution" EntitySet="Solution" />
+            <End Role="SolutionKeyword" EntitySet="SolutionKeyword" />
+          </AssociationSet>
           <AssociationSet Name="FK_Ticket_AspNetUsers" Association="Self.FK_Ticket_AspNetUsers">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="Ticket" EntitySet="Ticket" />
@@ -777,6 +895,14 @@
             <End Role="Ticket" EntitySet="Ticket" />
             <End Role="TicketHistory" EntitySet="TicketHistory" />
           </AssociationSet>
+          <AssociationSet Name="FK_TicketKeyword_Keyword" Association="Self.FK_TicketKeyword_Keyword">
+            <End Role="Keyword" EntitySet="Keyword" />
+            <End Role="TicketKeyword" EntitySet="TicketKeyword" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketKeyword_Ticket" Association="Self.FK_TicketKeyword_Ticket">
+            <End Role="Ticket" EntitySet="Ticket" />
+            <End Role="TicketKeyword" EntitySet="TicketKeyword" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -794,14 +920,17 @@
           <EntitySet Name="Categories" EntityType="TMSModel.Category" />
           <EntitySet Name="Groups" EntityType="TMSModel.Group" />
           <EntitySet Name="Impacts" EntityType="TMSModel.Impact" />
+          <EntitySet Name="Keywords" EntityType="TMSModel.Keyword" />
           <EntitySet Name="Notifications" EntityType="TMSModel.Notification" />
           <EntitySet Name="Priorities" EntityType="TMSModel.Priority" />
           <EntitySet Name="PriorityMatrixItems" EntityType="TMSModel.PriorityMatrixItem" />
           <EntitySet Name="Solutions" EntityType="TMSModel.Solution" />
           <EntitySet Name="SolutionAttachments" EntityType="TMSModel.SolutionAttachment" />
+          <EntitySet Name="SolutionKeywords" EntityType="TMSModel.SolutionKeyword" />
           <EntitySet Name="Tickets" EntityType="TMSModel.Ticket" />
           <EntitySet Name="TicketAttachments" EntityType="TMSModel.TicketAttachment" />
           <EntitySet Name="TicketHistories" EntityType="TMSModel.TicketHistory" />
+          <EntitySet Name="TicketKeywords" EntityType="TMSModel.TicketKeyword" />
           <EntitySet Name="Urgencies" EntityType="TMSModel.Urgency" />
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="TMSModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUser" EntitySet="AspNetUsers" />
@@ -867,6 +996,14 @@
             <End Role="Category" EntitySet="Categories" />
             <End Role="Category1" EntitySet="Categories" />
           </AssociationSet>
+          <AssociationSet Name="FK_Category_Impact" Association="TMSModel.FK_Category_Impact">
+            <End Role="Impact" EntitySet="Impacts" />
+            <End Role="Category" EntitySet="Categories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Category_Urgency" Association="TMSModel.FK_Category_Urgency">
+            <End Role="Urgency" EntitySet="Urgencies" />
+            <End Role="Category" EntitySet="Categories" />
+          </AssociationSet>
           <AssociationSet Name="FK_KnowledgeBase_Category" Association="TMSModel.FK_KnowledgeBase_Category">
             <End Role="Category" EntitySet="Categories" />
             <End Role="Solution" EntitySet="Solutions" />
@@ -882,6 +1019,14 @@
           <AssociationSet Name="FK_Ticket_Impact" Association="TMSModel.FK_Ticket_Impact">
             <End Role="Impact" EntitySet="Impacts" />
             <End Role="Ticket" EntitySet="Tickets" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SolutionKeyword_Keyword" Association="TMSModel.FK_SolutionKeyword_Keyword">
+            <End Role="Keyword" EntitySet="Keywords" />
+            <End Role="SolutionKeyword" EntitySet="SolutionKeywords" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketKeyword_Keyword" Association="TMSModel.FK_TicketKeyword_Keyword">
+            <End Role="Keyword" EntitySet="Keywords" />
+            <End Role="TicketKeyword" EntitySet="TicketKeywords" />
           </AssociationSet>
           <AssociationSet Name="FK_Notification_Ticket" Association="TMSModel.FK_Notification_Ticket">
             <End Role="Ticket" EntitySet="Tickets" />
@@ -903,6 +1048,10 @@
             <End Role="Solution" EntitySet="Solutions" />
             <End Role="SolutionAttachment" EntitySet="SolutionAttachments" />
           </AssociationSet>
+          <AssociationSet Name="FK_SolutionKeyword_Solution" Association="TMSModel.FK_SolutionKeyword_Solution">
+            <End Role="Solution" EntitySet="Solutions" />
+            <End Role="SolutionKeyword" EntitySet="SolutionKeywords" />
+          </AssociationSet>
           <AssociationSet Name="FK_Ticket_Ticket" Association="TMSModel.FK_Ticket_Ticket">
             <End Role="Ticket" EntitySet="Tickets" />
             <End Role="Ticket1" EntitySet="Tickets" />
@@ -918,6 +1067,10 @@
           <AssociationSet Name="FK_TicketHistory_Ticket" Association="TMSModel.FK_TicketHistory_Ticket">
             <End Role="Ticket" EntitySet="Tickets" />
             <End Role="TicketHistory" EntitySet="TicketHistories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TicketKeyword_Ticket" Association="TMSModel.FK_TicketKeyword_Ticket">
+            <End Role="Ticket" EntitySet="Tickets" />
+            <End Role="TicketKeyword" EntitySet="TicketKeywords" />
           </AssociationSet>
           <AssociationSet Name="AspNetUserRoles" Association="TMSModel.AspNetUserRoles">
             <End Role="AspNetRole" EntitySet="AspNetRoles" />
@@ -1048,12 +1201,16 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="ParentID" Type="Int32" />
-          <Property Name="CategoryLevel" Type="Int32" />
+          <Property Name="CategoryLevel" Type="Int32" Nullable="false" />
+          <Property Name="ImpactID" Type="Int32" Nullable="false" />
+          <Property Name="UrgencyID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Category1" Relationship="TMSModel.FK_Category_Category" FromRole="Category" ToRole="Category1" />
           <NavigationProperty Name="Category2" Relationship="TMSModel.FK_Category_Category" FromRole="Category1" ToRole="Category" />
+          <NavigationProperty Name="Impact" Relationship="TMSModel.FK_Category_Impact" FromRole="Category" ToRole="Impact" />
+          <NavigationProperty Name="Urgency" Relationship="TMSModel.FK_Category_Urgency" FromRole="Category" ToRole="Urgency" />
           <NavigationProperty Name="Solutions" Relationship="TMSModel.FK_KnowledgeBase_Category" FromRole="Category" ToRole="Solution" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Category" FromRole="Category" ToRole="Ticket" />
         </EntityType>
@@ -1073,8 +1230,19 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsSystem" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Categories" Relationship="TMSModel.FK_Category_Impact" FromRole="Impact" ToRole="Category" />
           <NavigationProperty Name="PriorityMatrixItems" Relationship="TMSModel.FK_PriorityMatrixItem_Impact" FromRole="Impact" ToRole="PriorityMatrixItem" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Impact" FromRole="Impact" ToRole="Ticket" />
+        </EntityType>
+        <EntityType Name="Keyword">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="SolutionKeywords" Relationship="TMSModel.FK_SolutionKeyword_Keyword" FromRole="Keyword" ToRole="SolutionKeyword" />
+          <NavigationProperty Name="TicketKeywords" Relationship="TMSModel.FK_TicketKeyword_Keyword" FromRole="Keyword" ToRole="TicketKeyword" />
         </EntityType>
         <EntityType Name="Notification">
           <Key>
@@ -1099,7 +1267,9 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="Color" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Color" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="PriorityLevel" Type="Int32" Nullable="false" />
+          <Property Name="IsSystem" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="PriorityMatrixItems" Relationship="TMSModel.FK_PriorityMatrixItem_Priority" FromRole="Priority" ToRole="PriorityMatrixItem" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Priority" FromRole="Priority" ToRole="Ticket" />
         </EntityType>
@@ -1110,7 +1280,7 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ImpactID" Type="Int32" Nullable="false" />
           <Property Name="UrgencyID" Type="Int32" Nullable="false" />
-          <Property Name="PriorityID" Type="Int32" />
+          <Property Name="PriorityID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Impact" Relationship="TMSModel.FK_PriorityMatrixItem_Impact" FromRole="PriorityMatrixItem" ToRole="Impact" />
           <NavigationProperty Name="Priority" Relationship="TMSModel.FK_PriorityMatrixItem_Priority" FromRole="PriorityMatrixItem" ToRole="Priority" />
           <NavigationProperty Name="Urgency" Relationship="TMSModel.FK_PriorityMatrixItem_Urgency1" FromRole="PriorityMatrixItem" ToRole="Urgency" />
@@ -1123,12 +1293,12 @@
           <Property Name="Subject" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="ContentText" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
-          <Property Name="Keyword" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="Path" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedTime" Type="DateTime" Precision="3" />
-          <Property Name="ModifiedTime" Type="DateTime" Precision="3" />
+          <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ModifiedTime" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="Category" Relationship="TMSModel.FK_KnowledgeBase_Category" FromRole="Solution" ToRole="Category" />
           <NavigationProperty Name="SolutionAttachments" Relationship="TMSModel.FK_SolutionAttachment_Solution" FromRole="Solution" ToRole="SolutionAttachment" />
+          <NavigationProperty Name="SolutionKeywords" Relationship="TMSModel.FK_SolutionKeyword_Solution" FromRole="Solution" ToRole="SolutionKeyword" />
         </EntityType>
         <EntityType Name="SolutionAttachment">
           <Key>
@@ -1140,6 +1310,16 @@
           <Property Name="SolutionID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Solution" Relationship="TMSModel.FK_SolutionAttachment_Solution" FromRole="SolutionAttachment" ToRole="Solution" />
         </EntityType>
+        <EntityType Name="SolutionKeyword">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SolutionID" Type="Int32" Nullable="false" />
+          <Property Name="KeywordID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Keyword" Relationship="TMSModel.FK_SolutionKeyword_Keyword" FromRole="SolutionKeyword" ToRole="Keyword" />
+          <NavigationProperty Name="Solution" Relationship="TMSModel.FK_SolutionKeyword_Solution" FromRole="SolutionKeyword" ToRole="Solution" />
+        </EntityType>
         <EntityType Name="Ticket">
           <Key>
             <PropertyRef Name="ID" />
@@ -1148,31 +1328,29 @@
           <Property Name="Code" Type="String" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <Property Name="Type" Type="Int32" />
           <Property Name="Mode" Type="Int32" Nullable="false" />
-          <Property Name="ImpactID" Type="Int32" />
+          <Property Name="ImpactID" Type="Int32" Nullable="false" />
           <Property Name="ImpactDetail" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="UrgencyID" Type="Int32" />
-          <Property Name="PriorityID" Type="Int32" />
+          <Property Name="UrgencyID" Type="Int32" Nullable="false" />
+          <Property Name="PriorityID" Type="Int32" Nullable="false" />
           <Property Name="CategoryID" Type="Int32" />
           <Property Name="Status" Type="Int32" Nullable="false" />
           <Property Name="Subject" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Solution" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="UnapproveReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="ScheduleStartDate" Type="DateTime" Precision="3" />
-          <Property Name="ScheduleEndDate" Type="DateTime" Precision="3" />
-          <Property Name="ActualStartDate" Type="DateTime" Precision="3" />
+          <Property Name="ScheduleStartDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="ScheduleEndDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ActualEndDate" Type="DateTime" Precision="3" />
           <Property Name="SolvedDate" Type="DateTime" Precision="3" />
-          <Property Name="DueByDate" Type="DateTime" Precision="3" />
+          <Property Name="DueByDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CreatedID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="SolveID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="SolvedID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="TechnicianID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="AssignedByID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="RequesterID" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
           <Property Name="Note" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Tags" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="MergedID" Type="Int32" />
           <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_Ticket_AspNetUsers" FromRole="Ticket" ToRole="AspNetUser" />
           <NavigationProperty Name="AspNetUser1" Relationship="TMSModel.FK_Ticket_AspNetUsers1" FromRole="Ticket" ToRole="AspNetUser" />
@@ -1187,6 +1365,7 @@
           <NavigationProperty Name="Urgency" Relationship="TMSModel.FK_Ticket_Urgency" FromRole="Ticket" ToRole="Urgency" />
           <NavigationProperty Name="TicketAttachments" Relationship="TMSModel.FK_TicketAttachment_Ticket" FromRole="Ticket" ToRole="TicketAttachment" />
           <NavigationProperty Name="TicketHistories" Relationship="TMSModel.FK_TicketHistory_Ticket" FromRole="Ticket" ToRole="TicketHistory" />
+          <NavigationProperty Name="TicketKeywords" Relationship="TMSModel.FK_TicketKeyword_Ticket" FromRole="Ticket" ToRole="TicketKeyword" />
         </EntityType>
         <EntityType Name="TicketAttachment">
           <Key>
@@ -1212,6 +1391,16 @@
           <NavigationProperty Name="AspNetUser" Relationship="TMSModel.FK_TicketHistory_AspNetUsers" FromRole="TicketHistory" ToRole="AspNetUser" />
           <NavigationProperty Name="Ticket" Relationship="TMSModel.FK_TicketHistory_Ticket" FromRole="TicketHistory" ToRole="Ticket" />
         </EntityType>
+        <EntityType Name="TicketKeyword">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TicketID" Type="Int32" Nullable="false" />
+          <Property Name="KeywordID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Keyword" Relationship="TMSModel.FK_TicketKeyword_Keyword" FromRole="TicketKeyword" ToRole="Keyword" />
+          <NavigationProperty Name="Ticket" Relationship="TMSModel.FK_TicketKeyword_Ticket" FromRole="TicketKeyword" ToRole="Ticket" />
+        </EntityType>
         <EntityType Name="Urgency">
           <Key>
             <PropertyRef Name="ID" />
@@ -1219,6 +1408,9 @@
           <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsSystem" Type="Boolean" Nullable="false" />
+          <Property Name="Duration" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Categories" Relationship="TMSModel.FK_Category_Urgency" FromRole="Urgency" ToRole="Category" />
           <NavigationProperty Name="PriorityMatrixItems" Relationship="TMSModel.FK_PriorityMatrixItem_Urgency1" FromRole="Urgency" ToRole="PriorityMatrixItem" />
           <NavigationProperty Name="Tickets" Relationship="TMSModel.FK_Ticket_Urgency" FromRole="Urgency" ToRole="Ticket" />
         </EntityType>
@@ -1306,7 +1498,7 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Ticket">
-              <PropertyRef Name="SolveID" />
+              <PropertyRef Name="SolvedID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1418,6 +1610,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Category_Impact">
+          <End Type="TMSModel.Impact" Role="Impact" Multiplicity="1" />
+          <End Type="TMSModel.Category" Role="Category" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Impact">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Category">
+              <PropertyRef Name="ImpactID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Category_Urgency">
+          <End Type="TMSModel.Urgency" Role="Urgency" Multiplicity="1" />
+          <End Type="TMSModel.Category" Role="Category" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Urgency">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Category">
+              <PropertyRef Name="UrgencyID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_KnowledgeBase_Category">
           <End Type="TMSModel.Category" Role="Category" Multiplicity="1" />
           <End Type="TMSModel.Solution" Role="Solution" Multiplicity="*" />
@@ -1455,7 +1671,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Impact">
-          <End Type="TMSModel.Impact" Role="Impact" Multiplicity="0..1" />
+          <End Type="TMSModel.Impact" Role="Impact" Multiplicity="1" />
           <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Impact">
@@ -1463,6 +1679,30 @@
             </Principal>
             <Dependent Role="Ticket">
               <PropertyRef Name="ImpactID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SolutionKeyword_Keyword">
+          <End Type="TMSModel.Keyword" Role="Keyword" Multiplicity="1" />
+          <End Type="TMSModel.SolutionKeyword" Role="SolutionKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Keyword">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SolutionKeyword">
+              <PropertyRef Name="KeywordID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TicketKeyword_Keyword">
+          <End Type="TMSModel.Keyword" Role="Keyword" Multiplicity="1" />
+          <End Type="TMSModel.TicketKeyword" Role="TicketKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Keyword">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TicketKeyword">
+              <PropertyRef Name="KeywordID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1479,7 +1719,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_PriorityMatrixItem_Priority">
-          <End Type="TMSModel.Priority" Role="Priority" Multiplicity="0..1" />
+          <End Type="TMSModel.Priority" Role="Priority" Multiplicity="1" />
           <End Type="TMSModel.PriorityMatrixItem" Role="PriorityMatrixItem" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Priority">
@@ -1491,7 +1731,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Priority">
-          <End Type="TMSModel.Priority" Role="Priority" Multiplicity="0..1" />
+          <End Type="TMSModel.Priority" Role="Priority" Multiplicity="1" />
           <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Priority">
@@ -1526,6 +1766,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SolutionKeyword_Solution">
+          <End Type="TMSModel.Solution" Role="Solution" Multiplicity="1" />
+          <End Type="TMSModel.SolutionKeyword" Role="SolutionKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Solution">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="SolutionKeyword">
+              <PropertyRef Name="SolutionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Ticket_Ticket">
           <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="0..1" />
           <End Type="TMSModel.Ticket" Role="Ticket1" Multiplicity="*" />
@@ -1539,7 +1791,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Ticket_Urgency">
-          <End Type="TMSModel.Urgency" Role="Urgency" Multiplicity="0..1" />
+          <End Type="TMSModel.Urgency" Role="Urgency" Multiplicity="1" />
           <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Urgency">
@@ -1570,6 +1822,18 @@
               <PropertyRef Name="ID" />
             </Principal>
             <Dependent Role="TicketHistory">
+              <PropertyRef Name="TicketID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TicketKeyword_Ticket">
+          <End Type="TMSModel.Ticket" Role="Ticket" Multiplicity="1" />
+          <End Type="TMSModel.TicketKeyword" Role="TicketKeyword" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ticket">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TicketKeyword">
               <PropertyRef Name="TicketID" />
             </Dependent>
           </ReferentialConstraint>
@@ -1688,6 +1952,8 @@
           <EntitySetMapping Name="Categories">
             <EntityTypeMapping TypeName="TMSModel.Category">
               <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="UrgencyID" ColumnName="UrgencyID" />
+                <ScalarProperty Name="ImpactID" ColumnName="ImpactID" />
                 <ScalarProperty Name="CategoryLevel" ColumnName="CategoryLevel" />
                 <ScalarProperty Name="ParentID" ColumnName="ParentID" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
@@ -1708,7 +1974,16 @@
           <EntitySetMapping Name="Impacts">
             <EntityTypeMapping TypeName="TMSModel.Impact">
               <MappingFragment StoreEntitySet="Impact">
+                <ScalarProperty Name="IsSystem" ColumnName="IsSystem" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Keywords">
+            <EntityTypeMapping TypeName="TMSModel.Keyword">
+              <MappingFragment StoreEntitySet="Keyword">
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
@@ -1731,6 +2006,8 @@
           <EntitySetMapping Name="Priorities">
             <EntityTypeMapping TypeName="TMSModel.Priority">
               <MappingFragment StoreEntitySet="Priority">
+                <ScalarProperty Name="IsSystem" ColumnName="IsSystem" />
+                <ScalarProperty Name="PriorityLevel" ColumnName="PriorityLevel" />
                 <ScalarProperty Name="Color" ColumnName="Color" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -1754,7 +2031,6 @@
                 <ScalarProperty Name="ModifiedTime" ColumnName="ModifiedTime" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
                 <ScalarProperty Name="Path" ColumnName="Path" />
-                <ScalarProperty Name="Keyword" ColumnName="Keyword" />
                 <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
                 <ScalarProperty Name="ContentText" ColumnName="ContentText" />
                 <ScalarProperty Name="Subject" ColumnName="Subject" />
@@ -1772,23 +2048,30 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="SolutionKeywords">
+            <EntityTypeMapping TypeName="TMSModel.SolutionKeyword">
+              <MappingFragment StoreEntitySet="SolutionKeyword">
+                <ScalarProperty Name="KeywordID" ColumnName="KeywordID" />
+                <ScalarProperty Name="SolutionID" ColumnName="SolutionID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Tickets">
             <EntityTypeMapping TypeName="TMSModel.Ticket">
               <MappingFragment StoreEntitySet="Ticket">
                 <ScalarProperty Name="MergedID" ColumnName="MergedID" />
-                <ScalarProperty Name="Tags" ColumnName="Tags" />
                 <ScalarProperty Name="Note" ColumnName="Note" />
                 <ScalarProperty Name="RequesterID" ColumnName="RequesterID" />
                 <ScalarProperty Name="AssignedByID" ColumnName="AssignedByID" />
                 <ScalarProperty Name="TechnicianID" ColumnName="TechnicianID" />
-                <ScalarProperty Name="SolveID" ColumnName="SolveID" />
+                <ScalarProperty Name="SolvedID" ColumnName="SolvedID" />
                 <ScalarProperty Name="CreatedID" ColumnName="CreatedID" />
                 <ScalarProperty Name="ModifiedTime" ColumnName="ModifiedTime" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
                 <ScalarProperty Name="DueByDate" ColumnName="DueByDate" />
                 <ScalarProperty Name="SolvedDate" ColumnName="SolvedDate" />
                 <ScalarProperty Name="ActualEndDate" ColumnName="ActualEndDate" />
-                <ScalarProperty Name="ActualStartDate" ColumnName="ActualStartDate" />
                 <ScalarProperty Name="ScheduleEndDate" ColumnName="ScheduleEndDate" />
                 <ScalarProperty Name="ScheduleStartDate" ColumnName="ScheduleStartDate" />
                 <ScalarProperty Name="UnapproveReason" ColumnName="UnapproveReason" />
@@ -1831,9 +2114,20 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="TicketKeywords">
+            <EntityTypeMapping TypeName="TMSModel.TicketKeyword">
+              <MappingFragment StoreEntitySet="TicketKeyword">
+                <ScalarProperty Name="KeywordID" ColumnName="KeywordID" />
+                <ScalarProperty Name="TicketID" ColumnName="TicketID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Urgencies">
             <EntityTypeMapping TypeName="TMSModel.Urgency">
               <MappingFragment StoreEntitySet="Urgency">
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="IsSystem" ColumnName="IsSystem" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="ID" ColumnName="ID" />

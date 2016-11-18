@@ -100,8 +100,8 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Code = p.Code,
                 Subject = p.Subject,
                 CreatedTimeString = p.CreatedTime.ToString(ConstantUtil.DateTimeFormat),
-                DueByDateString = p.DueByDate.HasValue ? p.DueByDate.Value.ToString(ConstantUtil.DateTimeFormat) : string.Empty,
-                ScheduleEndDateString = p.ScheduleEndDate.HasValue ? p.ScheduleEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-",
+                DueByDateString = p.DueByDate.ToString(ConstantUtil.DateTimeFormat),
+                ScheduleEndDateString = p.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat),
                 ActualEndDateString = p.ActualEndDate.HasValue ? p.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-",
                 TypeString = GeneralUtil.GetTypeNameByType(p.Type),
                 Status = GeneralUtil.GetTicketStatusByID(p.Status),
@@ -111,7 +111,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Urgency = (p.Urgency == null) ? "-" : p.Urgency.Name,
                 Priority = (p.Priority == null) ? "-" : p.Priority.Name,
                 Group = (_userService.GetUserById(p.TechnicianID) == null) ? "-" : (_userService.GetUserById(p.TechnicianID).Group == null ? "-" : _userService.GetUserById(p.TechnicianID).Group.Name),
-                IsOverdue = p.DueByDate.HasValue ? (DateTime.Now > p.DueByDate.Value) : false
+                IsOverdue = DateTime.Now > p.DueByDate
             });
 
             return Json(new
@@ -258,9 +258,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                     {
                         IEnumerable<Priority> priorityList = _priorityService.GetAll();
                         IEnumerable<Ticket> priorityInTickets;
-                        // Label and data for null priority
-                        labels.Add("Unassigned");
-                        data.Add(filteredListItems.Where(p => p.PriorityID == null).Count());
 
                         foreach (var priority in priorityList)
                         {

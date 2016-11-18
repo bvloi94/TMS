@@ -48,7 +48,7 @@ namespace TMS.Services
             Ticket ticket = _unitOfWork.TicketRepository.GetByID(ticketID);
             Ticket mergedTicket = _unitOfWork.TicketRepository.GetByID(ticket.MergedID);
             AspNetUser creater = _unitOfWork.AspNetUserRepository.GetByID(ticket.CreatedID);
-            AspNetUser solver = _unitOfWork.AspNetUserRepository.GetByID(ticket.SolveID);
+            AspNetUser solver = _unitOfWork.AspNetUserRepository.GetByID(ticket.SolvedID);
             AspNetUser actedUser = _unitOfWork.AspNetUserRepository.GetByID(actID);
 
             if (ticket != null)

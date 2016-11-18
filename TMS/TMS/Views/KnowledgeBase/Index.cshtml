@@ -405,7 +405,7 @@
                                 length: 350,
                             });
                             var sId = data.data[i].ID;
-                            var keywordTags = (data.data[i].Keyword).split(',');
+                            var keywordTags = (data.data[i].Keywords).split(',');
                             var checkbox = $("<input/>", {
                                 "type": "checkbox",
                                 "data-role": "cbox-solution",
@@ -455,7 +455,7 @@
 
 
                             $("#keyword" + sId).empty();
-                            if (data.data[i].Keyword != "-") {
+                            if (data.data[i].Keywords != "") {
                                 $("#keyword" + sId).append("<li style='padding: 5px 0px'>Keywords: </li>");
                                 for (j = 0; j < keywordTags.length; j++) {
                                     var key = keywordTags[j].replace(/"/g, '');
