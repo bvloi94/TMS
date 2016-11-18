@@ -6,7 +6,7 @@
     ViewBag.Title = "Help Desk";
     IEnumerable<BasicTicketViewModel> newTickets = ViewBag.AllNewTickets;
     IEnumerable<BasicTicketViewModel> newTicketsLast7Days = ViewBag.NewTicketsLast7Days;
-    var newTicketsPercentage = newTicketsLast7Days == null ? 0 : (newTicketsLast7Days.Count() * 100 / newTickets.Count());
+    var newTicketsPercentage = (newTicketsLast7Days == null || newTickets.Count() == 0) ? 0 : (newTicketsLast7Days.Count() * 100 / newTickets.Count());
     IEnumerable<BasicTicketViewModel> unapprovedTickets = ViewBag.UnapprovedTickets;
     IEnumerable<BasicTicketViewModel> warningTickets = ViewBag.WarningTickets;
 }
@@ -61,7 +61,7 @@
             <span class="info-box-icon"><i class="fa fa-star"></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Open tickets</span>
-                @if (newTicketsLast7Days == null)
+                @if (newTickets == null)
                 {
                     <span class="info-box-number">0</span>
                 }

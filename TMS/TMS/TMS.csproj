@@ -231,6 +231,8 @@
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
+    <Compile Include="Class\TicketKeywordPoint.cs" />
+    <Compile Include="Class\KeywordPoint.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DropdownController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />

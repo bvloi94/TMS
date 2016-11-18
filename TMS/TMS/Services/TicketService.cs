@@ -1174,6 +1174,43 @@ namespace TMS.Services
             return result;
         }
 
+        public ICollection<FrequentlyAskedTicketViewModel> GetFrequentlyAskedTickets(IEnumerable<Ticket> tickets)
+        {
+            IEnumerable<KeywordPoint> keywordPointList = _unitOfWork.TicketKeywordRepository.Get().Where(m => tickets.Any(n => n.ID == m.TicketID))
+                .GroupBy(m => m.KeywordID).Select(m => new KeywordPoint
+                {
+                    KeywordId = m.Key,
+                    Point = m.Count()
+                });
+            IEnumerable<TicketKeywordPoint> ticketKeywordPointList = _unitOfWork.TicketKeywordRepository.Get().Where(m => tickets.Any(n => n.ID == m.TicketID) && keywordPointList.Any(n => n.KeywordId == m.KeywordID))
+                .GroupBy(m => m.TicketID).Select(m => new TicketKeywordPoint
+                {
+                    TicketId = m.Key,
+                    Point = m.Count()
+                }).OrderByDescending(m => m.Point);
+            ICollection<FrequentlyAskedTicketViewModel> result = new List<FrequentlyAskedTicketViewModel>();
+
+            int totalPoint = 0;
+            foreach (TicketKeywordPoint item in ticketKeywordPointList)
+            {
+                totalPoint += item.Point;
+            }
+
+            foreach (TicketKeywordPoint item in ticketKeywordPointList)
+            {
+                Ticket ticket = _unitOfWork.TicketRepository.GetByID(item.TicketId);
+                int frequency = totalPoint == 0 ? 0 : ((int) (((double) item.Point) / totalPoint * 100));
+                FrequentlyAskedTicketViewModel model = new FrequentlyAskedTicketViewModel
+                {
+                    Ticket = ticket,
+                    Frequency = frequency
+                };
+                result.Add(model);
+            }
+            //IEnumerable<Ticket> result = _unitOfWork.TicketRepository.Get().Where(m => ticketKeywordPointList.Any(n => n.TicketId == m.ID));
+            return result;
+        }
+
         public int GetPriorityId(int impactId, DateTime dueByDate)
         {
             int urgencyId = GetUrgencyId(dueByDate);
