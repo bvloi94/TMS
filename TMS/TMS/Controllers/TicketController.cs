@@ -27,6 +27,7 @@ namespace TMS.Controllers
         TicketHistoryService _ticketHistoryService;
         ImpactService _impactService;
         UrgencyService _urgencyService;
+        KeywordService _keywordService;
 
         public TicketController()
         {
@@ -39,6 +40,7 @@ namespace TMS.Controllers
             _ticketHistoryService = new TicketHistoryService(_unitOfWork);
             _impactService = new ImpactService(_unitOfWork);
             _urgencyService = new UrgencyService(_unitOfWork);
+            _keywordService = new KeywordService(_unitOfWork);
         }
 
         // GET: Tickets
@@ -492,17 +494,17 @@ namespace TMS.Controllers
                     }
 
                     model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
-                    model.Impact = (ticket.Impact == null) ? "-" : ticket.Impact.Name;
+                    model.Impact = ticket.Impact.Name;
                     model.ImpactDetail = (ticket.ImpactDetail == null) ? "-" : ticket.ImpactDetail;
-                    model.Urgency = (ticket.Urgency == null) ? "-" : ticket.Urgency.Name;
-                    model.Priority = (ticket.Priority == null) ? "-" : ticket.Priority.Name;
-                    model.CreatedTimeString = ticket.CreatedTime.ToString("MMM d yyyy, hh:mm");
-                    model.ModifiedTimeString = ticket.ModifiedTime == null ? "-" : ticket.ModifiedTime.ToString("MMM d yyyy, hh:mm");
-                    model.ScheduleEndDateString = ticket.ScheduleEndDate.ToString("MMM d yyyy, hh:mm");
-                    model.ScheduleStartDateString = ticket.ScheduleStartDate.ToString("MMM d yyyy, hh:mm");
-                    model.ActualEndDateString = ticket.ActualEndDate == null ? "-" : ticket.ActualEndDate.Value.ToString("MMM d yyyy, hh:mm");
-                    model.SolvedDateString = ticket.SolvedDate == null ? "-" : ticket.SolvedDate.Value.ToString("MMM d yyyy, hh:mm");
-                    model.DueByDateString = ticket.DueByDate.ToString("MMM d yyyy, hh:mm");
+                    model.Urgency = ticket.Urgency.Name;
+                    model.Priority = ticket.Priority.Name;
+                    model.CreatedTimeString = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat3);
+                    model.ModifiedTimeString = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat3);
+                    model.ScheduleEndDateString = ticket.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat3);
+                    model.ScheduleStartDateString = ticket.ScheduleStartDate.ToString(ConstantUtil.DateTimeFormat3);
+                    model.ActualEndDateString = ticket.ActualEndDate == null ? "-" : ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat3);
+                    model.SolvedDateString = ticket.SolvedDate == null ? "-" : ticket.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat3);
+                    model.DueByDateString = ticket.DueByDate.ToString(ConstantUtil.DateTimeFormat3);
                     model.Group = "-";
                     if (technician != null)
                     {
@@ -520,7 +522,7 @@ namespace TMS.Controllers
                     model.DescriptionAttachmentsURL = descriptionAttachment;
                     model.SolutionAttachmentsURL = solutionAttachment;
                     model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason.Trim();
-                    //model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Keywords = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
                     model.Note = (string.IsNullOrEmpty(ticket.Note)) ? "-" : ticket.Note.Trim();
 
                     return View(model);
@@ -593,16 +595,16 @@ namespace TMS.Controllers
 
                     ticketType = GeneralUtil.GetTypeNameByType(ticket.Type);
                     ticketMode = GeneralUtil.GetModeNameByMode(ticket.Mode);
-                    ticketUrgency = ticket.Urgency == null ? "-" : ticket.Urgency.Name;
-                    ticketPriority = ticket.Priority == null ? "-" : ticket.Priority.Name;
-                    ticketImpact = ticket.Impact == null ? "-" : ticket.Impact.Name;
+                    ticketUrgency = ticket.Urgency.Name;
+                    ticketPriority = ticket.Priority.Name;
+                    ticketImpact = ticket.Impact.Name;
                     createdTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
                     modifiedTime = ticket.ModifiedTime.ToString(ConstantUtil.DateTimeFormat);
-                    scheduleStartDate = ticket.ScheduleStartDate.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-                    scheduleEndDate = ticket.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat) ?? "-";
+                    scheduleStartDate = ticket.ScheduleStartDate.ToString(ConstantUtil.DateTimeFormat);
+                    scheduleEndDate = ticket.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat);
+                    dueByDate = ticket.DueByDate.ToString(ConstantUtil.DateTimeFormat);
                     actualEndDate = ticket.ActualEndDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
                     solvedDate = ticket.SolvedDate?.ToString(ConstantUtil.DateTimeFormat) ?? "-";
-                    dueByDate = ticket.DueByDate.ToString(ConstantUtil.DateTimeFormat) ?? "-";
 
                     group = "-";
                     if (technician != null)
@@ -663,7 +665,7 @@ namespace TMS.Controllers
                         descriptionAttachment = descriptionAttachment,
                         solutionAttachment = solutionAttachment,
                         mergeTicket = mergedTicketString,
-                        //tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags),
+                        tags = _keywordService.GetTicketKeywordForDisplay(ticket.ID),
                         note = note
                     }, JsonRequestBehavior.AllowGet);
                 }
@@ -1040,14 +1042,14 @@ namespace TMS.Controllers
                         {
                             ActedDate = m.ActedTime.HasValue ? GeneralUtil.ShowDateTime(m.ActedTime.Value) : "-",
                             Action = m.Action,
-                            Performer = _userService.GetUserById(m.ActID) != null ? _userService.GetUserById(m.ActID).Fullname : "-",
+                            Performer = _userService.GetUserById(m.ActID) != null ? _userService.GetUserById(m.ActID).Fullname : "System",
                             Type = GeneralUtil.GetTicketHistoryTypeName(m.Type)
                         });
                     AspNetUser requester = _userService.GetUserById(ticket.RequesterID);
                     ViewBag.Subject = ticket.Subject;
-                    ViewBag.Priority = ticket.Priority != null ? ticket.Priority.Name : "Unassigned";
-                    ViewBag.Requester = requester != null ? requester.Fullname : "-";
-                    ViewBag.CreateTime = ticket.CreatedTime.ToString();
+                    ViewBag.Priority = ticket.Priority.Name;
+                    ViewBag.Requester = requester.Fullname;
+                    ViewBag.CreateTime = ticket.CreatedTime.ToString(ConstantUtil.DateTimeFormat);
                     ViewBag.Role = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault().Name;
                     ViewBag.Code = ticket.Code;
                     return View(historyTickets);

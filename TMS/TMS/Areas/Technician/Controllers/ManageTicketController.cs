@@ -11,6 +11,7 @@ using TMS.ViewModels;
 
 namespace TMS.Areas.Technician.Controllers
 {
+    [CustomAuthorize(Roles = "Technician")]
     public class ManageTicketController : Controller
     {
         public TicketService _ticketService { get; set; }
@@ -42,14 +43,12 @@ namespace TMS.Areas.Technician.Controllers
             var sort_Filter = Request["filter_sort"];
             var search_text = Request["search_text"];
 
-
             // Initial variables
             IEnumerable<Ticket> filteredListItems;
 
             // Query data by params
             if (!string.IsNullOrEmpty(default_search_key)) //user have inputed keyword to search textbox
             {
-                //contains(keyword) = like "%keyword%" in SQL query
                 filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
             }
             else
@@ -92,8 +91,8 @@ namespace TMS.Areas.Technician.Controllers
             if (sortColumnIndex == 0)
             {
                 filteredListItems = sortDirection == "asc"
-                     ? filteredListItems.OrderBy(p => p.ModifiedTime)
-                     : filteredListItems.OrderByDescending(p => p.ModifiedTime);
+                     ? filteredListItems.OrderBy(p => p.Priority.PriorityLevel)
+                     : filteredListItems.OrderByDescending(p => p.Priority.PriorityLevel);
             }
 
             if (!string.IsNullOrEmpty(sort_Filter))
@@ -139,9 +138,9 @@ namespace TMS.Areas.Technician.Controllers
                 s.CreatedTimeString = GeneralUtil.ShowDateTime(item.CreatedTime);
                 s.ModifiedTimeString = GeneralUtil.ShowDateTime(item.ModifiedTime);
                 s.OverdueDateString = GeneralUtil.GetOverdueDate(item.DueByDate, item.Status);
-                s.IsOverdue = item.ScheduleEndDate.Date.Subtract(DateTime.Now.Date).Days < 0;
-                s.Priority = item.Priority == null ? "" : item.Priority.Name;
-                s.PriorityColor = item.Priority == null ? "" : item.Priority.Color;
+                s.IsOverdue = GeneralUtil.IsOverdue(item.DueByDate, item.Status);
+                s.Priority = item.Priority.Name;
+                s.PriorityColor = item.Priority.Color;
                 tickets.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();

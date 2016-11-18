@@ -91,7 +91,7 @@
                 if (!string.IsNullOrEmpty(ViewBag.SearchKey))
                 {
                     <li><h2>Key Search: @ViewBag.SearchKey</h2></li>
-                    <li style="text-align: center"><h4>There are @Model.Count() result(s) matched keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
+                    <li style="text-align: center"><h4>There are @Model.Count() result(s) matched search keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
                 }
                 else if (!string.IsNullOrWhiteSpace(ViewBag.Category))
                 {
@@ -101,7 +101,7 @@
                 else if (!string.IsNullOrWhiteSpace(ViewBag.Tag))
                 {
                     <li><h2>Tag: @ViewBag.Tag</h2></li>
-                    <li style="text-align: center"><h4>There are @Model.Count() result(s) matched tag <i>@ViewBag.Tag</i>.</h4></li>
+                    <li style="text-align: center"><h4>There are @Model.Count() result(s) matched keyword <i>@ViewBag.Tag</i>.</h4></li>
                 }
                 else
                 {
@@ -123,7 +123,7 @@
                             <div class="longContent">@Html.Raw(solution.Content)</div>
                             <a class="link-color" href="/FAQ/Detail/@solution.Path">...See full solution</a>
                             <p>
-                                <ul class="keywords">@Html.Raw(solution.Keyword)</ul>
+                                <ul class="keywords">@Html.Raw(solution.Keywords)</ul>
                             </p>
                         </article>
                     </li>
@@ -133,7 +133,7 @@
             {
                 if (Request.Url.ToString().Contains("search"))
                 {
-                    <li style="text-align: center"><h4>There is no result matched keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
+                    <li style="text-align: center"><h4>There is no result matched search keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
                 }
                 else if (Request.Url.ToString().Contains("Category"))
                 {
@@ -191,7 +191,7 @@
         function loadKeywordToTags(keyword, obj) {
             var keywordTags = (keyword).split(',');
             $(obj).empty();
-            if (keywordTags[0] != "-") {
+            if (keywordTags[0] != "") {
                 for (j = 0; j < keywordTags.length; j++) {
                     var key = keywordTags[j].replace(/"/g, '');
                     $(obj).append('<li><div class="key-tags"><a href="/FAQ/Tags/' + key + ' ">' + key + '</a></div></li>');

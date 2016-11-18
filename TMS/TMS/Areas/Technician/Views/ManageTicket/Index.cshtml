@@ -402,7 +402,7 @@
                 serverSide: true,
                 paging: true,
                 sort: true,
-                order: [[0, 'asc']],
+                order: [[0, 'desc']],
                 lengthChange: false,
                 filter: false,
                 drawCallback: function () {
@@ -514,17 +514,36 @@
                     },
                     {
                         "render": function (data, type, row) {
-                            var solveUrl = '/Ticket/Solve/' + row.Id;
+                            var history = '<li>'
+                            + '<a href="/Ticket/History/' + row.Id + '">'
+                            + '<i class="fa fa-history" aria-hidden="true"></i> Ticket History'
+                            + '</a>'
+                            + '</li>';
+                            var detail = '<li>'
+                            + '<a href="/Ticket/TicketDetail/' + row.Id + '">'
+                            + '<i class="fa fa-info-circle" aria-hidden="true"></i> Ticket Detail'
+                            + '</a>'
+                            + '</li>';
+                            var solve = ''
                             if (row.Status == "Assigned") {
-                                return $("<div/>",
-                                   {
-                                       "style": "padding-top: 10px",
-                                       "html": "<a href='" + solveUrl + "' class='btn btn-success btn-flat' >Solve</a>"
-                                   })[0].outerHTML;;
+                                solve = '<li>'
+                            + '<a href="/Ticket/Solve/' + row.Id + '">'
+                            + '<i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket'
+                            + '</a>'
+                            + '</li>'
+                            + '<li>'
                             }
-                            else {
-                                return "<a class='btn btn-default btn-flat' disabled>Solve</a>";
-                            }
+
+                            var links = detail + history + solve;
+                            var action = '<div class="btn-group" style="padding-top: 10px">'
+                            + '<button type="button" class="btn bg-olive btn-flat dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
+                            + 'Action <span class="caret"></span>'
+                            + '</button>'
+                            + '<ul class="dropdown-menu dropdown-menu-right">';
+                            action += links;
+                            action += '</ul>'
+                                + '</div>';
+                            return action;
                         },
                         "sortable": false,
                         "targets": 1

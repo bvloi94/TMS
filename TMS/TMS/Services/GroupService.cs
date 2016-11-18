@@ -58,11 +58,11 @@ namespace TMS.Services
         {
             if (id.HasValue)
             {
-                return _unitOfWork.GroupRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).Any();
+                return _unitOfWork.GroupRepository.Get(m => m.ID != id && m.Name.ToLower().Equals(name.ToLower())).Any();
             }
             else
             {
-                return _unitOfWork.GroupRepository.Get(m => m.ID != id && m.Name.ToLower().Equals(name.ToLower())).Any();
+                return _unitOfWork.GroupRepository.Get(m => m.Name.ToLower().Equals(name.ToLower())).Any();
             }
         }
 

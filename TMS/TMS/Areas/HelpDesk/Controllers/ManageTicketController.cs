@@ -1079,7 +1079,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                     {
                         if (ticket.Status == ConstantUtil.TicketStatus.Unapproved)
                         {
+                            Urgency defaultUrgency = _urgencyService.GetSystemUrgency();
                             ticket.TechnicianID = technicianId;
+                            ticket.UrgencyID = defaultUrgency.ID;
+                            ticket.DueByDate = DateTime.Now.AddHours(defaultUrgency.Duration);
+                            ticket.PriorityID = _ticketService.GetPriorityId(ticket.ImpactID, ticket.DueByDate);
+                            ticket.ScheduleEndDate = ticket.DueByDate.AddDays(ConstantUtil.DayToCloseTicket);
                             bool assignResult = _ticketService.ReassignTicket(ticket, User.Identity.GetUserId());
                             if (assignResult)
                             {

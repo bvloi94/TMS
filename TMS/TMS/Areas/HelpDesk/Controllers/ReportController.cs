@@ -43,7 +43,6 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpPost]
         public ActionResult GetTickets(int by, int type, DateTime? date_from_select, DateTime? date_to_select, jQueryDataTableParamModel param)
         {
-
             IEnumerable<Ticket> ticketsList = _ticketService.GetAll().OrderBy(m => m.CreatedTime);
             IEnumerable<Ticket> filteredListItems;
             filteredListItems = ticketsList;
@@ -107,9 +106,9 @@ namespace TMS.Areas.HelpDesk.Controllers
                 Status = GeneralUtil.GetTicketStatusByID(p.Status),
                 ModeString = GeneralUtil.GetModeNameByMode(p.Mode),
                 Category = (p.Category == null) ? "-" : p.Category.Name,
-                Impact = (p.Impact == null) ? "-" : p.Impact.Name,
-                Urgency = (p.Urgency == null) ? "-" : p.Urgency.Name,
-                Priority = (p.Priority == null) ? "-" : p.Priority.Name,
+                Impact = p.Impact.Name,
+                Urgency = p.Urgency.Name,
+                Priority = p.Priority.Name,
                 Group = (_userService.GetUserById(p.TechnicianID) == null) ? "-" : (_userService.GetUserById(p.TechnicianID).Group == null ? "-" : _userService.GetUserById(p.TechnicianID).Group.Name),
                 IsOverdue = DateTime.Now > p.DueByDate
             });
@@ -219,8 +218,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                         IEnumerable<Impact> impacts = _impactService.GetAll();
                         //duyet list 
                         IEnumerable<Ticket> impactInTicketList = null;
-                        labels.Add("Unassigned");
-                        data.Add(filteredListItems.Where(p => p.Impact == null).Count());
                         foreach (var impact in impacts)
                         {
                             labels.Add(impact.Name);
@@ -238,8 +235,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                     {
                         IEnumerable<Urgency> urgencyList = _urgencyService.GetAll();
                         IEnumerable<Ticket> urgencyListInTickets = null;
-                        labels.Add("Unassigned");
-                        data.Add(filteredListItems.Where(p => p.Urgency == null).Count());
                         foreach (var urgency in urgencyList)
                         {
                             labels.Add(urgency.Name);
