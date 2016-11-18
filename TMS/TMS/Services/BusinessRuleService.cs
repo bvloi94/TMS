@@ -20,7 +20,18 @@ namespace TMS.Services
         }
         public IEnumerable<BusinessRule> GetAll()
         {
-            return _unitOfWork.BusinessRuleRepository.Get(a => (bool)a.IsActive);
+            return _unitOfWork.BusinessRuleRepository.Get();
+        }
+
+        public bool Remove(int id)
+        {
+            var br = _unitOfWork.BusinessRuleRepository.GetByID(id);
+            if (br != null)
+            {
+                _unitOfWork.BusinessRuleRepository.Delete(id);
+                return _unitOfWork.Commit();
+            }
+            return false;
         }
 
         public void RemoveAllBusinessRuleRelatedInfo(int businessRuleId)
@@ -129,6 +140,22 @@ namespace TMS.Services
                     }
                 }
             }
+        }
+
+        public bool ChangeStatus(BusinessRule br)
+        {
+            bool? isActive = br.IsActive;
+            if (isActive == null || isActive == false)
+            {
+                br.IsActive = true;
+            }
+            else
+            {
+                br.IsActive = false;
+            }
+
+            _unitOfWork.BusinessRuleRepository.Update(br);
+            return _unitOfWork.Commit();
         }
 
         private void AddConditionsToDB(int index, int level, int businessRuleId, int? Id, string parentId, List<Rule> ruleList)

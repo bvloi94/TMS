@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using TMS.DAL;
 using TMS.Models;
+using TMS.Utils;
 
 namespace TMS.Services
 {
@@ -63,7 +64,9 @@ namespace TMS.Services
 
         public bool IsInUse(Impact impact)
         {
-            return _unitOfWork.TicketRepository.Get(m => m.ImpactID == impact.ID).Any();
+            return _unitOfWork.TicketRepository.Get(m => m.ImpactID == impact.ID).Any()
+                   || _unitOfWork.BusinessRuleConditionRepository.Get(m => m.Criteria == ConstantUtil.BusinessRuleCriteria.Impact
+                                                                      && m.Condition.HasValue && m.Condition.Value == impact.ID).Any();
         }
 
         public Impact GetSystemImpact()

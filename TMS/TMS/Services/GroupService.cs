@@ -2,6 +2,7 @@
 using System.Linq;
 using TMS.DAL;
 using TMS.Models;
+using TMS.Utils;
 
 namespace TMS.Services
 {
@@ -68,7 +69,9 @@ namespace TMS.Services
 
         public bool IsInUse(Group group)
         {
-            return _unitOfWork.AspNetUserRepository.Get(m => m.GroupID == group.ID).Any();
+            return _unitOfWork.AspNetUserRepository.Get(m => m.GroupID == group.ID).Any()
+                || _unitOfWork.BusinessRuleConditionRepository.Get(
+                    m => m.Criteria == ConstantUtil.BusinessRuleCriteria.Group && m.Condition.HasValue && m.Condition.Value == group.ID).Any();
         }
     }
 }

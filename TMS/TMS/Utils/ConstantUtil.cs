@@ -161,6 +161,7 @@ namespace TMS.Utils
             public const string UnavailableTechnician = "This technician is not available!";
             public const string UnavailableUser = "This user is not available!";
             public const string InvalidTicket = "This ticket is invalid!";
+
         }
 
         public class TimeOption

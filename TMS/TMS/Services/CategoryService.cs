@@ -100,7 +100,13 @@ namespace TMS.Services
                 }
             }
             return _unitOfWork.TicketRepository.Get(m => m.CategoryID == category.ID).Any()
-                || _unitOfWork.SolutionRepository.Get(m => m.CategoryID == category.ID).Any();
+                || _unitOfWork.SolutionRepository.Get(m => m.CategoryID == category.ID).Any()
+                || _unitOfWork.BusinessRuleConditionRepository.Get(m => m.Criteria == ConstantUtil.BusinessRuleCriteria.Category
+                                                                       && m.Condition.HasValue && m.Condition.Value == category.ID).Any()
+                || (_unitOfWork.BusinessRuleTriggerRepository.Get(m => (m.Action == ConstantUtil.BusinessRuleTrigger.MoveToCategory 
+                                                                      || m.Action == ConstantUtil.BusinessRuleTrigger.MoveToSubCategory 
+                                                                      || m.Action == ConstantUtil.BusinessRuleTrigger.MoveToItem))
+                                                                      .Where(m => m.Value.Split(',').Contains(category.ID.ToString()))).Any(); ;
         }
 
         public bool DeleteCategory(Category category)

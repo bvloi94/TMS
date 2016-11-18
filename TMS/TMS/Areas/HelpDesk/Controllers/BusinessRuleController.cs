@@ -6,6 +6,7 @@ using System.Net;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using LumiSoft.Net.Mime.vCard;
+using Org.BouncyCastle.Crypto.Engines;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Services;
@@ -342,6 +343,31 @@ namespace TMS.Areas.HelpDesk.Controllers
             });
         }
 
+        public ActionResult Remove(int? id)
+        {
+            var br = _businessRuleService.GetById(id ?? -1);
+            var msg = "Some error occured. Please try again later!";
+            bool result = false;
+            if (br == null)
+            {
+                result = true;
+                msg = "The business rule was no longer existed!";
+            }
+            else
+            {
+                result = _businessRuleService.Remove(br.ID);
+                if (result)
+                {
+                    msg = "Business rule was removed successfully!";
+                }
+            }
+            return Json(new
+            {
+                success = result,
+                message = msg
+            });
+        }
+
         [HttpPost]
         public ActionResult LoadAll(JqueryDatatableParameterViewModel param)
         {
@@ -381,6 +407,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                 s.Id = item.ID;
                 s.Name = item.Name;
                 s.Description = item.Description;
+                s.IsActive = item.IsActive ?? false;
                 rules.Add(s);
             }
             JqueryDatatableResultViewModel rsModel = new JqueryDatatableResultViewModel();
@@ -389,6 +416,51 @@ namespace TMS.Areas.HelpDesk.Controllers
             rsModel.recordsFiltered = filteredListItems.Count();
             rsModel.data = rules;
             return Json(rsModel, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult ChangeStatus(int? id)
+        {
+
+            BusinessRule businessRule = _businessRuleService.GetById(id ?? 0);
+            if (businessRule != null)
+            {
+                bool? wasActive = businessRule.IsActive;
+                bool changeStatusResult = _businessRuleService.ChangeStatus(businessRule);
+                var message = "";
+                if (changeStatusResult)
+                {
+                    if (wasActive.HasValue && wasActive == true)
+                    {
+                        message = "Disable business rule successfully!";
+                    }
+                    else
+                    {
+                        message = "Enable business rule successfully!";
+                    }
+                    return Json(new
+                    {
+                        success = true,
+                        message = message
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
+                }
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.UnavailableUser
+                });
+            }
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

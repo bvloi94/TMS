@@ -22,15 +22,15 @@
                     <i class="fa fa-plus" aria-hidden="true"></i> New Business Rules
                 </a>
                 @*<a class="btn bg-olive btn-flat margin-left10 disabled" style="display: inline-block;" data-role="btn-organize">
-                    Organize Business Rules
-                </a>*@
+                        Organize Business Rules
+                    </a>*@
                 <table class="table" id="rules-table">
                     <thead>
                         <tr>
-                            <th style="width: 5%;" />
-                            <th style="width: 25%;">Rule Name</th>
-                            <th style="width: 50%;">Description</th>
-                            <th style="width: 20%;">Actions</th>
+                            <th style="width: 30%;">Rule Name</th>
+                            <th style="width: 45%;">Description</th>
+                            <th style="width: 10%;">Active</th>
+                            <th style="width: 15%;">Actions</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -44,11 +44,34 @@
 </div>
 <!-- /.row -->
 
+<div id="modal-remove-businessrule" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Do you really want to remove this business rule?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-role="btn-confirm-remove"><i class="fa fa-check" aria-hidden="true"></i> Yes</button>
+                <button type="button" class="btn btn-default" data-role="btn-cancel-remove" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> No</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 @section Scripts {
 
     <script>
 
         var rulesTable = null;
+        var $confirmModal = $('#modal-remove-businessrule');
+        var $yesBtn = $('[data-role="btn-confirm-remove"]');
+        var $noBtn = $('[data-role="btn-cancel-remove"]');
+        var removeId = null;
 
         function initRulesTable() {
             rulesTable = $("#rules-table")
@@ -68,47 +91,116 @@
                         }
                     },
                     drawCallback: function () {
+                        $('.toggle').bootstrapToggle();
                     },
                     columnDefs: [
                         {
                             "targets": [0],
-                            "sortable": false,
-                            "render": function (data, type, row) {
-                                return '<input type="checkbox" data-role="cbo-rules" data-id="' +
-                                    row.Id + '"/>';
-                            }
-                        },
-                        {
-                            "targets": [1],
                             "render": function (data, type, row) {
                                 return row.Name;
                             }
                         },
                         {
-                            "targets": [2],
+                            "targets": [1],
                             "sortable": false,
                             "render": function (data, type, row) {
                                 return row.Description;
                             }
                         },
                         {
+                            "targets": [2],
+                            "sortable": false,
+                            "render": function (data, type, row) {
+                                if (row.IsActive) {
+                                    return '<input type="checkbox" data-size="small" checked="checked" data-toggle="toggle" class="toggle" data-onstyle="success" onchange="changeStatus(\'' + row.Id + '\')">';
+                                } else {
+                                    return '<input type="checkbox" data-size="small" data-toggle="toggle" class="toggle" data-onstyle="success" onchange="changeStatus(\'' + row.Id + '\')">';
+                                }
+                            }
+                        },
+                        {
                             "targets": [3],
                             "sortable": false,
                             "render": function (data, type, row) {
-                                return '<i class="fa fa-edit edit-rule" data-id="' + row.Id + '"></i>';
+                                return '<a class="btn-sm btn btn-flat bg-olive" href="/HelpDesk/BusinessRule/Edit/' + row.Id + '"><i class="fa fa-pencil"></i></a>' +
+                                    '<a class="btn-sm btn btn-flat bg-red" style="margin-left:10px;" onclick="javascript:showConfirmModal(' + row.Id + ')"><i class="fa fa-remove"></i></a>';
                             }
                         }
                     ]
                 });
         };
 
-        $('#rules-table').on('click', 'tr i.edit-rule', function (e) {
-            window.location.href = "/HelpDesk/BusinessRule/Edit/" + $(this)[0].getAttribute("data-id");
+        function showConfirmModal(id) {
+            removeId = id;
+            $confirmModal.modal("show");
+        }
+
+        var changeStatus = function (id) {
+            $.ajax({
+                url: "/HelpDesk/BusinessRule/ChangeStatus",
+                data: {
+                    id: id
+                },
+                dataType: "JSON",
+                type: "POST",
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        rulesTable.api().ajax.reload(null, false);
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                    }
+                }
+            });
+        };
+
+        $yesBtn.click(function () {
+            $yesBtn.prop("disabled", true);
+            $noBtn.prop("disabled", true);
+            $.ajax({
+                url: "/HelpDesk/BusinessRule/Remove",
+                data: {
+                    id: removeId
+                },
+                dataType: "JSON",
+                type: "POST",
+                success: function (data) {
+                    $confirmModal.modal("hide");
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        $confirmModal.modal("hide");
+                        rulesTable.ajax.reload(null, false);
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                    }
+                    $yesBtn.prop("disabled", false);
+                    $noBtn.prop("disabled", false);
+                }
+            });
         });
 
         $(document)
             .ready(function () {
-                //setActiveTicketMenu();
                 initRulesTable();
             });
     </script>

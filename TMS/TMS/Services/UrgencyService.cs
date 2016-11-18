@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using TMS.DAL;
 using TMS.Models;
+using TMS.Utils;
 
 namespace TMS.Services
 {
@@ -52,7 +53,9 @@ namespace TMS.Services
 
         public bool IsInUse(Urgency urgency)
         {
-            return _unitOfWork.TicketRepository.Get(m => m.UrgencyID == urgency.ID).Any();
+            return _unitOfWork.TicketRepository.Get(m => m.UrgencyID == urgency.ID).Any()
+                   || _unitOfWork.BusinessRuleConditionRepository.Get( m => m.Criteria == ConstantUtil.BusinessRuleCriteria.Urgency
+                                                                        && m.Condition.HasValue && m.Condition.Value == urgency.ID).Any();
         }
 
         public bool DeleteUrgency(Urgency urgency)

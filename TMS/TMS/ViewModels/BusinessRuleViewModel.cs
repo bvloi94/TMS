@@ -10,6 +10,7 @@ namespace TMS.ViewModels
         public int? Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public bool IsActive { get; set; }
         public bool Enable { get; set; }
         public List<Rule> Rules { get; set; }
         public string Conditions { get; set; }
