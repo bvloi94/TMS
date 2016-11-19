@@ -267,41 +267,47 @@
                 url: "/Manager/ManageSC/GetCategoriesDataTable"
             },
             order: [[1, 'asc']],
+            autoWidth: false,
             columnDefs: [
                 {
                     "targets": [0],
                     "className": "details-control",
                     "sortable": false,
                     "data": null,
-                    "defaultContent": ''
+                    "defaultContent": '',
+                    "width": "5%"
                 },
                 {
                     "targets": [1],
                     "sortable": true,
                     "render": function (data, type, row) {
                         return row.Name;
-                    }
+                    },
+                    "width": "30%"
                 },
                 {
                     "targets": [2],
                     "sortable": false,
                     "render": function (data, type, row) {
                         return row.Description;
-                    }
+                    },
+                    "width": "35%"
                 },
                 {
                     "targets": [3],
                     "sortable": false,
                     "render": function (data, type, row) {
                         return row.Impact;
-                    }
+                    },
+                    "width": "10%"
                 },
                 {
                     "targets": [4],
                     "sortable": false,
                     "render": function (data, type, row) {
                         return row.Urgency;
-                    }
+                    },
+                    "width": "10%"
                 },
                 {
                     "targets": [5],
@@ -309,8 +315,8 @@
                     "render": function (data, type, row) {
                         return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showEditCategoryModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
                             + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a>';
-                    }
-
+                    },
+                    "width": "10%"
                 }
             ]
         });
@@ -341,7 +347,7 @@
                         content += "<table class='table table-bordered dataTable cell-border'>";
                         content += "<thead>";
                         content += "<tr>";
-                        content += "<th style='width: 35px'></th>";
+                        content += "<th></th>";
                         content += "<th>Name</th>";
                         content += "<th>Description</th>";
                         content += "<th>Impact</th>";
@@ -366,41 +372,47 @@
                             },
                             data: categories,
                             order: [[1, 'asc']],
+                            autoWidth: false,
                             columnDefs: [
                                 {
                                     "targets": [0],
                                     "className": "details-control",
                                     "sortable": false,
                                     "data": null,
-                                    "defaultContent": ''
+                                    "defaultContent": '',
+                                    "width": "5%"
                                 },
                                 {
                                     "targets": [1],
                                     "sortable": true,
                                     "render": function (data, type, row) {
                                         return row.Name;
-                                    }
+                                    },
+                                    "width": "30%"
                                 },
                                 {
                                     "targets": [2],
                                     "sortable": false,
                                     "render": function (data, type, row) {
                                         return row.Description;
-                                    }
+                                    },
+                                    "width": "35%"
                                 },
                                 {
                                     "targets": [3],
                                     "sortable": false,
                                     "render": function (data, type, row) {
                                         return row.Impact;
-                                    }
+                                    },
+                                    "width": "10%"
                                 },
                                 {
                                     "targets": [4],
                                     "sortable": false,
                                     "render": function (data, type, row) {
                                         return row.Urgency;
-                                    }
+                                    },
+                                    "width": "10%"
                                 },
                                 {
                                     "targets": [5],
@@ -408,7 +420,8 @@
                                     "render": function (data, type, row) {
                                         return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showEditSubCategoryModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
                                             + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a>';
-                                    }
+                                    },
+                                    "width": "10%"
                                 }
                             ]
                         });
@@ -419,11 +432,11 @@
                         content += "<table class='table table-bordered dataTable'>";
                         content += "<thead>";
                         content += "<tr>";
-                        content += "<th width='200px'>Name</th>";
+                        content += "<th>Name</th>";
                         content += "<th>Description</th>";
                         content += "<th>Impact</th>";
                         content += "<th>Urgency</th>";
-                        content += "<th width='100px'>Action</th>";
+                        content += "<th>Action</th>";
                         content += "</tr>";
                         content += "</thead>";
                         content += "<tbody>";
@@ -440,34 +453,39 @@
                             lengthChange: false,
                             data: categories,
                             order: [[0, 'asc']],
+                            autoWidth: false,
                             columnDefs: [
                                 {
                                     "targets": [0],
                                     "sortable": true,
                                     "render": function (data, type, row) {
                                         return row.Name;
-                                    }
+                                    },
+                                    "width": "30%"
                                 },
                                 {
                                     "targets": [1],
                                     "sortable": false,
                                     "render": function (data, type, row) {
                                         return row.Description;
-                                    }
+                                    },
+                                    "width": "40%"
                                 },
                                 {
                                     "targets": [2],
                                     "sortable": false,
                                     "render": function (data, type, row) {
                                         return row.Impact;
-                                    }
+                                    },
+                                    "width": "10%"
                                 },
                                 {
                                     "targets": [3],
                                     "sortable": false,
                                     "render": function (data, type, row) {
                                         return row.Urgency;
-                                    }
+                                    },
+                                    "width": "10%"
                                 },
                                 {
                                     "targets": [4],
@@ -475,7 +493,8 @@
                                     "render": function (data, type, row) {
                                         return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showEditItemModal(\'' + row.ID + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;'
                                             + '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row.ID + '\')"><i class="fa fa-trash-o"></i></a>';
-                                    }
+                                    },
+                                    "width": "10%"
 
                                 }
                             ]

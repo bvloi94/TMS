@@ -183,7 +183,8 @@ namespace TMS.Areas.HelpDesk.Controllers
             else
             {
                 Ticket ticket = _ticketService.GetTicketByID(id.Value);
-                if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled)
+                if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled
+                        || ticket.Status == ConstantUtil.TicketStatus.Closed)
                 {
                     return HttpNotFound();
                 }
@@ -206,8 +207,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.StatusId = ticket.Status;
                 if (ticket.CategoryID.HasValue)
                 {
-                    model.CategoryId = ticket.CategoryID.Value;
-                    model.Category = _categoryService.GetCategoryById(ticket.CategoryID.Value).Name;
+                    Category category = _categoryService.GetCategoryById(ticket.CategoryID.Value);
+                    if (category != null)
+                    {
+                        model.CategoryId = category.ID;
+                        model.Category = category.Name;
+                    }
                 }
                 model.UrgencyId = ticket.UrgencyID;
                 model.Urgency = ticket.Urgency.Name;
@@ -242,8 +247,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                     model.Technician = technician.Fullname;
                     if (technician.GroupID.HasValue)
                     {
-                        model.GroupId = technician.GroupID.Value;
-                        model.Group = technician.Group.Name;
+                        if (technician.Group != null)
+                        {
+                            model.GroupId = technician.GroupID.Value;
+                            model.Group = technician.Group.Name;
+                        }
                     }
                 }
 

@@ -35,10 +35,8 @@ namespace TMS.Services
         public Ticket ParseTicket(Ticket ticket)
         {
             Ticket handlingTicket = ticket;
-
             if (handlingTicket != null)
             {
-
                 //Handle automation job
                 bool isSatisfied = false;
                 IEnumerable<BusinessRule> businessRules = _unitOfWork.BusinessRuleRepository.Get(m => m.IsActive == true);
@@ -80,13 +78,15 @@ namespace TMS.Services
                                     if (technician != null && string.IsNullOrEmpty(handlingTicket.TechnicianID))
                                     {
                                         handlingTicket.TechnicianID = technician.Id;
+                                        handlingTicket.Status = ConstantUtil.TicketStatus.Assigned;
                                     }
                                     break;
                                 case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
                                 case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
                                 case ConstantUtil.BusinessRuleTrigger.MoveToItem:
                                     int categoryId = TMSUtils.StrToIntDef(trigger.Value, 0);
-                                    if (categoryId > 0 && !handlingTicket.CategoryID.HasValue)
+                                    Category category = _unitOfWork.CategoryRepository.GetByID(categoryId);
+                                    if (category != null && !handlingTicket.CategoryID.HasValue)
                                     {
                                         handlingTicket.CategoryID = categoryId;
                                     }
@@ -143,7 +143,11 @@ namespace TMS.Services
 
         private bool IsSatisfiedWithMultipleConditions(Ticket handlingTicket, ICollection<BusinessRuleConditionCustom> businessRuleConditionCustomList)
         {
-            int highestLevel = businessRuleConditionCustomList.Aggregate((i1, i2) => i1.BusinessRuleCondition.BusinessRuleConditionLevel > i2.BusinessRuleCondition.BusinessRuleConditionLevel ? i1 : i2).BusinessRuleCondition.BusinessRuleConditionLevel.Value;
+            int highestLevel = 0;
+            if (businessRuleConditionCustomList != null && businessRuleConditionCustomList.Any())
+            {
+                highestLevel = businessRuleConditionCustomList.Aggregate((i1, i2) => i1.BusinessRuleCondition.BusinessRuleConditionLevel > i2.BusinessRuleCondition.BusinessRuleConditionLevel ? i1 : i2).BusinessRuleCondition.BusinessRuleConditionLevel.Value;
+            }
             bool isSatisfied = false;
             while (highestLevel > 0)
             {
@@ -514,10 +518,8 @@ namespace TMS.Services
                     }
                     break;
                 case ConstantUtil.BusinessRuleCriteria.Category:
-                    Category category = handlingTicket.Category;
-                    if (category != null)
+                    if (handlingTicket.CategoryID.HasValue)
                     {
-                        int categoryId = category.ID;
                         values = businessRuleCondition.Value.Split(',');
                         switch (businessRuleCondition.Condition)
                         {
@@ -526,7 +528,8 @@ namespace TMS.Services
                                 {
                                     int intVal = 0;
                                     Int32.TryParse(value, out intVal);
-                                    if (categoryId == intVal)
+                                    List<int> childrenCategoriesIdList = GetChildrenCategoriesIdList(intVal);
+                                    if (childrenCategoriesIdList.Contains(handlingTicket.CategoryID.Value) || intVal == handlingTicket.CategoryID.Value)
                                     {
                                         return true;
                                     }
@@ -538,8 +541,9 @@ namespace TMS.Services
                                 {
                                     int intVal = 0;
                                     Int32.TryParse(value, out intVal);
-                                    if (categoryId == intVal)
-                                    {
+                                    List<int> childrenCategoriesIdList = GetChildrenCategoriesIdList(intVal);
+                                    if (childrenCategoriesIdList.Contains(handlingTicket.CategoryID.Value) || intVal == handlingTicket.CategoryID.Value)
+                                    { 
                                         result = false;
                                         break;
                                     }
@@ -550,6 +554,7 @@ namespace TMS.Services
                                 }
                                 break;
                         }
+
                     }
                     break;
             }
@@ -758,7 +763,7 @@ namespace TMS.Services
                         _unitOfWork.TicketKeywordRepository.Insert(ticketKeyword);
                     }
                 }
-                
+
                 _unitOfWork.TicketRepository.Update(ticket);
                 return _unitOfWork.CommitTransaction();
             }
@@ -1182,12 +1187,19 @@ namespace TMS.Services
                     KeywordId = m.Key,
                     Point = m.Count()
                 });
+
             IEnumerable<TicketKeywordPoint> ticketKeywordPointList = _unitOfWork.TicketKeywordRepository.Get().Where(m => tickets.Any(n => n.ID == m.TicketID) && keywordPointList.Any(n => n.KeywordId == m.KeywordID))
-                .GroupBy(m => m.TicketID).Select(m => new TicketKeywordPoint
+                .Select(m => new TicketKeywordPoint
+                {
+                    TicketId = m.TicketID,
+                    Point = (keywordPointList.Where(n => n.KeywordId == m.KeywordID).FirstOrDefault() != null) ?
+                        keywordPointList.Where(n => n.KeywordId == m.KeywordID).FirstOrDefault().Point : 0
+                }).GroupBy(m => m.TicketId).Select(m => new TicketKeywordPoint
                 {
                     TicketId = m.Key,
-                    Point = m.Count()
+                    Point = m.Sum(n => n.Point)
                 }).OrderByDescending(m => m.Point);
+
             ICollection<FrequentlyAskedTicketViewModel> result = new List<FrequentlyAskedTicketViewModel>();
 
             int totalPoint = 0;
@@ -1199,7 +1211,7 @@ namespace TMS.Services
             foreach (TicketKeywordPoint item in ticketKeywordPointList)
             {
                 Ticket ticket = _unitOfWork.TicketRepository.GetByID(item.TicketId);
-                int frequency = totalPoint == 0 ? 0 : ((int) (((double) item.Point) / totalPoint * 100));
+                int frequency = totalPoint == 0 ? 0 : ((int)(((double)item.Point) / totalPoint * 100));
                 FrequentlyAskedTicketViewModel model = new FrequentlyAskedTicketViewModel
                 {
                     Ticket = ticket,
@@ -1433,5 +1445,30 @@ namespace TMS.Services
             }
             return result;
         }
+
+        public List<int> GetChildrenCategoriesIdList(int categoryId)
+        {
+            List<int> list = new List<int>();
+            IEnumerable<Category> childrenCategories = GetChildrenCategories(categoryId);
+            foreach (Category childCategory in childrenCategories)
+            {
+                list.Add(childCategory.ID);
+                if (childCategory.CategoryLevel == ConstantUtil.CategoryLevel.SubCategory)
+                {
+                    IEnumerable<Category> items = GetChildrenCategories(childCategory.ID);
+                    foreach (Category item in items)
+                    {
+                        list.Add(item.ID);
+                    }
+                }
+            }
+            return list;
+        }
+
+        private IEnumerable<Category> GetChildrenCategories(int parentId)
+        {
+            return _unitOfWork.CategoryRepository.Get(m => m.ParentID == parentId);
+        }
+
     }
 }
