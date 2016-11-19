@@ -543,7 +543,7 @@ namespace TMS.Services
                                     Int32.TryParse(value, out intVal);
                                     List<int> childrenCategoriesIdList = GetChildrenCategoriesIdList(intVal);
                                     if (childrenCategoriesIdList.Contains(handlingTicket.CategoryID.Value) || intVal == handlingTicket.CategoryID.Value)
-                                    { 
+                                    {
                                         result = false;
                                         break;
                                     }
@@ -1468,6 +1468,75 @@ namespace TMS.Services
         private IEnumerable<Category> GetChildrenCategories(int parentId)
         {
             return _unitOfWork.CategoryRepository.Get(m => m.ParentID == parentId);
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadAllTickets()
+        {
+            IEnumerable<BasicTicketViewModel> ticketList = _unitOfWork.TicketRepository.Get()
+                .OrderBy(m => m.CreatedTime)
+                .Select(m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    CreatedBy = string.IsNullOrWhiteSpace(m.CreatedID) ? "-" : _unitOfWork.AspNetUserRepository.GetByID(m.CreatedID).Fullname,
+                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                    ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
+                });
+            return ticketList;
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadRequestersTickets()
+        {
+            IEnumerable<BasicTicketViewModel> ticketList = _unitOfWork.TicketRepository.Get()
+                .Where(m => _unitOfWork.AspNetUserRepository.GetByID(m.CreatedID).AspNetRoles.FirstOrDefault().Name == ConstantUtil.UserRoleString.Requester)
+                .OrderBy(m => m.CreatedTime)
+                .Select(m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    CreatedBy = string.IsNullOrWhiteSpace(m.CreatedID) ? "-" : _unitOfWork.AspNetUserRepository.GetByID(m.CreatedID).Fullname,
+                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                    ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
+                });
+            return ticketList;
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadTicketsInLast7Days()
+        {
+            IEnumerable<BasicTicketViewModel> ticketList = _unitOfWork.TicketRepository.Get()
+                .Where(m => DateTime.Now.Subtract(m.CreatedTime).Days < 7)
+                .OrderBy(m => m.CreatedTime)
+                .Select(m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    CreatedBy = m.CreatedID == null ? "-" : _unitOfWork.AspNetUserRepository.GetByID(m.CreatedID).Fullname,
+                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                    ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
+                });
+            return ticketList;
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadWarningTickets()
+        {
+            IEnumerable<BasicTicketViewModel> incomingTickets = _unitOfWork.TicketRepository.Get(p => p.Status == ConstantUtil.TicketStatus.Assigned)
+                .Where(p => p.DueByDate.Subtract(DateTime.Now).Days < 3)
+                .OrderByDescending(m => m.DueByDate)
+                .Select(m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    DueByDate = m.DueByDate.ToString(ConstantUtil.DateTimeFormat2),
+                });
+            return incomingTickets;
         }
 
     }

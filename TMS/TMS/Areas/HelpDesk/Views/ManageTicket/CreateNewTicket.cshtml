@@ -619,7 +619,15 @@
                 initOlderTicketsTable();
                 $(self._select2).parent().find(".select2-container").css('width', '');
                 $("#keywords").tagit({
-                    allowSpaces: true
+                    allowSpaces: true,
+                    autocomplete: {
+                        source: "/Ticket/GetKeywords",
+                        //create: function () {
+                        //    //access to jQuery Autocomplete widget differs depending
+                        //    //on jQuery UI version - you can also try .data('autocomplete')
+                        //    $(this).data('uiAutocomplete')._renderMenu = customRenderMenu;
+                        //}
+                    }
                 });
                 getDueByDate();
             });

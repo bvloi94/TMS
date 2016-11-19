@@ -730,7 +730,7 @@ namespace TMS.Controllers
                     model.ScheduleStartDateString = ticket.ScheduleStartDate.ToString(ConstantUtil.DateTimeFormat);
                     model.ScheduleEndDateString = ticket.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat);
                     model.ActualEndDateString = ticket.ActualEndDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
-                    model.SolvedDateString = ticket.SolvedDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.SolvedDateString = ticket.SolvedDate.HasValue ? ticket.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                     model.OverdueDateString = ticket.DueByDate.ToString(ConstantUtil.DateTimeFormat);
                     model.CreatedBy = GeneralUtil.GetUserInfo(createdUser);
                     model.AssignedBy = GeneralUtil.GetUserInfo(assignedUser);
@@ -1056,6 +1056,20 @@ namespace TMS.Controllers
                 }
             }
             return HttpNotFound();
+        }
+
+        [HttpGet]
+        public ActionResult GetKeywords()
+        {
+            IEnumerable<Keyword> keywords = _keywordService.GetAll().Select(m => new Keyword
+            {
+                Name = m.Name
+            }).OrderBy(m => m.Name);
+
+            return Json(new
+            {
+                keywords
+            }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
