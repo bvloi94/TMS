@@ -57,59 +57,36 @@
         #all-articles li {
             list-style: none;
         }
-
-    .keywords {
-        margin-left: 0px;
-        margin-bottom: 35px;
-        float: left;
-        list-style: none;
-    }
-
-        .keywords li {
-            float: left;
-            display: inline-block;
-            margin-right: 1em;
-        }
-
-    .key-tags {
-        position: relative;
-        height: 30px;
-        line-height: 30px;
-        padding: 0 15px;
-        background-color: #e6e6e6;
-        border-left: solid 5px #3393d8;
-        color: #191919;
-    }
 </style>
 
 <div class="col-lg-12">
     <div class="span8 page-content">
-        <div id="main-title" style="padding-left: 25px"></div>
-        <ul id="all-articles" class="hidden">
-            @if (Model != null && Model.Count() > 0)
-            {
-                if (!string.IsNullOrEmpty(ViewBag.SearchKey))
+        @if (Model != null && Model.Count() > 0)
+        {
+            <div id="main-title" style="padding-left: 25px">
+                @if (!string.IsNullOrEmpty(ViewBag.SearchKey))
                 {
-                    <li><h2>Key Search: @ViewBag.SearchKey</h2></li>
-                    <li style="text-align: center"><h4>There are @Model.Count() result(s) matched search keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
+                    <h2>Key Search: @ViewBag.SearchKey</h2>
+                    <h4 style="text-align: center">There are @Model.Count() result(s) matched search keyword <i>"@ViewBag.SearchKey"</i>.</h4>
                 }
                 else if (!string.IsNullOrWhiteSpace(ViewBag.Category))
                 {
-                    <li><h2>Category: @ViewBag.Category</h2></li>
-                    <li style="text-align: center"><h4>There are @Model.Count() result(s) found in category <i>"@ViewBag.Category"</i>.</h4></li>
+                    <h2>Category: @ViewBag.Category</h2>
+                    <h4 style="text-align: center">There are @Model.Count() result(s) found in category <i>"@ViewBag.Category"</i>.</h4>
                 }
                 else if (!string.IsNullOrWhiteSpace(ViewBag.Tag))
                 {
-                    <li><h2>Tag: @ViewBag.Tag</h2></li>
-                    <li style="text-align: center"><h4>There are @Model.Count() result(s) matched keyword <i>@ViewBag.Tag</i>.</h4></li>
+                    <h2>Keyword: @ViewBag.Tag</h2>
+                    <h4 style="text-align: center">There are @Model.Count() result(s) matched keyword <i>@ViewBag.Tag</i>.</h4>
                 }
                 else
                 {
-                    <li><h2>All articles</h2></li>
-                    <li><h5>Total @Model.Count() result(s).</h5></li>
+                    <h2>All articles</h2>
+                    <h5>Total @Model.Count() result(s).</h5>
                 }
-
-                foreach (KnowledgeBaseViewModel solution in Model)
+            </div>
+            <ul id="all-articles" class="hidden">
+                @foreach (KnowledgeBaseViewModel solution in Model)
                 {
                     <li>
                         <article class="type-post format-standard hentry clearfix">
@@ -128,19 +105,19 @@
                         </article>
                     </li>
                 }
-            }
-            else
+            </ul>
+        }
+        else
+        {
+            if (Request.Url.ToString().Contains("search"))
             {
-                if (Request.Url.ToString().Contains("search"))
-                {
-                    <li style="text-align: center"><h4>There is no result matched search keyword <i>"@ViewBag.SearchKey"</i>.</h4></li>
-                }
-                else if (Request.Url.ToString().Contains("Category"))
-                {
-                    <li style="text-align: center"><h4>There is no result in category <i>"@ViewBag.Category"</i>.</h4></li>
-                }
+                <h4 style="text-align: center">There is no result matched search keyword <i>"@ViewBag.SearchKey"</i>.</h4>
             }
-        </ul>
+            else if (Request.Url.ToString().Contains("Category"))
+            {
+                <h4 style="text-align: center">There is no result in category <i>"@ViewBag.Category"</i>.</h4>
+            }
+        }
         <div class="holder hidden"></div>
     </div>
 
