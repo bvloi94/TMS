@@ -10,6 +10,7 @@ using TMS.DAL;
 using TMS.Models;
 using TMS.Utils;
 using TMS.ViewModels;
+using System.Text.RegularExpressions;
 
 namespace TMS.Services
 {
@@ -327,7 +328,7 @@ namespace TMS.Services
                     AspNetUser technician = _unitOfWork.AspNetUserRepository.GetByID(handlingTicket.TechnicianID);
                     if (technician != null)
                     {
-                        Group group = technician.Group;
+                        Models.Group group = technician.Group;
                         if (group != null)
                         {
                             int groupId = group.ID;
@@ -543,7 +544,7 @@ namespace TMS.Services
                                     Int32.TryParse(value, out intVal);
                                     List<int> childrenCategoriesIdList = GetChildrenCategoriesIdList(intVal);
                                     if (childrenCategoriesIdList.Contains(handlingTicket.CategoryID.Value) || intVal == handlingTicket.CategoryID.Value)
-                                    { 
+                                    {
                                         result = false;
                                         break;
                                     }
@@ -559,6 +560,29 @@ namespace TMS.Services
                     break;
             }
             return false;
+        }
+
+        public ICollection<TicketKeyword> GetTicketKeywords(string subject)
+        {
+            ICollection<TicketKeyword> keywords = new List<TicketKeyword>();
+            IEnumerable<Keyword> keywordList = _unitOfWork.KeywordRepository.Get();
+            subject = GeneralUtil.RemoveSpecialCharacters(subject);
+            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+            string words = regex.Replace(subject, " ");
+            string[] wordArr = words.Split(' ');
+            foreach (string word in wordArr)
+            {
+                string lowerWord = word.ToLower();
+                if (keywordList.Any(m => m.Name.Equals(lowerWord)))
+                {
+                    TicketKeyword ticketKeyword = new TicketKeyword
+                    {
+                        KeywordID = keywordList.Where(m => m.Name.Equals(lowerWord)).FirstOrDefault().ID
+                    };
+                    keywords.Add(ticketKeyword);
+                }
+            }
+            return keywords;
         }
 
         public IEnumerable<Ticket> GetRecentTickets(int timeOption)
@@ -1109,76 +1133,6 @@ namespace TMS.Services
                 || m.Status == ConstantUtil.TicketStatus.Closed);
         }
 
-        public IEnumerable<FrequentlyAskedTicketViewModel> GetFrequentlyAskedSubjects(IEnumerable<Ticket> tickets)
-        {
-            //tickets = tickets.OrderByDescending(m => GeneralUtil.GetNumberOfTags(m.Tags));
-            List<FrequentlyAskedTicketViewModel> result = new List<FrequentlyAskedTicketViewModel>();
-            List<Ticket> temp = tickets.ToList();
-            foreach (Ticket compareTicket in temp)
-            {
-                int count = 0;
-                //if (!string.IsNullOrWhiteSpace(compareTicket.Tags))
-                //{
-                //    string[] tagArr = compareTicket.Tags.Split(',');
-                //    int numOfTags = tagArr.Count();
-                //    if (result.Where(m => m.Tags == compareTicket.Tags).Any())
-                //    {
-                //        continue;
-                //    }
-                //    foreach (Ticket remainingTicket in temp)
-                //    {
-                //        int matchTag = 0;
-
-                //        if (!compareTicket.CategoryID.HasValue || compareTicket.CategoryID == remainingTicket.CategoryID)
-                //        {
-                //            if (!string.IsNullOrWhiteSpace(remainingTicket.Tags))
-                //            {
-                //                foreach (string tag in tagArr)
-                //                {
-                //                    if (remainingTicket.Tags.Contains(tag))
-                //                    {
-                //                        matchTag++;
-                //                    }
-                //                }
-                //            }
-                //        }
-                //        else
-                //        {
-                //            continue;
-                //        }
-
-                //        if (numOfTags <= 3)
-                //        {
-                //            if (matchTag == numOfTags)
-                //            {
-                //                count++;
-                //            }
-                //        }
-                //        else if (3 < numOfTags && numOfTags <= 5)
-                //        {
-                //            if (matchTag >= numOfTags - 1 && matchTag <= numOfTags + 1)
-                //            {
-                //                count++;
-                //            }
-                //        }
-                //        else
-                //        {
-                //            if (matchTag >= numOfTags - 2 && matchTag <= numOfTags + 2)
-                //            {
-                //                count++;
-                //            }
-                //        }
-                //    }
-                //    FrequentlyAskedTicketViewModel frequentlyAskedTicket = new FrequentlyAskedTicketViewModel();
-                //    frequentlyAskedTicket.Tags = compareTicket.Tags;
-                //    frequentlyAskedTicket.Count = count;
-                //    result.Add(frequentlyAskedTicket);
-                //}
-            }
-
-            return result;
-        }
-
         public ICollection<FrequentlyAskedTicketViewModel> GetFrequentlyAskedTickets(IEnumerable<Ticket> tickets)
         {
             IEnumerable<KeywordPoint> keywordPointList = _unitOfWork.TicketKeywordRepository.Get().Where(m => tickets.Any(n => n.ID == m.TicketID))
@@ -1468,6 +1422,75 @@ namespace TMS.Services
         private IEnumerable<Category> GetChildrenCategories(int parentId)
         {
             return _unitOfWork.CategoryRepository.Get(m => m.ParentID == parentId);
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadAllTickets()
+        {
+            IEnumerable<BasicTicketViewModel> ticketList = _unitOfWork.TicketRepository.Get()
+                .OrderBy(m => m.CreatedTime)
+                .Select(m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    CreatedBy = string.IsNullOrWhiteSpace(m.CreatedID) ? "-" : _unitOfWork.AspNetUserRepository.GetByID(m.CreatedID).Fullname,
+                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                    ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
+                });
+            return ticketList;
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadRequestersTickets()
+        {
+            IEnumerable<BasicTicketViewModel> ticketList = _unitOfWork.TicketRepository.Get()
+                .Where(m => _unitOfWork.AspNetUserRepository.GetByID(m.CreatedID).AspNetRoles.FirstOrDefault().Name == ConstantUtil.UserRoleString.Requester)
+                .OrderBy(m => m.CreatedTime)
+                .Select(m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    CreatedBy = string.IsNullOrWhiteSpace(m.CreatedID) ? "-" : _unitOfWork.AspNetUserRepository.GetByID(m.CreatedID).Fullname,
+                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                    ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
+                });
+            return ticketList;
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadTicketsInLast7Days()
+        {
+            IEnumerable<BasicTicketViewModel> ticketList = _unitOfWork.TicketRepository.Get()
+                .Where(m => DateTime.Now.Subtract(m.CreatedTime).Days < 7)
+                .OrderBy(m => m.CreatedTime)
+                .Select(m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    CreatedBy = m.CreatedID == null ? "-" : _unitOfWork.AspNetUserRepository.GetByID(m.CreatedID).Fullname,
+                    CreatedTime = GeneralUtil.ShowDateTime(m.CreatedTime),
+                    ModifiedTime = GeneralUtil.ShowDateTime(m.ModifiedTime),
+                });
+            return ticketList;
+        }
+
+        public IEnumerable<BasicTicketViewModel> LoadWarningTickets()
+        {
+            IEnumerable<BasicTicketViewModel> incomingTickets = _unitOfWork.TicketRepository.Get(p => p.Status == ConstantUtil.TicketStatus.Assigned)
+                .Where(p => p.DueByDate.Subtract(DateTime.Now).Days < 3)
+                .OrderByDescending(m => m.DueByDate)
+                .Select(m => new BasicTicketViewModel
+                {
+                    Code = m.Code,
+                    ID = m.ID,
+                    Status = m.Status,
+                    Subject = m.Subject,
+                    DueByDate = m.DueByDate.ToString(ConstantUtil.DateTimeFormat2),
+                });
+            return incomingTickets;
         }
 
     }

@@ -607,6 +607,26 @@
             //$("[data-role='ddl-technician']").select2("val", "");
         });
 
+        $("[name='Subject']").focusout(function () {
+            generateTags();
+        });
+
+        var generateTags = function () {
+            $.ajax({
+                url: "/HelpDesk/ManageTicket/GetTags",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    subject: $("[name='Subject']").val()
+                },
+                success: function (data) {
+                    for (i = 0; i < data.data.length; i++) {
+                        $('#keywords').tagit('createTag', data.data[i]);
+                    }
+                }
+            });
+        }
+
         $(document)
             .ready(function () {
                 setActiveTicketMenu();
@@ -619,7 +639,10 @@
                 initOlderTicketsTable();
                 $(self._select2).parent().find(".select2-container").css('width', '');
                 $("#keywords").tagit({
-                    allowSpaces: true
+                    allowSpaces: true,
+                    autocomplete: {
+                        source: "/Ticket/GetKeywords",
+                    }
                 });
                 getDueByDate();
             });

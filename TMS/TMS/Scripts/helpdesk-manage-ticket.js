@@ -12,11 +12,10 @@ $(window).on('resize', function () {
 });
 
 function initTicketTable() {
-
     ticketTable = $("#ticket-table").DataTable({
         serverSide: true,
         processing: true,
-        sort: true,
+        sort: false,
         filter: false,
         lengthMenu: [10],
         lengthChange: false,
@@ -31,7 +30,6 @@ function initTicketTable() {
             "sLengthMenu": "Show _MENU_ rows",
             "sProcessing": "Processing..."
         },
-        bAutoWidth: false,
         ajax: {
             "url": "/HelpDesk/ManageTicket/LoadAllTickets",
             "type": "POST",
@@ -237,7 +235,7 @@ function initTicketTable() {
                         + '</li>';
                             break;
                         case "Closed":
-                            links += edit + history + detail;
+                            links += history + detail;
                             break;
                         case "Cancelled":
                             links += history + detail;
@@ -406,7 +404,7 @@ function openTicketDetailModal(ticketId) {
                     $('#ticket-status').html(getStatusLabel('Closed'));
                     $('#action-solve-btn').hide();
                     $("#action-cancel-btn").hide();
-                    $("#action-edit-btn").show();
+                    $("#action-edit-btn").hide();
                     $(".reopen-li").hide();
                 }
 
@@ -539,9 +537,8 @@ $(document).ready(function () {
         ticketTable.draw();
     });
 
-    $('#ticket-table tbody').on('click', 'a[data-role="btn-show-cancel-modal"]:not([disabled])', function () {
-        cancelTicketId = this.getAttribute("data-ticket-id");
-        $("#modal-cancel-ticket").modal("show");
+    $('body').on('click', 'a[data-role="btn-show-cancel-modal"]', function () {
+        showCancelModal(this);
     });
 
     $("[data-role='btn-confirm-cancel']").on('click', function () {
@@ -554,7 +551,6 @@ $(document).ready(function () {
             },
             "success": function (data) {
                 if (data.success) {
-                    $("#modal-cancel-ticket").modal("hide");
                     noty({
                         text: data.msg,
                         layout: "topCenter",
@@ -563,7 +559,6 @@ $(document).ready(function () {
                     });
                     ticketTable.draw();
                 } else {
-                    $("#modal-cancel-ticket").modal("hide");
                     noty({
                         text: data.msg,
                         type: "error",
@@ -572,6 +567,7 @@ $(document).ready(function () {
                     });
                     ticketTable.draw();
                 }
+                $(".modal").modal("hide");
                 $("[data-role='btn-confirm-cancel']").prop("disabled", false);
             },
             "error": function () {
@@ -907,6 +903,12 @@ var showCloseModal = function (obj) {
     $("#modal-close-ticket").modal("show");
 }
 
+var showCancelModal = function (obj) {
+    cancelTicketId = $(obj).attr("data-ticket-id");
+    $("#modal-cancel-ticket").css("z-index", "1100");
+    $("#modal-cancel-ticket").modal("show");
+};
+
 var showReassignModal = function (obj) {
     reassignTicketId = $(obj).attr("data-ticket-id");
     initDropdownControl();
@@ -942,22 +944,6 @@ var showReassignModal = function (obj) {
     $("#reassign-validation-message").hide();
     $("#modal-reassign-ticket").css("z-index", "1100");
     $("#modal-reassign-ticket").modal("show");
-}
-
-var generateTags = function () {
-    $.ajax({
-        url: "/HelpDesk/ManageTicket/GetTags",
-        type: "GET",
-        dataType: "json",
-        data: {
-            subject: $("[name='Subject']").val()
-        },
-        success: function (data) {
-            for (i = 0; i < data.data.length; i++) {
-                $('#tags').tagit('createTag', data.data[i]);
-            }
-        }
-    });
 }
 
 function loadKeywordToTags(keyword) {

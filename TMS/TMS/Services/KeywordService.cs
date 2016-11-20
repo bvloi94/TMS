@@ -16,6 +16,11 @@ namespace TMS.Services
             _unitOfWork = unitOfWork;
         }
 
+        public IEnumerable<Keyword> GetAll()
+        {
+            return _unitOfWork.KeywordRepository.Get();
+        }
+
         public ICollection<TicketKeyword> GetTicketKeywordsForCreate(string keywords)
         {
             List<TicketKeyword> result = new List<TicketKeyword>();

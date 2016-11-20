@@ -57,7 +57,7 @@ namespace TMS.Controllers
                 {
                     model.Subject = ticket.Subject;
                     model.Keywords = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
-                    model.Content = ticket.Solution;
+                    model.Content = string.IsNullOrEmpty(ticket.Solution) ? string.Empty : ticket.Solution.Replace(Environment.NewLine, "<br />");
                     model.CategoryID = ticket.CategoryID.HasValue ? ticket.CategoryID.Value : 0;
                     if (ticket.Category != null)
                     {

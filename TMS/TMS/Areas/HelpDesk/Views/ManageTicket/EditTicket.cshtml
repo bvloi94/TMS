@@ -719,7 +719,10 @@
                 loadEditData();
                 initOlderTicketsTable();
                 $("#keywords").tagit({
-                    allowSpaces: true
+                    allowSpaces: true,
+                    autocomplete: {
+                        source: "/Ticket/GetKeywords",
+                    }
                 });
             });
     </script>

@@ -19,12 +19,16 @@ namespace TMS.Schedulers
         private UnitOfWork _unitOfWork;
         private UserService _userService;
         private TicketService _ticketService;
+        private UrgencyService _urgencyService;
+        private ImpactService _impactService;
 
         public ConvertTicketJob()
         {
             _unitOfWork = new UnitOfWork();
             _userService = new UserService(_unitOfWork);
             _ticketService = new TicketService(_unitOfWork);
+            _urgencyService = new UrgencyService(_unitOfWork);
+            _impactService = new ImpactService(_unitOfWork);
         }
 
         public override string GetName()
@@ -42,16 +46,25 @@ namespace TMS.Schedulers
                 {
                     string subject = mail.Subject.Replace("(Trial Version)", "");
                     string description = mail.TextBody;
+                    Urgency urgency = _urgencyService.GetSystemUrgency();
+                    Impact impact = _impactService.GetSystemImpact();
                     Ticket ticket = new Ticket
                     {
                         Subject = subject,
-                        Description = description,
+                        Description = description == null ? string.Empty : description.Trim(),
                         Status = ConstantUtil.TicketStatus.Open,
                         CreatedTime = DateTime.Now,
                         ModifiedTime = DateTime.Now,
+                        ScheduleStartDate = DateTime.Now,
+                        DueByDate = DateTime.Now.AddHours(urgency.Duration),
+                        ScheduleEndDate = DateTime.Now.AddDays(ConstantUtil.DayToCloseTicket),
+                        UrgencyID = urgency.ID,
+                        ImpactID = impact.ID,
+                        PriorityID = _ticketService.GetPriorityId(impact.ID, DateTime.Now.AddHours(urgency.Duration)),
                         CreatedID = _userService.GetUserByEmail(requesterEmail).Id,
                         RequesterID = _userService.GetUserByEmail(requesterEmail).Id,
-                        Mode = ConstantUtil.TicketMode.Email
+                        Mode = ConstantUtil.TicketMode.Email,
+                        TicketKeywords = _ticketService.GetTicketKeywords(subject)
                     };
 
                     if (mail.Attachments.Length > 0)

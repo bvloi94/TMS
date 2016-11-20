@@ -844,19 +844,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 filteredListItems = filteredListItems.Where(p => requesterFilter.Contains(p.RequesterID.ToString()));
             }
 
-            // Sort.
-            var sortColumnIndex = TMSUtils.StrToIntDef(param.order[0]["column"], 1);
-            var sortDirection = param.order[0]["dir"];
-
-            switch (sortColumnIndex)
-            {
-                case 1:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.ModifiedTime)
-                        : filteredListItems.OrderByDescending(p => p.ModifiedTime);
-                    break;
-            }
-
             if (!string.IsNullOrEmpty(sortFilter))
             {
                 switch (sortFilter)
@@ -1207,13 +1194,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpGet]
         public ActionResult GetTags(string subject)
         {
-            HashSet<string> stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            string[] lines = System.IO.File.ReadAllLines(Server.MapPath(@"~/Utils/stopwords.txt"));
-            foreach (string s in lines)
-            {
-                stopWords.Add(s); // Assuming that each line contains one stop word.
-            }
-
+            IEnumerable<Keyword> keywordList = _keywordService.GetAll();
             List<string> keywords = new List<string>();
             subject = GeneralUtil.RemoveSpecialCharacters(subject);
             Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
@@ -1222,7 +1203,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             foreach (string word in wordArr)
             {
                 string lowerWord = word.ToLower();
-                if (!stopWords.Contains(lowerWord))
+                if (keywordList.Any(m => m.Name.Equals(lowerWord)))
                 {
                     keywords.Add(lowerWord);
                 }
