@@ -288,6 +288,7 @@ namespace TMS.Controllers
                 ticket.ImpactID = _impactService.GetSystemImpact().ID;
                 ticket.UrgencyID = defaultUrgency.ID;
                 ticket.PriorityID = _ticketService.GetPriorityId(ticket.ImpactID, ticket.DueByDate);
+                ticket.TicketKeywords = _ticketService.GetTicketKeywords(ticket.Subject);
                 bool addResult = _ticketService.AddTicket(ticket);
                 if (addResult)
                 {
@@ -1059,17 +1060,13 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetKeywords()
+        public ActionResult GetKeywords(string term)
         {
-            IEnumerable<Keyword> keywords = _keywordService.GetAll().Select(m => new Keyword
-            {
-                Name = m.Name
-            }).OrderBy(m => m.Name);
+            List<string> labels = _keywordService.GetAll()
+            .Where(m => m.Name.Contains(term))
+            .Select(m => m.Name).ToList();
 
-            return Json(new
-            {
-                keywords
-            }, JsonRequestBehavior.AllowGet);
+            return Json(labels, JsonRequestBehavior.AllowGet);
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

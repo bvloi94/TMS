@@ -246,9 +246,9 @@
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-12 col-content ">
                         <div class="col-sm-2 labels">
-                            <b>Tags: </b>
+                            <b>Keywords: </b>
                         </div>
-                        <div class="col-sm-10"><span id="tags"></span></div>
+                        <div class="col-sm-10"><span id="keywords"></span></div>
                     </div>
                 </div>
                 <div class="col-sm-12 row-content">
@@ -336,7 +336,7 @@
                         Action <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        @if (Model.Status != "Cancelled")
+                        @if (Model.Status != ConstantUtil.TicketStatusString.Cancelled && Model.Status != ConstantUtil.TicketStatusString.Closed)
                         {
                             <li>
                                 <a href="/HelpDesk/ManageTicket/EditTicket/@Model.Id">
@@ -349,11 +349,19 @@
                                 <i class="fa fa-history" aria-hidden="true"></i> Ticket History
                             </a>
                         </li>
-                        @if (Model.Status == "Open")
+                        @if (Model.Status == ConstantUtil.TicketStatusString.Open)
                         {
                             <li>
                                 <a href="/Ticket/Solve/@Model.Id">
                                     <i class="fa fa-commenting" aria-hidden="true"></i> Solve Ticket
+                                </a>
+                            </li>
+                        }
+                        @if (Model.Status == ConstantUtil.TicketStatusString.Open || Model.Status == ConstantUtil.TicketStatusString.Assigned)
+                        {
+                            <li>
+                                <a href="javascript:void(0)" onclick="showCancelModal(this)" data-ticket-id="@Model.Id">
+                                    <i class="fa fa-ban" aria-hidden="true"></i> Cancel Ticket
                                 </a>
                             </li>
                         }
@@ -406,6 +414,25 @@
     <!-- /.modal-dialog -->
 </div>
 
+<div id="modal-cancel-ticket" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">Do you want to cancel this ticket?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btn-confirm-cancel"><i class="fa fa-check" aria-hidden="true"></i> Yes</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> No</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 <div id="modal-reassign-ticket" class="modal fade" aria-hidden="true" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -448,7 +475,7 @@
     <script src="~/Scripts/helpdesk-manage-ticket.js"></script>
     <script>
         $(document).ready(function () {
-            $("#tags").html(loadKeywordToTags('@Model.Keywords'));
+            $("#keywords").html(loadKeywordToTags('@Model.Keywords'));
         });
 
         $("#btn-confirm-close").on('click', function () {
@@ -478,6 +505,48 @@
                             timeout: 2000
                         });
                         $("#modal-close-ticket").modal("hide");
+                        $(this).prop("disabled", false);
+                    }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server!",
+                        type: "error",
+                        layout: "topCenter",
+                        timeout: 2000
+                    });
+                    $(this).prop("disabled", false);
+                }
+            });
+        });
+
+        $("#btn-confirm-cancel").on('click', function () {
+            $(this).prop("disabled", true);
+            $.ajax({
+                url: "/HelpDesk/ManageTicket/CancelTicket",
+                type: "POST",
+                data: {
+                    ticketId: cancelTicketId
+                },
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.msg,
+                            layout: "topCenter",
+                            type: "success",
+                            timeout: 2000
+                        });
+                        setTimeout(function () {
+                            window.location = "/HelpDesk/ManageTicket";
+                        }, 2000);
+                    } else {
+                        noty({
+                            text: data.msg,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2000
+                        });
+                        $("#modal-cancel-ticket").modal("hide");
                         $(this).prop("disabled", false);
                     }
                 },

@@ -607,6 +607,26 @@
             //$("[data-role='ddl-technician']").select2("val", "");
         });
 
+        $("[name='Subject']").focusout(function () {
+            generateTags();
+        });
+
+        var generateTags = function () {
+            $.ajax({
+                url: "/HelpDesk/ManageTicket/GetTags",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    subject: $("[name='Subject']").val()
+                },
+                success: function (data) {
+                    for (i = 0; i < data.data.length; i++) {
+                        $('#keywords').tagit('createTag', data.data[i]);
+                    }
+                }
+            });
+        }
+
         $(document)
             .ready(function () {
                 setActiveTicketMenu();
@@ -622,11 +642,6 @@
                     allowSpaces: true,
                     autocomplete: {
                         source: "/Ticket/GetKeywords",
-                        //create: function () {
-                        //    //access to jQuery Autocomplete widget differs depending
-                        //    //on jQuery UI version - you can also try .data('autocomplete')
-                        //    $(this).data('uiAutocomplete')._renderMenu = customRenderMenu;
-                        //}
                     }
                 });
                 getDueByDate();
