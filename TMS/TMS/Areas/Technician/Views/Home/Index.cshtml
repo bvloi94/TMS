@@ -223,13 +223,13 @@
                                         <p>
                                             @if (ticket.Subject.Length > 60)
                                             {
-                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-green">
+                                                <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-green">
                                                     @ticket.Subject.Substring(0, 59) ...
                                                 </a>
                                             }
                                             else
                                             {
-                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-green">
+                                                <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-green">
                                                     @ticket.Subject
                                                 </a>
                                             }
@@ -276,13 +276,13 @@
                                         <p>
                                             @if (ticket.Subject.Length > 60)
                                             {
-                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-muted">
+                                                <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-muted">
                                                     @ticket.Subject.Substring(0, 59) ...
                                                 </a>
                                             }
                                             else
                                             {
-                                                <a href="/Ticket/Detail/@ticket.ID" class="text-bold text-muted">
+                                                <a href="/Ticket/TicketDetail/@ticket.ID" class="text-bold text-muted">
                                                     @ticket.Subject
                                                 </a>
                                             }
