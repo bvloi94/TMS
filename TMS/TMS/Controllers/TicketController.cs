@@ -460,38 +460,25 @@ namespace TMS.Controllers
                     }
                     model.Status = GeneralUtil.GetTicketStatusByID(ticket.Status);
                     IEnumerable<TicketAttachment> ticketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(id.Value);
-                    string descriptionAttachment = "";
-                    string solutionAttachment = "";
 
-                    if (ticketAttachments.Count() > 0)
+                    if (ticketAttachments != null)
                     {
-                        string fileName;
-                        foreach (var attachFile in ticketAttachments)
+                        model.DescriptionAttachments = new List<AttachmentViewModel>();
+                        model.SolutionAttachments = new List<AttachmentViewModel>();
+                        foreach (var attachment in ticketAttachments)
                         {
-                            fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
-                            if (attachFile.Type == ConstantUtil.TicketAttachmentType.Description)
+                            var att = new AttachmentViewModel();
+                            att.id = attachment.ID;
+                            att.name = TMSUtils.GetMinimizedAttachmentName(attachment.Filename);
+                            if (attachment.Type == ConstantUtil.TicketAttachmentType.Description)
                             {
-                                descriptionAttachment += "<a download=\'" + fileName +
-                                                 "\' class=\'btn-xs btn-primary\' href=\'" + attachFile.Path +
-                                                 "\' target=\'_blank\' >" + fileName + "</a>&nbsp;&nbsp";
+                                model.DescriptionAttachments.Add(att);
                             }
-                            else if (attachFile.Type == ConstantUtil.TicketAttachmentType.Solution)
+                            else
                             {
-                                solutionAttachment += "<a download=\'" + fileName +
-                                                 "\' class=\'btn-xs btn-primary\' href=\'" + attachFile.Path +
-                                                 "\' target=\'_blank\' >" + fileName + "</a>&nbsp;&nbsp";
+                                model.SolutionAttachments.Add(att);
                             }
                         }
-                    }
-
-                    if (string.IsNullOrWhiteSpace(descriptionAttachment))
-                    {
-                        descriptionAttachment = "None";
-                    }
-
-                    if (string.IsNullOrWhiteSpace(solutionAttachment))
-                    {
-                        solutionAttachment = "None";
                     }
 
                     model.Category = (ticket.Category == null) ? "-" : ticket.Category.Name;
@@ -520,8 +507,8 @@ namespace TMS.Controllers
                     model.SolvedBy = GeneralUtil.GetUserInfo(solvedUser);
                     model.Requester = GeneralUtil.GetUserInfo(requester);
                     model.Solution = ticket.Solution == null ? string.Empty : ticket.Solution.Trim();
-                    model.DescriptionAttachmentsURL = descriptionAttachment;
-                    model.SolutionAttachmentsURL = solutionAttachment;
+                    model.DescriptionAttachmentsURL = GetTicketAttachmentUrl(ticket.ID, ConstantUtil.TicketAttachmentType.Description); 
+                    model.SolutionAttachmentsURL = GetTicketAttachmentUrl(ticket.ID, ConstantUtil.TicketAttachmentType.Solution);
                     model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason.Trim();
                     model.Keywords = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
                     model.Note = (string.IsNullOrEmpty(ticket.Note)) ? "-" : ticket.Note.Trim();

@@ -24,8 +24,11 @@
         border-radius: unset;
     }
 
-    .content-wrapper .container {
+    .row {
         background-color: #fff !important;
+    }
+
+    .content-wrapper .container {
         padding-top: 0px !important;
     }
 
@@ -105,7 +108,7 @@
         }
 
     .question-list {
-        height: 70vh;
+        height: 78vh;
         overflow-y: auto;
         padding: 10px 0px;
     }
@@ -203,14 +206,14 @@
 <div class="row">
     <div class="col-md-12 no-padding">
         <div class="left-menu col-xs-3 menu-collapse">
-            <div class="header"><span>Categories</span></div>
+            <div class="header"><span>All topic</span></div>
             <div id="category-treeview-div">
 
             </div>
         </div>
-        <div class="col-xs-9 no-padding border-left">
+        <div class="col-xs-9 no-padding">
             <div class="questions">
-                <div class="question-list col-md-12">
+                <div class="question-list col-md-12 border-left">
                 </div>
             </div>
         </div>
@@ -401,7 +404,7 @@
                                 "html": data.data[i].Subject
                             })[0].outerHTML;
                             var buttons = $("<div/>", {
-                                "class": "col-lg-2 button",
+                                "class": "col-lg-2 col-sm-2 button",
                                 "html": $("<a/>", {
                                     "class": "btn-sm btn-success",
                                     "href": '/FAQ/Detail/' + data.data[i].Path,
@@ -412,8 +415,13 @@
                                     "html": '<i class="fa fa-pencil"></i>'
                                 })[0].outerHTML
                             })[0].outerHTML;
-                            var createdTime = $("<p/>", {
-                                "html": '<i class="fa fa-calendar"></i>&nbsp;Created time: ' + data.data[i].CreatedTimeString
+                            var createdTime = $("<span/>", {
+                                "class": "text-green",
+                                "html": '<i class="fa fa-calendar"></i>&nbsp;<span class="text-bold">Created: </span>' + data.data[i].CreatedTimeString
+                            })[0].outerHTML;
+                            var categoryPath = $("<span/>", {
+                                "class": "text-green    ",
+                                "html": '<i class="fa fa-tag"></i>&nbsp;<span class="text-bold">Category: </span>' + data.data[i].CategoryPath
                             })[0].outerHTML;
                             var solutionContent = $("<p/>", {
                                 "html": content + '<a href="/FAQ/Detail/' + data.data[i].Path + '">...Continue Reading</a>'
@@ -426,13 +434,14 @@
                                        "class": "question-row",
                                        "html": $("<div/>",
                                                {
-                                                   "class": "question-header col-lg-10",
+                                                   "class": "question-header col-lg-10 col-sm-10",
+                                                   "style": "font-size: 16px",
                                                    "html": checkbox + '&nbsp;&nbsp;' + subject
                                                })[0].outerHTML + buttons +
                                                $("<div/>",
                                                {
                                                    "class": "question-detail col-sm-12",
-                                                   "html": createdTime + solutionContent + keywords
+                                                   "html": '<p>' + createdTime + '&nbsp; &nbsp; ' + categoryPath + '</p>' + solutionContent + keywords
                                                })[0].outerHTML
                                    })[0].outerHTML;
 
@@ -481,8 +490,8 @@
         });
 
         function setQuestionListHeight() {
-            var contentHeight = $("#category-treeview-div").height();
-            $(".question-list").css("height", contentHeight);
+            //var contentHeight = $(".left-menu").height();
+            //$(".question-list").css("height", contentHeight);
         }
 
         function checkSelectedCheckbox() {
