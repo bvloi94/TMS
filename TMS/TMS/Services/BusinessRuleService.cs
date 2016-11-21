@@ -25,11 +25,13 @@ namespace TMS.Services
 
         public bool Remove(int id)
         {
+            _unitOfWork.BeginTransaction();
             var br = _unitOfWork.BusinessRuleRepository.GetByID(id);
             if (br != null)
             {
+                RemoveAllBusinessRuleRelatedInfo(id);
                 _unitOfWork.BusinessRuleRepository.Delete(id);
-                return _unitOfWork.Commit();
+                return _unitOfWork.CommitTransaction();
             }
             return false;
         }

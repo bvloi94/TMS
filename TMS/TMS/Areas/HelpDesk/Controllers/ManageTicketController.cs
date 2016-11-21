@@ -334,14 +334,21 @@ namespace TMS.Areas.HelpDesk.Controllers
 
                 if (ticket.TechnicianID != model.TechnicianId)
                 {
-                    ticket.TechnicianID = model.TechnicianId;
+                    if (string.IsNullOrWhiteSpace(model.TechnicianId))
+                    {
+                        ticket.TechnicianID = null;
+                    }
+                    else
+                    {
+                        ticket.TechnicianID = model.TechnicianId;
+                    }
                     ticket.AssignedByID = User.Identity.GetUserId();
                     if ((ticket.Status == ConstantUtil.TicketStatus.Open ||
-                        ticket.Status == ConstantUtil.TicketStatus.Unapproved) && model.TechnicianId != null)
+                        ticket.Status == ConstantUtil.TicketStatus.Unapproved) && ticket.TechnicianID != null)
                     {
                         ticket.Status = ConstantUtil.TicketStatus.Assigned;
                     }
-                    else if (ticket.Status == ConstantUtil.TicketStatus.Assigned && model.TechnicianId == null)
+                    else if (ticket.Status == ConstantUtil.TicketStatus.Assigned && ticket.TechnicianID == null)
                     {
                         ticket.Status = ConstantUtil.TicketStatus.Open;
                     }

@@ -242,7 +242,13 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Models\AspNetUserLogin.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Group.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GroupCategory.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Keyword.cs">
@@ -276,9 +282,6 @@
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AspNetUserClaim.cs">
-      <DependentUpon>TMSModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AspNetUserLogin.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BusinessRule.cs">
@@ -378,7 +381,7 @@
     <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\TriggerViewModel.cs" />
     <Compile Include="ViewModels\DropdownViewModel.cs" />
-    <Compile Include="ViewModels\DepartmentViewModel.cs" />
+    <Compile Include="ViewModels\GroupViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
     <Compile Include="ViewModels\KnowledgeBaseViewModel.cs" />

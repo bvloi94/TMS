@@ -459,53 +459,50 @@ function getDueByFilter() {
 }
 
 function initFilter() {
-    var created_select = $('[data-role="filter_created_select"');
-    var sort_select = $('[data-role="sort_ticket_select"');
-    var mode_select = $('[data-role="filter_mode_select"');
-    var status_select = $('[data-role="filter_status_select"');
-    var requester_select = $('[data-role="filter_requester_select"');
-    var time_period = $('[data-role="filter_time_period"');
-    var time_period_inp = $('[data-role="filter_time_period_input"');
+    var $createdSelect = $('[data-role="filter_created_select"');
+    var $sortSelect = $('[data-role="sort_ticket_select"');
+    var $modeSelect = $('[data-role="filter_mode_select"');
+    var $statusSelect = $('[data-role="filter_status_select"');
+    var $requesterSelect = $('[data-role="filter_requester_select"');
+    var $timePeriod = $('[data-role="filter_time_period"');
+    var $timePeriodInp = $('[data-role="filter_time_period_input"');
 
-    created_select.select2();
+    $createdSelect.select2();
     if (typeof daterangepicker === "function") {
-        time_period_inp.daterangepicker({
+        $timePeriodInp.daterangepicker({
             locale: {
                 format: 'DD/MM/YYYY'
             }
         });
     }
-    sort_select.select2();
-    time_period_inp.val("");
-    mode_select.select2();
-    status_select.select2();
-    status_select.select2('val', "1");
+    $sortSelect.select2();
+    $timePeriodInp.val("");
+    $modeSelect.select2();
+    $statusSelect.select2();
+    //$status_select.select2('val', "1");
     initRequesterDropdown({
-        control: requester_select,
+        control: $requesterSelect,
         ignore: function () {
-            return requester_select.val();
+            return $requesterSelect.val();
         }
     });
-    created_select
-        .on("change",
-            function () {
-                time_period_inp.val("");
-                if (created_select.val() == "set_date") {
-                    if (time_period.hasClass("hidden")) {
-                        time_period.removeClass("hidden");
-                    }
-                } else {
-                    if (!time_period.hasClass("hidden")) {
-                        time_period.addClass("hidden");
-                    }
-                    ticketTable.draw();
-                }
-            });
-    sort_select.on("change", function () {
+    $createdSelect.on("change", function () {
+        $timePeriodInp.val("");
+        if ($createdSelect.val() == "set_date") {
+            if ($timePeriod.hasClass("hidden")) {
+                $timePeriod.removeClass("hidden");
+            }
+        } else {
+            if (!$timePeriod.hasClass("hidden")) {
+                $timePeriod.addClass("hidden");
+            }
+            ticketTable.draw();
+        }
+    });
+    $sortSelect.on("change", function () {
         ticketTable.draw();
     });
-    $('[data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]')
-        .on("change",
+    $('[data-role="filter_mode_select"],[data-role="filter_status_select"],[data-role="filter_requester_select"]').on("change",
             function () {
                 ticketTable.draw();
             });
@@ -514,7 +511,7 @@ function initFilter() {
         ticketTable.draw();
     });
 
-    time_period_inp.on("change",
+    $timePeriodInp.on("change",
         function () {
             ticketTable.draw();
         });
@@ -911,7 +908,19 @@ var showCancelModal = function (obj) {
 
 var showReassignModal = function (obj) {
     reassignTicketId = $(obj).attr("data-ticket-id");
-    initDropdownControl();
+    initGroupDropdown({
+        control: $("[data-role=ddl-group-reassign]"),
+        ignore: function () {
+            return [];
+        }
+    });
+    initTechnicianWithNoneDropdown({
+        control: $("[data-role=ddl-technician-reassign]"),
+        ignore: function () {
+            return [];
+        },
+        allowNone: true
+    });
     $.ajax({
         url: "/HelpDesk/ManageTicket/GetTicketDetailForReassign",
         type: "GET",
@@ -921,8 +930,8 @@ var showReassignModal = function (obj) {
         },
         success: function (data) {
             if (data.success) {
-                loadInitDropdown('ddl-group', data.group, data.groupId);
-                loadInitDropdown('ddl-technician', data.technician, data.technicianId);
+                loadInitDropdown('ddl-group-reassign', data.group, data.groupId);
+                loadInitDropdown('ddl-technician-reassign', data.technician == "" ? "Unassigned" : data.technician, data.technicianId);
             } else {
                 noty({
                     text: data.message,

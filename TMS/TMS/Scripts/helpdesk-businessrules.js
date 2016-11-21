@@ -396,26 +396,7 @@ $("#submitBtn").click(function () {
     $("#submitBtn").prop("disabled", true);
     $("#cancelBtn").prop("disabled", true);
     var ruleName = $("#rule-name").val().trim();
-    if (!ruleName) {
-        noty({
-            text: "Please enter rule name!",
-            type: "error",
-            layout: "topRight",
-            timeout: 2000
-        });
-        return;
-    } else {
-        if (ruleName.length > 100) {
-            noty({
-                text: "Rule name must be under 100 characters!",
-                type: "error",
-                layout: "topRight",
-                timeout: 2000
-            });
-            return;
-        }
-    }
-    var ruleDescription = $("#rule-description").val();
+    var ruleDescription = $("#rule-description").val().trim();
     var ruleTechnicians = $("#ddl-technician").val();
 
     // rule
@@ -472,7 +453,7 @@ $("#submitBtn").click(function () {
                 $("#submitBtn").prop("disabled", false);
                 $("#cancelBtn").prop("disabled", false);
                 noty({
-                    text: "Some error occur! Please try again later!",
+                    text: data.msg,
                     type: "error",
                     layout: "topRight",
                     timeout: 2000

@@ -116,6 +116,7 @@ namespace TMS.Areas.Manager.Controllers
                 Group group = new Group();
                 group.Name = model.Name;
                 group.Description = model.Description;
+                group.GroupCategories = _groupService.GetGroupCategories(model.Categories, null);
 
                 bool addResult = _groupService.AddGroup(group);
                 if (addResult)
@@ -135,28 +136,33 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetGroupDetail()
+        public ActionResult GetGroupDetail(int? id)
         {
-            try
+            if (id.HasValue)
             {
-                int id = Int32.Parse(Request["id"]);
-                Group group = _groupService.GetGroupById(id);
-                return Json(new
+                Group group = _groupService.GetGroupById(id.Value);
+                if (group != null)
                 {
-                    success = true,
-                    name = group.Name,
-                    description = group.Description
-                }, JsonRequestBehavior.AllowGet);
+                    IEnumerable<GroupCategoryViewModel> groupCategories = _groupService.GetGroupCategories(id.Value);
+                    GroupViewModel model = new GroupViewModel
+                    {
+                        Name = group.Name,
+                        Description = group.Description,
+                        GroupCategories = groupCategories
+                    };
+
+                    return Json(new
+                    {
+                        success = true,
+                        group = model
+                    }, JsonRequestBehavior.AllowGet);
+                }
             }
-            catch (Exception ex) when (ex is FormatException || ex is ArgumentNullException)
+            return Json(new
             {
-                return Json(new
-                {
-                    success = false,
-                    error = true,
-                    message = "Cannot get group detail!"
-                }, JsonRequestBehavior.AllowGet);
-            }
+                success = false,
+                message = "Unavailable group!"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -197,6 +203,7 @@ namespace TMS.Areas.Manager.Controllers
                     Group group = _groupService.GetGroupById(id.Value);
                     group.Name = name;
                     group.Description = model.Description;
+                    group.GroupCategories = _groupService.GetGroupCategories(model.Categories, id.Value);
 
                     bool resultEdit = _groupService.EditGroup(group);
                     if (resultEdit)
