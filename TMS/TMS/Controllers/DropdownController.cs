@@ -149,6 +149,39 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult LoadTechnicianWithNoneDropdown(string ignore, string query, int? groupId)
+        {
+            var js = new JavaScriptSerializer();
+            var ignoreItems = (object[])js.DeserializeObject(ignore);
+
+            var result = new List<DropdownTechnicianViewModel>();
+            List<AspNetUser> queryResult = _userService.GetTechnicianByPattern(query, groupId).ToList();
+            //result.Add(new DropdownTechnicianViewModel()
+            //{
+            //    Id = "",
+            //    Name = "None",
+            //    Email = ""
+            //});
+            foreach (var tech in queryResult)
+            {
+                if (ignoreItems != null && ignoreItems.Length > 0)
+                {
+                    if (ignoreItems.Any(a => (string)a == tech.Id))
+                    {
+                        continue;
+                    }
+                }
+                var technicianItem = new DropdownTechnicianViewModel
+                {
+                    Id = tech.Id,
+                    Name = tech.Fullname,
+                    Email = tech.Email
+                };
+                result.Add(technicianItem);
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult LoadCategoryDropDown(string query)
         {
             var result = new List<CategoryViewModel>();

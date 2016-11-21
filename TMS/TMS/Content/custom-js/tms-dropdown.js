@@ -189,7 +189,7 @@ function initCategoryDropdown(param) {
                     });
                 }
                 for (var i = 0; i < data.length; i++) {
-                    data[i].id = data[i].ID+"";
+                    data[i].id = data[i].ID + "";
                     data[i].text = data[i].Name;
                     result.results.push(data[i]);
                 }
@@ -307,6 +307,77 @@ function initTechnicianDropdown(param) {
             cache: true
         },
         placeholder: "-- Select Technician --",
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+        minimumInputLength: 0,
+        templateResult: formatt,
+        templateSelection: function (data) {
+            return data.text;
+        }
+    });
+}
+
+function initTechnicianWithNoneDropdown(param) {
+    var formatt = function (repo) {
+        var markup = "";
+        if (repo.allowAll) {
+            markup = "<div class='technician-dropdown'>" +
+                "<label class='technician-name'>All</label>" +
+                "</div>";
+
+        } else if (repo.allowNone) {
+            markup = "<div class='technician-dropdown'>" +
+                "<label class='technician-name'>"+repo.text+"</label>" +
+                "</div>";
+
+        } else {
+            markup = "<div class='technician-dropdown'>" +
+                "<label class='technician-name'>" + repo.Name + "</label>" +
+                "<label class='technician-email'>( " + repo.Email + " )</label>" +
+                "</div>";
+        }
+        return markup;
+    }
+    param.control.select2({
+        ajax: {
+            url: "/dropdown/LoadTechnicianDropdown",
+            dataType: "json",
+            data: function (params) {
+                var ajaxData = {
+                    ignore: JSON.stringify(param.ignore()),
+                    query: params.term,
+                    groupId: $("[data-role='ddl-group']").val()
+                };
+                return ajaxData;
+            },
+            processResults: function (data) {
+                var result = {
+                    results: []
+                };
+                if (param.allowAll) {
+                    result.results.push({
+                        allowAll: true,
+                        id: "",
+                        text: "All"
+                    });
+                }
+                if (param.allowNone) {
+                    result.results.push({
+                        allowNone: true,
+                        id: '',
+                        text: "Unassigned"
+                    });
+                }
+                for (var i = 0; i < data.length; i++) {
+                    data[i].id = data[i].Id;
+                    data[i].text = data[i].Name;
+                    result.results.push(data[i]);
+                }
+                return result;
+            },
+            cache: true
+        },
         escapeMarkup: function (markup) {
             return markup;
         },
@@ -633,7 +704,7 @@ function initStatusDropdown(param) {
                     });
                 }
                 for (var i = 0; i < data.length; i++) {
-                    data[i].id = data[i].Id+"";
+                    data[i].id = data[i].Id + "";
                     data[i].text = data[i].Name;
                     result.results.push(data[i]);
                 }
@@ -674,7 +745,7 @@ function initCategoryConditionDropdown(param) {
         ajax: {
             url: "/dropdown/loadcategorydropdown",
             dataType: "json",
-            data: function(params) {
+            data: function (params) {
                 var ajaxData = {
                     ignore: param.ignore(),
                     query: params.term
@@ -687,7 +758,7 @@ function initCategoryConditionDropdown(param) {
                 }
                 return ajaxData;
             },
-            processResults: function(data) {
+            processResults: function (data) {
                 var result = {
                     results: []
                 };
@@ -709,7 +780,7 @@ function initCategoryConditionDropdown(param) {
         },
         multiple: true,
         minimumResultsForSearch: Infinity,
-        escapeMarkup: function(markup) {
+        escapeMarkup: function (markup) {
             return markup;
         },
         closeOnSelect: false,
@@ -752,7 +823,7 @@ function initCategoryDropdownByLevel(param) {
                     });
                 }
                 for (var i = 0; i < data.length; i++) {
-                    data[i].id = data[i].Id+"";
+                    data[i].id = data[i].Id + "";
                     data[i].text = data[i].Name;
                     result.results.push(data[i]);
                 }

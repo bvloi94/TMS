@@ -66,7 +66,7 @@
                         </div>
                         <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
-                                <label class="control-label">DEPARTMENT</label>
+                                <label class="control-label">GROUP</label>
                                 <select class="form-control" name="GroupId" data-role="ddl-group"></select>
                             </div>
                             <div class="col-md-6 col-xs-6">
@@ -480,13 +480,9 @@
     <script>
         var requesterTable = null;
 
-        $("[data-role=btn-cancel]")
-            .on("click",
-                function () {
-                    window.location.href = "/HelpDesk/ManageTicket";
-                });
-
-        //$('#descriptionFiles').addEventListener('change', handleFileSelect, false);
+        $("[data-role=btn-cancel]").on("click",function () {
+            window.location.href = "/HelpDesk/ManageTicket";
+        });
 
         $("[data-role=btn-submit-new-ticket]").on("click", function () {
             if (!checkUploadFile()) {
@@ -522,15 +518,13 @@
                             timeout: 2000
                         });
                         $("#form-new-ticket [data-role=group-form-error]").html("");
-                        $("#form-new-ticket [data-role=group-form-error]")
-                            .append($("<p/>",
+                        $("#form-new-ticket [data-role=group-form-error]").append($("<p/>", {
+                            "html": $("<font/>",
                             {
-                                "html": $("<font/>",
-                                {
-                                    "color": "red",
-                                    "html": "*" + data.msg
-                                })
-                            }));
+                                "color": "red",
+                                "html": "*" + data.msg
+                            })
+                        }));
                     }
                 },
                 cache: false,
@@ -580,14 +574,15 @@
                     return [];
                 }
             });
-            initTechnicianDropdown({
+            initTechnicianWithNoneDropdown({
                 control: $("[data-role=ddl-technician]"),
                 ignore: function () {
                     return [];
                 },
                 groupId: function () {
                     return $("[data-role=ddl-group]").val();
-                }
+                },
+                allowNone: true
             });
         }
 
@@ -603,25 +598,22 @@
         }
 
         $("[data-role='ddl-group']").on("change", function () {
-            loadInitDropdown('ddl-technician', 'Not assigned', "");
-            //$("[data-role='ddl-technician']").select2("val", "");
+            loadInitDropdown('ddl-technician', 'Unassigned', "");
         });
 
-        $(document)
-            .ready(function () {
-                setActiveTicketMenu();
-                initDropdownControl();
-                loadInitDropdown('ddl-urgency', '@ViewBag.Urgency', @ViewBag.UrgencyId);
-                loadInitDropdown('ddl-impact', '@ViewBag.Impact', @ViewBag.ImpactId);
-                loadInitDropdown('ddl-category', 'None', 0);
-                loadInitDropdown('ddl-group', 'Choose Group', 0);
-                requesterTable = initRequesterTable($("#requester-table"));
-                initOlderTicketsTable();
-                $(self._select2).parent().find(".select2-container").css('width', '');
-                $("#keywords").tagit({
-                    allowSpaces: true
-                });
-                getDueByDate();
+        $(document).ready(function () {
+            initDropdownControl();
+            loadInitDropdown('ddl-urgency', '@ViewBag.Urgency', @ViewBag.UrgencyId);
+            loadInitDropdown('ddl-impact', '@ViewBag.Impact', @ViewBag.ImpactId);
+            loadInitDropdown('ddl-category', 'None', 0);
+            loadInitDropdown('ddl-group', 'Choose Group', 0);
+            requesterTable = initRequesterTable($("#requester-table"));
+            initOlderTicketsTable();
+            $(self._select2).parent().find(".select2-container").css('width', '');
+            $("#keywords").tagit({
+                allowSpaces: true
             });
+            getDueByDate();
+        });
     </script>
 }

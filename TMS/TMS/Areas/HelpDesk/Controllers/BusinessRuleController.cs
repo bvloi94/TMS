@@ -303,6 +303,20 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpPost]
         public ActionResult Create(BusinessRuleViewModel viewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
+                {
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = error.ErrorMessage
+                        });
+                    }
+                }
+            }
             // Create New BusinessRule
             BusinessRule businessRule = new BusinessRule();
             businessRule.Name = viewModel.Name.Trim();
@@ -320,9 +334,22 @@ namespace TMS.Areas.HelpDesk.Controllers
         }
 
         [HttpPost]
-        [ValidateInput(false)]
         public ActionResult Update(BusinessRuleViewModel viewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
+                {
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            msg = error.ErrorMessage
+                        });
+                    }
+                }
+            }
             var result = false;
             // Update new business rule to database
             if (viewModel.Id.HasValue)

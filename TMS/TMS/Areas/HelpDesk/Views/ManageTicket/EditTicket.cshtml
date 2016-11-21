@@ -64,7 +64,7 @@
                             </div>
                             <div class="col-md-12 col-xs-12">
                                 <input class="form-control" type="file" id="descriptionFiles" name="descriptionFiles" multiple>
-                                <div style="height: auto; margin-top: 5px;">
+                                <div data-role="description-attachments" style="height: auto; margin-top: 5px;">
                                     @for (int i = 0; i < Model.DescriptionAttachments.Count; i++)
                                     {
                                         <div class="attachment-div" style="display: inline;">
@@ -88,7 +88,7 @@
                         </div>
                         <div class="row form-group">
                             <div class="col-md-6 col-xs-6">
-                                <label class="control-label">DEPARTMENT</label>
+                                <label class="control-label">GROUP</label>
                                 <select class="form-control" name="GroupId" data-role="ddl-group"></select>
                             </div>
                             <div class="col-md-6 col-xs-6">
@@ -534,12 +534,9 @@
 
         var requesterTable = null;
 
-        $("[data-role=btn-cancel]")
-            .on("click",
-                function() {
-                    window.location.href = "/HelpDesk/ManageTicket";
-                });
-
+        $("[data-role=btn-cancel]").on("click",function() {
+            window.location.href = "/HelpDesk/ManageTicket";
+        });
 
         $("[data-role=btn-update-ticket]").on("click",function() {
             if (!checkUploadFile()) {
@@ -641,11 +638,12 @@
                     return [];
                 }
             });
-            initTechnicianDropdown({
+            initTechnicianWithNoneDropdown({
                 control: $("[data-role=ddl-technician]"),
                 ignore: function() {
                     return [];
-                }
+                },
+                allowNone: true
             });
         }
 
@@ -667,16 +665,17 @@
                 $('[name="Subject"]').prop("readonly", true);
                 $('[name="Description"]').prop("readonly", true);
                 $('[name="descriptionFiles"]').prop("disabled", true);
+                $('[data-role="description-attachments"]').css("pointer-events", "none");
                 $('[name="Mode"]').prop("disabled", true);
                 $('#hidden-div').append('<input type="hidden" name="Mode" value="@Model.Mode" />');
             };
 
-            var priority = $("<small/>",
-            {
+            var priority = $("<small/>", {
                 "class": "label",
                 "html": '@Model.Priority',
                 "style": "color: #000000; background-color: @Model.PriorityColor"
             })[0].outerHTML;
+
             $("#div-priority").html(priority);
             $("#div-status").html(getStatusLabel('@Model.Status'));
             $("[name='Type']").val(@Model.Type);
@@ -685,7 +684,7 @@
             loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
             loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
             loadInitDropdown('ddl-group', '@(Model.GroupId == 0 ? "Chooose Group" :@Model.Group)', @Model.GroupId);
-            loadInitDropdown('ddl-technician', '@Model.Technician', '@Model.TechnicianId');
+            loadInitDropdown('ddl-technician', '@(Model.Technician ?? "Unassigned")', '@Model.TechnicianId');
 
             if ((@Model.StatusId != @ConstantUtil.TicketStatus.Open) &&
                 (@Model.StatusId != @ConstantUtil.TicketStatus.Assigned)) {
@@ -695,32 +694,26 @@
             }
         }
 
-        $("[data-role='ddl-group']")
-            .on("change",
-                function() {
-                    $("[data-role='ddl-technician']").select2("val", "");
-                });
+        $("[data-role='ddl-group']").on("change", function() {
+            loadInitDropdown('ddl-technician', 'Unassigned', "");
+        });
 
-        $(".attachment-delete")
-            .on("click",
-                function () {
-                    var inputs = $(this).parent().find(':input');
-                    inputs.each(function (index, element) {
-                        element.value = "";
-                    });
-                    $(this).parent().addClass("hidden");
-                });
-
-        $(document)
-            .ready(function() {
-                setActiveTicketMenu();
-                requesterTable = initRequesterTable($("#requester-table"));
-                initDropdownControl();
-                loadEditData();
-                initOlderTicketsTable();
-                $("#keywords").tagit({
-                    allowSpaces: true
-                });
+        $(".attachment-delete").on("click",function () {
+            var inputs = $(this).parent().find(':input');
+            inputs.each(function (index, element) {
+                element.value = "";
             });
+            $(this).parent().addClass("hidden");
+        });
+
+        $(document).ready(function() {
+            requesterTable = initRequesterTable($("#requester-table"));
+            initDropdownControl();
+            loadEditData();
+            initOlderTicketsTable();
+            $("#keywords").tagit({
+                allowSpaces: true
+            });
+        });
     </script>
 }

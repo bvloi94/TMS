@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -8,7 +9,10 @@ namespace TMS.ViewModels
     public class BusinessRuleViewModel
     {
         public int? Id { get; set; }
+        [Required(ErrorMessage = "Please input rule name!")]
+        [StringLength(100, ErrorMessage = "Subject must be under 100  characters")]
         public string Name { get; set; }
+        [StringLength(255, ErrorMessage = "Description must be under 255 characters")]
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public bool Enable { get; set; }
