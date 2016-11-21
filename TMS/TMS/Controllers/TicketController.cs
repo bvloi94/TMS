@@ -231,7 +231,7 @@ namespace TMS.Controllers
                     {
                         attachmentUrl += "<a download=\'" + fileName +
                                          "\' class=\'btn-xs btn-primary btn-flat\' href=\'" + attachFile.Path +
-                                         "\' target=\'_blank\' >" + fileName + "</a> &nbsp; &nbsp;";
+                                         "\' target=\'_blank\' >" + fileName + "</a> &nbsp;";
                     }
                 }
             }
