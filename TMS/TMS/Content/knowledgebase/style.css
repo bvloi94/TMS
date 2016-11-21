@@ -15,20 +15,20 @@
     white-space: pre-wrap;
 }
 
-html,body{
-    height: 100%
+html, body {
+    height: 100%;
 }
 
 #page-container {
     min-height: 100%;
-    position:relative;
+    position: relative;
 }
 
 #body {
     padding-bottom: 100px;
 }
 
-#footer{
+#footer {
     bottom: 0;
     left: 0;
     position: absolute;
@@ -36,48 +36,73 @@ html,body{
 }
 
 
-    .holder {
-        text-align: center;
+.holder {
+    text-align: center;
+}
+
+    .holder a {
+        font-size: 13px;
+        cursor: pointer;
+        color: #458dc2;
+        padding: 5px 15px;
+        border: solid 1px #bfbfbf;
+        border-right: none;
     }
 
-        .holder a {
-            font-size: 13px;
-            cursor: pointer;
-            color: #458dc2;
-            padding: 5px 15px;
-            border: solid 1px #bfbfbf;
-            border-right: none;
+        .holder a:last-of-type {
+            border-right: solid 1px #bfbfbf;
         }
 
-            .holder a:last-of-type {
-                border-right: solid 1px #bfbfbf;
-            }
-
-            .holder a:hover {
-                color: #fff;
-                background-color: #3393d8;
-            }
-
-            .holder a.jp-current, a.jp-current:hover {
-                color: #fff;
-                background-color: #3393d8 !important;
-                font-weight: bold;
-            }
-
-            .holder a.jp-disabled, a.jp-disabled:hover {
-                color: #808080;
-                background-color: #e9e8e8 !important;
-            }
-
-            .holder a.jp-current, a.jp-current:hover, .holder a.jp-disabled, a.jp-disabled:hover {
-                cursor: default;
-                background: none;
-            }
-
-        .holder span {
-            font-size: 13px;
-            color: #161616;
-            padding: 5px 15px;
-            border: solid 1px #bfbfbf;
-            border-right: none;
+        .holder a:hover {
+            color: #fff;
+            background-color: #3393d8;
         }
+
+        .holder a.jp-current, a.jp-current:hover {
+            color: #fff;
+            background-color: #3393d8 !important;
+            font-weight: bold;
+        }
+
+        .holder a.jp-disabled, a.jp-disabled:hover {
+            color: #808080;
+            background-color: #e9e8e8 !important;
+        }
+
+        .holder a.jp-current, a.jp-current:hover, .holder a.jp-disabled, a.jp-disabled:hover {
+            cursor: default;
+            background: none;
+        }
+
+    .holder span {
+        font-size: 13px;
+        color: #161616;
+        padding: 5px 15px;
+        border: solid 1px #bfbfbf;
+        border-right: none;
+    }
+
+.keywords {
+    margin-left: 0px;
+    margin-bottom: 35px;
+    float: left;
+    list-style: none;
+}
+
+    .keywords li {
+        float: left;
+        display: inline-block;
+        margin-right: 1em;
+    }
+
+.key-tags {
+    position: relative;
+    height: 24px;
+    line-height: 24px;
+    padding: 0 12px;
+    background-color: #dee9ff;
+    border: 1px solid #d9dfe9;
+    border-radius: 10px;
+    color: #191919;
+    margin: 2px 0px 6px;
+}

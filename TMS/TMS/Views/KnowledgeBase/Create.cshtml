@@ -65,7 +65,7 @@
                 <div class="form-group">
                     <label class="control-label col-md-2">Keywords</label>
                     <div class="col-md-10" style="max-width: 704px;">
-                        @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keyword" })
+                        @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keywords" })
                         @Html.ValidationMessageFor(m => m.Keywords, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -100,8 +100,11 @@
     <script>
         $(document).ready(function () {
             $('#content-area').wysihtml5();
-            $("#keyword").tagit({
-                allowSpaces: true
+            $("#keywords").tagit({
+                allowSpaces: true,
+                autocomplete: {
+                    source: "/Ticket/GetKeywords",
+                }
             });
             initCategoryDropdown({
                 control: $("[data-role=ddl-category]"),
@@ -114,11 +117,35 @@
             {
                  <text>loadInitDropdown('ddl-category', '@Model.Category', '@Model.CategoryID');</text>
             }
+            @if (!string.IsNullOrWhiteSpace(Model.Subject) && string.IsNullOrWhiteSpace(Model.Path))
+            {
+                <text>getPath();</text>
+            }
         });
 
         $("#subject-txt").keyup(function () {
             getPath();
         });
+
+        $("[name='Subject']").focusout(function () {
+            generateTags();
+        });
+
+        var generateTags = function () {
+            $.ajax({
+                url: "/HelpDesk/ManageTicket/GetTags",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    subject: $("[name='Subject']").val()
+                },
+                success: function (data) {
+                    for (i = 0; i < data.data.length; i++) {
+                        $('#keywords').tagit('createTag', data.data[i]);
+                    }
+                }
+            });
+        }
 
     </script>
 }

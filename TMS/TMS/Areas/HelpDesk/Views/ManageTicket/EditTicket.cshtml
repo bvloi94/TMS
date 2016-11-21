@@ -79,6 +79,14 @@
                         </div>
                         <div class="row form-group">
                             <div class="col-md-12 col-xs-12">
+                                <label class="control-label">KEYWORDS</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keywords" })
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
                                 <label class="control-label">REQUESTER <font color="red">*</font></label>
                                 <input type="hidden" id="requesterId" name="RequesterId" value="@Model.RequesterId">
                                 <div class="requester-input-group" style="width: 100%">
@@ -189,14 +197,6 @@
                                         </div>
                                     }
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-md-12 col-xs-12">
-                                <label class="control-label">KEYWORDS</label>
-                            </div>
-                            <div class="col-md-12 col-xs-12">
-                                @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keywords" })
                             </div>
                         </div>
                         <div class="row form-group">
@@ -706,14 +706,19 @@
             $(this).parent().addClass("hidden");
         });
 
-        $(document).ready(function() {
-            requesterTable = initRequesterTable($("#requester-table"));
-            initDropdownControl();
-            loadEditData();
-            initOlderTicketsTable();
-            $("#keywords").tagit({
-                allowSpaces: true
-            });
+        $(document)
+            .ready(function() {
+                setActiveTicketMenu();
+                requesterTable = initRequesterTable($("#requester-table"));
+                initDropdownControl();
+                loadEditData();
+                initOlderTicketsTable();
+                $("#keywords").tagit({
+                    allowSpaces: true,
+                    autocomplete: {
+                        source: "/Ticket/GetKeywords",
+                    }
+                });
         });
     </script>
 }

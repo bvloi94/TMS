@@ -22,6 +22,7 @@ namespace TMS.Areas.Manager.Controllers
         private CategoryService _categoryService;
         private UserService _userService;
         private PriorityMatrixService _priorityMatrixService;
+        private KeywordService _keywordService;
         private ILog log = LogManager.GetLogger(typeof(ManageSCController));
 
         public ManageSCController()
@@ -33,6 +34,7 @@ namespace TMS.Areas.Manager.Controllers
             _categoryService = new CategoryService(_unitOfWork);
             _userService = new UserService(_unitOfWork);
             _priorityMatrixService = new PriorityMatrixService(_unitOfWork);
+            _keywordService = new KeywordService(_unitOfWork);
         }
 
         // GET: Manager/ManageSC/Priority
@@ -60,6 +62,12 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpGet]
+        public ActionResult Keywords()
+        {
+            return View();
+        }
+
+        [HttpGet]
         public ActionResult PriorityMatrix()
         {
             return View();
@@ -81,7 +89,7 @@ namespace TMS.Areas.Manager.Controllers
                 filteredListItems = impactList;
             }
             // Sort.
-            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"],0);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"], 0);
             var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
@@ -132,7 +140,7 @@ namespace TMS.Areas.Manager.Controllers
                 filteredListItems = urgencyList;
             }
             // Sort.
-            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"],0);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"], 0);
             var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
@@ -185,7 +193,7 @@ namespace TMS.Areas.Manager.Controllers
                 filteredListItems = priorityList;
             }
             // Sort.
-            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"],0);
+            var sortColumnIndex = TMSUtils.StrToIntDef(Request["iSortCol_0"], 0);
             var sortDirection = Request["sSortDir_0"]; // asc or desc
 
             switch (sortColumnIndex)
@@ -286,6 +294,55 @@ namespace TMS.Areas.Manager.Controllers
                 recordsTotal = result.Count(),
                 recordsFiltered = filteredListItems.Count(),
                 data = result
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetKeywords(jQueryDataTableParamModel param)
+        {
+            var keywordList = _keywordService.GetAll();
+            var default_search_key = Request["search[value]"];
+
+            IEnumerable<Keyword> filteredListItems;
+            if (!string.IsNullOrEmpty(default_search_key))
+            {
+                filteredListItems = keywordList.Where(p => p.Name.ToLower().Contains(default_search_key.ToLower()));
+            }
+            else
+            {
+                filteredListItems = keywordList;
+            }
+            // Sort.
+            var sortColumnIndex = Convert.ToInt32(Request["order[0][column]"]);
+            var sortDirection = Request["order[0][dir]"];
+
+            switch (sortColumnIndex)
+            {
+                case 0:
+                    filteredListItems = sortDirection == "asc"
+                        ? filteredListItems.OrderBy(p => p.Name)
+                        : filteredListItems.OrderByDescending(p => p.Name);
+                    break;
+            }
+
+            var displayedList = filteredListItems;
+            if (param.length != -1)
+            {
+                displayedList = filteredListItems.Skip(param.start).Take(param.length);
+            }
+
+            IEnumerable<KeywordViewModel> result = displayedList.Select(p => new KeywordViewModel
+            {
+                ID = p.ID,
+                Name = p.Name
+            }).ToArray();
+
+            return Json(new
+            {
+                param.sEcho,
+                iTotalRecords = result.Count(),
+                iTotalDisplayRecords = filteredListItems.Count(),
+                aaData = result
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -394,6 +451,220 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpPost]
+        public ActionResult CreateKeyword(KeywordViewModel model)
+        {
+            if (!string.IsNullOrWhiteSpace(model.Name))
+            {
+                model.Name = model.Name.Trim();
+                bool isDuplicatedName = _keywordService.IsDuplicatedName(null, model.Name);
+                if (isDuplicatedName)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = string.Format("'{0}' has already been used.", model.Name)
+                    });
+                }
+            }
+            if (!ModelState.IsValid)
+            {
+                foreach (ModelState modelState in ViewData.ModelState.Values)
+                {
+                    foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = error.ErrorMessage
+                        });
+                    }
+                }
+            }
+            else
+            {
+                Keyword keyword = new Keyword();
+                keyword.Name = model.Name.Trim();
+                bool resultInsert = _keywordService.AddKeyword(keyword);
+                if (resultInsert)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Create keyword successfully!"
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = ConstantUtil.CommonError.DBExceptionError
+            });
+        }
+
+        [HttpGet]
+        public ActionResult GetKeywordDetail(int? id)
+        {
+            if (id.HasValue)
+            {
+                Keyword keyword = _keywordService.GetKeywordById(id.Value);
+                return Json(new
+                {
+                    success = true,
+                    name = keyword.Name
+                }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unavailable keyword!"
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EditKeyword(int? id, KeywordViewModel model)
+        {
+            if (id.HasValue)
+            {
+                if (!string.IsNullOrWhiteSpace(model.Name))
+                {
+                    model.Name = model.Name.Trim();
+                    bool isDuplicatedName = _keywordService.IsDuplicatedName(id, model.Name);
+                    if (isDuplicatedName)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = string.Format("'{0}' has already been used.", model.Name)
+                        });
+                    }
+                }
+                if (!ModelState.IsValid)
+                {
+                    foreach (ModelState modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (System.Web.Mvc.ModelError error in modelState.Errors)
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = error.ErrorMessage
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    Keyword keyword = _keywordService.GetKeywordById(id.Value);
+                    if (keyword != null)
+                    {
+                        keyword.Name = model.Name.Trim();
+                        bool resultUpdate = _keywordService.UpdateKeyword(keyword);
+                        if (resultUpdate)
+                        {
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Update keyword successfully!"
+                            });
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Unavailable keyword!"
+                        });
+                    }
+                }
+                return Json(new
+                {
+                    success = false,
+                    message = ConstantUtil.CommonError.DBExceptionError
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unavailable keyword!"
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteKeyword(int? id)
+        {
+            if (!id.HasValue)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unavailable keyword!"
+                });
+            }
+
+            Keyword keyword = _keywordService.GetKeywordById(id.Value);
+            if (keyword == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Unavailable keyword!"
+                });
+            }
+            else
+            {
+                if (_keywordService.IsInUse(keyword))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Keyword is being used! Can not be deleted!"
+                    });
+                }
+
+                bool resultDelete = _keywordService.DeleteKeyword(keyword);
+                if (resultDelete)
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Delete keyword successfully!"
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = ConstantUtil.CommonError.DBExceptionError
+                    });
+                }
+            }
+        }
+
+        [HttpPost]
         public ActionResult CreateImpact(ImpactViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(model.Name))
@@ -454,12 +725,11 @@ namespace TMS.Areas.Manager.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetImpactDetail()
+        public ActionResult GetImpactDetail(int? id)
         {
-            try
+            if (id.HasValue)
             {
-                int id = Int32.Parse(Request["id"]);
-                Impact impact = _impactService.GetImpactById(id);
+                Impact impact = _impactService.GetImpactById(id.Value);
                 return Json(new
                 {
                     success = true,
@@ -467,13 +737,12 @@ namespace TMS.Areas.Manager.Controllers
                     description = impact.Description
                 }, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception ex) when (ex is FormatException || ex is ArgumentNullException)
+            else
             {
                 return Json(new
                 {
                     success = false,
-                    error = true,
-                    message = "Cannot get impact detail!"
+                    message = "Unavailable impact!"
                 }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -515,23 +784,34 @@ namespace TMS.Areas.Manager.Controllers
                 {
                     var name = model.Name.Trim();
                     Impact impact = _impactService.GetImpactById(id.Value);
-                    impact.Name = name;
-                    impact.Description = model.Description;
-                    bool resultUpdate = _impactService.UpdateImpact(impact);
-                    if (resultUpdate)
+                    if (impact != null)
                     {
-                        return Json(new
+                        impact.Name = name;
+                        impact.Description = model.Description;
+                        bool resultUpdate = _impactService.UpdateImpact(impact);
+                        if (resultUpdate)
                         {
-                            success = true,
-                            message = "Update impact successfully!"
-                        });
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Update impact successfully!"
+                            });
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                success = false,
+                                message = ConstantUtil.CommonError.DBExceptionError
+                            });
+                        }
                     }
                     else
                     {
                         return Json(new
                         {
                             success = false,
-                            message = ConstantUtil.CommonError.DBExceptionError
+                            message = "Unavailable impact!"
                         });
                     }
                 }

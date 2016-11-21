@@ -169,16 +169,16 @@
     .border-left {
         border-left: solid 1px #E4E4E4;
     }
+
     .border-bottom {
         border-bottom: solid 1px #E4E4E4;
     }
-
 </style>
 
 <div class="row">
     <div class="col-sm-12 no-padding border-bottom">
         <div class="left-menu col-xs-3 menu-collapse" style="padding: 23px 20px">
-            <a href="javascript:void(0)" class="btn btn-primary btn-flat" onclick="showFrequentlyAskedSubjects();">Frequently Asked Subjects</a>
+            <a href="javascript:void(0)" class="btn btn-primary btn-flat" onclick="showFrequentlyAskedTickets();">10 Frequently Asked Tickets</a>
         </div>
         <div class="col-xs-9 no-padding border-left">
             <div class="header-content col-sm-12">
@@ -235,18 +235,18 @@
     </div>
 </div>
 
-<div id="frequently-asked-subjects-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
+<div id="frequently-asked-tickets-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title">Frequently Asked Subjects</h4>
+                <h4 class="modal-title">10 Frequently Asked Tickets</h4>
             </div>
             <div class="modal-body">
                 <div class="pull-right">
-                    <select id="frequently-asked-subjects-time-option-select">
+                    <select id="frequently-asked-tickets-time-option-select">
                         <option value="1">Today</option>
                         <option value="2">4 Days ago</option>
                         <option value="3" selected>This Week</option>
@@ -254,7 +254,7 @@
                         <option value="5">This Year</option>
                     </select>
                 </div>
-                <table class="table dataTable" id="frequently-asked-subjects-table">
+                <table class="table dataTable" id="frequently-asked-tickets-table">
                     <thead>
                         <tr>
                             <th>Tags</th>
@@ -272,47 +272,16 @@
     </div>
 </div>
 
-<div id="tickets-by-tags-modal" class="modal fade" aria-hidden="true" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                <h4 class="modal-title">Tickets List</h4>
-            </div>
-            <div class="modal-body">
-                <table class="table dataTable" id="tickets-by-tags-table">
-                    <thead>
-                        <tr>
-                            <th>Subject</th>
-                            <th>Tags</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <div class="modal-footer" style="text-align: center;">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section scripts{
     <script src="~/Content/Plugins/jstree/jstree.min.js"></script>
     <script>
-        var sum = 0;
         var selectedSolutions = [];
-        var initTags = "";
 
         $(document).ready(function () {
             notifyFlashMessage();
             showTreeViewModal();
             getSolutionsByActiveNode(null);
-            initFrequentlyAskedSubjectsTable();
-            initTicketsByTagsTable();
+            initFrequentlyAskedTicketsTable();
             $(".menu-item").click(function () {
 
                 //if submenu is hidden, does not have active class
@@ -607,8 +576,8 @@
             data.instance.toggle_node(data.node);
         });
 
-        var initFrequentlyAskedSubjectsTable = function () {
-            $("#frequently-asked-subjects-table").dataTable({
+        var initFrequentlyAskedTicketsTable = function () {
+            $("#frequently-asked-tickets-table").dataTable({
                 processing: true,
                 serverSide: true,
                 paging: true,
@@ -618,9 +587,9 @@
                 order: [[1, 'desc']],
                 lengthChange: false,
                 ajax: {
-                    url: "/KnowledgeBase/GetFrequentlyAskedSubjects",
+                    url: "/KnowledgeBase/GetFrequentlyAskedTickets",
                     data: function (d) {
-                        d.timeOption = $("#frequently-asked-subjects-time-option-select").val()
+                        d.timeOption = $("#frequently-asked-tickets-time-option-select").val()
                     }
                 },
                 autoWidth: false,
@@ -629,16 +598,16 @@
                         "targets": 0,
                         "width": "60%",
                         "render": function (data, type, row) {
-                            return loadKeywordToTags(row.Tags);
+                            return row.Ticket.Subject;
                         }
                     },
                     {
                         "targets": 1,
                         "width": "30%",
                         "render": function (data, type, row) {
-                            var percent = parseInt(row.Count / sum * 100);
+                            var percent = row.Frequency;
                             return '<div class="clearfix">'
-                                + '<small class="pull-right">' + row.Count + '/' + sum + '</small>'
+                                + '<small class="pull-right">' + percent + '%</small>'
                                 + '</div>'
                                 + '<div class="progress xs">'
                                 + '<div class="progress-bar progress-bar-blue" style="width: ' + percent + '%;"></div>'
@@ -650,93 +619,21 @@
                         "sortable": false,
                         "width": "10%",
                         "render": function (data, type, row) {
-                            //return '<a href="/KnowledgeBase/Create?Keyword=' + row.Tags + '" class="btn btn-flat btn-primary">Add Solution</a>';
-                            return '<a href="javascript:void(0)" onclick="showTicketsModalByTags(\'' + row.Tags + '\')" class="btn btn-flat btn-primary">View tickets</a>';
+                            return '<a href="/KnowledgeBase/Create/' + row.Ticket.ID + '" class="btn btn-flat btn-primary">Add Solution</a>';
                         }
                     }
                 ]
             });
         }
 
-        $('#frequently-asked-subjects-table').on('xhr.dt', function (e, settings, json, xhr) {
-            sum = json.totalTicket;
+        $("#frequently-asked-tickets-time-option-select").on("change", function () {
+            $("#frequently-asked-tickets-table").dataTable().api().ajax.reload();
         });
 
-        $("#frequently-asked-subjects-time-option-select").on("change", function () {
-            $("#frequently-asked-subjects-table").dataTable().api().ajax.reload();
-        });
-
-        var showFrequentlyAskedSubjects = function () {
-            $("#frequently-asked-subjects-table").dataTable().api().ajax.reload();
-            $("#frequently-asked-subjects-modal").modal("show");
+        var showFrequentlyAskedTickets = function () {
+            $("#frequently-asked-tickets-table").dataTable().api().ajax.reload();
+            $("#frequently-asked-tickets-modal").modal("show");
         }
-
-        function loadKeywordToTags(keyword) {
-            var keywordTags = (keyword).split(',');
-            var content = '<ul class="keywords">';
-            for (j = 0; j < keywordTags.length; j++) {
-                if (keywordTags[j]) {
-                    var key = keywordTags[j].replace(/"/g, '');
-                    content += '<li><div class="key-tags"><a href="/FAQ/Tags/' + key + ' ">' + key + '</a></div></li>';
-                }
-            }
-            content += '</ul>';
-            return content;
-        }
-
-        var showTicketsModalByTags = function (tags) {
-            initTags = tags;
-            $("#tickets-by-tags-table").dataTable().api().ajax.reload();
-            $("#tickets-by-tags-modal").modal("show");
-        }
-
-        var initTicketsByTagsTable = function () {
-            $("#tickets-by-tags-table").dataTable({
-                processing: true,
-                serverSide: true,
-                paging: true,
-                sort: true,
-                filter: false,
-                lengthMenu: [5],
-                order: [[1, 'desc']],
-                lengthChange: false,
-                ajax: {
-                    url: "/KnowledgeBase/GetTicketsByTags",
-                    data: function (d) {
-                        d.tags = initTags,
-                        d.timeOption = $("#frequently-asked-subjects-time-option-select").val()
-                    }
-                },
-                autoWidth: false,
-                columnDefs: [
-                    {
-                        "targets": 0,
-                        "width": "40%",
-                        "render": function (data, type, row) {
-                            return row.Subject;
-                        }
-                    },
-                    {
-                        "targets": 1,
-                        "width": "50%",
-                        "sortable": false,
-                        "render": function (data, type, row) {
-                            return loadKeywordToTags(row.Tags);
-                        }
-                    },
-                    {
-                        "targets": 2,
-                        "sortable": false,
-                        "width": "10%",
-                        "render": function (data, type, row) {
-                            //return '<a href="/KnowledgeBase/Create?Subject=' + row.Subject + '" class="btn btn-flat btn-primary">Add Solution</a>';
-                            return '<a href="/KnowledgeBase/Create/' + row.Id + '" class="btn btn-flat btn-primary">Add Solution</a>';
-                        }
-                    }
-                ]
-            });
-        }
-
     </script>
 }
 

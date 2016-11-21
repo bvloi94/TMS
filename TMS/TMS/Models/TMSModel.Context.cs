@@ -35,6 +35,7 @@ namespace TMS.Models
         public virtual DbSet<BusinessRuleTrigger> BusinessRuleTriggers { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Group> Groups { get; set; }
+        public virtual DbSet<GroupCategory> GroupCategories { get; set; }
         public virtual DbSet<Impact> Impacts { get; set; }
         public virtual DbSet<Keyword> Keywords { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }

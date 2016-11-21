@@ -46,11 +46,10 @@ namespace TMS.ViewModels
         public string Group { get; set; }
         public string UnapproveReason { get; set; }
         [Required(ErrorMessage = "Schedule Start Date is required!")]
-        [ValidateDate(0, ErrorMessage = "Invalid Schedule Start Date")]
         [ValidateDateSQL(ErrorMessage = "Invalid date")]
         public DateTime ScheduleStartDate { get; set; }
         public DateTime ScheduleEndDate { get; set; }
-        [Required(ErrorMessage = "Schedule Start Date is required!")]
+        [Required(ErrorMessage = "Due By Date is required!")]
         [DataType(DataType.DateTime)]
         [ValidateDateSQL(ErrorMessage = "Invalid date")]
         [CompareValidateDate(CompareToOperation.GreaterThan, "ScheduleStartDate", ErrorMessage = "Due By Date must greater than Schedule Start Date")]

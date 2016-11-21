@@ -144,6 +144,17 @@
                         <div class="col-sm-10 pre-wrap">@Html.Raw(Model.DescriptionAttachmentsURL)</div>
                     </div>
                 </div>
+                @if (!string.IsNullOrWhiteSpace(Model.UnapproveReason))
+                {
+                    <div class="col-sm-12">
+                        <div class="col-sm-2 labels">
+                            <b>UnapproveReason: </b>
+                        </div>
+                        <div class="col-sm-10">
+                            <span class="pre-wrap">@Html.DisplayFor(m => m.UnapproveReason)</span>
+                        </div>
+                    </div>
+                }
                 <form id="solveForm" role="form" method="POST">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="ID" value="@Model.ID" />
@@ -310,7 +321,7 @@
                 <div class="col-sm-12 row-content">
                     <div class="col-sm-12 col-content ">
                         <div class="col-sm-2 labels">
-                            <b>Tags: </b>
+                            <b>Keywords: </b>
                         </div>
                         <div class="col-sm-10"><span id="tags"></span></div>
                     </div>

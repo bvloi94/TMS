@@ -52,6 +52,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="col-sm-2 control-label">Category</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="category-txt" data-role="ddl-category" multiple="multiple"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-sm-offset-2 col-sm-10">
                             <p id="name-validation-message" class="text-danger" style="display: none"></p>
                         </div>
@@ -93,42 +99,51 @@
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
-        $("#group-table")
-            .DataTable({
-                processing: true,
-                serverSide: true,
-                paging: false,
-                sort: false,
-                filter: false,
-                ajax: {
-                    url: "/Manager/Group/GetGroup"
+        $("#group-table").DataTable({
+            processing: true,
+            serverSide: true,
+            paging: false,
+            sort: false,
+            filter: false,
+            ajax: {
+                url: "/Manager/Group/GetGroup"
+            },
+            "columnDefs": [
+                {
+                    "render": function (data, type, row) {
+                        return row[1];
+                    },
+                    "targets": 0,
+                    "type": "date"
                 },
-                "columnDefs": [
-                    {
-                        "render": function (data, type, row) {
-                            return row[1];
-                        },
-                        "targets": 0,
-                        "type": "date"
+                {
+                    "render": function (data, type, row) {
+                        return row[2];
                     },
-                    {
-                        "render": function (data, type, row) {
-                            return row[2];
-                        },
-                        "targets": 1
+                    "targets": 1
+                },
+                {
+                    "render": function (data, type, row) {
+                        return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getGroupDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
+                               '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                     },
-                    {
-                        "render": function (data, type, row) {
-                            return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getGroupDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
-                                   '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
-                        },
-                        "targets": 2
-                    }
-                ]
+                    "targets": 2
+                }
+            ]
+        });
+
+        function initDropdownControl() {
+            initCategoryDropdown({
+                control: $("[data-role=ddl-category]"),
+                ignore: function () {
+                    return [];
+                }
             });
+        }
 
         var showCreateModal = function () {
             clearModal();
+            initDropdownControl();
             $("#myModal").modal('show');
             $('#create-btn').attr('onclick', 'createGroup()');
         }
@@ -142,6 +157,7 @@
         var clearModal = function () {
             $("#myModal").find("input").val("");
             $("#myModal").find("textarea").val("");
+            $("#category-txt").val(null);
             $(".text-danger").hide();
         }
 
@@ -152,7 +168,8 @@
                 dataTpye: "JSON",
                 data: {
                     Name: $("#name-txt").val(),
-                    Description: $("#description-txt").val()
+                    Description: $("#description-txt").val(),
+                    Categories: JSON.stringify($("#category-txt").val())
                 },
                 success: function (data) {
                     if (data.success) {
@@ -188,6 +205,7 @@
 
         var getGroupDetail = function (id) {
             clearModal();
+            initDropdownControl();
             $.ajax({
                 url: "/Manager/Group/GetGroupDetail",
                 dataType: "json",
@@ -198,8 +216,11 @@
                 success: function (data) {
                     if (data.success) {
                         $("#myModal").modal("show");
-                        $("#name-txt").val(data.name);
-                        $("#description-txt").val(data.description);
+                        $("#name-txt").val(data.group.Name);
+                        $("#description-txt").val(data.group.Description);
+                        for (i = 0; i < data.group.GroupCategories.length; i++) {
+                            loadInitDropdown('ddl-category', data.group.GroupCategories[i].Category, data.group.GroupCategories[i].Id);
+                        }
                         $("#create-btn").attr("onclick", "editGroup('" + id + "')");
                     } else {
                         if (data.error) {
@@ -231,7 +252,8 @@
                 data: {
                     id: id,
                     Name: $("#name-txt").val(),
-                    Description: $("#description-txt").val()
+                    Description: $("#description-txt").val(),
+                    Categories: JSON.stringify($("#category-txt").val())
                 },
                 success: function (data) {
                     if (data.success) {

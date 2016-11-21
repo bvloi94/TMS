@@ -288,6 +288,7 @@ namespace TMS.Controllers
                 ticket.ImpactID = _impactService.GetSystemImpact().ID;
                 ticket.UrgencyID = defaultUrgency.ID;
                 ticket.PriorityID = _ticketService.GetPriorityId(ticket.ImpactID, ticket.DueByDate);
+                ticket.TicketKeywords = _ticketService.GetTicketKeywords(ticket.Subject);
                 bool addResult = _ticketService.AddTicket(ticket);
                 if (addResult)
                 {
@@ -730,7 +731,7 @@ namespace TMS.Controllers
                     model.ScheduleStartDateString = ticket.ScheduleStartDate.ToString(ConstantUtil.DateTimeFormat);
                     model.ScheduleEndDateString = ticket.ScheduleEndDate.ToString(ConstantUtil.DateTimeFormat);
                     model.ActualEndDateString = ticket.ActualEndDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
-                    model.SolvedDateString = ticket.SolvedDate.HasValue ? ticket.ActualEndDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
+                    model.SolvedDateString = ticket.SolvedDate.HasValue ? ticket.SolvedDate.Value.ToString(ConstantUtil.DateTimeFormat) : "-";
                     model.OverdueDateString = ticket.DueByDate.ToString(ConstantUtil.DateTimeFormat);
                     model.CreatedBy = GeneralUtil.GetUserInfo(createdUser);
                     model.AssignedBy = GeneralUtil.GetUserInfo(assignedUser);
@@ -1056,6 +1057,16 @@ namespace TMS.Controllers
                 }
             }
             return HttpNotFound();
+        }
+
+        [HttpGet]
+        public ActionResult GetKeywords(string term)
+        {
+            List<string> labels = _keywordService.GetAll()
+            .Where(m => m.Name.Contains(term))
+            .Select(m => m.Name).ToList();
+
+            return Json(labels, JsonRequestBehavior.AllowGet);
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

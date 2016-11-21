@@ -34,7 +34,7 @@ namespace TMS.Schedulers
 
         public override void DoJob()
         {
-            IEnumerable<Ticket> tickets = _ticketService.GetOverdueTickets();
+            IEnumerable<Ticket> tickets = _ticketService.GetOverdueTickets().Where(m => (int)(DateTime.Now.Date - m.DueByDate.Date).TotalDays > 0);
             IEnumerable<AspNetUser> helpdesks = _userService.GetHelpDesks().Where(m => m.IsActive == true);
             foreach (Ticket ticket in tickets)
             {

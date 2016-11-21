@@ -231,6 +231,8 @@
     <Compile Include="Areas\Technician\TechnicianAreaRegistration.cs" />
     <Compile Include="Areas\HelpDesk\Controllers\ManageTicketController.cs" />
     <Compile Include="Areas\HelpDesk\HelpDeskAreaRegistration.cs" />
+    <Compile Include="Class\TicketKeywordPoint.cs" />
+    <Compile Include="Class\KeywordPoint.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DropdownController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -240,7 +242,13 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Models\AspNetUserLogin.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Group.cs">
+      <DependentUpon>TMSModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GroupCategory.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Keyword.cs">
@@ -274,9 +282,6 @@
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\AspNetUserClaim.cs">
-      <DependentUpon>TMSModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AspNetUserLogin.cs">
       <DependentUpon>TMSModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\BusinessRule.cs">
@@ -376,7 +381,7 @@
     <Compile Include="ViewModels\CriteriaViewModel.cs" />
     <Compile Include="ViewModels\TriggerViewModel.cs" />
     <Compile Include="ViewModels\DropdownViewModel.cs" />
-    <Compile Include="ViewModels\DepartmentViewModel.cs" />
+    <Compile Include="ViewModels\GroupViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableParameterViewModel.cs" />
     <Compile Include="ViewModels\JqueryDatatableResultViewModel.cs" />
     <Compile Include="ViewModels\KnowledgeBaseViewModel.cs" />
@@ -669,6 +674,7 @@
     <Content Include="Areas\HelpDesk\Views\Home\Index.cshtml" />
     <Content Include="Areas\Manager\Views\Shared\_TopLayout.cshtml" />
     <Content Include="Areas\Manager\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Manager\Views\ManageSC\Keywords.cshtml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />

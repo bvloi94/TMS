@@ -119,7 +119,10 @@
             .ready(function() {
                 $('#content-area').wysihtml5();
                 $("#keyword").tagit({
-                    allowSpaces: true
+                    allowSpaces: true,
+                    autocomplete: {
+                        source: "/Ticket/GetKeywords",
+                    }
                 });
                 initCategoryDropdown({
                     control: $("[data-role=ddl-category]"),

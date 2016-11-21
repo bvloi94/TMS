@@ -57,7 +57,7 @@ namespace TMS.Controllers
                 {
                     model.Subject = ticket.Subject;
                     model.Keywords = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
-                    model.Content = ticket.Solution;
+                    model.Content = string.IsNullOrEmpty(ticket.Solution) ? string.Empty : ticket.Solution.Replace(Environment.NewLine, "<br />");
                     model.CategoryID = ticket.CategoryID.HasValue ? ticket.CategoryID.Value : 0;
                     if (ticket.Category != null)
                     {
@@ -355,25 +355,13 @@ namespace TMS.Controllers
                 Content = m.ContentText,
                 Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
-                CreatedTimeString = m.CreatedTime.ToString("MMMM dd yyyy, hh:mm"),
-                ModifiedTimeString = m.ModifiedTime.ToString("MMMM dd yyyy, hh:mm")
+                CreatedTimeString = m.CreatedTime.ToString(ConstantUtil.DateTimeFormat2),
+                ModifiedTimeString = m.ModifiedTime.ToString(ConstantUtil.DateTimeFormat2)
             }).AsQueryable();
-
-            var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
 
             if (!string.IsNullOrWhiteSpace(key_search))
             {
-                //keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
-                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                //keywords = regex.Replace(keywords, " ");
-                //string[] keywordArr = keywords.Split(' ');
-                //foreach (string keyword in keywordArr)
-                //{
-                //    string keywordTemp = '"' + keyword + '"';
-                //    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordTemp.ToLower()));
-                //}
-                //predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
-                //filteredListItems = filteredListItems.Where(predicate);
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
             }
 
             if (id.HasValue)
@@ -389,16 +377,17 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetFrequentlyAskedSubjects(JqueryDatatableParameterViewModel param, int? timeOption)
+        public ActionResult GetFrequentlyAskedTickets(JqueryDatatableParameterViewModel param, int? timeOption)
         {
             if (!timeOption.HasValue)
             {
                 timeOption = ConstantUtil.TimeOption.ThisWeek;
             }
             IEnumerable<Ticket> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
-            IEnumerable<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedSubjects(recentTickets);
+            ICollection<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedTickets(recentTickets);
+            //IEnumerable<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedSubjects(recentTickets);
 
-            IEnumerable<FrequentlyAskedTicketViewModel> filteredListItems = frequentlyAskedTickets;
+            IEnumerable<FrequentlyAskedTicketViewModel> filteredListItems = frequentlyAskedTickets.Take(10);
 
             // Sort.
             var sortColumnIndex = Convert.ToInt32(param.order[0]["column"]);
@@ -408,20 +397,24 @@ namespace TMS.Controllers
             {
                 case 0:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => GeneralUtil.GetNumberOfTags(p.Tags))
-                        : filteredListItems.OrderByDescending(p => GeneralUtil.GetNumberOfTags(p.Tags));
+                        ? filteredListItems.OrderBy(p => p.Ticket.Subject)
+                        : filteredListItems.OrderByDescending(p => p.Ticket.Subject);
                     break;
                 case 1:
                     filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.Count)
-                        : filteredListItems.OrderByDescending(p => p.Count);
+                        ? filteredListItems.OrderBy(p => p.Frequency)
+                        : filteredListItems.OrderByDescending(p => p.Frequency);
                     break;
             }
 
             var displayedList = filteredListItems.Skip(param.start).Take(param.length).Select(m => new FrequentlyAskedTicketViewModel
             {
-                Tags = GeneralUtil.ConvertFormattedKeywordToView(m.Tags),
-                Count = m.Count
+                Ticket = new Ticket
+                {
+                    ID = m.Ticket.ID,
+                    Subject = m.Ticket.Subject
+                },
+                Frequency = m.Frequency
             });
 
             return Json(new
@@ -429,8 +422,7 @@ namespace TMS.Controllers
                 draw = param.draw,
                 recordsTotal = displayedList.ToList().Count(),
                 recordsFiltered = filteredListItems.Count(),
-                data = displayedList,
-                totalTicket = recentTickets.Count()
+                data = displayedList
             }, JsonRequestBehavior.AllowGet);
         }
 

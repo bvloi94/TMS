@@ -60,6 +60,7 @@
     #ticket-list {
         padding-top: 20px;
         padding-left: 0px;
+        min-height: 100px;
     }
 
         #ticket-list li {
@@ -90,8 +91,8 @@
                         <option selected value="Default">-- Sort by --</option>
                         <option value="DateDsc">Date - Recent to Oldest</option>
                         <option value="DateAsc">Date - Oldest to Recent</option>
-                        <option value="StatusAsc">Status - New to Closed</option>
-                        <option value="StatusDsc">Status - Closed to New</option>
+                        <option value="StatusAsc">Status - Open to Closed</option>
+                        <option value="StatusDsc">Status - Closed to Open</option>
                         <option value="SubjectAsc">Subject - A to Z</option>
                         <option value="SubjectDsc">Subject - Z to A</option>
                     </select>
@@ -154,7 +155,7 @@
                                 + '<div class="box-footer no-padding bg-light-green">';
                             switch (dataItems[i].Status) {
                                 case 1:
-                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-aqua">New</div>'; break;
+                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-aqua">Open</div>'; break;
                                 case 2:
                                     innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-orange">Assigned</div>'; break;
                                 case 3:
@@ -162,7 +163,7 @@
                                 case 4:
                                     innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-red-active">Unapproved</div>'; break;
                                 case 5:
-                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-gray-active">Cancelled</div>'; break;
+                                    innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-violet">Cancelled</div>'; break;
                                 case 6:
                                     innerCode += '<div class="col-lg-1 col-sm-2 column-body status bg-gray-active">Closed</div>'; break;
                             }
@@ -176,13 +177,14 @@
                             $(".column-body:first-of-type").css("height", $(".column-body:last-of-type").outerHeight());
                         }
                         if (dataItems.length > 5) {
-                            $('#list-option').empty().append('Showing 5 of ' + dataItems.length + ' items.');
+                            $('#list-option').empty().append('Total ' + dataItems.length + ' items.');
                             $('div.holder').removeClass("hidden");
                             $('div.holder').jPages({
                                 containerID: "ticket-list",
                                 perPage: 5,
                                 startPage: 1,
                                 startRange: 2,
+                                minHeight: false,
                                 midRange: 5,
                                 endRange: 2,
                                 first: "First",

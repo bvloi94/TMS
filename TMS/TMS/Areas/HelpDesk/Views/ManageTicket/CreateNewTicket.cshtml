@@ -56,6 +56,14 @@
                         </div>
                         <div class="row form-group">
                             <div class="col-md-12 col-xs-12">
+                                <label class="control-label">KEYWORDS</label>
+                            </div>
+                            <div class="col-md-12 col-xs-12">
+                                <input type="text" name="Keywords" id="keywords" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-md-12 col-xs-12">
                                 <label class="control-label">REQUESTER <font color="red">*</font></label>
                                 <input type="hidden" id="requesterId" name="RequesterId">
                                 <div class="requester-input-group">
@@ -135,14 +143,6 @@
                             </div>
                             <div class="col-md-12 col-xs-12">
                                 <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <div class="col-md-12 col-xs-12">
-                                <label class="control-label">KEYWORDS</label>
-                            </div>
-                            <div class="col-md-12 col-xs-12">
-                                <input type="text" name="Keywords" id="keywords" class="form-control" />
                             </div>
                         </div>
                         <div class="row form-group">
@@ -601,18 +601,43 @@
             loadInitDropdown('ddl-technician', 'Unassigned', "");
         });
 
-        $(document).ready(function () {
-            initDropdownControl();
-            loadInitDropdown('ddl-urgency', '@ViewBag.Urgency', @ViewBag.UrgencyId);
-            loadInitDropdown('ddl-impact', '@ViewBag.Impact', @ViewBag.ImpactId);
-            loadInitDropdown('ddl-category', 'None', 0);
-            loadInitDropdown('ddl-group', 'Choose Group', 0);
-            requesterTable = initRequesterTable($("#requester-table"));
-            initOlderTicketsTable();
-            $(self._select2).parent().find(".select2-container").css('width', '');
-            $("#keywords").tagit({
-                allowSpaces: true
+        $("[name='Subject']").focusout(function () {
+            generateTags();
+        });
+
+        var generateTags = function () {
+            $.ajax({
+                url: "/HelpDesk/ManageTicket/GetTags",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    subject: $("[name='Subject']").val()
+                },
+                success: function (data) {
+                    for (i = 0; i < data.data.length; i++) {
+                        $('#keywords').tagit('createTag', data.data[i]);
+                    }
+                }
             });
+        }
+
+        $(document)
+            .ready(function () {
+                setActiveTicketMenu();
+                initDropdownControl();
+                loadInitDropdown('ddl-urgency', '@ViewBag.Urgency', @ViewBag.UrgencyId);
+                loadInitDropdown('ddl-impact', '@ViewBag.Impact', @ViewBag.ImpactId);
+                loadInitDropdown('ddl-category', 'None', 0);
+                loadInitDropdown('ddl-group', 'Choose Group', 0);
+                requesterTable = initRequesterTable($("#requester-table"));
+                initOlderTicketsTable();
+                $(self._select2).parent().find(".select2-container").css('width', '');
+                $("#keywords").tagit({
+                    allowSpaces: true,
+                    autocomplete: {
+                        source: "/Ticket/GetKeywords",
+                    }
+                });
             getDueByDate();
         });
     </script>

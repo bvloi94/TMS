@@ -18,6 +18,7 @@ namespace TMS.Models
         public Group()
         {
             this.AspNetUsers = new HashSet<AspNetUser>();
+            this.GroupCategories = new HashSet<GroupCategory>();
         }
     
         public int ID { get; set; }
@@ -26,5 +27,7 @@ namespace TMS.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AspNetUser> AspNetUsers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<GroupCategory> GroupCategories { get; set; }
     }
 }

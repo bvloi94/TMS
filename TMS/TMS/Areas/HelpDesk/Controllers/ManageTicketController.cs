@@ -183,7 +183,8 @@ namespace TMS.Areas.HelpDesk.Controllers
             else
             {
                 Ticket ticket = _ticketService.GetTicketByID(id.Value);
-                if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled)
+                if (ticket == null || ticket.Status == ConstantUtil.TicketStatus.Cancelled
+                        || ticket.Status == ConstantUtil.TicketStatus.Closed)
                 {
                     return HttpNotFound();
                 }
@@ -206,8 +207,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                 model.StatusId = ticket.Status;
                 if (ticket.CategoryID.HasValue)
                 {
-                    model.CategoryId = ticket.CategoryID.Value;
-                    model.Category = _categoryService.GetCategoryById(ticket.CategoryID.Value).Name;
+                    Category category = _categoryService.GetCategoryById(ticket.CategoryID.Value);
+                    if (category != null)
+                    {
+                        model.CategoryId = category.ID;
+                        model.Category = category.Name;
+                    }
                 }
                 model.UrgencyId = ticket.UrgencyID;
                 model.Urgency = ticket.Urgency.Name;
@@ -242,8 +247,11 @@ namespace TMS.Areas.HelpDesk.Controllers
                     model.Technician = technician.Fullname;
                     if (technician.GroupID.HasValue)
                     {
-                        model.GroupId = technician.GroupID.Value;
-                        model.Group = technician.Group.Name;
+                        if (technician.Group != null)
+                        {
+                            model.GroupId = technician.GroupID.Value;
+                            model.Group = technician.Group.Name;
+                        }
                     }
                 }
 
@@ -843,19 +851,6 @@ namespace TMS.Areas.HelpDesk.Controllers
                 filteredListItems = filteredListItems.Where(p => requesterFilter.Contains(p.RequesterID.ToString()));
             }
 
-            // Sort.
-            var sortColumnIndex = TMSUtils.StrToIntDef(param.order[0]["column"], 1);
-            var sortDirection = param.order[0]["dir"];
-
-            switch (sortColumnIndex)
-            {
-                case 1:
-                    filteredListItems = sortDirection == "asc"
-                        ? filteredListItems.OrderBy(p => p.ModifiedTime)
-                        : filteredListItems.OrderByDescending(p => p.ModifiedTime);
-                    break;
-            }
-
             if (!string.IsNullOrEmpty(sortFilter))
             {
                 switch (sortFilter)
@@ -1206,13 +1201,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpGet]
         public ActionResult GetTags(string subject)
         {
-            HashSet<string> stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            string[] lines = System.IO.File.ReadAllLines(Server.MapPath(@"~/Utils/stopwords.txt"));
-            foreach (string s in lines)
-            {
-                stopWords.Add(s); // Assuming that each line contains one stop word.
-            }
-
+            IEnumerable<Keyword> keywordList = _keywordService.GetAll();
             List<string> keywords = new List<string>();
             subject = GeneralUtil.RemoveSpecialCharacters(subject);
             Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
@@ -1221,7 +1210,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             foreach (string word in wordArr)
             {
                 string lowerWord = word.ToLower();
-                if (!stopWords.Contains(lowerWord))
+                if (keywordList.Any(m => m.Name.Equals(lowerWord)))
                 {
                     keywords.Add(lowerWord);
                 }

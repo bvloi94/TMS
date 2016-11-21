@@ -124,7 +124,7 @@ namespace TMS.Services
                     case ConstantUtil.NotificationActionType.TechnicianNotiChangeDueByDate:
                         if (actedUser != null)
                         {
-                            return string.Format("<b>{0}</b> changed due by date of ticket #{1}:  <b>\"{3}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
+                            return string.Format("<b>{0}</b> changed due by date of ticket #{1}:  <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
                         break;
                 }

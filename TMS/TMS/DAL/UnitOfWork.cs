@@ -38,6 +38,7 @@ namespace TMS.DAL
         private GenericRepository<Keyword> _keywordRepository;
         private GenericRepository<TicketKeyword> _ticketKeywordRepository;
         private GenericRepository<SolutionKeyword> _solutionKeywordRepository;
+        private GenericRepository<GroupCategory> _groupCategoryRepository;
 
         public GenericRepository<Category> CategoryRepository
         {
@@ -314,6 +315,18 @@ namespace TMS.DAL
                     this._solutionKeywordRepository = new GenericRepository<SolutionKeyword>(_context);
                 }
                 return _solutionKeywordRepository;
+            }
+        }
+
+        public GenericRepository<GroupCategory> GroupCategoryRepository
+        {
+            get
+            {
+                if (this._groupCategoryRepository == null)
+                {
+                    this._groupCategoryRepository = new GenericRepository<GroupCategory>(_context);
+                }
+                return _groupCategoryRepository;
             }
         }
 
