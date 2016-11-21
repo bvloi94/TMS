@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Web.Script.Serialization;
 using TMS.DAL;
 using TMS.Models;
 using TMS.Utils;
+using TMS.ViewModels;
 
 namespace TMS.Services
 {
@@ -38,8 +41,14 @@ namespace TMS.Services
 
         public bool EditGroup(Group group)
         {
+            _unitOfWork.BeginTransaction();
+            _unitOfWork.GroupCategoryRepository.Delete(m => m.GroupID == group.ID);
+            foreach (GroupCategory groupCategory in group.GroupCategories)
+            {
+                _unitOfWork.GroupCategoryRepository.Insert(groupCategory);
+            }
             _unitOfWork.GroupRepository.Update(group);
-            return _unitOfWork.Commit();
+            return _unitOfWork.CommitTransaction();
         }
 
         public bool RemoveGroup(int id)
@@ -72,6 +81,54 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(m => m.GroupID == group.ID).Any()
                 || _unitOfWork.BusinessRuleConditionRepository.Get(
                     m => m.Criteria == ConstantUtil.BusinessRuleCriteria.Group && m.Condition.HasValue && m.Condition.Value == group.ID).Any();
+        }
+
+        public ICollection<GroupCategory> GetGroupCategories(string categories, int? groupId)
+        {
+            ICollection<GroupCategory> result = new List<GroupCategory>();
+            var js = new JavaScriptSerializer();
+            if (!string.IsNullOrWhiteSpace(categories))
+            {
+                object[] categoriesList = (object[])js.DeserializeObject(categories);
+                if (categoriesList != null)
+                {
+                    foreach (object item in categoriesList)
+                    {
+                        int intVal = TMSUtils.StrToIntDef(item.ToString(), 0);
+                        if (intVal != 0)
+                        {
+                            GroupCategory groupCategory;
+                            if (groupId.HasValue)
+                            {
+                                groupCategory = new GroupCategory
+                                {
+                                    CategoryID = intVal,
+                                    GroupID = groupId.Value
+                                };
+                            }
+                            else
+                            {
+                                groupCategory = new GroupCategory
+                                {
+                                    CategoryID = intVal
+                                };
+                            }
+                            result.Add(groupCategory);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public IEnumerable<GroupCategoryViewModel> GetGroupCategories(int groupId)
+        {
+            return _unitOfWork.GroupCategoryRepository.Get(m => m.GroupID == groupId)
+                .Select(m => new GroupCategoryViewModel
+                {
+                    Id = m.CategoryID,
+                    Category = _unitOfWork.CategoryRepository.GetByID(m.CategoryID).Name
+                });
         }
     }
 }
