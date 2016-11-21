@@ -140,7 +140,7 @@ namespace TMS.Utils
             DateTime currentDateTime = DateTime.Now;
             int minute = (int)currentDateTime.Subtract(dateTime).TotalMinutes;
             int hour = (int)(minute * 1.0) / 60;
-            int day = (int)(hour * 1.0) / 24;
+            int day = (int)currentDateTime.Date.Subtract(dateTime.Date).TotalDays;
 
             if (day < 2)
             {
@@ -265,20 +265,20 @@ namespace TMS.Utils
                 {
                     if (distanceMinute < 0)
                     {
-                        return "Overdue by today at " + dueByDate.ToString("hh:mm");
+                        return "Overdue by today at " + dueByDate.ToString("HH:mm");
                     }
                     else
                     {
-                        return "Due on today at " + dueByDate.ToString("hh:mm");
+                        return "Due on today at " + dueByDate.ToString("HH:mm");
                     }
                 }
                 else
                 {
                     if (distanceDay == 1)
                     {
-                        return "Due on tomorrow at " + dueByDate.ToString("hh:mm");
+                        return "Due on tomorrow at " + dueByDate.ToString("HH:mm");
                     }
-                    return "Due on " + dueByDate.ToString("MMMM dd yyyy  hh:mm");
+                    return "Due on " + dueByDate.ToString("MMMM dd yyyy  HH:mm");
                 }
             }
             return string.Empty;

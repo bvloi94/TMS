@@ -355,25 +355,13 @@ namespace TMS.Controllers
                 Content = m.ContentText,
                 Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
-                CreatedTimeString = m.CreatedTime.ToString("MMMM dd yyyy, hh:mm"),
-                ModifiedTimeString = m.ModifiedTime.ToString("MMMM dd yyyy, hh:mm")
+                CreatedTimeString = m.CreatedTime.ToString(ConstantUtil.DateTimeFormat2),
+                ModifiedTimeString = m.ModifiedTime.ToString(ConstantUtil.DateTimeFormat2)
             }).AsQueryable();
-
-            var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
 
             if (!string.IsNullOrWhiteSpace(key_search))
             {
-                //keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
-                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                //keywords = regex.Replace(keywords, " ");
-                //string[] keywordArr = keywords.Split(' ');
-                //foreach (string keyword in keywordArr)
-                //{
-                //    string keywordTemp = '"' + keyword + '"';
-                //    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keywordTemp.ToLower()));
-                //}
-                //predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
-                //filteredListItems = filteredListItems.Where(predicate);
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(key_search.ToLower()));
             }
 
             if (id.HasValue)

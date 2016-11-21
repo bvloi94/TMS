@@ -70,7 +70,7 @@ namespace TMS.Services
             return _unitOfWork.KeywordRepository.Get(m => m.Name.ToLower().Equals(keyword.ToLower())).FirstOrDefault();
         }
 
-        private bool AddKeyword(Keyword keyword)
+        public bool AddKeyword(Keyword keyword)
         {
             keyword.Name = keyword.Name.ToLower();
             _unitOfWork.KeywordRepository.Insert(keyword);
@@ -243,6 +243,41 @@ namespace TMS.Services
             }
 
             return result;
+        }
+
+        public bool IsDuplicatedName(int? id, string name)
+        {
+            if (id == null)
+            {
+                return _unitOfWork.KeywordRepository.Get(p => p.Name.ToLower().Equals(name.ToLower())).Any();
+            }
+            else
+            {
+                return _unitOfWork.KeywordRepository.Get(p => p.ID != id && p.Name.ToLower().Equals(name.ToLower())).Any();
+            }
+        }
+
+        public Keyword GetKeywordById(int id)
+        {
+            return _unitOfWork.KeywordRepository.GetByID(id);
+        }
+
+        public bool UpdateKeyword(Keyword keyword)
+        {
+            _unitOfWork.KeywordRepository.Update(keyword);
+            return _unitOfWork.Commit();
+        }
+
+        public bool IsInUse(Keyword keyword)
+        {
+            return _unitOfWork.TicketKeywordRepository.Get(m => m.KeywordID == keyword.ID).Any()
+                || _unitOfWork.SolutionKeywordRepository.Get(m => m.KeywordID == keyword.ID).Any();
+        }
+
+        public bool DeleteKeyword(Keyword keyword)
+        {
+            _unitOfWork.KeywordRepository.Delete(keyword);
+            return _unitOfWork.Commit();
         }
     }
 }

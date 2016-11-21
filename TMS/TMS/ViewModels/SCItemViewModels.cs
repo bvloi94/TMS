@@ -45,4 +45,12 @@ namespace TMS.ViewModels
         public int Level { get; set; }
         public bool IsSystem { get; set; }
     }
+
+    public class KeywordViewModel
+    {
+        public int ID { get; set; }
+        [Required(ErrorMessage = "Name is required!")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Name length is between 2 and 100 characters")]
+        public string Name { get; set; }
+    }
 }
