@@ -1,9 +1,13 @@
 ﻿using EAGetMail;
+using log4net;
+using OpenPop.Mime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Text;
 using System.Threading;
 using System.Web;
 using System.Web.Hosting;
@@ -38,14 +42,17 @@ namespace TMS.Schedulers
 
         public override void DoJob()
         {
-            List<Mail> mailList = EmailUtil.GetUnreadMailsUsingEAGetMail();
-            foreach (Mail mail in mailList)
+            ILog log = LogManager.GetLogger(typeof(ConvertTicketJob));
+            IEnumerable<MailMessage> mailList = EmailUtil.GetUnreadMailsUsingS22();
+            log.Info("Number of unread email: " + mailList.Count());
+
+            foreach (MailMessage mail in mailList)
             {
                 string requesterEmail = mail.From.Address;
                 if (_userService.IsValidEmail(requesterEmail))
                 {
-                    string subject = mail.Subject.Replace("(Trial Version)", "");
-                    string description = mail.TextBody;
+                    string subject = mail.Subject;
+                    string description = mail.Body;
                     Urgency urgency = _urgencyService.GetSystemUrgency();
                     Impact impact = _impactService.GetSystemImpact();
                     Ticket ticket = new Ticket
@@ -67,18 +74,18 @@ namespace TMS.Schedulers
                         TicketKeywords = _ticketService.GetTicketKeywords(subject)
                     };
 
-                    if (mail.Attachments.Length > 0)
+                    if (mail.Attachments.Count > 0)
                     {
                         string attachmentDirectory = HostingEnvironment.MapPath(@"~/Uploads/Attachments");
                         if (!Directory.Exists(attachmentDirectory))
                         {
                             Directory.CreateDirectory(attachmentDirectory);
                         }
-                        foreach (EAGetMail.Attachment att in mail.Attachments)
+                        foreach (System.Net.Mail.Attachment att in mail.Attachments)
                         {
                             string fileName = att.Name.Replace(Path.GetFileNameWithoutExtension(att.Name), Guid.NewGuid().ToString());
                             string attName = String.Format("{0}\\{1}", attachmentDirectory, fileName);
-                            att.SaveAs(attName, true);
+                            SaveMailAttachment(att, attName);
                             TicketAttachment ticketAttachment = new TicketAttachment();
                             ticketAttachment.Path = "/Uploads/Attachments/" + fileName;
                             ticketAttachment.Filename = att.Name;
@@ -109,6 +116,18 @@ namespace TMS.Schedulers
         public override int GetRepetitionIntervalTime()
         {
             return (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+        }
+
+        private void SaveMailAttachment(System.Net.Mail.Attachment attachment, string destinationFile)
+        {
+            byte[] allBytes = new byte[attachment.ContentStream.Length];
+            int bytesRead = attachment.ContentStream.Read(allBytes, 0, (int)attachment.ContentStream.Length);
+
+            //string destinationFile = @"C:\" + attachment.Name;
+
+            BinaryWriter writer = new BinaryWriter(new FileStream(destinationFile, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None));
+            writer.Write(allBytes);
+            writer.Close();
         }
     }
 }

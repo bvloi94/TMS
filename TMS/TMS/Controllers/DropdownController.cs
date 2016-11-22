@@ -36,13 +36,8 @@ namespace TMS.Controllers
         public ActionResult LoadUrgencyDropdown()
         {
             var result = new List<UrgencyViewModel>();
-            //result.Add(new UrgencyViewModel()
-            //{
-            //    Name = "None",
-            //    Description = "None",
-            //    Id = 0,
-            //});
-            var queryResult = _urgencyService.GetAll();
+
+            var queryResult = _urgencyService.GetAll().OrderByDescending(m => m.Duration);
             foreach (var urg in queryResult)
             {
                 result.Add(new UrgencyViewModel
@@ -58,13 +53,8 @@ namespace TMS.Controllers
         public ActionResult LoadPriorityDropdown()
         {
             var result = new List<PriorityViewModel>();
-            //result.Add(new PriorityViewModel()
-            //{
-            //    Name = "None",
-            //    Description = "None",
-            //    Id = 0,
-            //});
-            var queryResult = _priorityService.GetAll();
+
+            var queryResult = _priorityService.GetAll().OrderBy(m => m.PriorityLevel);
             foreach (var urg in queryResult)
             {
                 result.Add(new PriorityViewModel()
@@ -80,12 +70,7 @@ namespace TMS.Controllers
         public ActionResult LoadImpactDropDown()
         {
             var result = new List<ImpactViewModel>();
-            //result.Add(new ImpactViewModel()
-            //{
-            //    Name = "None",
-            //    Description = "None",
-            //    Id = 0,
-            //});
+
             var queryResult = _impactService.GetAll();
             foreach (var urg in queryResult)
             {
