@@ -15,6 +15,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Please input email!")]
         public string Email { get; set; }
         [Required(ErrorMessage = "Please input full name!")]
+        [StringLength(100, ErrorMessage = "Name length is less than 100 characters")]
         public string Fullname { get; set; }
         [ImageFile("jpg,jpeg,png,gif", ErrorMessage = "Please upload images with [jpg|jpeg|png|gif] extension.")]
         public HttpPostedFileBase Avatar { get; set; }
@@ -42,6 +43,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Please input email!")]
         public string Email { get; set; }
         [Required(ErrorMessage = "Please input full name!")]
+        [StringLength(100, ErrorMessage = "Name length is less than 100 characters")]
         public string Fullname { get; set; }
         [ImageFile("jpg,jpeg,png,gif", ErrorMessage = "Please upload images with [jpg|jpeg|png|gif] extension.")]
         public HttpPostedFileBase Avatar { get; set; }
@@ -65,6 +67,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Please input email!")]
         public string Email { get; set; }
         [Required(ErrorMessage = "Please input full name!")]
+        [StringLength(100, ErrorMessage = "Name length is less than 100 characters")]
         public string Fullname { get; set; }
         [ImageFile("jpg,jpeg,png,gif", ErrorMessage = "Please upload images with [jpg|jpeg|png|gif] extension.")]
         public HttpPostedFileBase Avatar { get; set; }
@@ -90,6 +93,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Please input email!")]
         public string Email { get; set; }
         [Required(ErrorMessage = "Please input full name!")]
+        [StringLength(100, ErrorMessage = "Name length is less than 100 characters")]
         public string Fullname { get; set; }
         [ImageFile("jpg,jpeg,png,gif", ErrorMessage = "Please upload images with [jpg|jpeg|png|gif] extension.")]
         public HttpPostedFileBase Avatar { get; set; }
@@ -113,6 +117,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Please input email!")]
         public string Email { get; set; }
         [Required(ErrorMessage = "Please input full name!")]
+        [StringLength(100, ErrorMessage = "Name length is less than 100 characters")]
         public string Fullname { get; set; }
         [ImageFile("jpg,jpeg,png,gif", ErrorMessage = "Please upload images with [jpg|jpeg|png|gif] extension.")]
         public HttpPostedFileBase Avatar { get; set; }

@@ -8,6 +8,7 @@ namespace TMS.ViewModels
     public class ProfileAdminViewModel
     {
         [Required(ErrorMessage = "Name is required")]
+        [StringLength(100, ErrorMessage = "Name length is less than 100 characters")]
         public string FullName { get; set; }
         public string Address { get; set; }
         [StringLength(15, MinimumLength = 8, ErrorMessage = "Phone length is between 8 and 15 characters")]
