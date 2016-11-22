@@ -46,7 +46,7 @@ namespace TMS
                 "~/Scripts/cldr.js",
                 "~/Scripts/jquery.cookie.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
+            bundles.Add(new StyleBundle("~/Content/appcss").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/AdminLTE.min.css",
                       "~/Content/Plugins/jquery.ui/jquery-ui.min.css",
