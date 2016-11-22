@@ -63,25 +63,25 @@ namespace TMS.Services
             return _unitOfWork.BusinessRuleRepository.GetByID(id);
         }
 
-        public bool AddNewBusinessRule(BusinessRule businessRule, string conditions, string actions, string technicians)
+        public bool AddNewBusinessRule(BusinessRule businessRule, string conditions, string actions, string helpdesks)
         {
             _unitOfWork.BeginTransaction();
             _unitOfWork.BusinessRuleRepository.Insert(businessRule);
             _unitOfWork.Commit();
-            AddAllBusinessRuleRelatedInfo(businessRule.ID, conditions, actions, technicians);
+            AddAllBusinessRuleRelatedInfo(businessRule.ID, conditions, actions, helpdesks);
             return _unitOfWork.CommitTransaction();
         }
 
-        public bool UpdateBusinessRule(BusinessRule businessRule, string conditions, string actions, string technicians)
+        public bool UpdateBusinessRule(BusinessRule businessRule, string conditions, string actions, string helpdesks)
         {
             _unitOfWork.BeginTransaction();
             _unitOfWork.BusinessRuleRepository.Update(businessRule);
             RemoveAllBusinessRuleRelatedInfo(businessRule.ID);
-            AddAllBusinessRuleRelatedInfo(businessRule.ID, conditions, actions, technicians);
+            AddAllBusinessRuleRelatedInfo(businessRule.ID, conditions, actions, helpdesks);
             return _unitOfWork.CommitTransaction();
         }
 
-        private void AddAllBusinessRuleRelatedInfo(int id, string conditions, string actions, string technicians)
+        private void AddAllBusinessRuleRelatedInfo(int id, string conditions, string actions, string helpdesks)
         {
             List<Rule> ruleList = new List<Rule>();
             var js = new JavaScriptSerializer();
@@ -125,18 +125,18 @@ namespace TMS.Services
                 }
             }
 
-            // Add technician notification
-            var technicianList = (object[])js.DeserializeObject(technicians);
-            if (technicianList != null)
+            // Add helpdesk notification
+            var helpdeskList = (object[])js.DeserializeObject(helpdesks);
+            if (helpdeskList != null)
             {
-                for (int i = 0; i < technicianList.Length; i++)
+                for (int i = 0; i < helpdeskList.Length; i++)
                 {
-                    string techId = technicianList[i].ToString();
-                    if (_unitOfWork.AspNetUserRepository.GetByID(techId) != null)
+                    string hdId = helpdeskList[i].ToString();
+                    if (_unitOfWork.AspNetUserRepository.GetByID(hdId) != null)
                     {
                         BusinessRuleNotification brNotification = new BusinessRuleNotification();
                         brNotification.BusinessRuleID = id;
-                        brNotification.ReceiverID = techId;
+                        brNotification.ReceiverID = hdId;
                         _unitOfWork.BusinessRuleNotificationRepository.Insert(brNotification);
                         _unitOfWork.Commit();
                     }

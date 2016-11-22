@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
@@ -915,26 +916,12 @@ namespace TMS.Controllers
         }
 
         [HttpPost]
-        public ActionResult SearchSolution(string searchtxt)
+        public ActionResult SearchSolution(string keywords)
         {
             IEnumerable<Solution> solutions;
-            if (!string.IsNullOrEmpty(searchtxt))
-            {
-                solutions = _solutionService.SearchSolutions(searchtxt);
-            }
-            else
-            {
-                solutions = _solutionService.GetAllSolutions();
-            }
 
-            if (solutions == null)
-            {
-                return Json(new
-                {
-                    success = false,
-                    msg = "No result!"
-                });
-            }
+            solutions = _solutionService.SearchSolutions(keywords);
+
             IEnumerable<SolutionViewModel> result = solutions.Select(m => new SolutionViewModel
             {
                 Id = m.ID,
@@ -942,17 +929,6 @@ namespace TMS.Controllers
                 ContentText = m.ContentText,
                 Path = Url.Action("Detail", "FAQ", new { path = m.Path }, protocol: Request.Url.Scheme /* This is the trick */)
             });
-
-            //List<Solution> result = solutions.ToList();
-            //List<SolutionViewModel> data = new List<SolutionViewModel>();
-            //foreach (var item in result)
-            //{
-            //    SolutionViewModel model = new SolutionViewModel();
-            //    model.Id = item.ID;
-            //    model.Subject = item.Subject;
-            //    model.ContentText = item.ContentText;
-            //    data.Add(model);
-            //}
             return Json(new
             {
                 success = true,
@@ -1057,6 +1033,30 @@ namespace TMS.Controllers
                 }
             }
             return HttpNotFound();
+        }
+
+        [HttpGet]
+        public ActionResult GetTags(string subject)
+        {
+            IEnumerable<Keyword> keywordList = _keywordService.GetAll();
+            List<string> keywords = new List<string>();
+            subject = GeneralUtil.RemoveSpecialCharacters(subject);
+            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+            string words = regex.Replace(subject, " ");
+            string[] wordArr = words.Split(' ');
+            foreach (string word in wordArr)
+            {
+                string lowerWord = word.ToLower();
+                if (keywordList.Any(m => m.Name.Equals(lowerWord)))
+                {
+                    keywords.Add(lowerWord);
+                }
+            }
+
+            return Json(new
+            {
+                data = keywords
+            }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

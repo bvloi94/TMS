@@ -209,6 +209,74 @@ function initCategoryDropdown(param) {
     });
 }
 
+function initGroupCategoryDropdown(param) {
+    var formatt = function (repo) {
+        var markup = "";
+        if (repo.allowAll) {
+            markup = "<div class='category-dropdown'>" +
+                "<label class='category-name'>All</label>" +
+                "</div>";
+
+        } else {
+            markup = "<div class='category-dropdown'>" +
+                "<label class='category-" + repo.level + "'>" +
+                repo.text + "</label>" + "</div>";
+        }
+        return markup;
+    }
+    param.control.select2({
+        ajax: {
+            url: "/dropdown/loadcategorydropdown",
+            dataType: "json",
+            data: function (params) {
+                var ajaxData = {
+                    ignore: param.ignore(),
+                    query: params.term
+                };
+                if (param.data != undefined) {
+                    var dat = param.data();
+                    for (var i in dat) {
+                        ajaxData[i] = dat[i];
+                    }
+                }
+                return ajaxData;
+            },
+            processResults: function (data) {
+                var result = {
+                    results: []
+                };
+                if (param.allowAll) {
+                    result.results.push({
+                        allowAll: true,
+                        id: "",
+                        text: "All"
+                    });
+                }
+                for (var i = 0; i < data.length; i++) {
+                    //data[i].id = data[i].ID + "";
+                    //data[i].text = data[i].Name;
+                    result.results.push({
+                        id: data[i].ID + "",
+                        text: data[i].Name,
+                        level: data[i].Level
+                });
+                }
+                return result;
+            },
+            cache: true
+        },
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+        multiple: true,
+        minimumInputLength: 0,
+        templateResult: formatt,
+        templateSelection: function (data) {
+            return data.text;
+        }
+    });
+}
+
 function initGroupDropdown(param) {
     param.control.select2({
         ajax: {
@@ -318,6 +386,65 @@ function initTechnicianDropdown(param) {
     });
 }
 
+function initHelpDeskDropdown(param) {
+    var formatt = function (repo) {
+        var markup = "";
+        if (repo.allowAll) {
+            markup = "<div class='technician-dropdown'>" +
+                "<label class='technician-name'>All</label>" +
+                "</div>";
+
+        } else {
+            markup = "<div class='technician-dropdown'>" +
+                "<label class='technician-name'>" + repo.Name + "</label>" +
+                "<label class='technician-email'>( " + repo.Email + " )</label>" +
+                "</div>";
+        }
+        return markup;
+    }
+    param.control.select2({
+        ajax: {
+            url: "/dropdown/LoadHelpDeskDropdown",
+            dataType: "json",
+            data: function (params) {
+                var ajaxData = {
+                    ignore: JSON.stringify(param.ignore()),
+                    query: params.term
+                };
+                return ajaxData;
+            },
+            processResults: function (data) {
+                var result = {
+                    results: []
+                };
+                if (param.allowAll) {
+                    result.results.push({
+                        allowAll: true,
+                        id: "",
+                        text: "All"
+                    });
+                }
+                for (var i = 0; i < data.length; i++) {
+                    data[i].id = data[i].Id;
+                    data[i].text = data[i].Name;
+                    result.results.push(data[i]);
+                }
+                return result;
+            },
+            cache: true
+        },
+        placeholder: "-- Select HelpDesk --",
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+        minimumInputLength: 0,
+        templateResult: formatt,
+        templateSelection: function (data) {
+            return data.text;
+        }
+    });
+}
+
 function initTechnicianWithNoneDropdown(param) {
     var formatt = function (repo) {
         var markup = "";
@@ -328,7 +455,7 @@ function initTechnicianWithNoneDropdown(param) {
 
         } else if (repo.allowNone) {
             markup = "<div class='technician-dropdown'>" +
-                "<label class='technician-name'>"+repo.text+"</label>" +
+                "<label class='technician-name'>" + repo.text + "</label>" +
                 "</div>";
 
         } else {

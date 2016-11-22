@@ -31,6 +31,11 @@
         border-radius: 4px;
     }
 
+        .editable img {
+            max-width: 100%;
+            N max-height: 100%;
+        }
+
     .solution-subject {
         cursor: pointer;
     }
@@ -105,6 +110,11 @@
         text-align: center;
         margin-left: 15px;
         width: 70px;
+    }
+
+   ul.tagit {
+        padding: 0px 5px 0px 5px;
+        margin-bottom: 0px;
     }
 </style>
 
@@ -432,7 +442,7 @@
             <div class="modal-body" style="background-color: #ecf0f5; height: 500px; overflow-y: auto;">
                 <a style="padding: 10px;">
                     <div class="input-group">
-                        <input type="text" id="solution-search" placeholder="Keyword..." class="form-control">
+                        <input type="hidden" id="solution-search" class="form-control">
                         <span class="input-group-btn">
                             <button type="button" id="search-btn" class="btn btn-warning btn-flat">Search</button>
                         </span>
@@ -462,7 +472,15 @@
                     element.value = "";
                 });
                 $(this).parent().addClass("hidden");
-            })
+            });
+
+            $("#solution-search").tagit({
+                allowSpaces: true,
+                autocomplete: {
+                    source: "/Ticket/GetKeywords"
+                }
+            });
+
         });
 
         $("#search-btn").on("click", function () {
@@ -470,13 +488,13 @@
                 url: "/Ticket/SearchSolution/",
                 method: "POST",
                 data: {
-                    searchtxt: $("#solution-search").val()
+                    keywords: $("#solution-search").val()
                 },
                 success: function (data) {
                     if (data.success) {
                         $('#result-list').empty();
                         if (data.data.length == 0) {
-                            $('#result-list').append('<li>No result.</li>');
+                            $('#result-list').append('<li>No compatible solution.</li>');
                         }
                         $.each(data.data, function (index, element) {
                             $('#result-list').append('<li><div class="timeline-item"><a class="time text-green solution-refer" href="javascript:insertURL(\''
@@ -560,12 +578,24 @@
         };
 
         function openReferKnowledgebaseModal() {
-            $("#solution-search").val($("#Subject")[0].innerHTML);
-            $("#modal-refer-knowledgebase").modal("show");
-            $("#search-btn").click();
+            $.ajax({
+                url: "/Ticket/GetTags",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    subject: $("#Subject")[0].innerHTML
+                },
+                success: function (data) {
+                    for (var i = 0; i < data.data.length; i++) {
+                        $('#solution-search').tagit('createTag', data.data[i]);
+                    }
+                    $("#search-btn").click();
+                    $("#modal-refer-knowledgebase").modal("show");
+                }
+            });
         }
 
-        $("#solution-search").keyup(function (e) {
+        $("#solution-search").change(function () {
             $("#search-btn").click();
         });
 

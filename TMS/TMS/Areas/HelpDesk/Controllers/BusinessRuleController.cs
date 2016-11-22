@@ -286,16 +286,16 @@ namespace TMS.Areas.HelpDesk.Controllers
             brModel.actionList = actionList;
 
             // Load all recievers
-            var technicianList = new List<DropdownTechnicianViewModel>();
+            var helpdeskList = new List<DropdownTechnicianViewModel>();
             var brNotifications = _businessRuleService.GetAllBusinessRuleNotifications(br.ID);
             foreach (var no in brNotifications)
             {
                 DropdownTechnicianViewModel item = new DropdownTechnicianViewModel();
                 item.Id = no.AspNetUser.Id;
                 item.Name = no.AspNetUser.Fullname;
-                technicianList.Add(item);
+                helpdeskList.Add(item);
             }
-            brModel.technicianList = technicianList;
+            brModel.helpdeskList = helpdeskList;
 
             return View(brModel);
         }
@@ -325,7 +325,7 @@ namespace TMS.Areas.HelpDesk.Controllers
             businessRule.IsActive = true;
 
             // Add new business rule to database
-            var result = _businessRuleService.AddNewBusinessRule(businessRule, viewModel.Conditions, viewModel.Actions, viewModel.Technicians);
+            var result = _businessRuleService.AddNewBusinessRule(businessRule, viewModel.Conditions, viewModel.Actions, viewModel.HelpDesks);
 
             return Json(new
             {
@@ -361,7 +361,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                     businessRule.Description = viewModel.Description;
                     businessRule.EnableRule = viewModel.Enable;
                     result = _businessRuleService.UpdateBusinessRule(businessRule, viewModel.Conditions, viewModel.Actions,
-                        viewModel.Technicians);
+                        viewModel.HelpDesks);
                 }
             }
 

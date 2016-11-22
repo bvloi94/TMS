@@ -4,7 +4,5 @@
 <p>Ticket #$code information:</p>
 <p><strong>Subject</strong>: $subject</p>
 <p><strong>Description</strong>: $description</p>
-<p><strong>Schedule Start Date</strong>: $scheduleStartDate</p>
-<p><strong>Schedule End Date</strong>: $scheduleEndDate</p>
 <p>The business rules is applied. Please checkout on TMS System.</p>
 </div>

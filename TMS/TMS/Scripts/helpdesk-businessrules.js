@@ -1,6 +1,6 @@
 ﻿var $actionSelect = $("#action_brselect");
 var $actionValueSelect = $("#action_value_brselect");
-var $technicianSelect = $("[data-role=ddl-technician]");
+var $helpdeskSelect = $("[data-role=ddl-helpdesk]");
 
 var tree = $('#criteriaeditordiv').jstree({
     "core": {
@@ -20,10 +20,10 @@ function initDropdownControl() {
     initActionDropdown({
         control: $actionSelect
     });
-    initTechnicianDropdown({
-        control: $technicianSelect,
+    initHelpDeskDropdown({
+        control: $helpdeskSelect,
         ignore: function () {
-            return $technicianSelect.val();
+            return $helpdeskSelect.val();
         }
     });
 }
@@ -397,7 +397,7 @@ $("#submitBtn").click(function () {
     $("#cancelBtn").prop("disabled", true);
     var ruleName = $("#rule-name").val().trim();
     var ruleDescription = $("#rule-description").val().trim();
-    var ruleTechnicians = $("#ddl-technician").val();
+    var ruleHelpDesks = $("#ddl-helpdesk").val();
 
     // rule
     var treeData = tree.jstree().get_json('#', { no_a_attr: true, no_li_attr: true, no_state: true, flat: true });
@@ -434,7 +434,7 @@ $("#submitBtn").click(function () {
             Enable: $("#enableRule").prop('checked'),
             Conditions: JSON.stringify(treeData),
             Actions: JSON.stringify(actionSet),
-            Technicians: JSON.stringify(ruleTechnicians)
+            HelpDesks: JSON.stringify(ruleHelpDesks)
         },
         "success": function (data) {
             if (data.success) {

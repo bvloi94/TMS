@@ -110,7 +110,7 @@ namespace TMS.Services
                         if (technician != null)
                         {
                             Thread thread =
-                                new Thread(() => EmailUtil.SendToTechnicianWhenBusinessRuleIsApplied(ticket, technician));
+                                new Thread(() => EmailUtil.SendToHelpDeskWhenBusinessRuleIsApplied(ticket, technician));
                             thread.Start();
                         }
                     }

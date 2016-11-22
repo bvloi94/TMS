@@ -105,6 +105,14 @@ namespace TMS.Services
                          && (query == null || r.Fullname.Contains(query)));
         }
 
+        public IEnumerable<AspNetUser> GetHelpDeskByPattern(string query, int? groupId)
+        {
+            return _unitOfWork.AspNetUserRepository.Get(
+                    r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "helpdesk"
+                         && (!groupId.HasValue || groupId == 0 || r.GroupID == groupId)
+                         && (query == null || r.Fullname.Contains(query)));
+        }
+
         public IEnumerable<AspNetUser> GetAdmins(string currentUserId)
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "admin" && r.Id != currentUserId);

@@ -19,8 +19,8 @@ namespace TMS.ViewModels
         public List<Rule> Rules { get; set; }
         public string Conditions { get; set; }
         public string Actions { get; set; }
-        public string Technicians { get; set; }
-        public List<DropdownTechnicianViewModel> technicianList { get; set; }
+        public string HelpDesks { get; set; }
+        public List<DropdownTechnicianViewModel> helpdeskList { get; set; }
         public List<TriggerViewModel> actionList { get; set; }
     }
 

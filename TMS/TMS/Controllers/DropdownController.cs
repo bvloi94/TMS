@@ -149,6 +149,33 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult LoadHelpDeskDropdown(string ignore, string query)
+        {
+            var js = new JavaScriptSerializer();
+            var ignoreItems = (object[])js.DeserializeObject(ignore);
+
+            var result = new List<DropdownTechnicianViewModel>();
+            List<AspNetUser> queryResult = _userService.GetHelpDeskByPattern(query, null).ToList();
+            foreach (var helpdesk in queryResult)
+            {
+                if (ignoreItems != null && ignoreItems.Length > 0)
+                {
+                    if (ignoreItems.Any(a => (string)a == helpdesk.Id))
+                    {
+                        continue;
+                    }
+                }
+                var hd = new DropdownTechnicianViewModel
+                {
+                    Id = helpdesk.Id,
+                    Name = helpdesk.Fullname,
+                    Email = helpdesk.Email
+                };
+                result.Add(hd);
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult LoadTechnicianWithNoneDropdown(string ignore, string query, int? groupId)
         {
             var js = new JavaScriptSerializer();

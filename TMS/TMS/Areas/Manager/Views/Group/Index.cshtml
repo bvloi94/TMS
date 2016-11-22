@@ -4,6 +4,22 @@
     Layout = "~/Areas/Manager/Views/Shared/_TopLayout.cshtml";
 }
 
+<style>
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: rgba(104, 140, 150, 0.78);
+        border: none;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #f7f5f5;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border: solid #3c8dbc 1px;
+        outline: 0;
+    }
+</style>
+
 <div class="row">
     <div class="col-xs-12">
         <div class="box box-primary">
@@ -54,7 +70,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Category</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="category-txt" data-role="ddl-category" multiple="multiple"></select>
+                            <select class="form-control" data-role="ddl-category" multiple="multiple"></select>
                         </div>
                     </div>
                     <div class="form-group">
@@ -99,6 +115,9 @@
 @section scripts{
     @Scripts.Render("~/bundles/datatables")
     <script>
+
+        $groupSelect = $('[data-role="ddl-category"]');
+
         $("#group-table").DataTable({
             processing: true,
             serverSide: true,
@@ -125,7 +144,7 @@
                 {
                     "render": function (data, type, row) {
                         return '<a href="javascript:void(0)" class="btn btn-xs btn-primary" data-toggle="modal" onclick="getGroupDetail(\'' + row[0] + '\')"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;' +
-                               '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
+                            '<a href="javascript:void(0)" class="btn btn-xs btn-primary" onclick="showDeleteModal(\'' + row[0] + '\')"><i class="fa fa-trash-o"></i></a>';
                     },
                     "targets": 2
                 }
@@ -133,8 +152,8 @@
         });
 
         function initDropdownControl() {
-            initCategoryDropdown({
-                control: $("[data-role=ddl-category]"),
+            initGroupCategoryDropdown({
+                control: $groupSelect,
                 ignore: function () {
                     return [];
                 }
@@ -157,7 +176,11 @@
         var clearModal = function () {
             $("#myModal").find("input").val("");
             $("#myModal").find("textarea").val("");
-            $("#category-txt").val(null);
+            $groupSelect.val(null).trigger('change');
+            $groupSelect.find('option').remove();
+            if (typeof ($groupSelect.data("select2")) != "undefined") {
+                $groupSelect.select2("destroy");
+            }
             $(".text-danger").hide();
         }
 
@@ -169,7 +192,7 @@
                 data: {
                     Name: $("#name-txt").val(),
                     Description: $("#description-txt").val(),
-                    Categories: JSON.stringify($("#category-txt").val())
+                    Categories: JSON.stringify($groupSelect.val())
                 },
                 success: function (data) {
                     if (data.success) {
@@ -218,8 +241,8 @@
                         $("#myModal").modal("show");
                         $("#name-txt").val(data.group.Name);
                         $("#description-txt").val(data.group.Description);
-                        for (i = 0; i < data.group.GroupCategories.length; i++) {
-                            loadInitDropdown('ddl-category', data.group.GroupCategories[i].Category, data.group.GroupCategories[i].Id);
+                        for (var i = 0; i < data.group.GroupCategories.length; i++) {
+                            loadInitDropdown('ddl-category', data.group.GroupCategories[i].Category, data.group.GroupCategories[i].Id + "");
                         }
                         $("#create-btn").attr("onclick", "editGroup('" + id + "')");
                     } else {
@@ -253,7 +276,7 @@
                     id: id,
                     Name: $("#name-txt").val(),
                     Description: $("#description-txt").val(),
-                    Categories: JSON.stringify($("#category-txt").val())
+                    Categories: JSON.stringify($('[data-role="ddl-category"]').val())
                 },
                 success: function (data) {
                     if (data.success) {

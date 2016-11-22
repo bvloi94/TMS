@@ -99,9 +99,14 @@ namespace TMS.Services
 
         }
 
-        public IEnumerable<Solution> SearchSolutions(string searchtxt)
+        public IEnumerable<Solution> SearchSolutions(string keywords)
         {
-            return _unitOfWork.SolutionRepository.Get(s => s.Subject.ToLower().Contains(searchtxt.ToLower()));
+            if (!string.IsNullOrWhiteSpace(keywords))
+            {
+                string[] keywordArr = keywords.Split(',');
+                return _unitOfWork.SolutionRepository.Get(s => keywordArr.Any(k => s.Subject.ToLower().Contains(k.ToLower())));
+            }
+            return GetAllSolutions();
         }
 
         public Solution GetSolutionById(int id)
