@@ -141,14 +141,6 @@
         min-height: 30px;
     }
 
-    .jstree-anchor {
-        width: 150%;
-        margin-left: -50%;
-        padding-left: 50%;
-        white-space: normal !important;
-        height: auto !important;
-    }
-
     .jstree-clicked {
         color: #354da8 !important;
         font-weight: bold;
@@ -569,8 +561,9 @@
             }
         });
 
-        $("#category-treeview-div").on("click", ".category-node", function () {
-            getSolutionsByActiveNode($(this).attr("data-id"));
+        $("#category-treeview-div").on("select_node.jstree", function (e, data) {
+            var id = data.node.a_attr["data-id"];
+            getSolutionsByActiveNode(id);
         });
 
         $("#category-treeview-div").on("after_open.jstree", function () {
@@ -581,9 +574,9 @@
             setQuestionListHeight();
         });
 
-        $('#category-treeview-div').on("select_node.jstree", function (e, data) {
-            data.instance.toggle_node(data.node);
-        });
+        //$('#category-treeview-div').on("select_node.jstree", function (e, data) {
+        //    data.instance.toggle_node(data.node);
+        //});
 
         var initFrequentlyAskedTicketsTable = function () {
             $("#frequently-asked-tickets-table").dataTable({
