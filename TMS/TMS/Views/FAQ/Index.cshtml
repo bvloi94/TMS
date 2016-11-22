@@ -241,58 +241,9 @@
             });
         };
 
-        //var loadFAQ = function (id, categoryName) {
-        //    $.ajax({
-        //        url: "/FAQ/GetFAQ",
-        //        type: "GET",
-        //        data: {
-        //            id: id,
-        //            //key_search: $('#search-solution').val()
-        //        },
-        //        success: function (data) {
-        //            $('#all-articles').empty();
-        //            if (categoryName) {
-        //                $("#main-title").empty().append("<h1>Category: " + categoryName + "</h1>");
-        //            } else {
-        //                $("#main-title").empty().append("<h1>All articles</h1>");
-        //            }
-        //            if (data.data.length == 0) {
-        //                $("#all-articles").append("<p style='text-align: center'><i>There is no solution to display.</i></p>");
-        //            } else {
-        //                for (i = 0; i < data.data.length; i++) {
-        //                    var content = data.data[i].Content;
-        //                    content = $.truncate(content, {
-        //                        length: 350,
-        //                    });
-        //                    var sId = data.data[i].ID;
-        //                    var keywordTags = (data.data[i].Keyword).split(',');
-        //                    $('#all-articles').append(
-        //                        '<li><article class="type-post format-standard hentry clearfix">'
-        //                        + '<br/><h2 class="post-title"><a href="/FAQ/Detail?Path=' + data.data[i].Path + '">' + data.data[i].Subject + '</a></h2>'
-        //                        + '<div class="post-meta clearfix">'
-        //                        + '<span class="date">' + formatDateTime(new Date(parseInt(data.data[i].ModifiedTime.substr(6)))) + '</span>'
-        //                        + '<span class="category" id=' + data.data[i].CategoryID + ' data-id=' + data.data[i].Category + '><a class="link-color" href="#">' + data.data[i].CategoryPath + '</a></span></div>'
-        //                        + '<p class="longContent">' + content + '</p><a class="link-color" href="/FAQ/Detail?Path=' + data.data[i].Path + '"> Continue reading</a>'
-        //                        + '<p><ul class="keywords" id="keyword' + sId + '"></ul></p></article></li>');
-        //                    $("#keyword" + sId).empty();
-        //                    if (keywordTags[0] != "-") {
-        //                        for (j = 0; j < keywordTags.length; j++) {
-        //                            var key = keywordTags[j].replace(/"/g, '');
-        //                            $("#keyword" + sId).append("<li><div class='key-tags'><span>" + key + "<span><div></li>");
-        //                        }
-        //                    }
-        //                }
-        //                articlePaging(data.data.length);
-        //                $("#all-articles").find('img').hide();
-        //            }
-        //        }
-        //    });
-        //}
-
         $('#category-treeview-div').on("select_node.jstree", function (e, data) {
             window.location.href = data.node.a_attr.href;
             $('#search-solution').val('');
-            //loadFAQ(data.node.id, data.node.text);
         });
     </script>
 }
