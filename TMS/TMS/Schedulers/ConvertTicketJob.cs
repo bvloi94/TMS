@@ -1,6 +1,4 @@
-﻿using EAGetMail;
-using log4net;
-using OpenPop.Mime;
+﻿using log4net;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
