@@ -1,7 +1,4 @@
-﻿using EAGetMail;
-using log4net;
-using OpenPop.Mime;
-using OpenPop.Pop3;
+﻿using log4net;
 using S22.Imap;
 using System;
 using System.Collections.Generic;
@@ -251,111 +248,111 @@ namespace TMS.Utils
             }
         }
 
-        public static List<Mail> GetUnreadMailsUsingEAGetMail()
-        {
-            ILog log = LogManager.GetLogger(typeof(EmailUtil));
-            MailServer oServer = new MailServer("imap.gmail.com", ConstantUtil.ContactEmailInfo.MailAddress,
-                ConstantUtil.ContactEmailInfo.Password, ServerProtocol.Imap4);
-            MailClient oClient = new MailClient("TryIt");
+        //public static List<Mail> GetUnreadMailsUsingEAGetMail()
+        //{
+        //    ILog log = LogManager.GetLogger(typeof(EmailUtil));
+        //    MailServer oServer = new MailServer("imap.gmail.com", ConstantUtil.ContactEmailInfo.MailAddress,
+        //        ConstantUtil.ContactEmailInfo.Password, ServerProtocol.Imap4);
+        //    MailClient oClient = new MailClient("TryIt");
 
-            // Set SSL connection,
-            oServer.SSLConnection = true;
-            oClient.GetMailInfosParam.Reset();
-            oClient.GetMailInfosParam.GetMailInfosOptions = GetMailInfosOptionType.NewOnly;
-            // Set 993 IMAP4 port
-            oServer.Port = 993;
+        //    // Set SSL connection,
+        //    oServer.SSLConnection = true;
+        //    oClient.GetMailInfosParam.Reset();
+        //    oClient.GetMailInfosParam.GetMailInfosOptions = GetMailInfosOptionType.NewOnly;
+        //    // Set 993 IMAP4 port
+        //    oServer.Port = 993;
 
-            List<Mail> mailList = new List<Mail>();
-            try
-            {
-                oClient.Connect(oServer);
-                MailInfo[] infos = oClient.GetMailInfos();
-                for (int i = 0; i < infos.Length; i++)
-                {
-                    MailInfo info = infos[i];
+        //    List<Mail> mailList = new List<Mail>();
+        //    try
+        //    {
+        //        oClient.Connect(oServer);
+        //        MailInfo[] infos = oClient.GetMailInfos();
+        //        for (int i = 0; i < infos.Length; i++)
+        //        {
+        //            MailInfo info = infos[i];
 
-                    //Debug.WriteLine("Index: {0}; Size: {1}; UIDL: {2}",
-                    //info.Index, info.Size, info.UIDL);
+        //            //Debug.WriteLine("Index: {0}; Size: {1}; UIDL: {2}",
+        //            //info.Index, info.Size, info.UIDL);
 
-                    // Download email from GMail IMAP4 server
-                    Mail oMail = oClient.GetMail(info);
+        //            // Download email from GMail IMAP4 server
+        //            Mail oMail = oClient.GetMail(info);
 
-                    //Debug.WriteLine("From: " + oMail.From.ToString());
-                    //Debug.WriteLine("Subject: " + oMail.Subject + "\r\n");
-                    //Debug.WriteLine("Content: " + oMail.TextBody + "\r\n");
-                    //Debug.WriteLine("Number of attachment: " + oMail.Attachments.Length + "\r\n");
+        //            //Debug.WriteLine("From: " + oMail.From.ToString());
+        //            //Debug.WriteLine("Subject: " + oMail.Subject + "\r\n");
+        //            //Debug.WriteLine("Content: " + oMail.TextBody + "\r\n");
+        //            //Debug.WriteLine("Number of attachment: " + oMail.Attachments.Length + "\r\n");
 
-                    mailList.Add(oMail);
+        //            mailList.Add(oMail);
 
-                    // mark read email as unread 
-                    oClient.MarkAsRead(info, true);
-                }
+        //            // mark read email as unread 
+        //            oClient.MarkAsRead(info, true);
+        //        }
 
-                // Quit and pure emails marked as deleted from Gmail IMAP4 server.
-                oClient.Quit();
-            }
-            catch (Exception e)
-            {
-                log.Error(e.Message);
-            }
-            return mailList;
-        }
+        //        // Quit and pure emails marked as deleted from Gmail IMAP4 server.
+        //        oClient.Quit();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        log.Error(e.Message);
+        //    }
+        //    return mailList;
+        //}
 
-        public static List<Message> GetUnreadMailsUsingOpenPop(List<string> seenUids)
-        {
-            ILog log = LogManager.GetLogger(typeof(EmailUtil));
+        //public static List<Message> GetUnreadMailsUsingOpenPop(List<string> seenUids)
+        //{
+        //    ILog log = LogManager.GetLogger(typeof(EmailUtil));
 
-            // The client disconnects from the server when being disposed
-            using (Pop3Client client = new Pop3Client())
-            {
-                try
-                {
-                    // Connect to the server
-                    client.Connect("pop.gmail.com", 995, true);
+        //    // The client disconnects from the server when being disposed
+        //    using (Pop3Client client = new Pop3Client())
+        //    {
+        //        try
+        //        {
+        //            // Connect to the server
+        //            client.Connect("pop.gmail.com", 995, true);
 
-                    // Authenticate ourselves towards the server
-                    //client.Authenticate(ConstantUtil.ContactEmailInfo.MailAddress, ConstantUtil.ContactEmailInfo.Password);
-                    client.Authenticate("tms.g4.hotro@gmail.com", "mdx4kISu");
+        //            // Authenticate ourselves towards the server
+        //            //client.Authenticate(ConstantUtil.ContactEmailInfo.MailAddress, ConstantUtil.ContactEmailInfo.Password);
+        //            client.Authenticate("tms.g4.hotro@gmail.com", "mdx4kISu");
 
-                    // Fetch all the current uids seen
-                    List<string> uids = client.GetMessageUids();
+        //            // Fetch all the current uids seen
+        //            List<string> uids = client.GetMessageUids();
 
-                    // Create a list we can return with all new messages
-                    List<Message> newMessages = new List<Message>();
+        //            // Create a list we can return with all new messages
+        //            List<Message> newMessages = new List<Message>();
 
-                    // All the new messages not seen by the POP3 client
-                    for (int i = 0; i < uids.Count; i++)
-                    {
-                        string currentUidOnServer = uids[i];
-                        if (!seenUids.Contains(currentUidOnServer))
-                        {
-                            // We have not seen this message before.
-                            // Download it and add this new uid to seen uids
+        //            // All the new messages not seen by the POP3 client
+        //            for (int i = 0; i < uids.Count; i++)
+        //            {
+        //                string currentUidOnServer = uids[i];
+        //                if (!seenUids.Contains(currentUidOnServer))
+        //                {
+        //                    // We have not seen this message before.
+        //                    // Download it and add this new uid to seen uids
 
-                            // the uids list is in messageNumber order - meaning that the first
-                            // uid in the list has messageNumber of 1, and the second has 
-                            // messageNumber 2. Therefore we can fetch the message using
-                            // i + 1 since messageNumber should be in range [1, messageCount]
-                            Message unseenMessage = client.GetMessage(i + 1);
+        //                    // the uids list is in messageNumber order - meaning that the first
+        //                    // uid in the list has messageNumber of 1, and the second has 
+        //                    // messageNumber 2. Therefore we can fetch the message using
+        //                    // i + 1 since messageNumber should be in range [1, messageCount]
+        //                    Message unseenMessage = client.GetMessage(i + 1);
 
-                            // Add the message to the new messages
-                            newMessages.Add(unseenMessage);
+        //                    // Add the message to the new messages
+        //                    newMessages.Add(unseenMessage);
 
-                            // Add the uid to the seen uids, as it has now been seen
-                            seenUids.Add(currentUidOnServer);
-                        }
-                    }
+        //                    // Add the uid to the seen uids, as it has now been seen
+        //                    seenUids.Add(currentUidOnServer);
+        //                }
+        //            }
 
-                    // Return our new found messages
-                    return newMessages;
-                }
-                catch (Exception e)
-                {
-                    log.Error(e.Message);
-                    return new List<Message>();
-                }
-            }
-        }
+        //            // Return our new found messages
+        //            return newMessages;
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            log.Error(e.Message);
+        //            return new List<Message>();
+        //        }
+        //    }
+        //}
 
         public static List<MailMessage> GetUnreadMailsUsingS22()
         {
