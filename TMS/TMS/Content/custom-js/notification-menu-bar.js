@@ -1,6 +1,10 @@
 ﻿$(document).ready(function () {
     loadNotification();
     setInterval(loadNotification, 10000);
+    $(".notification-content").trunk8({
+        lines: 3,
+        tooltip: false,
+    });
 });
 
 function loadNotification() {
