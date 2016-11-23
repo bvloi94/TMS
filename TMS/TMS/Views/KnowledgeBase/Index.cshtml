@@ -241,6 +241,13 @@
             </div>
             <div class="modal-body">
                 <div class="pull-right">
+                    <label>Type: </label>
+                    <select id="frequently-asked-tickets-type-option-select">
+                        <option value="0">All</option>
+                        <option value="@ConstantUtil.TicketType.Request">@ConstantUtil.TicketTypeString.Request</option>
+                        <option value="@ConstantUtil.TicketType.Problem">@ConstantUtil.TicketTypeString.Problem</option>
+                    </select>
+                    <label>Time: </label>
                     <select id="frequently-asked-tickets-time-option-select">
                         <option value="1">Today</option>
                         <option value="2">4 Days ago</option>
@@ -574,10 +581,6 @@
             setQuestionListHeight();
         });
 
-        //$('#category-treeview-div').on("select_node.jstree", function (e, data) {
-        //    data.instance.toggle_node(data.node);
-        //});
-
         var initFrequentlyAskedTicketsTable = function () {
             $("#frequently-asked-tickets-table").dataTable({
                 processing: true,
@@ -591,7 +594,8 @@
                 ajax: {
                     url: "/KnowledgeBase/GetFrequentlyAskedTickets",
                     data: function (d) {
-                        d.timeOption = $("#frequently-asked-tickets-time-option-select").val()
+                        d.timeOption = $("#frequently-asked-tickets-time-option-select").val(),
+                        d.typeOption = $("#frequently-asked-tickets-type-option-select").val()
                     }
                 },
                 autoWidth: false,
@@ -629,6 +633,10 @@
         }
 
         $("#frequently-asked-tickets-time-option-select").on("change", function () {
+            $("#frequently-asked-tickets-table").dataTable().api().ajax.reload();
+        });
+
+        $("#frequently-asked-tickets-type-option-select").on("change", function () {
             $("#frequently-asked-tickets-table").dataTable().api().ajax.reload();
         });
 

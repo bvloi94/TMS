@@ -377,15 +377,32 @@ namespace TMS.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetFrequentlyAskedTickets(JqueryDatatableParameterViewModel param, int? timeOption)
+        public ActionResult GetFrequentlyAskedTickets(JqueryDatatableParameterViewModel param, int? timeOption, int? typeOption)
         {
             if (!timeOption.HasValue)
             {
                 timeOption = ConstantUtil.TimeOption.ThisWeek;
             }
+            if (!typeOption.HasValue)
+            {
+                typeOption = 0;
+            }
             IEnumerable<Ticket> recentTickets = _ticketService.GetRecentTickets(timeOption.Value);
-            ICollection<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedTickets(recentTickets);
-            //IEnumerable<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedSubjects(recentTickets);
+            IEnumerable<Ticket> typeTickets;
+            switch (typeOption)
+            {
+                case ConstantUtil.TicketType.Request:
+                    typeTickets = recentTickets.Where(m => m.Type == ConstantUtil.TicketType.Request);
+                    break;
+                case ConstantUtil.TicketType.Problem:
+                    typeTickets = recentTickets.Where(m => m.Type == ConstantUtil.TicketType.Problem);
+                    break;
+                case 0:
+                default:
+                    typeTickets = recentTickets;
+                    break;
+            }
+            ICollection<FrequentlyAskedTicketViewModel> frequentlyAskedTickets = _ticketService.GetFrequentlyAskedTickets(typeTickets);
 
             IEnumerable<FrequentlyAskedTicketViewModel> filteredListItems = frequentlyAskedTickets.Take(10);
 
