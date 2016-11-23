@@ -176,10 +176,11 @@ namespace TMS.Utils
         {
             List<DropDownViewModel> actions = new List<DropDownViewModel>();
             actions.Add((new DropDownViewModel("1", "Assign to Technician")));
-            actions.Add((new DropDownViewModel("2", "Move to Category")));
-            actions.Add((new DropDownViewModel("3", "Move to Sub Category")));
-            actions.Add((new DropDownViewModel("4", "Move to Item")));
-            actions.Add((new DropDownViewModel("5", "Set Priority as")));
+            actions.Add((new DropDownViewModel("2", "Place in Group")));
+            actions.Add((new DropDownViewModel("3", "Move to Category")));
+            actions.Add((new DropDownViewModel("4", "Move to Sub Category")));
+            actions.Add((new DropDownViewModel("5", "Move to Item")));
+            //actions.Add((new DropDownViewModel("6", "Set Priority as")));
             return actions;
         }
 

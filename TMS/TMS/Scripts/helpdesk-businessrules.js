@@ -333,12 +333,11 @@ function onSelectBRActionChange() {
             });
             break;
         case "2":
-            initCategoryDropdownByLevel({
+            initGroupDropdown({
                 control: $actionValueSelect,
                 ignore: function () {
                     return [];
-                },
-                level: 1
+                }
             });
             break;
         case "3":
@@ -347,7 +346,7 @@ function onSelectBRActionChange() {
                 ignore: function () {
                     return [];
                 },
-                level: 2
+                level: 1
             });
             break;
         case "4":
@@ -356,17 +355,19 @@ function onSelectBRActionChange() {
                 ignore: function () {
                     return [];
                 },
-                level: 3
+                level: 2
             });
             break;
         case "5":
-            initPriorityDropdown({
+            initCategoryDropdownByLevel({
                 control: $actionValueSelect,
                 ignore: function () {
                     return [];
-                }
+                },
+                level: 3
             });
             break;
+        
     }
 }
 

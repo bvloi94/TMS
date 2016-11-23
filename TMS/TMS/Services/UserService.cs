@@ -46,9 +46,7 @@ namespace TMS.Services
         public bool IsValidEmail(string email)
         {
             return _unitOfWork.AspNetUserRepository.Get(m => m.Email.Equals(email.ToLower()) && m.IsActive == true
-                                                             &&
-                                                             m.AspNetRoles.FirstOrDefault()
-                                                                 .Name.ToLower()
+                                                             && m.AspNetRoles.FirstOrDefault().Name.ToLower()
                                                                  .Equals("requester")).Any();
         }
 
@@ -78,23 +76,24 @@ namespace TMS.Services
 
         public IEnumerable<AspNetUser> GetRequesters()
         {
-            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "requester");
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "requester" && (r.IsActive ?? false));
         }
 
         public IEnumerable<AspNetUser> SearchRequesters(string query)
         {
             return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "requester"
-                                                        && (query == null || query == "" || r.Fullname.ToLower().Contains(query.ToLower())));
+                                                        && (query == null || query == "" || r.Fullname.ToLower().Contains(query.ToLower()))
+                                                        && (r.IsActive ?? false));
         }
 
         public IEnumerable<AspNetUser> GetHelpDesks()
         {
-            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "helpdesk");
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "helpdesk" && (r.IsActive ?? false));
         }
 
         public IEnumerable<AspNetUser> GetTechnicians()
         {
-            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician");
+            return _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician" && (r.IsActive ?? false));
         }
 
         public IEnumerable<AspNetUser> GetTechnicianByPattern(string query, int? groupId)
@@ -102,7 +101,40 @@ namespace TMS.Services
             return _unitOfWork.AspNetUserRepository.Get(
                     r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician"
                          && (!groupId.HasValue || groupId == 0 || r.GroupID == groupId)
-                         && (query == null || r.Fullname.Contains(query)));
+                         && (query == null || r.Fullname.Contains(query))
+                         && (r.IsActive ?? false));
+        }
+
+        public string GetFreeTechnicianIdByGroup(int groupId)
+        {
+            var technicians = _unitOfWork.AspNetUserRepository.Get(r => r.AspNetRoles.FirstOrDefault().Name.ToLower() == "technician"
+                                                                   && r.GroupID == groupId && (r.IsActive ?? false)).ToList();
+            string technicianId = null;
+            if (technicians.Count > 1)
+            {
+                technicianId = technicians[0].Id;
+                int minimumNumberOfHandlingTickets = GetNumberOfHandlingTickets(technicianId);
+                for (int i = 1; i < technicians.Count; i++)
+                {
+                    int numberOfHandlingTickets = GetNumberOfHandlingTickets(technicians[i].Id);
+                    if (minimumNumberOfHandlingTickets > numberOfHandlingTickets)
+                    {
+                        minimumNumberOfHandlingTickets = numberOfHandlingTickets;
+                        technicianId = technicians[i].Id;
+                    }
+                }
+            }
+            else if (technicians.Count == 1)
+            {
+                technicianId = technicians[0].Id;
+            }
+            return technicianId;
+        }
+
+        public int GetNumberOfHandlingTickets(string techId)
+        {
+            return (_unitOfWork.TicketRepository.Get().Where(t => t.Status == ConstantUtil.TicketStatus.Assigned
+                                                          && t.TechnicianID == techId)).Count();
         }
 
         public IEnumerable<AspNetUser> GetHelpDeskByPattern(string query, int? groupId)

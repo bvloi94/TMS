@@ -113,9 +113,14 @@ namespace TMS.Areas.HelpDesk.Controllers
                 ticket.TicketKeywords = _keywordService.GetTicketKeywordsForCreate(model.Keywords);
                 ticket.Note = model.Note;
 
-                if (!string.IsNullOrWhiteSpace(model.TechnicianId))
+                string assignTechId = model.TechnicianId;
+                if (string.IsNullOrEmpty(model.TechnicianId) && model.GroupId > 0)
                 {
-                    ticket.TechnicianID = model.TechnicianId;
+                    assignTechId = _userService.GetFreeTechnicianIdByGroup(model.GroupId);
+                }
+                if (!string.IsNullOrWhiteSpace(assignTechId))
+                {
+                    ticket.TechnicianID = assignTechId;
                     ticket.AssignedByID = User.Identity.GetUserId();
                     ticket.Status = ConstantUtil.TicketStatus.Assigned;
                 }
@@ -332,6 +337,15 @@ namespace TMS.Areas.HelpDesk.Controllers
                     ticket.CategoryID = null;
                 }
 
+                if (string.IsNullOrWhiteSpace(model.TechnicianId) && model.GroupId > 0)
+                {
+                    string assignedTechId = _userService.GetFreeTechnicianIdByGroup(model.GroupId);
+                    if (!string.IsNullOrWhiteSpace(assignedTechId))
+                    {
+                        model.TechnicianId = assignedTechId;
+                    }
+                }
+
                 if (ticket.TechnicianID != model.TechnicianId)
                 {
                     if (string.IsNullOrWhiteSpace(model.TechnicianId))
@@ -341,10 +355,10 @@ namespace TMS.Areas.HelpDesk.Controllers
                     else
                     {
                         ticket.TechnicianID = model.TechnicianId;
+                        ticket.AssignedByID = User.Identity.GetUserId();
                     }
-                    ticket.AssignedByID = User.Identity.GetUserId();
                     if ((ticket.Status == ConstantUtil.TicketStatus.Open ||
-                        ticket.Status == ConstantUtil.TicketStatus.Unapproved) && ticket.TechnicianID != null)
+                         ticket.Status == ConstantUtil.TicketStatus.Unapproved) && ticket.TechnicianID != null)
                     {
                         ticket.Status = ConstantUtil.TicketStatus.Assigned;
                     }
@@ -353,7 +367,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                         ticket.Status = ConstantUtil.TicketStatus.Open;
                     }
                 }
-
+                
                 List<TicketAttachment> allTicketAttachments = _ticketAttachmentService.GetAttachmentByTicketID(ticket.ID).ToList();
                 bool isDelete;
                 for (int i = 0; i < allTicketAttachments.Count(); i++)

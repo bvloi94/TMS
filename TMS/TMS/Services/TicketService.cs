@@ -82,6 +82,16 @@ namespace TMS.Services
                                         handlingTicket.Status = ConstantUtil.TicketStatus.Assigned;
                                     }
                                     break;
+                                case ConstantUtil.BusinessRuleTrigger.PlaceInGroup:
+                                    var group = _unitOfWork.GroupRepository.GetByID(TMSUtils.StrToIntDef(trigger.Value, 0));
+                                    if (group != null && handlingTicket.Status != ConstantUtil.TicketStatus.Assigned
+                                        && string.IsNullOrEmpty(handlingTicket.TechnicianID))
+                                    {
+                                        var userService = new UserService(_unitOfWork);
+                                        handlingTicket.TechnicianID = userService.GetFreeTechnicianIdByGroup(group.ID);
+                                        handlingTicket.Status = ConstantUtil.TicketStatus.Assigned;
+                                    }
+                                    break;
                                 case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
                                 case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
                                 case ConstantUtil.BusinessRuleTrigger.MoveToItem:
@@ -92,7 +102,7 @@ namespace TMS.Services
                                         handlingTicket.CategoryID = categoryId;
                                     }
                                     break;
-                                case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
+                                    //case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
                                     //int priorityId = TMSUtils.StrToIntDef(trigger.Value, 0);
                                     //if (priorityId > 0 && !handlingTicket.PriorityID.)
                                     //{
