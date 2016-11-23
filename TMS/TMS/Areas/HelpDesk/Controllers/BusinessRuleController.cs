@@ -419,7 +419,7 @@ namespace TMS.Areas.HelpDesk.Controllers
 
             switch (sortColumnIndex)
             {
-                case 1:
+                case 0:
                     filteredListItems = sortDirection == "asc"
                         ? filteredListItems.OrderBy(p => p.Name)
                         : filteredListItems.OrderByDescending(p => p.Name);

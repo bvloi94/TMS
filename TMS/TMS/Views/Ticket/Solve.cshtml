@@ -187,7 +187,7 @@
                             </div>
                             <div class="col-sm-10">
                                 <input class="form-control" type="file" id="solutionFiles" name="solutionFiles" multiple>
-                                <div class="col-sm-12 no-padding" style="margin-top: 10px">
+                                <div class="col-sm-12 no-padding" style="margin-top: 5px">
                                     @for (int i = 0; i < Model.SolutionAttachments.Count; i++)
                                     {
                                         <div class="attachment-div" style="display: inline;">
@@ -488,7 +488,7 @@
                     if (data.success) {
                         $('#result-list').empty();
                         if (data.data.length == 0) {
-                            $('#result-list').append('<li>No compatible solution.</li>');
+                            $('#result-list').append('<li><div class="timeline-item solution-subject"><h3 class="timeline-header no-border">No compatible solution.</h3><a></div></li>');
                         }
                         $.each(data.data, function (index, element) {
                             $('#result-list').append('<li><div class="timeline-item"><a class="time text-green solution-refer" href="javascript:insertURL(\''
@@ -564,7 +564,7 @@
         function insertURL(url) {
             $("#new-solution").val($("#new-solution").val() + '\n' + url);
             noty({
-                text: 'Solution\'s link is inserted!',
+                text: 'Solution\'s link was inserted!',
                 layout: "topCenter",
                 type: "success",
                 timeout: 2000

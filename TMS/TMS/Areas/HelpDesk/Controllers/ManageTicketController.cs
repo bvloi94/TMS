@@ -641,7 +641,7 @@ namespace TMS.Areas.HelpDesk.Controllers
         [HttpPost]
         public ActionResult MergeTicket(int[] selectedTickets)
         {
-            if (selectedTickets.Length < 2)
+            if (selectedTickets == null || selectedTickets.Length < 2)
             {
                 return Json(new
                 {
