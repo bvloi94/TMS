@@ -657,7 +657,6 @@
     <Content Include="Areas\Manager\Views\ManageSC\PriorityMatrix.cshtml" />
     <Content Include="Areas\Manager\Views\ManageSC\_PriorityMatrixTable.cshtml" />
     <Content Include="Areas\Manager\Views\Group\Index.cshtml" />
-    <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
     <Content Include="Areas\HelpDesk\Views\BusinessRule\Index.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\Manager.cshtml" />
     <Content Include="Areas\Admin\Views\ManageUser\CreateManager.cshtml" />
@@ -675,6 +674,8 @@
     <Content Include="Areas\Manager\Views\Shared\_TopLayout.cshtml" />
     <Content Include="Areas\Manager\Views\Home\Index.cshtml" />
     <Content Include="Areas\Manager\Views\ManageSC\Keywords.cshtml" />
+    <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
+    <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
