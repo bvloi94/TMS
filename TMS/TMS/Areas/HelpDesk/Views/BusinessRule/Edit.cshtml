@@ -292,7 +292,7 @@
             @foreach (var item in Model.Rules)
                 {
                 <text>
-            if ('@item.ParentId' === id) {
+            if ('@item.ParentId' == id) {
                 var createdId = tree.jstree().create_node(parentNode, { "data": {
                     Logic: "@item.Logic",
                     LogicText: "@item.LogicText",
