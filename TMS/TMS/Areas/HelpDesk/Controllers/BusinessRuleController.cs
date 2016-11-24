@@ -272,12 +272,12 @@ namespace TMS.Areas.HelpDesk.Controllers
                             item.Mask += " \"" + mask + "\"";
                         }
                         break;
-                    case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
-                        var pri = _priorityService.GetPriorityByID(TMSUtils.StrToIntDef(no.Value, 0));
-                        if (pri != null)
+                    case ConstantUtil.BusinessRuleTrigger.PlaceInGroup:
+                        var group = _groupService.GetGroupById(TMSUtils.StrToIntDef(no.Value, 0));
+                        if (group != null)
                         {
-                            item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.SetPriorityAs - 1].Name;
-                            item.Mask += " \"" + pri.Name + "\"";
+                            item.Mask = TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.PlaceInGroup - 1].Name;
+                            item.Mask += " \"" + group.Name + "\"";
                         }
                         break;
                 }

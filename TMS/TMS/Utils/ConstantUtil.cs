@@ -202,10 +202,11 @@ namespace TMS.Utils
         public class BusinessRuleTrigger
         {
             public const int AssignToTechnician = 1;
-            public const int MoveToCategory = 2;
-            public const int MoveToSubCategory = 3;
-            public const int MoveToItem = 4;
-            public const int SetPriorityAs = 5;
+            public const int PlaceInGroup = 2;
+            public const int MoveToCategory = 3;
+            public const int MoveToSubCategory = 4;
+            public const int MoveToItem = 5;
+            //public const int SetPriorityAs = 6;
         }
 
         public class NotificationActionType

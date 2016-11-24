@@ -57,8 +57,8 @@ namespace TMS.Services
 
             return _unitOfWork.TicketRepository.Get(m => m.PriorityID == priority.ID).Any()
                 || _unitOfWork.BusinessRuleConditionRepository.Get(m => m.Criteria == ConstantUtil.BusinessRuleCriteria.Priority
-                                                                      && m.Condition.HasValue && m.Condition.Value == priority.ID).Any()
-                || (_unitOfWork.BusinessRuleTriggerRepository.Get(m => m.Action == ConstantUtil.BusinessRuleTrigger.SetPriorityAs).Where(m => m.Value.Split(',').Contains(priority.ID.ToString()))).Any();
+                                                                      && m.Condition.HasValue && m.Condition.Value == priority.ID).Any();
+                //|| (_unitOfWork.BusinessRuleTriggerRepository.Get(m => m.Action == ConstantUtil.BusinessRuleTrigger.SetPriorityAs).Where(m => m.Value.Split(',').Contains(priority.ID.ToString()))).Any();
         }
 
         public bool DeletePriority(Priority priority)
