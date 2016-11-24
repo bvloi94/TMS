@@ -676,6 +676,7 @@
     <Content Include="Areas\Manager\Views\ManageSC\Keywords.cshtml" />
     <Content Include="Areas\HelpDesk\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\TMS.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\cldr.js" />
     <Content Include="Scripts\cldr\event.js" />
