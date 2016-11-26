@@ -196,6 +196,7 @@
           <Property Name="Path" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="CreatedTime" Type="datetime" Nullable="false" />
           <Property Name="ModifiedTime" Type="datetime" Nullable="false" />
+          <Property Name="IsPublish" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="SolutionAttachment">
           <Key>
@@ -1358,6 +1359,7 @@
           <Property Name="Path" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsPublish" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Category" Relationship="TMSModel.FK_KnowledgeBase_Category" FromRole="Solution" ToRole="Category" />
           <NavigationProperty Name="SolutionAttachments" Relationship="TMSModel.FK_SolutionAttachment_Solution" FromRole="Solution" ToRole="SolutionAttachment" />
           <NavigationProperty Name="SolutionKeywords" Relationship="TMSModel.FK_SolutionKeyword_Solution" FromRole="Solution" ToRole="SolutionKeyword" />
@@ -2123,6 +2125,7 @@
           <EntitySetMapping Name="Solutions">
             <EntityTypeMapping TypeName="TMSModel.Solution">
               <MappingFragment StoreEntitySet="Solution">
+                <ScalarProperty Name="IsPublish" ColumnName="IsPublish" />
                 <ScalarProperty Name="ModifiedTime" ColumnName="ModifiedTime" />
                 <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
                 <ScalarProperty Name="Path" ColumnName="Path" />

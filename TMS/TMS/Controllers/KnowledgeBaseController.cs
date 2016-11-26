@@ -20,7 +20,7 @@ namespace TMS.Controllers
         private UnitOfWork _unitOfWork = new UnitOfWork();
         private TicketService _ticketService;
         private UserService _userService;
-        private SolutionService _solutionServices;
+        private SolutionService _solutionService;
         private FileUploader _fileUploader;
         private CategoryService _categoryService;
         private SolutionAttachmentService _solutionAttachmentService;
@@ -31,7 +31,7 @@ namespace TMS.Controllers
         {
             _ticketService = new TicketService(_unitOfWork);
             _userService = new UserService(_unitOfWork);
-            _solutionServices = new SolutionService(_unitOfWork);
+            _solutionService = new SolutionService(_unitOfWork);
             _fileUploader = new FileUploader();
             _categoryService = new CategoryService(_unitOfWork);
             _solutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
@@ -76,7 +76,7 @@ namespace TMS.Controllers
             if (id.HasValue)
             {
                 // Get solution by ID.
-                Solution solution = _solutionServices.GetSolutionById(id.Value);
+                Solution solution = _solutionService.GetSolutionById(id.Value);
                 // solution != null.
                 if (solution != null)
                 {
@@ -125,7 +125,7 @@ namespace TMS.Controllers
             {
                 model.Subject = model.Subject.Trim();
                 // Check duplicate subject.
-                bool isDuplicatedSubject = _solutionServices.IsDuplicatedSubject(null, model.Subject);
+                bool isDuplicatedSubject = _solutionService.IsDuplicatedSubject(null, model.Subject);
                 // Subject is duplicate.
                 if (isDuplicatedSubject)
                 {
@@ -137,7 +137,7 @@ namespace TMS.Controllers
             {
                 model.Path = model.Path.Trim();
                 // Check duplicate path.
-                bool isDuplicatedPath = _solutionServices.IsDuplicatedPath(null, model.Path);
+                bool isDuplicatedPath = _solutionService.IsDuplicatedPath(null, model.Path);
                 // Path is duplicate. 
                 if (isDuplicatedPath)
                 {
@@ -178,7 +178,7 @@ namespace TMS.Controllers
                 solution.CreatedTime = DateTime.Now;
                 solution.ModifiedTime = DateTime.Now;
                 // Create Solution
-                bool createSolutionResult = _solutionServices.AddSolution(solution);
+                bool createSolutionResult = _solutionService.AddSolution(solution);
                 // Create Solution success.
                 if (createSolutionResult)
                 {
@@ -208,7 +208,7 @@ namespace TMS.Controllers
                 {
                     model.Subject = model.Subject.Trim();
                     // Check duplicate subject.
-                    bool isDuplicatedSubject = _solutionServices.IsDuplicatedSubject(id.Value, model.Subject);
+                    bool isDuplicatedSubject = _solutionService.IsDuplicatedSubject(id.Value, model.Subject);
                     //   // Subject is duplicate.
                     if (isDuplicatedSubject)
                     {
@@ -220,7 +220,7 @@ namespace TMS.Controllers
                 {
                     model.Path = model.Path.Trim();
                     // check duplicate path.
-                    bool isDuplicatedPath = _solutionServices.IsDuplicatedPath(id.Value, model.Path);
+                    bool isDuplicatedPath = _solutionService.IsDuplicatedPath(id.Value, model.Path);
                     // path is duplicate.
                     if (isDuplicatedPath)
                     {
@@ -234,7 +234,7 @@ namespace TMS.Controllers
                     model.Category = category.Name;
                 }
                 // Get solution by id.
-                Solution solution = _solutionServices.GetSolutionById(id.Value);
+                Solution solution = _solutionService.GetSolutionById(id.Value);
                 // Solution != null.
                 if (solution != null)
                 {
@@ -278,7 +278,7 @@ namespace TMS.Controllers
                             if (isDelete) _solutionAttachmentService.DeleteAttachment(attachments[i]);
                         }
                         // Edit solution.
-                        bool editResult = _solutionServices.EditSolution(solution);
+                        bool editResult = _solutionService.EditSolution(solution);
                         // Eit success.
                         if (editResult)
                         {
@@ -323,7 +323,7 @@ namespace TMS.Controllers
             }
             else
             {
-                bool resultDelete = _solutionServices.DeleteSolution(selectedSolutions);
+                bool resultDelete = _solutionService.DeleteSolution(selectedSolutions);
                 if (!resultDelete)
                 {
                     return Json(new
@@ -344,8 +344,8 @@ namespace TMS.Controllers
         public ActionResult GetSolutionsByCategory(int? id, string key_search)
         {
             string keywords = key_search;
-            IEnumerable<Solution> solutions = _solutionServices.GetAllSolutions();
-            IQueryable<KnowledgeBaseViewModel> filteredListItems = solutions.Select(m => new KnowledgeBaseViewModel
+            IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
+            IEnumerable<KnowledgeBaseViewModel> filteredListItems = solutions.Select(m => new KnowledgeBaseViewModel
             {
                 ID = m.ID,
                 Subject = m.Subject,
@@ -356,8 +356,9 @@ namespace TMS.Controllers
                 Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
                 CreatedTimeString = m.CreatedTime.ToString(ConstantUtil.DateTimeFormat2),
-                ModifiedTimeString = m.ModifiedTime.ToString(ConstantUtil.DateTimeFormat2)
-            }).AsQueryable();
+                ModifiedTimeString = m.ModifiedTime.ToString(ConstantUtil.DateTimeFormat2),
+                IsPublish = m.IsPublish
+            });
 
             if (!string.IsNullOrWhiteSpace(key_search))
             {
@@ -584,6 +585,52 @@ namespace TMS.Controllers
             {
                 data = keywords
             }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult Toggle(int? id)
+        {
+            if (id.HasValue)
+            {
+                Solution solution = _solutionService.GetSolutionById(id.Value);
+                if (solution != null)
+                {
+                    bool current = solution.IsPublish;
+                    solution.IsPublish = !current;
+                    bool updateResult = _solutionService.EditSolution(solution);
+                    if (updateResult)
+                    {
+                        if (current)
+                        {
+                            return Json(new {
+                                success = true,
+                                message = "Solution has been set to private!"
+                            });
+                        }
+                        else
+                        {
+                            return Json(new
+                            {
+                                success = true,
+                                message = "Published solution successfully!"
+                            });
+                        }
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = ConstantUtil.CommonError.DBExceptionError
+                        });
+                    }
+                }
+            }
+            return Json(new
+            {
+                success = false,
+                message = "Unavailable Solution!"
+            });
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

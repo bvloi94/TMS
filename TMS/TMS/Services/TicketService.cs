@@ -1503,5 +1503,25 @@ namespace TMS.Services
             return incomingTickets;
         }
 
+        public string ReplaceURL(string sentence)
+        {
+            List<string> links = new List<string>();
+            Regex urlRx = new Regex(@"(http|ftp|https):\/\/([\w+?\.\w+])+([a-zA-Z0-9\~\!\@\#\$\%\^\&\*\(\)_\-\=\+\\\/\?\.\:\;\'\,]*)?", RegexOptions.IgnoreCase);
+
+            MatchCollection matches = urlRx.Matches(sentence);
+            foreach (Match match in matches)
+            {
+                links.Add(match.Value);
+            }
+
+            if (links.Count > 0)
+            {
+                foreach (string replaceItem in links)
+                {
+                    sentence = sentence.Replace(replaceItem, string.Format("<a href='{0}'>{0}</a>", replaceItem));
+                }
+            }
+            return sentence;
+        }
     }
 }

@@ -431,7 +431,7 @@ namespace TMS.Areas.Manager.Controllers
         {
             ViewBag.priorityList = new SelectList(_priorityService.GetAll(), "ID", "Name");
             ViewBag.impactList = _impactService.GetAll();
-            ViewBag.urgencyList = _urgencyService.GetAll();
+            ViewBag.urgencyList = _urgencyService.GetAll().OrderByDescending(m => m.Duration);
             return PartialView("_PriorityMatrixTable");
         }
 

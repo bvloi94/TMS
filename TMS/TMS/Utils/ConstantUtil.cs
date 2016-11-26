@@ -22,11 +22,11 @@ namespace TMS.Utils
 
         public class UserRoleString
         {
-            public static readonly string Admin = "Admin";
-            public static readonly string HelpDesk = "Helpdesk";
-            public static readonly string Requester = "Requester";
-            public static readonly string Technician = "Technician";
-            public static readonly string Manager = "Manager";
+            public const string Admin = "Admin";
+            public const string HelpDesk = "Helpdesk";
+            public const string Requester = "Requester";
+            public const string Technician = "Technician";
+            public const string Manager = "Manager";
         }
 
         public class TicketType

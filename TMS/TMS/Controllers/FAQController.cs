@@ -13,6 +13,7 @@ using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
+    [CustomAuthorize]
     public class FAQController : Controller
     {
         private UnitOfWork _unitOfWork = new UnitOfWork();
@@ -36,7 +37,8 @@ namespace TMS.Controllers
         public ActionResult Index(string search)
         {
             IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
-            IQueryable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
+            IEnumerable<KnowledgeBaseViewModel> model = solutions
+            .Select(m => new KnowledgeBaseViewModel
             {
                 ID = m.ID,
                 Subject = m.Subject,
@@ -47,8 +49,9 @@ namespace TMS.Controllers
                 Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
-                ModifiedTime = m.ModifiedTime
-            }).AsQueryable().OrderBy(m => m.Subject);
+                ModifiedTime = m.ModifiedTime,
+                IsPublish = m.IsPublish
+            }).OrderBy(m => m.Subject);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -56,35 +59,53 @@ namespace TMS.Controllers
                 ViewBag.SearchKey = search;
             }
 
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                model = GetDataByRoleName(userRole.Name, model);
+            }
+
             return View(model);
+        }
+
+        public IEnumerable<KnowledgeBaseViewModel> GetDataByRoleName(string UserRoleName, IEnumerable<KnowledgeBaseViewModel> data)
+        {
+            IEnumerable<KnowledgeBaseViewModel> filteredData = data;
+            switch (UserRoleName)
+            {
+                case ConstantUtil.UserRoleString.Technician:
+                case ConstantUtil.UserRoleString.HelpDesk:
+                    break;
+                case ConstantUtil.UserRoleString.Requester:
+                default:
+                    filteredData = data.Where(m => m.IsPublish == true);
+                    break;
+            }
+            return filteredData;
         }
 
         public void GetMenuItemByRoleName(string UserRoleName)
         {
             switch (UserRoleName)
             {
-                case "Admin":
-                    ViewBag.Home = "/FAQ/Index";
-                    ViewBag.ItemLink1 = "/Admin/ManageSC/Impact";
-                    ViewBag.Item1 = "System Config";
-                    ViewBag.ItemLink2 = "/Admin/ManageUser/Admin";
-                    ViewBag.Item2 = "Manage User";
-                    ViewBag.Profile = "/Admin/Profile"; break;
-                case "Technician":
+                case ConstantUtil.UserRoleString.Technician:
                     ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/KnowledgeBase/Index";
                     ViewBag.Item1 = "Knowledge Base";
                     ViewBag.ItemLink2 = "/Technician/ManageTicket";
                     ViewBag.Item2 = "Ticket";
-                    ViewBag.Profile = "/Technician/Profile"; break;
-                case "Helpdesk":
+                    ViewBag.Profile = "/Technician/Profile";
+                    break;
+                case ConstantUtil.UserRoleString.HelpDesk:
                     ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/KnowledgeBase/Index";
                     ViewBag.Item1 = "Knowledge Base";
                     ViewBag.ItemLink2 = "/HelpDesk/ManageTicket";
                     ViewBag.Item2 = "Ticket";
-                    ViewBag.Profile = "/Helpdesk/Profile"; break;
-                case "Requester":
+                    ViewBag.Profile = "/Helpdesk/Profile";
+                    break;
+                case ConstantUtil.UserRoleString.Requester:
                     ViewBag.Home = "/FAQ/Index";
                     ViewBag.ItemLink1 = "/Home/Index";
                     ViewBag.Item1 = "Home";
@@ -98,52 +119,52 @@ namespace TMS.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult GetFAQ(int? id, string key_search)
-        {
-            string keywords = key_search;
-            IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
-            IQueryable<KnowledgeBaseViewModel> filteredListItems = solutions.Select(m => new KnowledgeBaseViewModel
-            {
-                ID = m.ID,
-                Subject = m.Subject,
-                Category = m.Category.Name,
-                CategoryID = m.Category.ID,
-                CategoryPath = _categoryService.GetCategoryPath(m.Category),
-                Content = m.ContentText,
-                //Keyword = m.Keyword == null ? "-" : m.Keyword,
-                Path = m.Path,
-                CreatedTime = m.CreatedTime,
-                ModifiedTime = m.ModifiedTime
-            }).AsQueryable();
+        //[HttpGet]
+        //public ActionResult GetFAQ(int? id, string key_search)
+        //{
+        //    string keywords = key_search;
+        //    IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
+        //    IQueryable<KnowledgeBaseViewModel> filteredListItems = solutions.Select(m => new KnowledgeBaseViewModel
+        //    {
+        //        ID = m.ID,
+        //        Subject = m.Subject,
+        //        Category = m.Category.Name,
+        //        CategoryID = m.Category.ID,
+        //        CategoryPath = _categoryService.GetCategoryPath(m.Category),
+        //        Content = m.ContentText,
+        //        //Keyword = m.Keyword == null ? "-" : m.Keyword,
+        //        Path = m.Path,
+        //        CreatedTime = m.CreatedTime,
+        //        ModifiedTime = m.ModifiedTime
+        //    }).AsQueryable();
 
-            var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
+        //    var predicate = PredicateBuilder.False<KnowledgeBaseViewModel>();
 
-            if (!string.IsNullOrWhiteSpace(key_search))
-            {
-                //keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
-                //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-                //keywords = regex.Replace(keywords, " ");
-                //string[] keywordArr = keywords.Split(' ');
-                //foreach (string keyword in keywordArr)
-                //{
-                //    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keyword.ToLower()));
-                //}
-                //predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
-                //filteredListItems = filteredListItems.Where(predicate);
-            }
+        //    if (!string.IsNullOrWhiteSpace(key_search))
+        //    {
+        //        //keywords = GeneralUtil.RemoveSpecialCharacters(keywords);
+        //        //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
+        //        //keywords = regex.Replace(keywords, " ");
+        //        //string[] keywordArr = keywords.Split(' ');
+        //        //foreach (string keyword in keywordArr)
+        //        //{
+        //        //    predicate = predicate.Or(p => p.Keyword.ToLower().Contains(keyword.ToLower()));
+        //        //}
+        //        //predicate = predicate.Or(p => p.Subject.ToLower().Contains(key_search.ToLower()));
+        //        //filteredListItems = filteredListItems.Where(predicate);
+        //    }
 
-            if (id.HasValue)
-            {
-                List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
-                filteredListItems = filteredListItems.Where(m => m.CategoryID == id.Value
-                    || childrenCategoriesIdList.Contains(m.CategoryID));
-            }
-            return Json(new
-            {
-                data = filteredListItems.OrderBy(m => m.Subject)
-            }, JsonRequestBehavior.AllowGet);
-        }
+        //    if (id.HasValue)
+        //    {
+        //        List<int> childrenCategoriesIdList = _categoryService.GetChildrenCategoriesIdList(id.Value);
+        //        filteredListItems = filteredListItems.Where(m => m.CategoryID == id.Value
+        //            || childrenCategoriesIdList.Contains(m.CategoryID));
+        //    }
+        //    return Json(new
+        //    {
+        //        data = filteredListItems.OrderBy(m => m.Subject)
+        //    }, JsonRequestBehavior.AllowGet);
+        //}
 
         [HttpGet]
         public ActionResult GetCategoryTreeViewData()
@@ -169,6 +190,19 @@ namespace TMS.Controllers
                 Solution solution = _solutionService.GetSolutionByPath(path);
                 if (solution != null)
                 {
+                    AspNetRole userRole = null;
+                    if (User.Identity.GetUserId() != null)
+                    {
+                        userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                        if (userRole.Name != ConstantUtil.UserRoleString.HelpDesk
+                            && userRole.Name != ConstantUtil.UserRoleString.Technician)
+                        {
+                            if (solution.IsPublish == false)
+                            {
+                                return HttpNotFound();
+                            }
+                        }
+                    }
                     KnowledgeBaseViewModel model = new KnowledgeBaseViewModel();
                     model.ID = solution.ID;
                     model.Subject = solution.Subject;
@@ -185,16 +219,8 @@ namespace TMS.Controllers
                     model.Path = solution.Path;
                     ViewBag.relatedSolution = LoadRelatedArticle(solution.ID);
 
-                    AspNetRole userRole = null;
-                    if (User.Identity.GetUserId() != null)
-                    {
-                        userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
-                    }
-                    GetMenuItemByRoleName(userRole.Name);
-
                     return View(model);
                 }
-                return HttpNotFound();
             }
             return HttpNotFound();
         }
@@ -213,17 +239,34 @@ namespace TMS.Controllers
                     CategoryID = m.CategoryID,
                     ContentText = m.ContentText,
                     Path = m.Path,
-                    //Keyword = m.Keyword == null ? "-" : m.Keyword,
                     CreatedTime = m.CreatedTime,
-                    ModifiedTime = m.ModifiedTime
-                }).OrderBy(m => m.Subject).ToList().Take(5);
+                    ModifiedTime = m.ModifiedTime,
+                    IsPublish = m.IsPublish
+                });
+
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                switch (userRole.Name)
+                {
+                    case ConstantUtil.UserRoleString.HelpDesk:
+                    case ConstantUtil.UserRoleString.Technician:
+                        break;
+                    default:
+                        relatedSolution = relatedSolution.Where(m => m.IsPublish == true);
+                        break;
+                }
+            }
+            relatedSolution = relatedSolution.OrderBy(m => m.Subject).ToList().Take(5);
+
             return relatedSolution;
         }
 
         public ActionResult Category(string category)
         {
             IEnumerable<Solution> solutions = _solutionService.GetAllSolutions();
-            IQueryable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
+            IEnumerable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
             {
                 ID = m.ID,
                 Subject = m.Subject,
@@ -234,8 +277,9 @@ namespace TMS.Controllers
                 Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
-                ModifiedTime = m.ModifiedTime
-            }).AsQueryable().OrderBy(m => m.Subject);
+                ModifiedTime = m.ModifiedTime,
+                IsPublish = m.IsPublish
+            }).OrderBy(m => m.Subject);
 
             if (!string.IsNullOrWhiteSpace(category))
             {
@@ -249,13 +293,20 @@ namespace TMS.Controllers
                 }
             }
 
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                model = GetDataByRoleName(userRole.Name, model);
+            }
+
             return View("Index", model);
         }
 
         public ActionResult Tags(string tag)
         {
             IEnumerable<Solution> solutions = _solutionService.GetSolutionsByTag(tag);
-            IQueryable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
+            IEnumerable<KnowledgeBaseViewModel> model = solutions.Select(m => new KnowledgeBaseViewModel
             {
                 ID = m.ID,
                 Subject = m.Subject,
@@ -266,12 +317,19 @@ namespace TMS.Controllers
                 Keywords = _keywordService.GetSolutionKeywordForDisplay(m.ID),
                 Path = m.Path,
                 CreatedTime = m.CreatedTime,
-                ModifiedTime = m.ModifiedTime
-            }).AsQueryable();
-
-            model = model.OrderBy(m => m.Subject);
+                ModifiedTime = m.ModifiedTime,
+                IsPublish = m.IsPublish
+            }).OrderBy(m => m.Subject);
 
             ViewBag.Tag = tag;
+
+            AspNetRole userRole = null;
+            if (User.Identity.GetUserId() != null)
+            {
+                userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                model = GetDataByRoleName(userRole.Name, model);
+            }
+
             return View("Index", model);
         }
 
@@ -281,9 +339,9 @@ namespace TMS.Controllers
             if (User.Identity.GetUserId() != null)
             {
                 userRole = _userService.GetUserById(User.Identity.GetUserId()).AspNetRoles.FirstOrDefault();
+                GetMenuItemByRoleName(userRole.Name);
             }
 
-            GetMenuItemByRoleName(userRole.Name);
             base.OnActionExecuting(filterContext);
         }
     }

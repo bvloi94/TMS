@@ -176,8 +176,8 @@
                             $('#ticket-list').append(innerCode);
                             $(".column-body:first-of-type").css("height", $(".column-body:last-of-type").outerHeight());
                         }
+                        $('#list-option').empty().append('Total ' + dataItems.length + ' items.');
                         if (dataItems.length > 5) {
-                            $('#list-option').empty().append('Total ' + dataItems.length + ' items.');
                             $('div.holder').removeClass("hidden");
                             $('div.holder').jPages({
                                 containerID: "ticket-list",
@@ -198,6 +198,8 @@
                     }
                     else {
                         $('#ticket-list').empty().append('<div class="col-sm-12 text-center"><p>There is no ticket at this moment.</p></div>');
+                        $('div.holder').addClass("hidden");
+                        $('#list-option').empty();
                     }
                 },
                 error: function () {

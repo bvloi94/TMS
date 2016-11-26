@@ -28,6 +28,7 @@ namespace TMS.Models
         public string Path { get; set; }
         public System.DateTime CreatedTime { get; set; }
         public System.DateTime ModifiedTime { get; set; }
+        public bool IsPublish { get; set; }
     
         public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

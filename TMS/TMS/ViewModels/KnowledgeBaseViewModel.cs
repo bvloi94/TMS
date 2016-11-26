@@ -30,7 +30,7 @@ namespace TMS.ViewModels
         [Required(ErrorMessage = "Please input a path!")]
         [PathFormat(ErrorMessage = "Path can not contain special characters and spaces!")]
         public string Path { get; set; }
-        // [MaxFileSize(5 * 1024 * 1024, ErrorMessage = "Maximum allowed file size is {0} bytes")]
+        public bool IsPublish { get; set; }
         public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
         public List<AttachmentViewModel> SolutionAttachmentsList { get; set; }
         public List<AttachmentViewModel> DescriptionAttachments { get; set; }

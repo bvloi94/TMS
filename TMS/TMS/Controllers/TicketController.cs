@@ -66,7 +66,6 @@ namespace TMS.Controllers
             // Query data by params
             if (!string.IsNullOrEmpty(default_search_key)) //user have inputed keyword to search textbox
             {
-                //contains(keyword) = like "%keyword%" in SQL query
                 filteredListItems = ticketList.Where(p => p.Subject.ToLower().Contains(search_text.ToLower()));
             }
             else
@@ -349,6 +348,7 @@ namespace TMS.Controllers
                         string ticketCode = '#' + mergedTicket.Code;
                         model.Description = model.Description.Replace(ticketCode, "<a href='/Ticket/Detail/" + mergedTicket.ID + "'>" + ticketCode + "</a>");
                     }
+                    model.Description = _ticketService.ReplaceURL(model.Description);
                     model.CreatedBy = creater.Fullname;
                     model.SolvedBy = solver == null ? "-" : solver.Fullname;
                     model.Status = ticket.Status;
@@ -362,6 +362,7 @@ namespace TMS.Controllers
                     else
                     {
                         model.Solution = ticket.Solution == null ? "-" : ticket.Solution.Trim();
+                        model.Solution = _ticketService.ReplaceURL(model.Solution);
                     }
 
                     model.Mode = GeneralUtil.GetModeNameByMode(ticket.Mode);
@@ -446,6 +447,7 @@ namespace TMS.Controllers
                     model.Code = ticket.Code;
                     model.Subject = ticket.Subject;
                     model.Description = ticket.Description == null ? "-" : ticket.Description.Trim();
+                    model.Description = _ticketService.ReplaceURL(model.Description);
                     IEnumerable<Ticket> mergedTickets = _ticketService.GetMergedTickets(ticket.ID);
                     foreach (Ticket mergedTicket in mergedTickets)
                     {
@@ -508,6 +510,7 @@ namespace TMS.Controllers
                     model.SolvedBy = GeneralUtil.GetUserInfo(solvedUser);
                     model.Requester = GeneralUtil.GetUserInfo(requester);
                     model.Solution = ticket.Solution == null ? string.Empty : ticket.Solution.Trim();
+                    model.Solution = _ticketService.ReplaceURL(model.Solution);
                     model.DescriptionAttachmentsURL = GetTicketAttachmentUrl(ticket.ID, ConstantUtil.TicketAttachmentType.Description); 
                     model.SolutionAttachmentsURL = GetTicketAttachmentUrl(ticket.ID, ConstantUtil.TicketAttachmentType.Solution);
                     model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason.Trim();

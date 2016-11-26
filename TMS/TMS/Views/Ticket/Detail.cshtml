@@ -152,7 +152,7 @@
                 <div class="box-body no-pad-left">
                     <div class="col-lg-1 col-sm-2 text-bold">Solution: </div>
                     <div class="col-lg-11 col-sm-10">
-                        <p class="pre-wrap" id="ticket-solution">@Html.DisplayFor(model => model.Solution)</p>
+                        <p class="pre-wrap" id="ticket-solution">@Html.Raw(Model.Solution)</p>
                         <span class="text-bold text-green">Solved by </span>@Html.DisplayFor(model => model.SolvedBy)
                         <span class="text-bold text-green"> on </span>@Html.DisplayFor(model => model.SolvedTime)
                     </div>

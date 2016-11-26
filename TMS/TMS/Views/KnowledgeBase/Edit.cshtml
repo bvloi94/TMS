@@ -81,7 +81,7 @@
                 <div class="form-group">
                     <label class="control-label col-md-2">Keywords</label>
                     <div class="col-md-10" style="max-width: 704px;">
-                        @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keyword" })
+                        @Html.TextBoxFor(m => m.Keywords, new { @class = "form-control", id = "keywords" })
                         @Html.ValidationMessageFor(m => m.Keywords, "", new { @class = "text-danger" })
                     </div>
                 </div>
@@ -118,7 +118,7 @@
         $(document)
             .ready(function() {
                 $('#content-area').wysihtml5();
-                $("#keyword").tagit({
+                $("#keywords").tagit({
                     allowSpaces: true,
                     autocomplete: {
                         source: "/Ticket/GetKeywords",
@@ -150,14 +150,32 @@
             });
 
 
-        $(".attachment-delete")
-        .on("click",
-            function () {
-                var inputs = $(this).parent().find(':input');
-                inputs.each(function (index, element) {
-                    element.value = "";
-                });
-                $(this).parent().addClass("hidden");
+        $(".attachment-delete").on("click", function () {
+            var inputs = $(this).parent().find(':input');
+            inputs.each(function (index, element) {
+                element.value = "";
             });
+            $(this).parent().addClass("hidden");
+        });
+
+        $("[name='Subject']").focusout(function () {
+            generateTags();
+        });
+
+        var generateTags = function () {
+            $.ajax({
+                url: "/Ticket/GetTags",
+                type: "GET",
+                dataType: "json",
+                data: {
+                    subject: $("[name='Subject']").val()
+                },
+                success: function (data) {
+                    for (i = 0; i < data.data.length; i++) {
+                        $('#keywords').tagit('createTag', data.data[i]);
+                    }
+                }
+            });
+        }
     </script>
 }

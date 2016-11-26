@@ -402,9 +402,30 @@
                                 "class": "question-title",
                                 "html": data.data[i].Subject
                             })[0].outerHTML;
+
+                            var publish = "";
+                            if (data.data[i].IsPublish) {
+                                publish = $("<a/>", {
+                                    "class": "btn-sm btn-success",
+                                    "href": 'javascript:void(0)',
+                                    "onclick": 'toggleSolution(this)',
+                                    "data-id": sId,
+                                    "html": "Published"
+                                })[0].outerHTML + '&nbsp;&nbsp;';
+                            }
+                            else {
+                                publish = $("<a/>", {
+                                    "class": "btn-sm btn-default",
+                                    "href": 'javascript:void(0)',
+                                    "onclick": 'toggleSolution(this)',
+                                    "data-id": sId,
+                                    "html": "Private"
+                                })[0].outerHTML + '&nbsp;&nbsp;';
+                            }
+
                             var buttons = $("<div/>", {
-                                "class": "col-lg-2 col-sm-2 button",
-                                "html": $("<a/>", {
+                                "class": "col-lg-3 col-sm-3 button",
+                                "html": publish + $("<a/>", {
                                     "class": "btn-sm btn-success",
                                     "href": '/FAQ/Detail/' + data.data[i].Path,
                                     "html": '<i class="fa fa-eye"></i>'
@@ -433,7 +454,7 @@
                                        "class": "question-row",
                                        "html": $("<div/>",
                                                {
-                                                   "class": "question-header col-lg-10 col-sm-10",
+                                                   "class": "question-header col-lg-9 col-sm-9",
                                                    "style": "font-size: 16px",
                                                    "html": checkbox + '&nbsp;&nbsp;' + subject
                                                })[0].outerHTML + buttons +
@@ -643,6 +664,52 @@
         var showFrequentlyAskedTickets = function () {
             $("#frequently-asked-tickets-table").dataTable().api().ajax.reload();
             $("#frequently-asked-tickets-modal").modal("show");
+        }
+
+        var toggleSolution = function (obj) {
+            var id = $(obj).attr("data-id");
+            $.ajax({
+                url: "/KnowledgeBase/Toggle",
+                method: "POST",
+                data: {
+                    id: id
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        noty({
+                            text: data.message,
+                            type: "success",
+                            layout: "topCenter",
+                            timeout: 2500
+                        });
+                        if ($(obj).html() == "Published") {
+                            $(obj).removeClass("btn-success");
+                            $(obj).addClass("btn-default");
+                            $(obj).html("Private");
+                        } else {
+                            $(obj).removeClass("btn-default");
+                            $(obj).addClass("btn-success");
+                            $(obj).html("Published");
+                        }
+                    } else {
+                        noty({
+                            text: data.message,
+                            type: "error",
+                            layout: "topRight",
+                            timeout: 2500
+                        });
+                    }
+                },
+                error: function () {
+                    noty({
+                        text: "Cannot connect to server! Please try again later!",
+                        type: "error",
+                        layout: "topRight",
+                        timeout: 2500
+                    });
+                }
+            });
         }
     </script>
 }
