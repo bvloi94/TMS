@@ -323,6 +323,7 @@ $(document).bind("dnd_start.vakata", function (e, data) {
 });
 
 function onSelectBRActionChange() {
+    $actionValueSelect.val("");
     switch ($actionSelect.val()) {
         case "1":
             initTechnicianDropdown({
