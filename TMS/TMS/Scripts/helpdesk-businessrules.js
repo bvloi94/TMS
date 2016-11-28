@@ -368,25 +368,55 @@ function onSelectBRActionChange() {
                 level: 3
             });
             break;
-        
+
     }
 }
 
 $("#add-action").click(function () {
-    if ($actionSelect.val() == null) alert("Please choose action.");
-    else if ($actionValueSelect.val() == null) alert("Please set value for action.");
+    var actionKey = $actionSelect.val();
+    var actionValue = $actionValueSelect.val();
+    if (actionKey == null) {
+        noty({
+            text: "Please choose action.",
+            type: "error",
+            layout: "topRight",
+            timeout: 2000
+        });
+    }
     else {
-        var actionSet = $actionSelect.select2('data')[0].text + ' \"' +
-            $actionValueSelect.select2('data')[0].text + '\"';
-        var actionKey = $actionSelect.val();
-        var actionValue = $actionValueSelect.val();
-        $('#action-table tr:last').after('<tr class="actionSet" ' +
-            'data-id=' + actionKey + ' data-value=' + actionValue + '>' +
-            '<td><i class="fa fa-trash remove-action"></i></td><td>' + actionSet + '</td></tr>');
-        //$actionSelect.val('').trigger("change");
-        $actionValueSelect.val('').trigger("change");
-        //$actionValueSelect.children().remove();
-        //$actionValueSelect.select2('destroy');
+        var flag = false;
+        $(".actionSet").each(function (element, index) {
+            if (this.innerHTML.indexOf($actionSelect.select2('data')[0].text) != -1) {
+                noty({
+                    text: "Each type of action can be added only one time. Please remove the existed action first.",
+                    type: "error",
+                    layout: "topRight",
+                    timeout: 2000
+                });
+                flag = true;
+                return;
+            }
+        });
+        if (flag) return;
+        if (actionValue == null) {
+            noty({
+                text: "Please set value for action.",
+                type: "error",
+                layout: "topRight",
+                timeout: 2000
+            });
+        }
+        else {
+            var actionSet = $actionSelect.select2('data')[0].text + ' \"' +
+                $actionValueSelect.select2('data')[0].text + '\"';
+            $('#action-table tr:last').after('<tr class="actionSet" ' +
+                'data-id=' + actionKey + ' data-value=' + actionValue + '>' +
+                '<td><i class="fa fa-trash remove-action"></i></td><td>' + actionSet + '</td></tr>');
+            //$actionSelect.val('').trigger("change");
+            $actionValueSelect.val('').trigger("change");
+            //$actionValueSelect.children().remove();
+            //$actionValueSelect.select2('destroy');
+        }
     }
 });
 
