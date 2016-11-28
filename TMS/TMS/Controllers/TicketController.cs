@@ -750,7 +750,7 @@ namespace TMS.Controllers
                         }
                     }
                     model.UnapproveReason = (string.IsNullOrWhiteSpace(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason.Trim();
-                    //model.Tags = GeneralUtil.ConvertFormattedKeywordToView(ticket.Tags);
+                    model.Tags = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
                     model.Note = (string.IsNullOrWhiteSpace(ticket.Note)) ? "-" : ticket.Note.Trim();
                     return View(model);
                 }
