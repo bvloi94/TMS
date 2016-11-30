@@ -534,3 +534,16 @@ INFO  2016-11-30 19:40:24,264 ConvertTicketJob       DoJob              - Number
 INFO  2016-11-30 19:45:25,493 ConvertTicketJob       DoJob              - Number of unread email: 0
 INFO  2016-11-30 19:50:26,725 ConvertTicketJob       DoJob              - Number of unread email: 0
 INFO  2016-11-30 19:55:28,025 ConvertTicketJob       DoJob              - Number of unread email: 0
+DEBUG 2016-11-30 19:59:11,883 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-30 19:59:12,021 JobManager             ExecuteAllJobs     - The Job "CheckPriorityTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 19:59:12,022 JobManager             ExecuteAllJobs     - The Job "CheckPriorityTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 19:59:12,023 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 19:59:12,023 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 19:59:12,024 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 19:59:12,024 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-30 19:59:12,025 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-30 19:59:12,026 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 19:59:12,027 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 19:59:12,029 JobManager             ExecuteAllJobs     - End Method
+INFO  2016-11-30 19:59:13,498 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 20:04:14,669 ConvertTicketJob       DoJob              - Number of unread email: 0
