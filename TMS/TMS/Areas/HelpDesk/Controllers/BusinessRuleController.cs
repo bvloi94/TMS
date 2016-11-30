@@ -271,7 +271,7 @@ namespace TMS.Areas.HelpDesk.Controllers
                             var mask = cate.Name;
                             int level = (int)cate.CategoryLevel;
                             int parentId;
-                            item.Mask = TMSUtils.GetDefaultActions()[level + 1].Name;
+                            item.Mask = TMSUtils.GetDefaultActions()[level + 2].Name;
                             while (level > 1)
                             {
                                 parentId = (int)cate.ParentID;
