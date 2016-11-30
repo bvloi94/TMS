@@ -680,9 +680,9 @@
             $("#div-status").html(getStatusLabel('@Model.Status'));
             $("[name='Type']").val(@Model.Type);
             $("[name='Mode']").val(@Model.Mode);
+            loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
             loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
             loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
-            loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
             loadInitDropdown('ddl-group', '@(Model.GroupId == 0 ? "Chooose Group" :@Model.Group)', @Model.GroupId);
             loadInitDropdown('ddl-technician', '@(Model.Technician ?? "Unassigned")', '@Model.TechnicianId');
 
