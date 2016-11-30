@@ -252,6 +252,16 @@ namespace TMS.Areas.HelpDesk.Controllers
                             item.Mask += " \"" + user.Fullname + "\"";
                         }
                         break;
+                    case ConstantUtil.BusinessRuleTrigger.SetTypeAs:
+                        int type = TMSUtils.StrToIntDef(no.Value, 0);
+                        if (type > 0)
+                        {
+                            item.Mask =
+                                TMSUtils.GetDefaultActions()[ConstantUtil.BusinessRuleTrigger.SetTypeAs - 1].Name;
+                            item.Mask += " \"" + TMSUtils.GetDefaultTypes()[type-1].Name + "\"";
+
+                        }
+                        break;
                     case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
                     case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
                     case ConstantUtil.BusinessRuleTrigger.MoveToItem:

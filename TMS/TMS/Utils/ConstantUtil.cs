@@ -203,9 +203,10 @@ namespace TMS.Utils
         {
             public const int AssignToTechnician = 1;
             public const int PlaceInGroup = 2;
-            public const int MoveToCategory = 3;
-            public const int MoveToSubCategory = 4;
-            public const int MoveToItem = 5;
+            public const int SetTypeAs = 3;
+            public const int MoveToCategory = 4;
+            public const int MoveToSubCategory = 5;
+            public const int MoveToItem = 6;
             //public const int SetPriorityAs = 6;
         }
 

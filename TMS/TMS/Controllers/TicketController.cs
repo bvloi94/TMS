@@ -182,7 +182,8 @@ namespace TMS.Controllers
 
             if (!string.IsNullOrEmpty(keySearch))
             {
-                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(keySearch.ToLower()));
+                filteredListItems = filteredListItems.Where(p => p.Subject.ToLower().Contains(keySearch.ToLower())
+                                                            || p.Code.ToLower().Contains(keySearch.ToLower()));
             }
 
             if (!string.IsNullOrEmpty(filterItem))
@@ -511,7 +512,7 @@ namespace TMS.Controllers
                     model.Requester = GeneralUtil.GetUserInfo(requester);
                     model.Solution = ticket.Solution == null ? string.Empty : ticket.Solution.Trim();
                     model.Solution = _ticketService.ReplaceURL(model.Solution);
-                    model.DescriptionAttachmentsURL = GetTicketAttachmentUrl(ticket.ID, ConstantUtil.TicketAttachmentType.Description); 
+                    model.DescriptionAttachmentsURL = GetTicketAttachmentUrl(ticket.ID, ConstantUtil.TicketAttachmentType.Description);
                     model.SolutionAttachmentsURL = GetTicketAttachmentUrl(ticket.ID, ConstantUtil.TicketAttachmentType.Solution);
                     model.UnapproveReason = (string.IsNullOrEmpty(ticket.UnapproveReason)) ? "-" : ticket.UnapproveReason.Trim();
                     model.Keywords = _keywordService.GetTicketKeywordForDisplay(ticket.ID);
