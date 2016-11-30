@@ -849,12 +849,12 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
                     $("[name='Type']").val(ticket.Type);
                 }
                 $("[name='ImpactDetail']").val(ticket.ImpactDetail);
-                $("[name='ScheduleStartDate']").val(ticket.ScheduleStartDateString);
+                //$("[name='ScheduleStartDate']").val(ticket.ScheduleStartDateString);
                 $("[name='Solution']").val(ticket.Solution);
                 if (ticket.Keywords) {
                     var tags = ticket.Keywords.split(',');
                     for (i = 0; i < tags.length; i++) {
-                        $('#tags').tagit('createTag', tags[i]);
+                        $('#keywords').tagit('createTag', tags[i]);
                     }
                 }
                 $("[name='Note']").val(ticket.Note);

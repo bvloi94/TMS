@@ -557,36 +557,6 @@ namespace TMS.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
-        public ActionResult GetKeywords(string subject)
-        {
-            HashSet<string> stopWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            string[] lines = System.IO.File.ReadAllLines(Server.MapPath(@"~/Utils/stopwords.txt"));
-            foreach (string s in lines)
-            {
-                stopWords.Add(s); // Assuming that each line contains one stop word.
-            }
-
-            List<string> keywords = new List<string>();
-            subject = GeneralUtil.RemoveSpecialCharacters(subject);
-            Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
-            string words = regex.Replace(subject, " ");
-            string[] wordArr = words.Split(' ');
-            foreach (string word in wordArr)
-            {
-                string lowerWord = word.ToLower();
-                if (!stopWords.Contains(lowerWord))
-                {
-                    keywords.Add(lowerWord);
-                }
-            }
-
-            return Json(new
-            {
-                data = keywords
-            }, JsonRequestBehavior.AllowGet);
-        }
-
         [HttpPost]
         public ActionResult Toggle(int? id)
         {
