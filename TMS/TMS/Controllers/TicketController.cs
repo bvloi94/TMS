@@ -1031,7 +1031,7 @@ namespace TMS.Controllers
         {
             IEnumerable<Keyword> keywordList = _keywordService.GetAll();
             List<string> keywords = new List<string>();
-            //subject = GeneralUtil.RemoveSpecialCharacters(subject);
+            subject = GeneralUtil.RemoveSpecialCharacters(subject);
             //Regex regex = new Regex("[ ]{2,}", RegexOptions.None);
             //string words = regex.Replace(subject, " ");
             //string[] wordArr = words.Split(' ');
@@ -1047,7 +1047,7 @@ namespace TMS.Controllers
             if (!string.IsNullOrWhiteSpace(subject))
             {
                 subject = ' ' + subject.ToLower() + ' ';
-                keywords = keywordList.Where(m => subject.Contains(m.Name.ToLower())).Select(m => m.Name).ToList();
+                keywords = keywordList.Where(m => subject.Contains(' ' + m.Name.ToLower() + ' ')).Select(m => m.Name).ToList();
             }
 
             return Json(new
