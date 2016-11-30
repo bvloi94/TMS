@@ -96,6 +96,55 @@ function initPriorityDropdown(param) {
     });
 }
 
+function initTypeDropdown(param) {
+    param.control.select2({
+        ajax: {
+            url: "/dropdown/loadtypedropdown",
+            dataType: "json",
+            data: function (params) {
+                var ajaxData = {
+                    ignore: param.ignore()
+                };
+                if (param.data != undefined) {
+                    var dat = param.data();
+                    for (var i in dat) {
+                        ajaxData[i] = dat[i];
+                    }
+                }
+                return ajaxData;
+            },
+            processResults: function (data) {
+                var result = {
+                    results: []
+                };
+                if (param.allowAll) {
+                    result.results.push({
+                        allowAll: true,
+                        id: "",
+                        text: "All"
+                    });
+                }
+
+                for (var i = 0; i < data.length; i++) {
+                    data[i].id = data[i].Id;
+                    data[i].text = data[i].Name;
+                    result.results.push(data[i]);
+                }
+                return result;
+            },
+            cache: true
+        },
+        minimumResultsForSearch: Infinity,
+        escapeMarkup: function (markup) {
+            return markup;
+        },
+        minimumInputLength: 0,
+        templateSelection: function (data) {
+            return data.text;
+        }
+    });
+}
+
 function initImpactDropdown(param) {
     param.control.select2({
         ajax: {

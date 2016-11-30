@@ -67,6 +67,11 @@ namespace TMS.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult LoadTypeDropdown()
+        {
+            return Json(TMSUtils.GetDefaultTypes(), JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult LoadImpactDropDown()
         {
             var result = new List<ImpactViewModel>();

@@ -756,7 +756,8 @@ namespace TMS.Areas.HelpDesk.Controllers
             // Search by subject
             if (!string.IsNullOrEmpty(searchText))
             {
-                filteredListItems = queriedResult.Where(p => p.Subject.ToLower().Contains(searchText.ToLower()));
+                filteredListItems = queriedResult.Where(p => p.Subject.ToLower().Contains(searchText.ToLower()) 
+                                        || p.Code.ToLower().Contains(searchText.ToLower()));
             }
             else
             {

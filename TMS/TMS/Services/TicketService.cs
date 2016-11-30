@@ -92,6 +92,13 @@ namespace TMS.Services
                                         handlingTicket.Status = ConstantUtil.TicketStatus.Assigned;
                                     }
                                     break;
+                                case ConstantUtil.BusinessRuleTrigger.SetTypeAs:
+                                    int type = TMSUtils.StrToIntDef(trigger.Value, 0);
+                                    if (type > 0 && !handlingTicket.Type.HasValue)
+                                    {
+                                        handlingTicket.Type = type;
+                                    }
+                                    break;
                                 case ConstantUtil.BusinessRuleTrigger.MoveToCategory:
                                 case ConstantUtil.BusinessRuleTrigger.MoveToSubCategory:
                                 case ConstantUtil.BusinessRuleTrigger.MoveToItem:
@@ -104,7 +111,7 @@ namespace TMS.Services
                                     break;
                                     //case ConstantUtil.BusinessRuleTrigger.SetPriorityAs:
                                     //int priorityId = TMSUtils.StrToIntDef(trigger.Value, 0);
-                                    //if (priorityId > 0 && !handlingTicket.PriorityID.)
+                                    //if (priorityId > 0 && !handlingTicket.PriorityID.HasValue)
                                     //{
                                     //    handlingTicket.PriorityID = priorityId;
                                     //}
