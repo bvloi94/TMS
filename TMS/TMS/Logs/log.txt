@@ -448,3 +448,89 @@ INFO  2016-11-30 15:07:44,493 ConvertTicketJob       DoJob              - Number
 INFO  2016-11-30 15:12:45,656 ConvertTicketJob       DoJob              - Number of unread email: 0
 INFO  2016-11-30 15:17:46,873 ConvertTicketJob       DoJob              - Number of unread email: 0
 INFO  2016-11-30 15:22:48,114 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 15:27:49,462 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 15:32:50,841 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 15:37:52,646 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 15:42:54,138 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 15:47:55,544 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 15:52:56,766 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 15:57:58,174 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:02:59,514 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:08:00,835 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:13:02,403 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:18:03,574 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:23:04,915 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:28:06,182 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:33:07,450 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:38:08,666 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:43:09,822 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:48:11,190 ConvertTicketJob       DoJob              - Number of unread email: 0
+DEBUG 2016-11-30 16:52:56,768 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-30 16:52:59,081 JobManager             ExecuteAllJobs     - The Job "CheckPriorityTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 16:52:59,081 JobManager             ExecuteAllJobs     - The Job "CheckPriorityTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 16:52:59,082 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 16:52:59,082 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 16:52:59,083 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 16:52:59,084 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-30 16:52:59,084 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-30 16:52:59,085 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 16:52:59,086 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 16:52:59,089 JobManager             ExecuteAllJobs     - End Method
+INFO  2016-11-30 16:53:00,417 ConvertTicketJob       DoJob              - Number of unread email: 0
+DEBUG 2016-11-30 16:54:34,786 JobManager             ExecuteAllJobs     - Begin Scheduler Manager
+DEBUG 2016-11-30 16:54:35,711 JobManager             ExecuteAllJobs     - The Job "CheckPriorityTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 16:54:35,711 JobManager             ExecuteAllJobs     - The Job "CheckPriorityTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 16:54:35,712 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 16:54:35,713 JobManager             ExecuteAllJobs     - The Job "CheckToCloseTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 16:54:35,713 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 16:54:35,714 JobManager             ExecuteAllJobs     - The Job "CheckOverdueTicketJob" has its thread started successfully.
+ERROR 2016-11-30 16:54:35,716 JobManager             ExecuteAllJobs     - The Job "TMS.Schedulers.Job" cannot be instantiated.
+DEBUG 2016-11-30 16:54:35,717 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has been instantiated successfully.
+DEBUG 2016-11-30 16:54:35,717 JobManager             ExecuteAllJobs     - The Job "ConvertTicketJob" has its thread started successfully.
+DEBUG 2016-11-30 16:54:35,720 JobManager             ExecuteAllJobs     - End Method
+INFO  2016-11-30 16:54:36,968 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 16:59:38,151 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:04:39,928 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:09:41,120 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:14:42,452 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:19:43,856 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:24:45,058 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:29:46,248 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:34:47,690 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:39:48,978 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:44:50,770 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:49:52,492 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:54:54,638 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 17:59:56,046 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:04:57,288 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:09:58,563 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:14:59,890 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:20:01,259 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:25:02,569 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:30:03,795 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:35:05,105 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:40:06,261 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:45:10,212 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:50:11,421 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 18:55:12,649 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:00:13,931 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:05:15,247 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:10:16,464 ConvertTicketJob       DoJob              - Number of unread email: 0
+DEBUG 2016-11-30 19:14:16,680 EmailUtil              MoveNext           - System.Net.Mail.SmtpException: The server committed a protocol violation The server response was: 
+   at System.Net.Mail.SendMailAsyncResult.End(IAsyncResult result)
+   at System.Net.Mail.SmtpClient.SendMailCallback(IAsyncResult result)
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter.GetResult()
+   at TMS.Utils.EmailUtil.<SendEmail>d__12.MoveNext() in F:\Documents\Capstone\TMS\TMS\TMS\TMS\TMS\Utils\EmailUtil.cs:line 241
+WARN  2016-11-30 19:14:16,780 EmailUtil              MoveNext           - Send created ticket notification email to REQ Nguyen Hoang Thy unsuccessfully!
+INFO  2016-11-30 19:15:17,682 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:20:18,906 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:25:20,669 ConvertTicketJob       DoJob              - Number of unread email: 1
+INFO  2016-11-30 19:30:21,913 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:35:23,083 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:40:24,264 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:45:25,493 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:50:26,725 ConvertTicketJob       DoJob              - Number of unread email: 0
+INFO  2016-11-30 19:55:28,025 ConvertTicketJob       DoJob              - Number of unread email: 0
