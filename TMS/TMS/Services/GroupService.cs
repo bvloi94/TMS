@@ -79,6 +79,7 @@ namespace TMS.Services
         public bool IsInUse(Group group)
         {
             return _unitOfWork.AspNetUserRepository.Get(m => m.GroupID == group.ID).Any()
+                || _unitOfWork.GroupCategoryRepository.Get(m => m.GroupID == group.ID).Any()
                 || _unitOfWork.BusinessRuleConditionRepository.Get(
                     m => m.Criteria == ConstantUtil.BusinessRuleCriteria.Group && m.Condition.HasValue && m.Condition.Value == group.ID).Any();
         }
