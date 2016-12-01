@@ -860,12 +860,15 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
                 $("[name='Note']").val(ticket.Note);
 
                 if (ticket.CategoryId != 0) {
+                    $("[name='CategoryId']").unbind("change");
                     loadInitDropdown('ddl-category', ticket.Category, ticket.CategoryId);
-                    $("#categoryId").trigger("change");
                 }
                 if (ticket.ImpactId != 0) {
                     loadInitDropdown('ddl-impact', ticket.Impact, ticket.ImpactId);
                 }
+
+                $("[name='CategoryId']").bind("change", GetImpactUrgency);
+
                 if (ticket.GroupId != 0) {
                     loadInitDropdown('ddl-group', ticket.Group, ticket.GroupId);
                 }

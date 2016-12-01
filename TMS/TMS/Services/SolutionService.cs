@@ -74,6 +74,12 @@ namespace TMS.Services
             return _unitOfWork.CommitTransaction();
         }
 
+        public bool ToggleSolution(Solution solution)
+        {
+            _unitOfWork.SolutionRepository.Update(solution);
+            return _unitOfWork.Commit();
+        }
+
         public IEnumerable<Solution> GetSolutionsByCategory(int id)
         {
             return _unitOfWork.SolutionRepository.Get(m => m.CategoryID == id);
