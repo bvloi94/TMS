@@ -849,7 +849,6 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
                     $("[name='Type']").val(ticket.Type);
                 }
                 $("[name='ImpactDetail']").val(ticket.ImpactDetail);
-                //$("[name='ScheduleStartDate']").val(ticket.ScheduleStartDateString);
                 $("[name='Solution']").val(ticket.Solution);
                 if (ticket.Keywords) {
                     var tags = ticket.Keywords.split(',');
@@ -860,8 +859,9 @@ $("#refer-older-ticket-confirm-btn").on("click", function () {
                 $("[name='Note']").val(ticket.Note);
 
                 if (ticket.CategoryId != 0) {
-                    $("[name='CategoryId']").unbind("change");
+                    $("[name='CategoryId']").addClass("init");
                     loadInitDropdown('ddl-category', ticket.Category, ticket.CategoryId);
+                    $("[name='CategoryId']").removeClass("init");
                 }
                 if (ticket.ImpactId != 0) {
                     loadInitDropdown('ddl-impact', ticket.Impact, ticket.ImpactId);
@@ -1004,7 +1004,7 @@ $("[name='ScheduleStartDate']").change(function () {
     getDueByDate();
 });
 
-$("[name='CategoryId']").change(function () {
+$("[name='CategoryId']:not(.init)").change(function () {
     GetImpactUrgency();
 })
 

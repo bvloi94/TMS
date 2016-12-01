@@ -42,7 +42,7 @@ function readURL(input) {
 function loadInitDropdown(selector, text, value) {
     var opt = new Option(text, value, true, true);
     $("[data-role='" + selector + "']:not([disabled])").append(opt);
-    $("[data-role='" + selector + "']:not([disabled])").trigger("change");
+    $("[data-role='" + selector + "']:not([disabled]):not(.init)").trigger("change");
 }
 
 function initDropdown(selector, text, value) {
