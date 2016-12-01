@@ -567,7 +567,7 @@ namespace TMS.Controllers
                 {
                     bool current = solution.IsPublish;
                     solution.IsPublish = !current;
-                    bool updateResult = _solutionService.EditSolution(solution);
+                    bool updateResult = _solutionService.ToggleSolution(solution);
                     if (updateResult)
                     {
                         if (current)
