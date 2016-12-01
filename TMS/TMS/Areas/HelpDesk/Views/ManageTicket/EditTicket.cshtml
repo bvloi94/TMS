@@ -680,13 +680,18 @@
             $("#div-status").html(getStatusLabel('@Model.Status'));
             $("[name='Type']").val(@Model.Type);
             $("[name='Mode']").val(@Model.Mode);
-            $("[name='CategoryId']").unbind("change");
+            //$("[name='CategoryId']").unbind("change");
+            //$("[name='UrgencyId']").unbind("change");
+            $("[name='CategoryId']").addClass('init');
+            $("[name='UrgencyId']").addClass('init');
             loadInitDropdown('ddl-category', '@(Model.CategoryId == 0 ? "None" : Model.Category)', @Model.CategoryId);
             loadInitDropdown('ddl-urgency', '@Model.Urgency', @Model.UrgencyId);
             loadInitDropdown('ddl-impact', '@Model.Impact', @Model.ImpactId);
             loadInitDropdown('ddl-group', '@(Model.GroupId == 0 ? "Chooose Group" :@Model.Group)', @Model.GroupId);
             loadInitDropdown('ddl-technician', '@(Model.Technician ?? "Unassigned")', '@Model.TechnicianId');
-            $("[name='CategoryId']").bind("change", GetImpactUrgency);
+            $("[name='CategoryId']").removeClass('init');
+            $("[name='UrgencyId']").removeClass('init');
+
 
             if ((@Model.StatusId != @ConstantUtil.TicketStatus.Open) &&
                 (@Model.StatusId != @ConstantUtil.TicketStatus.Assigned)) {
@@ -740,6 +745,6 @@
                         source: "/Ticket/GetKeywords"
                     }
                 });
-        });
+            });
     </script>
 }
