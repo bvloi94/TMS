@@ -1,6 +1,8 @@
 ﻿var $actionSelect = $("#action_brselect");
 var $actionValueSelect = $("#action_value_brselect");
 var $helpdeskSelect = $("[data-role=ddl-helpdesk]");
+var $submitBtn = $("#submitBtn");
+var $cancelBtn = $("#cancelBtn");
 
 var tree = $('#criteriaeditordiv').jstree({
     "core": {
@@ -432,9 +434,9 @@ $('#action-table').on('click', 'tr i.remove-action', function (e) {
     $(this).closest('tr').remove();
 });
 
-$("#submitBtn").click(function () {
-    $("#submitBtn").prop("disabled", true);
-    $("#cancelBtn").prop("disabled", true);
+$submitBtn.click(function () {
+    $submitBtn.prop("disabled", true);
+    $cancelBtn.prop("disabled", true);
     var ruleName = $("#rule-name").val().trim();
     var ruleDescription = $("#rule-description").val().trim();
     var ruleHelpDesks = $("#ddl-helpdesk").val();
@@ -490,8 +492,8 @@ $("#submitBtn").click(function () {
                     }
                 });
             } else {
-                $("#submitBtn").prop("disabled", false);
-                $("#cancelBtn").prop("disabled", false);
+                $submitBtn.prop("disabled", false);
+                $cancelBtn.prop("disabled", false);
                 noty({
                     text: data.msg,
                     type: "error",
@@ -501,8 +503,8 @@ $("#submitBtn").click(function () {
             }
         },
         "error": function () {
-            $("#submitBtn").prop("disabled", false);
-            $("#cancelBtn").prop("disabled", false);
+            $submitBtn.prop("disabled", false);
+            $cancelBtn.prop("disabled", false);
             noty({
                 text: "Cannot connect to server!",
                 type: "error",
