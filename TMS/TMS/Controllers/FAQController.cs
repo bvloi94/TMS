@@ -23,6 +23,7 @@ namespace TMS.Controllers
         private FileUploader _fileUploader;
         private CategoryService _categoryService;
         private KeywordService _keywordService;
+        private SolutionAttachmentService _solutionAttachmentService;
 
         public FAQController()
         {
@@ -32,6 +33,7 @@ namespace TMS.Controllers
             _fileUploader = new FileUploader();
             _categoryService = new CategoryService(_unitOfWork);
             _keywordService = new KeywordService(_unitOfWork);
+            _solutionAttachmentService = new SolutionAttachmentService(_unitOfWork);
         }
         // GET: FAQ
         public ActionResult Index(string search)
@@ -217,6 +219,8 @@ namespace TMS.Controllers
                     }
                     model.Keywords = _keywordService.GetSolutionKeywordForDisplay(solution.ID);
                     model.Path = solution.Path;
+                    model.SolutionAttachmentsURL = GetSolutionAttachmentUrl(solution.ID);
+
                     ViewBag.relatedSolution = LoadRelatedArticle(solution.ID);
 
                     return View(model);
@@ -331,6 +335,26 @@ namespace TMS.Controllers
             }
 
             return View("Index", model);
+        }
+
+        public string GetSolutionAttachmentUrl(int? id)
+        {
+            IEnumerable<SolutionAttachment> solutionAttachments = _solutionAttachmentService.GetSolutionAttachmentBySolutionID(id.Value);
+            string attachmentUrl = "";
+
+            if (solutionAttachments.Count() > 0)
+            {
+                string fileName;
+                foreach (var attachFile in solutionAttachments)
+                {
+                    fileName = TMSUtils.GetMinimizedAttachmentName(attachFile.Filename);
+                    attachmentUrl += "<a download=\'" + fileName +
+                                     "\' class=\'ibtn-xs ibtn-primary ibtn-flat\' href=\'" + attachFile.Path +
+                                     "\' target=\'_blank\' >" + fileName + "</a> &nbsp;";
+                }
+            }
+
+            return attachmentUrl == "" ? "None" : attachmentUrl;
         }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)

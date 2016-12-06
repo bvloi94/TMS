@@ -34,5 +34,6 @@ namespace TMS.ViewModels
         public IEnumerable<HttpPostedFileBase> SolutionAttachments { get; set; }
         public List<AttachmentViewModel> SolutionAttachmentsList { get; set; }
         public List<AttachmentViewModel> DescriptionAttachments { get; set; }
+        public string SolutionAttachmentsURL { get; set; }
     }
 }
