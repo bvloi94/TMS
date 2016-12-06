@@ -34,7 +34,7 @@
                         <ul id="menu-top-menu" class="clearfix">
                             <li><a href="@ViewBag.ItemLink1">@ViewBag.Item1</a></li>
                             <li><a href="@ViewBag.ItemLink2">@ViewBag.Item2</a></li>
-                            <li><a href="@ViewBag.Profile">Profile</a></li>
+                            <li><a href="@ViewBag.Profile">@(ViewBag.Profile != null ? "Profile" : "")</a></li>
                         </ul>
                     </div>
                 </nav>
