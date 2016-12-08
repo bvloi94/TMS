@@ -642,12 +642,11 @@ namespace TMS.Services
         //send notification to technician if ticket is assigned when creating
         public bool AddTicket(Ticket ticket)
         {
-            ticket = ParseTicket(ticket);
             string ticketCode = GenerateTicketCode();
             if (!string.IsNullOrWhiteSpace(ticketCode))
             {
                 ticket.Code = ticketCode;
-
+                ticket = ParseTicket(ticket);
                 //send notification to requester
                 Notification requesterNoti = new Notification();
                 requesterNoti.IsForHelpDesk = false;
@@ -657,11 +656,12 @@ namespace TMS.Services
                 ticket.Notifications.Add(requesterNoti);
 
                 //send notification to technician if ticket is assigned when creating
-                if (ticket.Status == ConstantUtil.TicketStatus.Assigned && ticket.AssignedByID != null)
+                if (ticket.Status == ConstantUtil.TicketStatus.Assigned && ticket.TechnicianID != null)
+                //if (ticket.Status == ConstantUtil.TicketStatus.Assigned && ticket.AssignedByID != null)
                 {
-                    AspNetUser ticketAssigner = _unitOfWork.AspNetUserRepository.GetByID(ticket.AssignedByID);
-                    if (ticketAssigner != null)
-                    {
+                    //AspNetUser ticketAssigner = _unitOfWork.AspNetUserRepository.GetByID(ticket.AssignedByID);
+                    //if (ticketAssigner != null)
+                    //{
                         Notification technicianNoti = new Notification();
                         technicianNoti.IsForHelpDesk = false;
                         technicianNoti.BeNotifiedID = ticket.TechnicianID;
@@ -669,7 +669,7 @@ namespace TMS.Services
                         technicianNoti.ActID = ticket.AssignedByID;
                         technicianNoti.NotifiedTime = DateTime.Now;
                         ticket.Notifications.Add(technicianNoti);
-                    }
+                    //}
                 }
 
                 //send notification to helpdesk if requester create ticket 
