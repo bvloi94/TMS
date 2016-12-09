@@ -840,10 +840,10 @@ namespace TMS.Areas.HelpDesk.Controllers
             {
                 filteredListItems =
                     filteredListItems.Where(
-                        p => (duebyFilterItems.Contains("Overdue") && GeneralUtil.IsOverdue(p.DueByDate, p.Status))
-                        || (duebyFilterItems.Contains("Today") && p.DueByDate.Date == DateTime.Today && (p.Status == ConstantUtil.TicketStatus.Open || p.Status == ConstantUtil.TicketStatus.Assigned))
-                        || (duebyFilterItems.Contains("Tomorrow") && p.DueByDate.Date == DateTime.Today.AddDays(1) && (p.Status == ConstantUtil.TicketStatus.Open || p.Status == ConstantUtil.TicketStatus.Assigned))
-                        || (duebyFilterItems.Contains("Next_8_hours") && p.DueByDate >= DateTime.Now && p.ScheduleEndDate <= DateTime.Now.AddHours(8) && (p.Status == ConstantUtil.TicketStatus.Open || p.Status == ConstantUtil.TicketStatus.Assigned))
+                        p => (duebyFilterItems.Contains("Overdue") && p.DueByDate < DateTime.Now)
+                        || (duebyFilterItems.Contains("Today") && p.DueByDate.Date == DateTime.Today)
+                        || (duebyFilterItems.Contains("Tomorrow") && p.DueByDate.Date == DateTime.Today.AddDays(1))
+                        || (duebyFilterItems.Contains("Next_8_hours") && p.DueByDate >= DateTime.Now && p.ScheduleEndDate <= DateTime.Now.AddHours(8))
                         );
             }
 
