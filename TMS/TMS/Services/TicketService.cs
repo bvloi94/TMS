@@ -385,7 +385,8 @@ namespace TMS.Services
                     }
                     break;
                 case ConstantUtil.BusinessRuleCriteria.Priority:
-                    Priority priority = handlingTicket.Priority;
+                    Priority priority = _unitOfWork.PriorityRepository.GetByID(handlingTicket.PriorityID);
+                    //Priority priority = handlingTicket.Priority;
                     if (priority != null)
                     {
                         int priorityId = priority.ID;
@@ -424,7 +425,8 @@ namespace TMS.Services
                     }
                     break;
                 case ConstantUtil.BusinessRuleCriteria.Impact:
-                    Impact impact = handlingTicket.Impact;
+                    Impact impact = _unitOfWork.ImpactRepository.GetByID(handlingTicket.ImpactID);
+                    //Impact impact = handlingTicket.Impact;
                     if (impact != null)
                     {
                         int impactId = impact.ID;
@@ -463,7 +465,8 @@ namespace TMS.Services
                     }
                     break;
                 case ConstantUtil.BusinessRuleCriteria.Urgency:
-                    Urgency urgency = handlingTicket.Urgency;
+                    Urgency urgency = _unitOfWork.UrgencyRepository.GetByID(handlingTicket.UrgencyID);
+                    //Urgency urgency = handlingTicket.Urgency;
                     if (urgency != null)
                     {
                         int urgencyId = urgency.ID;
