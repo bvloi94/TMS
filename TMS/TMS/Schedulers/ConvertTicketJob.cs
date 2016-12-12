@@ -50,48 +50,51 @@ namespace TMS.Schedulers
                 if (_userService.IsValidEmail(requesterEmail))
                 {
                     string subject = mail.Subject;
-                    string description = mail.Body;
-                    Urgency urgency = _urgencyService.GetSystemUrgency();
-                    Impact impact = _impactService.GetSystemImpact();
-                    Ticket ticket = new Ticket
+                    if (!string.IsNullOrWhiteSpace(subject) && subject.Length > 10 && subject.Length < 200)
                     {
-                        Subject = subject,
-                        Description = description == null ? string.Empty : description.Trim(),
-                        Status = ConstantUtil.TicketStatus.Open,
-                        CreatedTime = DateTime.Now,
-                        ModifiedTime = DateTime.Now,
-                        ScheduleStartDate = DateTime.Now,
-                        DueByDate = DateTime.Now.AddHours(urgency.Duration),
-                        ScheduleEndDate = DateTime.Now.AddDays(ConstantUtil.DayToCloseTicket),
-                        UrgencyID = urgency.ID,
-                        ImpactID = impact.ID,
-                        PriorityID = _ticketService.GetPriorityId(impact.ID, DateTime.Now.AddHours(urgency.Duration)),
-                        CreatedID = _userService.GetUserByEmail(requesterEmail).Id,
-                        RequesterID = _userService.GetUserByEmail(requesterEmail).Id,
-                        Mode = ConstantUtil.TicketMode.Email,
-                        TicketKeywords = _ticketService.GetTicketKeywords(subject)
-                    };
+                        string description = mail.Body;
+                        Urgency urgency = _urgencyService.GetSystemUrgency();
+                        Impact impact = _impactService.GetSystemImpact();
+                        Ticket ticket = new Ticket
+                        {
+                            Subject = subject,
+                            Description = description == null ? string.Empty : description.Trim(),
+                            Status = ConstantUtil.TicketStatus.Open,
+                            CreatedTime = DateTime.Now,
+                            ModifiedTime = DateTime.Now,
+                            ScheduleStartDate = DateTime.Now,
+                            DueByDate = DateTime.Now.AddHours(urgency.Duration),
+                            ScheduleEndDate = DateTime.Now.AddDays(ConstantUtil.DayToCloseTicket),
+                            UrgencyID = urgency.ID,
+                            ImpactID = impact.ID,
+                            PriorityID = _ticketService.GetPriorityId(impact.ID, DateTime.Now.AddHours(urgency.Duration)),
+                            CreatedID = _userService.GetUserByEmail(requesterEmail).Id,
+                            RequesterID = _userService.GetUserByEmail(requesterEmail).Id,
+                            Mode = ConstantUtil.TicketMode.Email,
+                            TicketKeywords = _ticketService.GetTicketKeywords(subject)
+                        };
 
-                    if (mail.Attachments.Count > 0)
-                    {
-                        string attachmentDirectory = HostingEnvironment.MapPath(@"~/Uploads/Attachments");
-                        if (!Directory.Exists(attachmentDirectory))
+                        if (mail.Attachments.Count > 0)
                         {
-                            Directory.CreateDirectory(attachmentDirectory);
+                            string attachmentDirectory = HostingEnvironment.MapPath(@"~/Uploads/Attachments");
+                            if (!Directory.Exists(attachmentDirectory))
+                            {
+                                Directory.CreateDirectory(attachmentDirectory);
+                            }
+                            foreach (System.Net.Mail.Attachment att in mail.Attachments)
+                            {
+                                string fileName = att.Name.Replace(Path.GetFileNameWithoutExtension(att.Name), Guid.NewGuid().ToString());
+                                string attName = String.Format("{0}\\{1}", attachmentDirectory, fileName);
+                                SaveMailAttachment(att, attName);
+                                TicketAttachment ticketAttachment = new TicketAttachment();
+                                ticketAttachment.Path = "/Uploads/Attachments/" + fileName;
+                                ticketAttachment.Filename = att.Name;
+                                ticketAttachment.Type = ConstantUtil.TicketAttachmentType.Description;
+                                ticket.TicketAttachments.Add(ticketAttachment);
+                            }
                         }
-                        foreach (System.Net.Mail.Attachment att in mail.Attachments)
-                        {
-                            string fileName = att.Name.Replace(Path.GetFileNameWithoutExtension(att.Name), Guid.NewGuid().ToString());
-                            string attName = String.Format("{0}\\{1}", attachmentDirectory, fileName);
-                            SaveMailAttachment(att, attName);
-                            TicketAttachment ticketAttachment = new TicketAttachment();
-                            ticketAttachment.Path = "/Uploads/Attachments/" + fileName;
-                            ticketAttachment.Filename = att.Name;
-                            ticketAttachment.Type = ConstantUtil.TicketAttachmentType.Description;
-                            ticket.TicketAttachments.Add(ticketAttachment);
-                        }
+                        _ticketService.AddTicket(ticket);
                     }
-                    _ticketService.AddTicket(ticket);
                 }
             }
         }
@@ -113,7 +116,7 @@ namespace TMS.Schedulers
         /// executed repeatadly.</returns>
         public override int GetRepetitionIntervalTime()
         {
-            return (int) TimeSpan.FromMinutes(5).TotalMilliseconds;
+            return (int)TimeSpan.FromSeconds(15).TotalMilliseconds;
         }
 
         private void SaveMailAttachment(System.Net.Mail.Attachment attachment, string destinationFile)

@@ -13,7 +13,7 @@ using TMS.ViewModels;
 
 namespace TMS.Controllers
 {
-    [CustomAuthorize]
+    //[CustomAuthorize]
     public class FAQController : Controller
     {
         private UnitOfWork _unitOfWork = new UnitOfWork();
