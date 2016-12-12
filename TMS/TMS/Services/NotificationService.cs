@@ -87,6 +87,9 @@ namespace TMS.Services
                         {
                             return string.Format("<b>{0}</b> assigned the ticket #{1} to you: <b>\"{2}\"</b>.", actedUser.Fullname, ticket.Code, ticket.Subject);
                         }
+                        else {
+                            return string.Format("Ticket #{0} is assigned to you: <b>\"{1}\"</b>.", ticket.Code, ticket.Subject);
+                        }
                         break;
                     case ConstantUtil.NotificationActionType.TechnicianNotiUnassign:
                         if (actedUser != null)
